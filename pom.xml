@@ -21,6 +21,7 @@
         <version.junit>4.12</version.junit>
         <version.spring.boot>1.5.4.RELEASE</version.spring.boot>
         <version.maven.compiler.plugin>3.6.0</version.maven.compiler.plugin>
+        <version.swagger>2.7.0</version.swagger>
     </properties>
 
 
