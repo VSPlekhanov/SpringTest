@@ -1,6 +1,5 @@
 package com.epam.lstrsum;
 
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
