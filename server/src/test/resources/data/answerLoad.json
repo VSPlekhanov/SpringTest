@@ -1,0 +1,98 @@
+[
+  {
+    "answerId": "1u_1r_1a",
+    "parentId": "1u_1r",
+    "tags": [],
+    "text": "You probably forgot to select the 'module's folder inside the extra contrib folder. Exact error happened to me when I only selected the extra contrib folder.",
+    "authorId": "5u",
+    "upVote": 6
+  },
+  {
+    "answerId": "1u_1r_2a",
+    "parentId": "1u_1r",
+    "tags": [],
+    "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
+    "authorId": "5u",
+    "upVote": 1
+  },
+  {
+    "answerId": "1u_1r_3a",
+    "parentId": "1u_1r",
+    "tags": [],
+    "text": "In my case it was related to Client authentication. It happened to me when I was trying to access SOAP API from Java code without setting keystore/keystorePassword and from the stacktrace there is no way we can figure out that there's a problem with Authentication.",
+    "authorId": "5u",
+    "upVote": 0
+  },
+  {
+    "answerId": "1u_2r_1a",
+    "parentId": "1u_2r",
+    "tags": [],
+    "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
+    "authorId": "5u",
+    "upVote": 3
+  },
+  {
+    "answerId": "1u_2r_2a",
+    "parentId": "1u_2r",
+    "tags": [],
+    "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
+    "authorId": "6u",
+    "upVote": 1
+  },
+  {
+    "answerId": "2u_3r_1a",
+    "parentId": "2u_3r",
+    "tags": [],
+    "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
+    "authorId": "1u",
+    "upVote": 4
+  },
+  {
+    "answerId": "2u_3r_2a",
+    "parentId": "2u_3r",
+    "tags": [],
+    "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
+    "authorId": "5u",
+    "upVote": 1
+  },
+  {
+    "answerId": "3u_4r_1a",
+    "parentId": "3u_4r",
+    "tags": [],
+    "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this",
+    "authorId": "5u",
+    "upVote": 4
+  },
+  {
+    "answerId": "3u_4r_2a",
+    "parentId": "3u_4r",
+    "tags": [],
+    "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
+    "authorId": "4u",
+    "upVote": 0
+  },
+  {
+    "answerId": "4u_5r_1a",
+    "parentId": "4u_5r",
+    "tags": [],
+    "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
+    "authorId": "5u",
+    "upVote": 2
+  },
+  {
+    "answerId": "4u_5r_2a",
+    "parentId": "4u_5r",
+    "tags": [],
+    "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
+    "authorId": "6u",
+    "upVote": 1
+  },
+  {
+    "answerId": "6u_6r_1a",
+    "parentId": "6u_6r",
+    "tags": [],
+    "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
+    "authorId": "5u",
+    "upVote": 3
+  }
+]
