@@ -2,6 +2,7 @@ package com.epam.lstrsum.security;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +19,7 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 import java.util.Collections;
 import java.util.Map;
 
+@Slf4j
 public class CustomResourceServerTokenServices implements ResourceServerTokenServices {
 
     @Autowired
@@ -41,8 +43,8 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
 
             return new OAuth2Authentication(request, finalToken);
         } catch (Exception e) {
-            throw new AuthenticationServiceException("some", e);
-            // TODO: LOGGER!!!
+            log.error("Token process exception!", e);
+            throw new AuthenticationServiceException(e.getMessage(), e);
         }
     }
 
