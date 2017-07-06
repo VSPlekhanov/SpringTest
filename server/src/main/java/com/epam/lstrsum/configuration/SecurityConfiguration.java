@@ -7,10 +7,8 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.TestingAuthenticationProvider;
@@ -34,8 +32,16 @@ import java.util.Collections;
 @Configuration
 @EnableOAuth2Client
 @ConfigurationProperties(prefix = "security")
-@Setter
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    @Setter
+    private String authorizationId;
+    @Setter
+    private String authorizationClientId;
+    @Setter
+    private String authorizationAccessTokenUri;
+    @Setter
+    private String authorizationUserUri;
 
     @Autowired
     @SuppressWarnings("all")
@@ -44,11 +50,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     static {
         new TrustAllCertificatesSSL();
     }
-
-    private String authorizationId;
-    private String authorizationClientId;
-    private String authorizationAccessTokenUri;
-    private String authorizationUserUri;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
