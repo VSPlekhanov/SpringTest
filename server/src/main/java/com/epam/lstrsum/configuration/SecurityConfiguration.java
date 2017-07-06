@@ -2,9 +2,15 @@ package com.epam.lstrsum.configuration;
 
 import com.epam.lstrsum.security.CustomResourceServerTokenServices;
 import com.epam.lstrsum.security.cert.TrustAllCertificatesSSL;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.TestingAuthenticationProvider;
@@ -27,6 +33,9 @@ import java.util.Collections;
 
 @Configuration
 @EnableOAuth2Client
+@ConfigurationProperties(prefix = "security")
+@Getter
+@Setter
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -36,6 +45,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     static {
         new TrustAllCertificatesSSL();
     }
+
+    private String authorizationId;
+    private String authorizationClientId;
+    private String authorizationAccessTokenUri;
+    private String authorizationUserUri;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -82,14 +96,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     public AuthorizationCodeResourceDetails authorizationCodeResourceDetails() {
         AuthorizationCodeResourceDetails details = new AuthorizationCodeResourceDetails();
-        details.setId("epam");
-        details.setClientId("oauth.epmlstrsum.exp");
-        details.setAccessTokenUri("https://login-prod.epm-sso.projects.epam.com/adfs/oauth2/token");
-        details.setUserAuthorizationUri("https://login-prod.epm-sso.projects.epam.com/adfs/oauth2/authorize?resource=http://localhost:8080/");
+        details.setId(authorizationId);
+        details.setClientId(authorizationClientId);
+        details.setAccessTokenUri(authorizationAccessTokenUri);
+        details.setUserAuthorizationUri(authorizationUserUri);
         details.setClientAuthenticationScheme(AuthenticationScheme.form);
         details.setAuthenticationScheme(AuthenticationScheme.query);
         return details;
     }
+
 
     @Bean
     public ResourceServerTokenServices tokenService() {
