@@ -34,7 +34,6 @@ import java.util.Collections;
 @Configuration
 @EnableOAuth2Client
 @ConfigurationProperties(prefix = "security")
-@Getter
 @Setter
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 

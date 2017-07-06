@@ -4,6 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>lstrsum-model</artifactId>
     <version>0.1</version>
+    <packaging>jar</packaging>
 
     <name>model</name>
     <description>Model configuration for maven</description>

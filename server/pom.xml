@@ -4,6 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>lstrsum-server</artifactId>
     <version>0.1</version>
+    <packaging>jar</packaging>
 
     <name>server</name>
     <description>Server configuration for maven</description>
@@ -16,6 +17,11 @@
     </parent>
 
     <dependencies>
+        <dependency>
+            <groupId>com.epam.lstrsum</groupId>
+            <artifactId>lstrsum-model</artifactId>
+            <version>0.1</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -55,11 +61,14 @@
             <artifactId>springfox-swagger-ui</artifactId>
             <version>${version.swagger}</version>
         </dependency>
-        <dependency>
-            <groupId>com.epam.lstrsum</groupId>
-            <artifactId>lstrsum-model</artifactId>
-            <version>0.1</version>
-        </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>
