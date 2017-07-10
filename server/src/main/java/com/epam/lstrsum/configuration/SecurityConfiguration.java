@@ -2,6 +2,8 @@ package com.epam.lstrsum.configuration;
 
 import com.epam.lstrsum.security.CustomResourceServerTokenServices;
 import com.epam.lstrsum.security.cert.TrustAllCertificatesSSL;
+import com.epam.lstrsum.security.role.ResourceBundleRoleService;
+import com.epam.lstrsum.security.role.RoleService;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,8 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import java.util.Collections;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 @Configuration
 @EnableOAuth2Client
@@ -53,11 +57,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
+        RoleService roleService = roleService();
+
+        http.authorizeRequests()
+                .antMatchers("/sso/**").permitAll().and();
+
+        Map<String, String[]> rolesRequestsMapping = roleService.getRolesRequestsMapping();
+
+        for (Map.Entry<String, String[]> entry : rolesRequestsMapping.entrySet()) {
+            http.authorizeRequests().antMatchers(entry.getKey()).hasAnyAuthority(entry.getValue()).and();
+        }
+
         http
-                .authorizeRequests()
-                .antMatchers("/sso/**").permitAll()
-                .antMatchers("/**").fullyAuthenticated()
-                .and()
                 .addFilterBefore(auth2ClientAuthenticationProcessingFilter(), BasicAuthenticationFilter.class)
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint());
     }
@@ -108,8 +120,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     public ResourceServerTokenServices tokenService() {
-        return new CustomResourceServerTokenServices();
+        return new CustomResourceServerTokenServices(roleService(), authorizationCodeResourceDetails());
     }
 
-
+    @Bean
+    public RoleService roleService() {
+        return new ResourceBundleRoleService(ResourceBundle.getBundle("security-roles"));
+    }
 }

@@ -1,0 +1,50 @@
+package com.epam.lstrsum.security.role;
+
+import com.epam.lstrsum.security.EpamEmployeePrincipal;
+
+import java.util.Map;
+
+/**
+ * Implement this interface to build custom RoleServices.
+ *
+ * RoleService provides the information about Principal roles, to
+ * define the authorities after SSO authorization.
+ *
+ * Also this service provide mapping of requests and required roles.
+ *
+ */
+public interface RoleService {
+
+    /**
+     * Get roles of specified principal.
+     *
+     * If principal have no roles this method should return
+     * one role like "NOT_ALLOWED_USER".
+     *
+     * Kepp in mind, if this method is calling, it means that
+     * principal already have passed the authentication system.
+     *
+     * @param principal - Authinticated principal
+     * @return - array or roles or not allowed user role
+     * @throws NullPointerException - if principal is null
+     */
+    String[] getPrincipalRoles(EpamEmployeePrincipal principal);
+
+    /**
+     * Get roles mappping.
+     *
+     * For each request pattern should return not
+     * empty roles list.
+     *
+     * @return - mapping for requests and roles
+     */
+    Map<String, String[]> getRolesRequestsMapping();
+
+    /**
+     * Should return name of "NOT_ALLOWED_USER" role.
+     *
+     * @return name of not allowed user role.
+     */
+    String getNotAllowedPrincipalRole();
+}
+
