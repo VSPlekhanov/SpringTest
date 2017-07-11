@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
-@Profile("production")
+@Profile("email")
 @Slf4j
 public class MailService {
 
