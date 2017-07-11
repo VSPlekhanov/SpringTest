@@ -19,34 +19,38 @@ public class MailService {
 
     @ServiceActivator(inputChannel = "receiveChannel", poller = @Poller(fixedRate = "200"))
     public void showMessages(MimeMessage message) throws Exception {
-        String contentType = message.getContentType();
+        log.debug("showMessages; Message received: {}", message);
 
-        log.info(contentType);
+        StringBuilder debugLogMessage = new StringBuilder();
+
+        String contentType = message.getContentType();
+        debugLogMessage.append(contentType);
 
         String content = "";
         if (matchesToRegexp(contentType, "^multipart\\/.*")) {
             MimeMultipart rawContent = (MimeMultipart) message.getContent();
             content = (String) rawContent.getBodyPart(0).getContent();
 
-            log.info("mime is multi");
+            debugLogMessage.append("mime is multi");
         } else if (matchesToRegexp(contentType, "^text\\/.*")) {
             content = (String) message.getContent();
-            log.info("mime is text");
+            debugLogMessage.append("mime is text");
         } else {
-            log.info("Unknown mime type!");
+            log.warn("Unknown mime type!");
         }
 
         InternetAddress address = (InternetAddress) message.getFrom()[0];
 
-        log.info("Email received ------------------------------------");
+        debugLogMessage.append(
+                "\nFrom: " + address.getAddress() +
+                        " \nSubject: " + message.getSubject() +
+                        " \nContent: \n" + content
+        );
 
-        log.info("\nFrom: %s \nSubject: %s \nContent: \n%s",
-                address.getAddress(), message.getSubject(), content);
-
-        log.info("\n\n------------------------------------");
+        log.debug(debugLogMessage.toString());
     }
 
-    private static boolean matchesToRegexp(String input, String regexp){
+    private static boolean matchesToRegexp(String input, String regexp) {
         Pattern p = Pattern.compile(regexp);
         return p.asPredicate().test(input);
     }
