@@ -10,14 +10,14 @@ import java.util.List;
 @Service
 public class AnswerService {
 
-    private final AnswerRepository answerRepository;
+    private AnswerRepository answerRepository;
 
     @Autowired
     public AnswerService(AnswerRepository answerRepository) {
         this.answerRepository = answerRepository;
     }
 
-    public List<Answer> findAll(){
+    public List<Answer> findAll() {
         return answerRepository.findAll();
     }
 }

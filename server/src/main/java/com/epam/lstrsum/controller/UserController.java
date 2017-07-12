@@ -1,4 +1,4 @@
-package com.epam.lstrsum.controllers;
+package com.epam.lstrsum.controller;
 
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.service.UserService;

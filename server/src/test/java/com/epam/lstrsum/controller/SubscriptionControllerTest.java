@@ -1,6 +1,7 @@
-package com.epam.lstrsum.controllers;
+package com.epam.lstrsum.controller;
 
-import com.epam.lstrsum.model.Answer;
+import com.epam.lstrsum.model.Subscription;
+import com.epam.lstrsum.model.User;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +24,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AnswerControllerTest extends SetUpDataBaseCollections {
+public class SubscriptionControllerTest extends SetUpDataBaseCollections {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
@@ -32,15 +33,14 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
     private MongoTemplate mongoTemplate;
 
     @Test
-    public void getListOfAnswers() throws Exception {
-        final ResponseEntity<List<Answer>> responseEntity = testRestTemplate.exchange("/api/answer",
-                HttpMethod.GET, null, new ParameterizedTypeReference<List<Answer>>() {
+    public void getListOfSubscriptions() throws Exception {
+        final ResponseEntity<List<Subscription>> responseEntity = testRestTemplate.exchange("/api/subscription",
+                HttpMethod.GET, null, new ParameterizedTypeReference<List<Subscription>>() {
                 });
-        List<Answer> actualList = responseEntity.getBody();
+        List<Subscription> actualList = responseEntity.getBody();
         //validate
-        assertThat(actualList.size(), is(12));
-        List<String> actualIds = actualList.stream().map(Answer::getAnswerId).collect(collectingAndThen(toList(), ImmutableList::copyOf));
-        assertThat(actualIds, containsInAnyOrder("1u_1r_1a", "1u_1r_2a", "1u_1r_3a", "1u_2r_1a", "1u_2r_2a",
-                "2u_3r_1a", "2u_3r_2a", "3u_4r_1a", "3u_4r_2a", "4u_5r_1a", "4u_5r_2a", "6u_6r_1a"));
+        assertThat(actualList.size(), is(6));
+        List<String> actualIds = actualList.stream().map(Subscription::getUserId).map(User::getUserId).collect(collectingAndThen(toList(), ImmutableList::copyOf));
+        assertThat(actualIds, containsInAnyOrder("1u", "2u", "3u", "4u", "5u", "6u"));
     }
 }
