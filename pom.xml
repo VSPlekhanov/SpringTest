@@ -28,7 +28,6 @@
         <version.jsr310>2.9.0.pr4</version.jsr310>
     </properties>
 
-
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
