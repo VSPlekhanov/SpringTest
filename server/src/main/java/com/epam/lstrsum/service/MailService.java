@@ -1,50 +1,56 @@
 package com.epam.lstrsum.service;
 
-import com.sun.xml.internal.messaging.saaj.packaging.mime.internet.MimeMultipart;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.integration.annotation.Poller;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.stereotype.Component;
 
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.util.regex.Matcher;
+import javax.mail.internet.MimeMultipart;
 import java.util.regex.Pattern;
 
 @Component
+@Profile("email")
+@Slf4j
 public class MailService {
 
     @ServiceActivator(inputChannel = "receiveChannel", poller = @Poller(fixedRate = "200"))
     public void showMessages(MimeMessage message) throws Exception {
-        String contentType = message.getContentType();
+        log.debug("showMessages; Message received: {}", message);
 
-        System.out.println(contentType);
+        StringBuilder debugLogMessage = new StringBuilder();
+
+        String contentType = message.getContentType();
+        debugLogMessage.append(contentType);
 
         String content = "";
         if (matchesToRegexp(contentType, "^multipart\\/.*")) {
             MimeMultipart rawContent = (MimeMultipart) message.getContent();
             content = (String) rawContent.getBodyPart(0).getContent();
 
-            System.out.println("mime is multi");
+            debugLogMessage.append("mime is multi");
         } else if (matchesToRegexp(contentType, "^text\\/.*")) {
             content = (String) message.getContent();
-            System.out.println("mime is text");
+            debugLogMessage.append("mime is text");
         } else {
-            System.out.println("Unknown mime type!");
+            log.warn("Unknown mime type!");
         }
 
         InternetAddress address = (InternetAddress) message.getFrom()[0];
 
-        System.out.println("Email received ------------------------------------");
+        debugLogMessage.append(
+                "\nFrom: " + address.getAddress() +
+                        " \nSubject: " + message.getSubject() +
+                        " \nContent: \n" + content
+        );
 
-        System.out.printf("\nFrom: %s \nSubject: %s \nContent: \n%s",
-                address.getAddress(), message.getSubject(), content);
-
-        System.out.println("\n\n------------------------------------");
+        log.debug(debugLogMessage.toString());
     }
 
-    private static boolean matchesToRegexp(String input, String regexp){
+    private static boolean matchesToRegexp(String input, String regexp) {
         Pattern p = Pattern.compile(regexp);
-        Matcher m = p.matcher(input);
-        return m.matches();
+        return p.asPredicate().test(input);
     }
 }
