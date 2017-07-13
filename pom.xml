@@ -24,6 +24,7 @@
         <version.swagger>2.7.0</version.swagger>
         <version.fongo>2.1.0</version.fongo>
         <version.lombok>1.16.18</version.lombok>
+        <spring.version>4.3.9.RELEASE</spring.version>
         <version.simple.json>1.1.1</version.simple.json>
         <version.jsr310>2.9.0.pr4</version.jsr310>
     </properties>
