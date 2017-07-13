@@ -80,7 +80,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-            <version>5.0.0.BUILD-SNAPSHOT</version>
+            <version>${spring.integration.version}</version>
         </dependency>
     </dependencies>
     <build>
