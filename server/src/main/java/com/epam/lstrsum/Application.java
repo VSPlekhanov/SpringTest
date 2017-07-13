@@ -8,8 +8,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class Application {
 
     public static void main(String[] args) throws Exception {
-        new ClassPathXmlApplicationContext("application-context.xml");
-
         SpringApplication.run(new Object[]{Application.class}, args);
     }
 }
