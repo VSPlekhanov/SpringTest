@@ -39,10 +39,6 @@
             <artifactId>spring-boot-starter-tomcat</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.security.oauth</groupId>
             <artifactId>spring-security-oauth2</artifactId>
         </dependency>
@@ -88,14 +84,11 @@
             <version>5.0.0.BUILD-SNAPSHOT</version>
         </dependency>
         <dependency>
-
-        <groupId>com.sun.mail</groupId>
-        <artifactId>javax.mail</artifactId>
-        <version>1.5.5</version>
-    </dependency>
-
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.5.5</version>
+        </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
