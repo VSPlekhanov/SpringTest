@@ -26,7 +26,6 @@
         <version.lombok>1.16.18</version.lombok>
     </properties>
 
-
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
