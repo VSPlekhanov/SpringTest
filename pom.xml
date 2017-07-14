@@ -25,6 +25,9 @@
         <version.fongo>2.1.0</version.fongo>
         <version.lombok>1.16.18</version.lombok>
         <spring.version>4.3.9.RELEASE</spring.version>
+        <version.simple.json>1.1.1</version.simple.json>
+        <version.jsr310>2.8.9</version.jsr310>
+        <version.org.reflection>0.9.1</version.org.reflection>
     </properties>
 
     <parent>
@@ -60,6 +63,17 @@
             <artifactId>lombok</artifactId>
             <version>${version.lombok}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>${version.simple.json}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${version.jsr310}</version>
         </dependency>
     </dependencies>
 

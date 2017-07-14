@@ -1,10 +1,7 @@
 package com.epam.lstrsum.controllers;
 
 import com.epam.lstrsum.model.Answer;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,23 +23,13 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AnswerControllerTest {
+public class AnswerControllerTest extends SetUpDataBaseCollections {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
 
     @Autowired
     private MongoTemplate mongoTemplate;
-
-    @Before
-    public void setUp() throws Exception {
-        final ObjectMapper answerMapper = new ObjectMapper();
-        final List<Answer> answers = answerMapper.readValue(getClass().getResourceAsStream("/data/answerLoad.json"),
-                answerMapper.getTypeFactory().constructCollectionType(List.class, Answer.class));
-        for (Answer a : answers) {
-            mongoTemplate.save(a);
-        }
-    }
 
     @Test
     public void getListOfAnswers() throws Exception {
@@ -55,10 +42,5 @@ public class AnswerControllerTest {
         List<String> actualIds = actualList.stream().map(Answer::getAnswerId).collect(collectingAndThen(toList(), ImmutableList::copyOf));
         assertThat(actualIds, containsInAnyOrder("1u_1r_1a", "1u_1r_2a", "1u_1r_3a", "1u_2r_1a", "1u_2r_2a",
                 "2u_3r_1a", "2u_3r_2a", "3u_4r_1a", "3u_4r_2a", "4u_5r_1a", "4u_5r_2a", "6u_6r_1a"));
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        mongoTemplate.dropCollection(Answer.class);
     }
 }
