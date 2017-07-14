@@ -1,6 +1,6 @@
 [
   {
-    "requestId": "1u_1r",
+    "_id": "1u_1r",
     "title": "JsonMappingException on android spring httprequest",
     "tags": [
       "java",
@@ -9,19 +9,20 @@
       "spring"
     ],
     "text": "I have this call in async task. All parameters are correct. In postman or advance rest client the call work fine and It return a json with a list of objects. But if I try to do this call in android with spring I have this error:",
-    "authorId": "1u",
+    "authorId": {"$ref" : "user", "$id" : "5u"},
+    "createdAt": { "$date" : "2016-04-19T11:00:00Z"},
     "upVote": 0,
     "allowedSubs": [
-      "2u",
-      "3u",
-      "4u",
-      "5u",
-      "6u"
+      {"$ref" : "user", "$id" : "2u"},
+      {"$ref" : "user", "$id" : "3u"},
+      {"$ref" : "user", "$id" : "4u"},
+      {"$ref" : "user", "$id" : "5u"},
+      {"$ref" : "user", "$id" : "6u"}
     ],
-    "deadLine": "ISODate('2017-06-030T00:00:00Z')"
+    "deadLine": { "$date" : "2016-05-19T11:00:00Z"}
   },
   {
-    "requestId": "1u_2r",
+    "_id": "1u_2r",
     "title": "iOS automation with appium on Simulator",
     "tags": [
       "ios",
@@ -30,19 +31,20 @@
       "appium-ios"
     ],
     "text": "I am new into Appium iOS, Can someone give me the step by step installation process for Appium test on Mac OS using simulator. Note - I have installed Xcode, and have source file of app. Now which setting is required and which capabilities I need to add in code in Eclipse",
-    "authorId": "1u",
+    "authorId":  {"$ref" : "user", "$id" : "1u"},
+    "createdAt": { "$date" : "2017-08-14T09:15:38Z"},
     "upVote": 0,
     "allowedSubs": [
-      "2u",
-      "3u",
-      "4u",
-      "5u",
-      "6u"
+      {"$ref" : "user", "$id" : "2u"},
+      {"$ref" : "user", "$id" : "3u"},
+      {"$ref" : "user", "$id" : "4u"},
+      {"$ref" : "user", "$id" : "5u"},
+      {"$ref" : "user", "$id" : "6u"}
     ],
-    "deadLine": "ISODate('2017-06-028T00:00:00Z')"
+    "deadLine": { "$date" : "2017-08-17T09:00:00Z"}
   },
   {
-    "requestId": "2u_3r",
+    "_id": "2u_3r",
     "title": "how to restrict the date picker with min and max values on I phone using java-script?",
     "tags": [
       "javascript",
@@ -50,19 +52,20 @@
       "iphone"
     ],
     "text": "I have a scenario that,I am using a JavaScript function for min and max values for input type date.It is working fine on android mobile,but in I phone Am unable to restrict the calendar with max and min values.",
-    "authorId": "2u",
+    "authorId": {"$ref" : "user", "$id" : "2u"},
+    "createdAt": { "$date" : "2017-09-04T05:12:17Z"},
     "upVote": 0,
     "allowedSubs": [
-      "1u",
-      "3u",
-      "4u",
-      "5u",
-      "6u"
+      {"$ref" : "user", "$id" : "1u"},
+      {"$ref" : "user", "$id" : "3u"},
+      {"$ref" : "user", "$id" : "4u"},
+      {"$ref" : "user", "$id" : "5u"},
+      {"$ref" : "user", "$id" : "6u"}
     ],
-    "deadLine": "ISODate('2017-06-029T00:00:00Z')"
+    "deadLine": { "$date" : "2017-09-10T10:00:00Z"}
   },
   {
-    "requestId": "3u_4r",
+    "_id": "3u_4r",
     "title": "how to persist query result between objects in php",
     "tags": [
       "php",
@@ -71,19 +74,20 @@
       "doctrine"
     ],
     "text": "in my case , i have query result came from database : the result is a array, i want to pass result in multiple object and get result. i try to use mediator pattern but it wont work in my case , because i need to get result from first object and pass theme to second and so on .",
-    "authorId": "3u",
+    "authorId": {"$ref" : "user", "$id" : "3u"},
+    "createdAt": { "$date" : "2016-04-12T15:12:25Z"},
     "upVote": 0,
     "allowedSubs": [
-      "1u",
-      "2u",
-      "4u",
-      "5u",
-      "6u"
+      {"$ref" : "user", "$id" : "1u"},
+      {"$ref" : "user", "$id" : "2u"},
+      {"$ref" : "user", "$id" : "4u"},
+      {"$ref" : "user", "$id" : "5u"},
+      {"$ref" : "user", "$id" : "6u"}
     ],
-    "deadLine": "ISODate('2017-07-010T00:00:00Z')"
+    "deadLine": { "$date" : "2017-05-13T10:00:00Z"}
   },
   {
-    "requestId": "4u_5r",
+    "_id": "4u_5r",
     "title": "Prototype.js get 'Text' from an element",
     "tags": [
       "javascript",
@@ -91,19 +95,20 @@
       "prototypejs"
     ],
     "text": "I'm new to Protoype.JS and just testing it a bit because I heard it was good, but I'm stuck quite quickly. As easy as this is with jQuery, it seems to be the end of the world to get the 'Text' in an element. I've tried innerHTML in multiple ways but the only thing I can get is 'undefined'.",
-    "authorId": "4u",
+    "authorId": {"$ref" : "user", "$id" : "4u"},
+    "createdAt": { "$date" : "2017-05-31T12:18:36Z"},
     "upVote": 0,
     "allowedSubs": [
-      "1u",
-      "2u",
-      "3u",
-      "5u",
-      "6u"
+      {"$ref" : "user", "$id" : "1u"},
+      {"$ref" : "user", "$id" : "2u"},
+      {"$ref" : "user", "$id" : "3u"},
+      {"$ref" : "user", "$id" : "5u"},
+      {"$ref" : "user", "$id" : "6u"}
     ],
-    "deadLine": "ISODate('2017-06-028T00:00:00Z')"
+    "deadLine": { "$date" : "2017-06-10T15:12:24Z"}
   },
   {
-    "requestId": "6u_6r",
+    "_id": "6u_6r",
     "title": "Elixir: pipe more then one variable into a function",
     "tags": [
       "functional-programming",
@@ -111,15 +116,16 @@
       "elixir"
     ],
     "text": "Elixir has the possibility to pipe input into a function, which makes code more readable very often. For example something like this",
-    "authorId": "6u",
+    "authorId": {"$ref" : "user", "$id" : "6u"},
+    "createdAt": { "$date" : "2017-07-23T12:00:05Z"},
     "upVote": 0,
     "allowedSubs": [
-      "1u",
-      "2u",
-      "3u",
-      "4u",
-      "5u"
+      {"$ref" : "user", "$id" : "1u"},
+      {"$ref" : "user", "$id" : "2u"},
+      {"$ref" : "user", "$id" : "3u"},
+      {"$ref" : "user", "$id" : "4u"},
+      {"$ref" : "user", "$id" : "5u"}
     ],
-    "deadLine": "ISODate('2017-07-012T00:00:00Z')"
+    "deadLine": { "$date" : "2017-07-25T09:00:00Z"}
   }
 ]
