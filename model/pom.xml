@@ -25,7 +25,7 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.11</version>
+            <version>${version.org.reflection}</version>
         </dependency>
     </dependencies>
 
