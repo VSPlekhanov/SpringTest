@@ -27,7 +27,7 @@
         <spring.version>4.3.9.RELEASE</spring.version>
         <version.simple.json>1.1.1</version.simple.json>
         <version.jsr310>2.8.9</version.jsr310>
-        <version.org.reflection>0.9.1</version.org.reflection>
+        <version.org.reflection>0.9.11</version.org.reflection>
     </properties>
 
     <parent>
