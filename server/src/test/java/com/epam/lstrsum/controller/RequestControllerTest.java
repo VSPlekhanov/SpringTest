@@ -1,7 +1,8 @@
-package com.epam.lstrsum.controllers;
+package com.epam.lstrsum.controller;
 
-import com.epam.lstrsum.model.User;
+import com.epam.lstrsum.model.Request;
 import com.google.common.collect.ImmutableList;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,25 +22,26 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
+@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class UserControllerTest extends SetUpDataBaseCollections {
+public class RequestControllerTest extends SetUpDataBaseCollections {
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private TestRestTemplate testRestTemplate;
 
     @Autowired
     private MongoTemplate mongoTemplate;
 
     @Test
-    public void getListOfUsers() throws Exception {
-        ResponseEntity<List<User>> responseEntity = restTemplate.exchange("/api/user",
-                HttpMethod.GET, null, new ParameterizedTypeReference<List<User>>() {
+    public void getListOfRequests() throws Exception {
+        final ResponseEntity<List<Request>> responseEntity = testRestTemplate.exchange("/api/request",
+                HttpMethod.GET, null, new ParameterizedTypeReference<List<Request>>() {
                 });
-        List<User> actualList = responseEntity.getBody();
+        final List<Request> actualList = responseEntity.getBody();
         //validate
         assertThat(actualList.size(), is(6));
-        List<String> actualIds = actualList.stream().map(User::getUserId).collect(collectingAndThen(toList(), ImmutableList::copyOf));
-        assertThat(actualIds, containsInAnyOrder("1u", "2u", "3u", "4u", "5u", "6u"));
+        final List<String> actualIds = actualList.stream().map(Request::getRequestId).collect(collectingAndThen(toList(), ImmutableList::copyOf));
+        assertThat(actualIds, containsInAnyOrder("1u_1r", "1u_2r", "2u_3r", "3u_4r", "4u_5r", "6u_6r"));
     }
 }
