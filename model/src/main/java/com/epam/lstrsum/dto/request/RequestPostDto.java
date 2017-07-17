@@ -1,9 +1,10 @@
-package com.epam.lstrsum.dto;
+package com.epam.lstrsum.dto.request;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
+@Slf4j
 public class RequestPostDto implements Serializable {
     private String title;
     private String[] tags;
@@ -48,7 +50,8 @@ public class RequestPostDto implements Serializable {
         try {
             return objectMapper.writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            return "It will never happen";
+            log.error("RequestPostDto toJson() exception, probably during request validation" + e.getMessage());
+            return "Error has occurred";
         }
     }
 }
