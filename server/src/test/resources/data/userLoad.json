@@ -1,108 +1,56 @@
 [
   {
-    "userId": "1u",
+    "_id": "1u",
     "firstName": "John",
     "lastName": "Doe",
     "email": "John_Doe@epam.com",
-    "role": "D4",
-    "subscriptions": [
-      "6r",
-      "3r"
-    ],
-    "requestIds": [
-      "1u_1r",
-      "1u_2r"
-    ],
-    "answerIds": [
-      "2u_3r_1a"
-    ]
+    "roles": ["USER", "ADMIN"],
+    "createdAt": { "$date" : "2017-08-15T11:16:34Z"},
+    "isActive" : true
   },
   {
-    "userId": "2u",
+    "_id": "2u",
     "firstName": "Bob",
     "lastName": "Hoplins",
     "email": "Bob_Hoplins@epam.com",
-    "role": "D4",
-    "subscriptions": [
-      "1u_1r",
-      "1u_2r",
-      "6u_6r"
-    ],
-    "requestIds": [
-      "2u_3r"
-    ],
-    "answerIds": []
+    "roles": ["USER"],
+    "createdAt": { "$date" : "2017-01-01T10:12:05Z"},
+    "isActive" : true
   },
   {
-    "userId": "3u",
+    "_id": "3u",
     "firstName": "Tyler",
     "lastName": "Greeds",
     "email": "Tyler_Greeds@epam.com",
-    "role": "D4",
-    "subscriptions": [
-      "1u_1r",
-      "6u_6r",
-      "4u_5r"
-    ],
-    "requestIds": [
-      "3u_4r"
-    ],
-    "answerIds": [
-      "1u_1r_3a"
-    ]
+    "roles": ["USER", "ADMIN"],
+    "createdAt": { "$date" : "2017-03-08T09:50:15Z"},
+    "isActive" : false
   },
   {
-    "userId": "4u",
+    "_id": "4u",
     "firstName": "Donald",
     "lastName": "Gardner",
     "email": "Donald_Gardner@epam.com",
-    "role": "D4",
-    "subscriptions": [
-      "1u_2r",
-      "2u_3r",
-      "6u_6r"
-    ],
-    "requestIds": [
-      "4u_5r"
-    ],
-    "answerIds": [
-      "3u_4r_2a"
-    ]
+    "roles": ["NOT_ALLOWED_USER"],
+    "createdAt": { "$date" : "2017-07-23T05:23:17Z"},
+    "isActive" : true
   },
   {
-    "userId": "5u",
+    "_id": "5u",
     "firstName": "Ernest",
     "lastName": "Hemingway",
     "email": "Ernest_Hemingway@epam.com",
-    "role": "D4",
-    "subscriptions": [],
-    "requestIds": [],
-    "answerIds": [
-      "1u_1r_1a",
-      "1u_2r_1a",
-      "2u_3r_2a",
-      "3u_4r_1a",
-      "4u_5r_1a",
-      "6u_6r_1a"
-    ]
+    "roles": ["USER", "ADMIN"],
+    "createdAt": { "$date" : "2017-12-31T23:05:15Z"},
+    "isActive" : true
   },
   {
-    "userId": "6u",
+    "_id": "6u",
     "firstName": "Steven",
     "lastName": "Tyler",
     "email": "Steven_Tyler@epam.com",
-    "role": "D4",
-    "subscriptions": [
-      "2u_3r",
-      "1u_2r",
-      "6u_6r"
-    ],
-    "requestIds": [
-      "6r"
-    ],
-    "answerIds": [
-      "1u_1r_2a",
-      "4u_5r_2a"
-    ]
+    "roles": ["USER"],
+    "createdAt": { "$date" : "2017-06-02T18:30:35Z"},
+    "isActive" : false
   }
 ]
