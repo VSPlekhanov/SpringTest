@@ -1,7 +1,7 @@
 package com.epam.lstrsum.exceptionhandler;
 
-import com.epam.lstrsum.exceptions.RestrictedMultipartException;
-import com.epam.lstrsum.exceptions.SizeLimitMultipartException;
+import com.epam.lstrsum.exception.RestrictedMultipartException;
+import com.epam.lstrsum.exception.SizeLimitMultipartException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

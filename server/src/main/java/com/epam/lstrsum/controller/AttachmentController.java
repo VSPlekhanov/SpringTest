@@ -38,13 +38,13 @@ public class AttachmentController {
                 .body("redirect:/api/attachment");
     }
 
-    @DeleteMapping
-    public void deleteAttachment(@RequestParam("id") String id) {
+    @DeleteMapping("/{id}")
+    public void deleteAttachment(@PathVariable("id") String id) {
         attachmentService.delete(id);
     }
 
-    @GetMapping
-    public ResponseEntity<Resource> downloadFile(@RequestParam("attachmentId") String id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable("id") String id) {
 
         Optional<AttachmentAllFieldsDto> one = attachmentService.findOne(id);
 

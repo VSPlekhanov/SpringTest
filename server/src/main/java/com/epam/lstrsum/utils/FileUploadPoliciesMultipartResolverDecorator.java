@@ -1,7 +1,7 @@
 package com.epam.lstrsum.utils;
 
-import com.epam.lstrsum.exceptions.RestrictedMultipartException;
-import com.epam.lstrsum.exceptions.SizeLimitMultipartException;
+import com.epam.lstrsum.exception.RestrictedMultipartException;
+import com.epam.lstrsum.exception.SizeLimitMultipartException;
 import lombok.Setter;
 import org.apache.tomcat.util.http.fileupload.FileUploadBase;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -9,37 +9,50 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 /**
- * This class is able to check if uploaded file type is not in restriction list.
- * If so the RestrictedMultipartException will be thrown.
+ * This class is decorator for general MultipartResolver.
  * <p>
- * Also it can catch any MultipartExceptions and translate them to our custom exceptions.
+ * Its responsibility is to check if uploaded file type is in allowed list.
+ * If not the RestrictedMultipartException will be thrown.
+ * <p>
+ * Also it can catch any MultipartExceptions and translate them to our custom exception.
  * Such as SizeLimitMultipartException.
  */
 @Component
 @ConfigurationProperties(prefix = "multipart")
-public class CustomMultipartResolver extends StandardServletMultipartResolver {
+public class FileUploadPoliciesMultipartResolverDecorator implements MultipartResolver {
 
-    private static final String DEFAULT_RESTRICTIONS = "exe,bat,com,sh";
+    private MultipartResolver resolver = defaultResolver();
 
     @Setter
-    private String restrictions = DEFAULT_RESTRICTIONS;
+    private List<String> allowedExtensions = Collections.emptyList();
+
+    public FileUploadPoliciesMultipartResolverDecorator() {
+    }
+
+    public FileUploadPoliciesMultipartResolverDecorator(MultipartResolver resolver) {
+        this.resolver = resolver;
+    }
+
 
     @Override
     public MultipartHttpServletRequest resolveMultipart(HttpServletRequest request) throws MultipartException {
         try {
-            MultipartHttpServletRequest multipartHttpServletRequest = super.resolveMultipart(request);
+            MultipartHttpServletRequest multipartHttpServletRequest = resolver.resolveMultipart(request);
 
             for (MultipartFile file : multipartHttpServletRequest.getFileMap().values()) {
                 String filename = file.getOriginalFilename();
                 String extension = filename.substring(filename.lastIndexOf(".") + 1).trim();
-                if (isRestricted(extension))
-                    throw new RestrictedMultipartException("File type " + extension + " is restricted!");
+                if (!isAllowed(extension))
+                    throw new RestrictedMultipartException("File type " + extension + " is not allowed!");
             }
 
             return multipartHttpServletRequest;
@@ -52,6 +65,16 @@ public class CustomMultipartResolver extends StandardServletMultipartResolver {
         }
     }
 
+    @Override
+    public boolean isMultipart(HttpServletRequest request) {
+        return resolver.isMultipart(request);
+    }
+
+    @Override
+    public void cleanupMultipart(MultipartHttpServletRequest request) {
+        resolver.cleanupMultipart(request);
+    }
+
     // If you know better solution, please, refactor.
     private boolean isSizeLimitException(MultipartException e) {
         return Optional.ofNullable(e.getCause())
@@ -61,8 +84,12 @@ public class CustomMultipartResolver extends StandardServletMultipartResolver {
                 .orElse(false);
     }
 
-    public boolean isRestricted(String fileExtension) {
-        String regexp = String.format("(.*(,|^|[ ].*|(\\W&\\D))%s(,|$|[ ].*|(\\W&\\D)).*)", fileExtension);
-        return restrictions.matches(regexp);
+    public boolean isAllowed(String fileExtension) {
+        return allowedExtensions.stream()
+                .anyMatch(fileExtension::equals);
+    }
+
+    private StandardServletMultipartResolver defaultResolver() {
+        return new StandardServletMultipartResolver();
     }
 }

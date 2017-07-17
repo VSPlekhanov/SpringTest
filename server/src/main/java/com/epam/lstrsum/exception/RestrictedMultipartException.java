@@ -1,4 +1,4 @@
-package com.epam.lstrsum.exceptions;
+package com.epam.lstrsum.exception;
 
 import org.springframework.web.multipart.MultipartException;
 
