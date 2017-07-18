@@ -43,7 +43,7 @@ public class TestDataGenerator {
     public static void generateCollectionLists() {
         for (int i = 0; i < 1000; i++) {
             final User authorOfRequest = buildAuthorOf(i);
-            if (!users.contains(authorOfRequest)){
+            if (!users.contains(authorOfRequest)) {
                 users.add(authorOfRequest);
             }
 
@@ -66,11 +66,10 @@ public class TestDataGenerator {
         assertThat(answers.size(), is(1000));
         final DBObject dbObject = new BasicDBList();
         mongoTemplate.getConverter().write(answers, dbObject);
-        String dbAnswers = dbObject.toString().replace("_class\" : \"com.epam.lstrsum.model.Answer\" ,", "");
-        String dbAnswers2 = dbAnswers.replace(", \"_class\" : \"com.epam.lstrsum.model.Answer\"", "");
-        Files.write(Paths.get("src/test/resources/data/generatedAnswers.json"), dbAnswers2.getBytes());
+        final String dbAnswers = dbObject.toString().replace("_class\" : \"" + Answer.class.getCanonicalName() + "\" ,", "");
+        final String dbAnswers2 = dbAnswers.replace(", \"_class\" : \"" +  Answer.class.getCanonicalName() + "\"", "");
+        Files.write(Paths.get("src/test/resources/data/generated/Answers.json"), dbAnswers2.getBytes());
     }
-
 
     @Ignore
     @Test
@@ -78,11 +77,10 @@ public class TestDataGenerator {
         assertThat(requests.size(), is(1000));
         final DBObject dbObject = new BasicDBList();
         mongoTemplate.getConverter().write(requests, dbObject);
-        String dbRequests = dbObject.toString().replace("_class\" : \"com.epam.lstrsum.model.Request\" ,", "");
-        String dbRequests2 = dbRequests.replace(", \"_class\" : \"com.epam.lstrsum.model.Request\"", "");
-        Files.write(Paths.get("src/test/resources/data/generatedRequests.json"), dbRequests2.getBytes());
+        final String dbRequests = dbObject.toString().replace("_class\" : \"" + Request.class.getCanonicalName() + "\" ,", "");
+        final String dbRequests2 = dbRequests.replace(", \"_class\" : \"" + Request.class.getCanonicalName() + "\"", "");
+        Files.write(Paths.get("src/test/resources/data/generated/Requests.json"), dbRequests2.getBytes());
     }
-
 
     @Ignore
     @Test
@@ -90,11 +88,10 @@ public class TestDataGenerator {
         assertThat(subscriptions.size(), is(1000));
         final DBObject dbObject = new BasicDBList();
         mongoTemplate.getConverter().write(subscriptions, dbObject);
-        String dbSubscriptions = dbObject.toString().replace("_class\" : \"com.epam.lstrsum.model.Subscription\" ,", "");
-        String dbSubscriptions2 = dbSubscriptions.replace(", \"_class\" : \"com.epam.lstrsum.model.Subscription\"", "");
-        Files.write(Paths.get("src/test/resources/data/generatedSubscriptions.json"), dbSubscriptions2.getBytes());
+        final String dbSubscriptions = dbObject.toString().replace("_class\" : \"" + Subscription.class.getCanonicalName() + "\" ,", "");
+        final String dbSubscriptions2 = dbSubscriptions.replace(", \"_class\" : \"" + Subscription.class.getCanonicalName() + "\"", "");
+        Files.write(Paths.get("src/test/resources/data/generated/Subscriptions.json"), dbSubscriptions2.getBytes());
     }
-
 
     @Ignore
     @Test
@@ -102,9 +99,9 @@ public class TestDataGenerator {
         assertThat(users.size(), is(1000));
         final DBObject dbObject = new BasicDBList();
         mongoTemplate.getConverter().write(users, dbObject);
-        String dbUsers = dbObject.toString().replace("\"_class\" : \"com.epam.lstrsum.model.User\" ,", "");
-        String dbUsers2 = dbUsers.replace(", \"_class\" : \"com.epam.lstrsum.model.User\"", "");
-        Files.write(Paths.get("src/test/resources/data/generatedUsers.json"), dbUsers2.getBytes());
+        final String dbUsers = dbObject.toString().replace("\"_class\" : " + User.class.getCanonicalName() + "\" ,", "");
+        final String dbUsers2 = dbUsers.replace(", \"_class\" : \"" + User.class.getCanonicalName() + "\"", "");
+        Files.write(Paths.get("src/test/resources/data/generated/Users.json"), dbUsers2.getBytes());
     }
 
 
@@ -160,7 +157,7 @@ public class TestDataGenerator {
     }
 
     @AfterClass
-    public static void reboot(){
+    public static void tearDown() {
         users = null;
         requests = null;
         answers = null;
