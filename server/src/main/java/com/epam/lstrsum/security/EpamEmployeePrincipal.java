@@ -23,7 +23,7 @@ public class EpamEmployeePrincipal implements Principal, Serializable {
         return displayName;
     }
 
-    public static EpamEmployeePrincipal ofMap(Map<String, Object> map) throws IllegalArgumentException{
+    public static EpamEmployeePrincipal ofMap(Map<String, Object> map) throws IllegalArgumentException {
         try {
             EpamEmployeePrincipal empl = new EpamEmployeePrincipal();
             String userId = (String) map.get(USER_ID);
@@ -35,8 +35,8 @@ public class EpamEmployeePrincipal implements Principal, Serializable {
             String email = (String) map.get(EMAIL);
             empl.setEmail(Objects.requireNonNull(email));
             return empl;
-        } catch (ClassCastException | NullPointerException e){
-            throw new IllegalArgumentException("Wrong map format.",e);
+        } catch (ClassCastException | NullPointerException e) {
+            throw new IllegalArgumentException("Wrong map format.", e);
         }
     }
 
