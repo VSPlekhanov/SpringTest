@@ -13,7 +13,7 @@ import java.time.Instant;
 @Data
 @Document(collection = User.USER_COLLECTION_NAME)
 public class User {
-    public final static String USER_COLLECTION_NAME = "users";
+    public final static String USER_COLLECTION_NAME = "user";
 
     @Id
     private String userId;

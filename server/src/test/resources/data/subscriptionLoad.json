@@ -1,51 +1,51 @@
 [
   {
     "_id": "1u_1s",
-    "userId": {"$ref" : "users", "$id" : "1u"},
+    "userId": {"$ref" : "user", "$id" : "1u"},
     "requestIds": [
-      {"$ref" : "requests", "$id" : "6u_6r"},
-      {"$ref" : "requests", "$id" : "2u_3r"}
+      {"$ref" : "request", "$id" : "6u_6r"},
+      {"$ref" : "request", "$id" : "2u_3r"}
     ]
   },
   {
     "_id": "2u_1s",
-    "userId": {"$ref" : "users", "$id" : "2u"},
+    "userId": {"$ref" : "user", "$id" : "2u"},
     "requestIds": [
-      {"$ref" : "requests", "$id" : "1u_1r"},
-      {"$ref" : "requests", "$id" : "1u_2r"},
-      {"$ref" : "requests", "$id" : "6u_6r"}
+      {"$ref" : "request", "$id" : "1u_1r"},
+      {"$ref" : "request", "$id" : "1u_2r"},
+      {"$ref" : "request", "$id" : "6u_6r"}
     ]
   },
   {
     "_id": "3u_1s",
-    "userId": {"$ref" : "users", "$id" : "3u"},
+    "userId": {"$ref" : "user", "$id" : "3u"},
     "requestIds": [
-      {"$ref" : "requests", "$id" : "1u_1r"},
-      {"$ref" : "requests", "$id" : "4u_5r"},
-      {"$ref" : "requests", "$id" : "6u_6r"}
+      {"$ref" : "request", "$id" : "1u_1r"},
+      {"$ref" : "request", "$id" : "4u_5r"},
+      {"$ref" : "request", "$id" : "6u_6r"}
     ]
   },
   {
     "_id": "4u_1s",
-    "userId": {"$ref" : "users", "$id" : "4u"},
+    "userId": {"$ref" : "user", "$id" : "4u"},
     "requestIds": [
-      {"$ref" : "requests", "$id" : "1u_2r"},
-      {"$ref" : "requests", "$id" : "2u_3r"},
-      {"$ref" : "requests", "$id" : "6u_6r"}
+      {"$ref" : "request", "$id" : "1u_2r"},
+      {"$ref" : "request", "$id" : "2u_3r"},
+      {"$ref" : "request", "$id" : "6u_6r"}
     ]
   },
   {
     "_id": "5u_1s",
-    "userId": {"$ref" : "users", "$id" : "5u"},
+    "userId": {"$ref" : "user", "$id" : "5u"},
     "requestIds": []
   },
   {
     "_id": "6u_1s",
-    "userId": {"$ref" : "users", "$id" : "6u"},
+    "userId": {"$ref" : "user", "$id" : "6u"},
     "requestIds": [
-      {"$ref" : "requests", "$id" : "1u_2r"},
-      {"$ref" : "requests", "$id" : "2u_3r"},
-      {"$ref" : "requests", "$id" : "6u_6r"}
+      {"$ref" : "request", "$id" : "1u_2r"},
+      {"$ref" : "request", "$id" : "2u_3r"},
+      {"$ref" : "request", "$id" : "6u_6r"}
     ]
   }
 ]

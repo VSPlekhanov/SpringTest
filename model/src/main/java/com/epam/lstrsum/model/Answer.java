@@ -14,7 +14,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @Document(collection = Answer.ANSWER_COLLECTION_NAME)
 public class Answer {
-    public final static String ANSWER_COLLECTION_NAME = "answers";
+    public final static String ANSWER_COLLECTION_NAME = "answer";
 
     @Id
     private String answerId;

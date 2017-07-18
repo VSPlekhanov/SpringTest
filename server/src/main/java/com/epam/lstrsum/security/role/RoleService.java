@@ -6,21 +6,20 @@ import java.util.Map;
 
 /**
  * Implement this interface to build custom RoleServices.
- *
+ * <p>
  * RoleService provides the information about Principal roles, to
  * define the authorities after SSO authorization.
- *
+ * <p>
  * Also this service provide mapping of requests and required roles.
- *
  */
 public interface RoleService {
 
     /**
      * Get roles of specified principal.
-     *
+     * <p>
      * If principal have no roles this method should return
      * one role like "NOT_ALLOWED_USER".
-     *
+     * <p>
      * Kepp in mind, if this method is calling, it means that
      * principal already have passed the authentication system.
      *
@@ -32,7 +31,7 @@ public interface RoleService {
 
     /**
      * Get roles mappping.
-     *
+     * <p>
      * For each request pattern should return not
      * empty roles list.
      *

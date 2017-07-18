@@ -1,4 +1,4 @@
-package com.epam.lstrsum.controllers;
+package com.epam.lstrsum.controller;
 
 import com.epam.lstrsum.configuration.MailConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,14 +6,14 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-/**
- * Created by Katerina on 11.07.2017.
- */
 @RestController
 
 @RequestMapping("/api/send_mail")
@@ -22,7 +22,7 @@ import javax.mail.internet.MimeMessage;
 
 public class SendMailController {
     @Autowired
-    JavaMailSenderImpl mailSender;
+    private JavaMailSenderImpl mailSender;
 
     @GetMapping("/{data}")
     public String sendEmail(@PathVariable("data") String data) throws MessagingException {

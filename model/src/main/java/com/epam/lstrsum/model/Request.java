@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 @Document(collection = Request.REQUEST_COLLECTION_NAME)
 public class Request {
-    public final static String REQUEST_COLLECTION_NAME = "requests";
+    public final static String REQUEST_COLLECTION_NAME = "request";
 
     @Id
     private String requestId;
