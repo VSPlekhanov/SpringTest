@@ -1,7 +1,7 @@
 package com.epam.lstrsum.service;
 
-import com.epam.lstrsum.converter.ModelDtoConverter;
-import com.epam.lstrsum.dto.AttachmentAllFieldsDto;
+import com.epam.lstrsum.converter.AttachmentDtoConverter;
+import com.epam.lstrsum.dto.attachment.AttachmentAllFieldsDto;
 import com.epam.lstrsum.model.Attachment;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +21,7 @@ public class AttachmentServiceTest {
     @Mock
     private CrudRepository<Attachment, String> repository;
 
-    private ModelDtoConverter converter = new ModelDtoConverter();
+    private AttachmentDtoConverter converter = new AttachmentDtoConverter();
 
     private AttachmentService attachmentService;
 
@@ -64,7 +64,7 @@ public class AttachmentServiceTest {
 
         Optional<AttachmentAllFieldsDto> one = attachmentService.findOne(existingId);
 
-        AttachmentAllFieldsDto expected = converter.attachmentToAllFieldDto(att);
+        AttachmentAllFieldsDto expected = converter.modelToAllFieldsDto(att);
         AttachmentAllFieldsDto actual = one.orElseThrow(() -> new AssertionError("Expected not found!"));
 
         assertEquals(expected, actual);

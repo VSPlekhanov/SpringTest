@@ -1,5 +1,6 @@
 package com.epam.lstrsum.controller;
 
+import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.model.Answer;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
@@ -22,7 +23,6 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
     @Autowired
     private TestRestTemplate testRestTemplate;
 
-
     @Test
     public void getListOfAnswers() throws Exception {
         final ResponseEntity<List<Answer>> responseEntity = testRestTemplate.exchange("/api/answer",
@@ -33,6 +33,6 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
         assertThat(actualList.size(), is(12));
         List<String> actualIds = actualList.stream().map(Answer::getAnswerId).collect(collectingAndThen(toList(), ImmutableList::copyOf));
         assertThat(actualIds, containsInAnyOrder("1u_1r_1a", "1u_1r_2a", "1u_1r_3a", "1u_2r_1a", "1u_2r_2a",
-                "2u_3r_1a", "2u_3r_2a", "3u_4r_1a", "3u_4r_2a", "4u_5r_1a", "4u_5r_2a", "6u_6r_1a"));
+                "2u_3r_1a", "2u_3r_2a", "3u_4r_1a", "3u_4r_2a", "4u_5r_1a", "4u_5r_2a", "4u_5r_3a"));
     }
 }

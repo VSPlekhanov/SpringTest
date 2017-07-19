@@ -30,7 +30,7 @@ public class SendMailController {
         return "Done!";
     }
 
-    private void sendMessage(String subject, String text, String ... to) throws MessagingException {
+    private void sendMessage(String subject, String text, String... to) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper mailMsg = new MimeMessageHelper(mimeMessage);
         mailMsg.setFrom("Auto_EPM-LSTR_Ask_Exp@epam.com");

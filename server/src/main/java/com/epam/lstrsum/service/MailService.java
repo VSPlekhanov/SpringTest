@@ -1,6 +1,5 @@
 package com.epam.lstrsum.service;
 
-import javax.mail.internet.MimeMultipart;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.integration.annotation.Poller;
@@ -9,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.util.regex.Matcher;
+import javax.mail.internet.MimeMultipart;
 import java.util.regex.Pattern;
 
 @Component

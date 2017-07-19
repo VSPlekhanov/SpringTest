@@ -1,6 +1,6 @@
 package com.epam.lstrsum.controller;
 
-import com.epam.lstrsum.dto.request.RequestAllFieldsDto;
+import com.epam.lstrsum.dto.request.RequestAppearanceDto;
 import com.epam.lstrsum.dto.request.RequestBaseDto;
 import com.epam.lstrsum.dto.request.RequestPostDto;
 import com.epam.lstrsum.security.EpamEmployeePrincipal;
@@ -40,9 +40,9 @@ public class RequestController {
     }
 
     @GetMapping(value = "/{requestId}")
-    public ResponseEntity<RequestAllFieldsDto> getRequest(Authentication authentication, @PathVariable String requestId) {
+    public ResponseEntity<RequestAppearanceDto> getRequestWithAnswers(Authentication authentication, @PathVariable String requestId) {
         if (requestService.contains(requestId)) {
-            RequestAllFieldsDto requestDto = requestService.getRequestDtoByRequestId(requestId);
+            RequestAppearanceDto requestDto = requestService.getRequestAppearanceDtoByRequestId(requestId);
             return ResponseEntity.ok(requestDto);
         } else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
