@@ -8,12 +8,8 @@ import com.epam.lstrsum.model.Request;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.RequestRepository;
 import com.epam.lstrsum.service.RequestService;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -24,9 +20,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 
-@Ignore
-@RunWith(SpringRunner.class)
-@SpringBootTest
 public class ModelDtoConverterTest extends SetUpDataBaseCollections {
 
     @Autowired

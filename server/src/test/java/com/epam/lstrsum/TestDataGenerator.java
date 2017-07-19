@@ -67,7 +67,7 @@ public class TestDataGenerator {
         final DBObject dbObject = new BasicDBList();
         mongoTemplate.getConverter().write(answers, dbObject);
         final String dbAnswers = dbObject.toString().replace("_class\" : \"" + Answer.class.getCanonicalName() + "\" ,", "");
-        final String dbAnswers2 = dbAnswers.replace(", \"_class\" : \"" +  Answer.class.getCanonicalName() + "\"", "");
+        final String dbAnswers2 = dbAnswers.replace(", \"_class\" : \"" + Answer.class.getCanonicalName() + "\"", "");
         Files.write(Paths.get("src/test/resources/data/generated/Answers.json"), dbAnswers2.getBytes());
     }
 

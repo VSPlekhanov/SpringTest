@@ -8,12 +8,8 @@ import com.epam.lstrsum.model.Request;
 import com.epam.lstrsum.persistence.RequestRepository;
 import com.epam.lstrsum.service.RequestService;
 import org.junit.FixMethodOrder;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,9 +19,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertTrue;
 
-@Ignore
-@RunWith(SpringRunner.class)
-@SpringBootTest
 @FixMethodOrder
 public class RequestServiceTest extends SetUpDataBaseCollections {
     @Autowired
