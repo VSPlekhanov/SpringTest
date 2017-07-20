@@ -3,7 +3,7 @@ package com.epam.lstrsum.service;
 import com.epam.lstrsum.converter.ModelDtoConverter;
 import com.epam.lstrsum.dto.RequestAllFieldsDto;
 import com.epam.lstrsum.dto.RequestPostDto;
-import com.epam.lstrsum.exceptions.RequestValidationException;
+import com.epam.lstrsum.exception.RequestValidationException;
 import com.epam.lstrsum.model.Request;
 import com.epam.lstrsum.persistence.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;

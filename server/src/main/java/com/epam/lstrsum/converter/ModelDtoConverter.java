@@ -1,10 +1,7 @@
 package com.epam.lstrsum.converter;
 
 import com.epam.lstrsum.dto.*;
-import com.epam.lstrsum.model.Answer;
-import com.epam.lstrsum.model.Request;
-import com.epam.lstrsum.model.Subscription;
-import com.epam.lstrsum.model.User;
+import com.epam.lstrsum.model.*;
 import com.epam.lstrsum.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +35,10 @@ public class ModelDtoConverter {
     public UserAllFieldsDto userToAllFieldDto(User user) {
         return new UserAllFieldsDto(user.getUserId(), user.getFirstName(), user.getLastName(), user.getEmail(),
                 user.getRoles(), user.getCreatedAt(), user.getIsActive());
+    }
+
+    public AttachmentAllFieldsDto attachmentToAllFieldDto(Attachment attachment) {
+        return new AttachmentAllFieldsDto(attachment.getId(), attachment.getName(), attachment.getType(), attachment.getData());
     }
 
     public Request requestDtoAndAuthorEmailToRequest(RequestPostDto requestPostDto, String email) {

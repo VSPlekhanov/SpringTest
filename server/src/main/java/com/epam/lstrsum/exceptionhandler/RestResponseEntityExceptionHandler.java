@@ -1,6 +1,6 @@
 package com.epam.lstrsum.exceptionhandler;
 
-import com.epam.lstrsum.exceptions.RequestValidationException;
+import com.epam.lstrsum.exception.RequestValidationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
