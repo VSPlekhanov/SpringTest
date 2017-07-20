@@ -1,4 +1,4 @@
-package com.epam.lstrsum.exceptions;
+package com.epam.lstrsum.exception;
 
 public class RequestValidationException extends RuntimeException {
     public RequestValidationException(String message) {
