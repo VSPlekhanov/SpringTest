@@ -1,5 +1,12 @@
 package com.epam.lstrsum.converter;
 
+import com.epam.lstrsum.dto.request.RequestAllFieldsDto;
+import com.epam.lstrsum.dto.request.RequestBaseDto;
+import com.epam.lstrsum.dto.request.RequestPostDto;
+import com.epam.lstrsum.dto.user.UserAllFieldsDto;
+import com.epam.lstrsum.dto.user.UserBaseDto;
+import com.epam.lstrsum.model.Request;
+import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.dto.*;
 import com.epam.lstrsum.model.*;
 import com.epam.lstrsum.service.UserService;
@@ -13,23 +20,19 @@ import java.util.List;
 @Service
 public class ModelDtoConverter {
 
+
     @Autowired
     private UserService userService;
 
     public RequestAllFieldsDto requestToAllFieldsDto(Request request) {
+        List<User> allowedSubs = request.getAllowedSubs();
+        List<UserBaseDto> userBaseDtos = new ArrayList<>();
+        for (User user : allowedSubs) {
+            userBaseDtos.add(userToBaseDto(user));
+        }
         return new RequestAllFieldsDto(request.getRequestId(), request.getTitle(),
-                request.getTags(), request.getText(), request.getCreatedAt(), request.getDeadLine(),
-                request.getAuthorId(), request.getAllowedSubs(), request.getUpVote());
-    }
-
-    public AnswerAllFieldsDto answerToAllFieldsDto(Answer answer) {
-        return new AnswerAllFieldsDto(answer.getAnswerId(), answer.getParentId(), answer.getText(),
-                answer.getCreatedAt(), answer.getAuthorId(), answer.getUpVote());
-    }
-
-    public SubscriptionAllFieldsDto subscriptionToAllFieldDto(Subscription subscription) {
-        return new SubscriptionAllFieldsDto(subscription.getSubscriptionId(), subscription.getUserId(),
-                subscription.getRequestIds());
+                request.getTags(), request.getCreatedAt(), request.getDeadLine(),
+                userToBaseDto(request.getAuthorId()), request.getUpVote(), userBaseDtos, request.getText());
     }
 
     public UserAllFieldsDto userToAllFieldDto(User user) {
@@ -46,19 +49,40 @@ public class ModelDtoConverter {
         newRequest.setTitle(requestPostDto.getTitle());
         newRequest.setTags(requestPostDto.getTags());
         newRequest.setText(requestPostDto.getText());
-        // Instant can parse only this format of date "2017-11-29T10:15:30Z"
         newRequest.setCreatedAt(Instant.now());
+        // Instant can parse only this format of date "2017-11-29T10:15:30Z"
+        // throws DateTimeException if RequestPostDto got wrong data format
         newRequest.setDeadLine(Instant.parse(requestPostDto.getDeadLine()));
         newRequest.setAuthorId(userService.getUserByEmail(email));
         List<String> subsFromDto = requestPostDto.getAllowedSubs();
         List<User> subsForRequest = new ArrayList<>();
-        //TODO Dunno what we will get in this collection, Users ids or emails, we should decide about it, then reimplement this
         for (String userEmail : subsFromDto) {
             subsForRequest.add(userService.getUserByEmail(userEmail));
         }
         newRequest.setAllowedSubs(subsForRequest);
         newRequest.setUpVote(0);
         return newRequest;
+    }
+
+
+    public RequestBaseDto requestToBaseDto(Request request) {
+        /*
+          - requestId
+          - title
+          - author's name
+          - creation date
+          - deadline date
+          - tags
+          - upVote
+        */
+        RequestBaseDto requestBaseDto = new RequestBaseDto(request.getRequestId(), request.getTitle(),
+                request.getTags(), request.getCreatedAt(), request.getDeadLine(), userToBaseDto(request.getAuthorId()),
+                request.getUpVote());
+        return requestBaseDto;
+    }
+
+    public UserBaseDto userToBaseDto(User user) {
+        return new UserBaseDto(user.getUserId(), user.getFirstName(), user.getLastName(), user.getEmail());
     }
 
 
