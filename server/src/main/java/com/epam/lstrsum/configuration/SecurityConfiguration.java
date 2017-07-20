@@ -69,7 +69,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         http
                 .addFilterBefore(auth2ClientAuthenticationProcessingFilter(), BasicAuthenticationFilter.class)
-                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint());
+                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
+                .accessDeniedPage("/unauthorized");
     }
 
     @Override
