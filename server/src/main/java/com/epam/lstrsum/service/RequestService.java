@@ -40,6 +40,15 @@ public class RequestService {
         }
         return dtoList;
     }
+    
+    public List<RequestAllFieldsDto> search(String searchQuery) {
+        List<Request> requestList = requestRepository.search(searchQuery);
+        List<RequestAllFieldsDto> dtoList = new ArrayList<>();
+        for (Request request : requestList) {
+            dtoList.add(modelDtoConverter.requestToAllFieldsDto(request));
+        }
+        return dtoList;
+    }
 
     public List<RequestBaseDto> findAllRequestsBaseDto(int requestPage, int requestAmount) {
         Pageable pageable = new PageRequest(requestPage, requestAmount);
