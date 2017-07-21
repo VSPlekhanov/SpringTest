@@ -17,7 +17,7 @@ public class SubscriptionService {
         this.subscriptionRepository = subscriptionRepository;
     }
 
-    public List<Subscription> findAll(){
+    public List<Subscription> findAll() {
         return subscriptionRepository.findAll();
     }
 }

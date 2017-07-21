@@ -1,6 +1,6 @@
 package com.epam.lstrsum.controller;
 
-import com.epam.lstrsum.dto.AttachmentAllFieldsDto;
+import com.epam.lstrsum.dto.attachment.AttachmentAllFieldsDto;
 import com.epam.lstrsum.service.AttachmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;

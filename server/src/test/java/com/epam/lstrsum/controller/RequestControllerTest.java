@@ -1,5 +1,7 @@
 package com.epam.lstrsum.controller;
 
+import com.epam.lstrsum.dto.answer.AnswerBaseDto;
+import com.epam.lstrsum.dto.request.RequestAppearanceDto;
 import com.epam.lstrsum.dto.request.RequestBaseDto;
 import com.epam.lstrsum.dto.request.RequestPostDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
@@ -8,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
@@ -95,5 +98,40 @@ public class RequestControllerTest {
         ResponseEntity<List<RequestBaseDto>> expectedEntity = ResponseEntity.ok(list);
 
         assertThat(actualEntity, is(equalTo(expectedEntity)));
+    }
+
+    @Test
+    public void getRequestWithAnswersShouldReturnValidResponseEntityWhenRequestExists() throws Exception {
+        String requestId = "requestId";
+
+        RequestAppearanceDto requestAppearanceDto = new RequestAppearanceDto(
+                requestId, "requestTitle", new String[]{"tag1", "tag2", "tag3"},
+                Instant.now(), Instant.now(),
+                new UserBaseDto("userId", "userName", "userSurname", "user@epam.com"),
+                2, "question body",
+                Arrays.asList(new AnswerBaseDto("answer1Text", Instant.now(),
+                                new UserBaseDto("user1Id", "user1Name", "user1Surname", "user1@epam.com"), 6),
+                        new AnswerBaseDto("answer2Text", Instant.now(),
+                                new UserBaseDto("user2Id", "user2Name", "user2Surname", "user2@epam.com"), 3)));
+
+        when(requestService.contains(requestId)).thenReturn(true);
+        when(requestService.getRequestAppearanceDtoByRequestId(requestId)).thenReturn(requestAppearanceDto);
+
+        ResponseEntity actual = controller.getRequestWithAnswers(null, requestId);
+        ResponseEntity expected = ResponseEntity.ok(requestAppearanceDto);
+
+        assertThat(actual, is(equalTo(expected)));
+    }
+
+    @Test
+    public void getRequestWithAnswersShouldReturnNotFoundResponseEntityWhenSuchRequestDoesNotExist() throws Exception {
+        String requestId = "thisRequestDoesNotExistInDb";
+
+        when(requestService.contains(requestId)).thenReturn(false);
+
+        ResponseEntity actual = controller.getRequestWithAnswers(null, requestId);
+        ResponseEntity expected = new ResponseEntity(HttpStatus.NOT_FOUND);
+
+        assertThat(actual, is(equalTo(expected)));
     }
 }

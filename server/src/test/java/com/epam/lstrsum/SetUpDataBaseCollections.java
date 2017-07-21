@@ -1,4 +1,4 @@
-package com.epam.lstrsum.controller;
+package com.epam.lstrsum;
 
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Request;
