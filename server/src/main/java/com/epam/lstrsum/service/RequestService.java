@@ -1,12 +1,15 @@
 package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.converter.ModelDtoConverter;
-import com.epam.lstrsum.dto.RequestAllFieldsDto;
-import com.epam.lstrsum.dto.RequestPostDto;
+import com.epam.lstrsum.dto.request.RequestAllFieldsDto;
+import com.epam.lstrsum.dto.request.RequestBaseDto;
+import com.epam.lstrsum.dto.request.RequestPostDto;
 import com.epam.lstrsum.exception.RequestValidationException;
 import com.epam.lstrsum.model.Request;
 import com.epam.lstrsum.persistence.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,8 +25,12 @@ public class RequestService {
     @Autowired
     private ModelDtoConverter modelDtoConverter;
 
+    private final RequestRepository requestRepository;
+
     @Autowired
-    private RequestRepository requestRepository;
+    public RequestService(RequestRepository requestRepository) {
+        this.requestRepository = requestRepository;
+    }
 
     public List<RequestAllFieldsDto> findAll() {
         List<Request> requestList = requestRepository.findAll();
@@ -34,11 +41,21 @@ public class RequestService {
         return dtoList;
     }
 
-    public Request addNewRequest(RequestPostDto requestPostDto, String email) {
+    public List<RequestBaseDto> findAllRequestsBaseDto(int requestPage, int requestAmount) {
+        Pageable pageable = new PageRequest(requestPage, requestAmount);
+        List<Request> requestList = requestRepository.findAllByOrderByCreatedAtDesc(pageable);
+        List<RequestBaseDto> dtoList = new ArrayList<>();
+        for (Request request : requestList) {
+            dtoList.add(modelDtoConverter.requestToBaseDto(request));
+        }
+        return dtoList;
+    }
+
+    public String addNewRequest(RequestPostDto requestPostDto, String email) {
         validateRequestData(requestPostDto, email);
         Request newRequest = modelDtoConverter.requestDtoAndAuthorEmailToRequest(requestPostDto, email);
         requestRepository.save(newRequest);
-        return newRequest;
+        return newRequest.getRequestId();
     }
 
     public RequestAllFieldsDto getRequestDtoByRequestId(String requestId) {
@@ -55,13 +72,19 @@ public class RequestService {
     }
 
     private void validateRequestData(RequestPostDto requestPostDto, String email) {
+        if (requestPostDto == null) {
+            throw new RequestValidationException("Post request should have json for RequestPostDto");
+        }
+        if (email == null) {
+            throw new RequestValidationException("probably should`nt appear at all, problems with SSO");
+        }
         if ((requestPostDto.getText() == null) || (requestPostDto.getTitle() == null)) {
             throw new RequestValidationException("null fields found in request " + requestPostDto.toJson());
         }
         if (requestPostDto.getTitle().length() < REQUEST_TITLE_LENGTH) {
             throw new RequestValidationException("Title is too short " + requestPostDto.toJson());
         }
-        if (requestPostDto.getTitle().length() < REQUEST_TEXT_LENGTH) {
+        if (requestPostDto.getText().length() < REQUEST_TEXT_LENGTH) {
             throw new RequestValidationException("Text is too short " + requestPostDto.toJson());
         }
     }
