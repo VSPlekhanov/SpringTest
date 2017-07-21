@@ -1,4 +1,4 @@
-package com.epam.lstrsum.dto;
+package com.epam.lstrsum.dto.answer;
 
 
 import lombok.AllArgsConstructor;
