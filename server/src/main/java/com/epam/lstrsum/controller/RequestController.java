@@ -1,5 +1,6 @@
 package com.epam.lstrsum.controller;
 
+import com.epam.lstrsum.dto.request.RequestAllFieldsDto;
 import com.epam.lstrsum.dto.request.RequestAppearanceDto;
 import com.epam.lstrsum.dto.request.RequestBaseDto;
 import com.epam.lstrsum.dto.request.RequestPostDto;
