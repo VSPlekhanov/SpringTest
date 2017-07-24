@@ -1,7 +1,8 @@
 package com.epam.lstrsum.service;
 
-import com.epam.lstrsum.converter.ModelDtoConverter;
+import com.epam.lstrsum.converter.RequestDtoConverter;
 import com.epam.lstrsum.dto.request.RequestAllFieldsDto;
+import com.epam.lstrsum.dto.request.RequestAppearanceDto;
 import com.epam.lstrsum.dto.request.RequestBaseDto;
 import com.epam.lstrsum.dto.request.RequestPostDto;
 import com.epam.lstrsum.exception.RequestValidationException;
@@ -23,8 +24,7 @@ public class RequestService {
     private final static int REQUEST_TEXT_LENGTH = 5;
 
     @Autowired
-    private ModelDtoConverter modelDtoConverter;
-
+    private RequestDtoConverter requestDtoConverter;
     private final RequestRepository requestRepository;
 
     @Autowired
@@ -34,6 +34,15 @@ public class RequestService {
 
     public List<RequestAllFieldsDto> findAll() {
         List<Request> requestList = requestRepository.findAll();
+        List<RequestAllFieldsDto> dtoList = new ArrayList<>();
+        for (Request request : requestList) {
+            dtoList.add(requestDtoConverter.modelToAllFieldsDto(request));
+        }
+        return dtoList;
+    }
+    
+    public List<RequestAllFieldsDto> search(String searchQuery) {
+        List<Request> requestList = requestRepository.search(searchQuery);
         List<RequestAllFieldsDto> dtoList = new ArrayList<>();
         for (Request request : requestList) {
             dtoList.add(modelDtoConverter.requestToAllFieldsDto(request));
@@ -46,25 +55,26 @@ public class RequestService {
         List<Request> requestList = requestRepository.findAllByOrderByCreatedAtDesc(pageable);
         List<RequestBaseDto> dtoList = new ArrayList<>();
         for (Request request : requestList) {
-            dtoList.add(modelDtoConverter.requestToBaseDto(request));
+            dtoList.add(requestDtoConverter.modelToBaseDto(request));
         }
         return dtoList;
     }
 
     public String addNewRequest(RequestPostDto requestPostDto, String email) {
         validateRequestData(requestPostDto, email);
-        Request newRequest = modelDtoConverter.requestDtoAndAuthorEmailToRequest(requestPostDto, email);
+        Request newRequest = requestDtoConverter.requestPostDtoAndAuthorEmailToRequest(requestPostDto, email);
         requestRepository.save(newRequest);
         return newRequest.getRequestId();
     }
 
-    public RequestAllFieldsDto getRequestDtoByRequestId(String requestId) {
+    public RequestAllFieldsDto getRequestAllFieldDtoByRequestId(String requestId) {
         Request request = requestRepository.findOne(requestId);
-        return modelDtoConverter.requestToAllFieldsDto(request);
+        return requestDtoConverter.modelToAllFieldsDto(request);
     }
 
-    public RequestAllFieldsDto requestToDto(Request request) {
-        return modelDtoConverter.requestToAllFieldsDto(request);
+    public RequestAppearanceDto getRequestAppearanceDtoByRequestId(String requestId) {
+        Request request = requestRepository.findOne(requestId);
+        return requestDtoConverter.modelToRequestAppearanceDto(request);
     }
 
     public boolean contains(String objectsId) {

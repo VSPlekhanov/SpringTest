@@ -1,5 +1,6 @@
 package com.epam.lstrsum.controller;
 
+import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
 import com.google.common.collect.ImmutableList;

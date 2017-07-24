@@ -1,5 +1,6 @@
 package com.epam.lstrsum.exceptionhandler;
 
+import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.exception.RequestValidationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -35,5 +36,12 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         String bodyOfResponse = ex.getMessage();
         return handleExceptionInternal(ex, bodyOfResponse,
                 new HttpHeaders(), HttpStatus.CONFLICT, request);
+    }
+
+    @ExceptionHandler(value = {NoSuchUserException.class})
+    protected ResponseEntity<Object> handleFindUserByEmailException(RuntimeException ex, WebRequest request) {
+        String bodyOfResponse = ex.getMessage();
+        return handleExceptionInternal(ex, bodyOfResponse,
+                new HttpHeaders(), HttpStatus.EXPECTATION_FAILED, request);
     }
 }

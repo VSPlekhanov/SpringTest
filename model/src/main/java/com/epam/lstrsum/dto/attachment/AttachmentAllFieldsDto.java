@@ -1,10 +1,7 @@
-package com.epam.lstrsum.dto;
+package com.epam.lstrsum.dto.attachment;
 
-import com.epam.lstrsum.model.Attachment;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @AllArgsConstructor
 @Getter
