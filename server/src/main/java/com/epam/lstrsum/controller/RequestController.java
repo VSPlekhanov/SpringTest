@@ -59,4 +59,10 @@ public class RequestController {
         List<RequestBaseDto> amountFrom = requestService.findAllRequestsBaseDto(requestPage, requestAmount);
         return ResponseEntity.ok(amountFrom);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<RequestAllFieldsDto>> search(@RequestParam(value = "query") String query) {
+        List<RequestAllFieldsDto> requestDtoList = requestService.search(query);
+        return ResponseEntity.ok(requestDtoList);
+    }
 }
