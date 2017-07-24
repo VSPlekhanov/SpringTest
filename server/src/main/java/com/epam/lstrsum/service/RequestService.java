@@ -6,6 +6,8 @@ import com.epam.lstrsum.dto.request.RequestAppearanceDto;
 import com.epam.lstrsum.dto.request.RequestBaseDto;
 import com.epam.lstrsum.dto.request.RequestPostDto;
 import com.epam.lstrsum.exception.RequestValidationException;
+import com.epam.lstrsum.mail.EmailNotification;
+import com.epam.lstrsum.mail.template.NewRequestNotificationTemplate;
 import com.epam.lstrsum.model.Request;
 import com.epam.lstrsum.persistence.RequestRepository;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +46,7 @@ public class RequestService {
         return mapList(requestList, requestDtoConverter::modelToBaseDto);
     }
 
+    @EmailNotification(template = NewRequestNotificationTemplate.class)
     public RequestAllFieldsDto addNewRequest(RequestPostDto requestPostDto, String email) {
         validateRequestData(requestPostDto, email);
         Request newRequest = requestDtoConverter.requestPostDtoAndAuthorEmailToRequest(requestPostDto, email);
