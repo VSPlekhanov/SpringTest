@@ -1,7 +1,7 @@
 package com.epam.lstrsum.service;
 
-import com.epam.lstrsum.converter.ModelDtoConverter;
-import com.epam.lstrsum.dto.AttachmentAllFieldsDto;
+import com.epam.lstrsum.converter.AttachmentDtoConverter;
+import com.epam.lstrsum.dto.attachment.AttachmentAllFieldsDto;
 import com.epam.lstrsum.model.Attachment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
@@ -15,10 +15,10 @@ import java.util.Optional;
 public class AttachmentService {
 
     private final CrudRepository<Attachment, String> repository;
-    private final ModelDtoConverter converter;
+    private final AttachmentDtoConverter converter;
 
     @Autowired
-    public AttachmentService(CrudRepository<Attachment, String> repository, ModelDtoConverter converter) {
+    public AttachmentService(CrudRepository<Attachment, String> repository, AttachmentDtoConverter converter) {
         this.repository = repository;
         this.converter = converter;
     }
@@ -31,7 +31,7 @@ public class AttachmentService {
         attachment.setName(attachmentAllFieldsDto.getFileName());
         attachment.setType(attachmentAllFieldsDto.getFileType());
 
-        return converter.attachmentToAllFieldDto(repository.save(attachment));
+        return converter.modelToAllFieldsDto(repository.save(attachment));
     }
 
     public String saveMultipartFile(MultipartFile file) throws IOException {
@@ -47,7 +47,7 @@ public class AttachmentService {
     public Optional<AttachmentAllFieldsDto> findOne(String id) {
         return Optional
                 .ofNullable(repository.findOne(id))
-                .map(converter::attachmentToAllFieldDto);
+                .map(converter::modelToAllFieldsDto);
     }
 
     public void delete(String id) {

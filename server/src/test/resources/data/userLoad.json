@@ -4,53 +4,80 @@
     "firstName": "John",
     "lastName": "Doe",
     "email": "John_Doe@epam.com",
-    "roles": ["USER", "ADMIN"],
-    "createdAt": { "$date" : "2017-08-15T11:16:34Z"},
-    "isActive" : true
+    "roles": [
+      "USER",
+      "ADMIN"
+    ],
+    "createdAt": {
+      "$date": "2017-08-15T11:16:34Z"
+    },
+    "isActive": true
   },
   {
     "_id": "2u",
     "firstName": "Bob",
     "lastName": "Hoplins",
     "email": "Bob_Hoplins@epam.com",
-    "roles": ["USER"],
-    "createdAt": { "$date" : "2017-01-01T10:12:05Z"},
-    "isActive" : true
+    "roles": [
+      "USER"
+    ],
+    "createdAt": {
+      "$date": "2017-01-01T10:12:05Z"
+    },
+    "isActive": true
   },
   {
     "_id": "3u",
     "firstName": "Tyler",
     "lastName": "Greeds",
     "email": "Tyler_Greeds@epam.com",
-    "roles": ["USER", "ADMIN"],
-    "createdAt": { "$date" : "2017-03-08T09:50:15Z"},
-    "isActive" : false
+    "roles": [
+      "USER",
+      "ADMIN"
+    ],
+    "createdAt": {
+      "$date": "2017-03-08T09:50:15Z"
+    },
+    "isActive": false
   },
   {
     "_id": "4u",
     "firstName": "Donald",
     "lastName": "Gardner",
     "email": "Donald_Gardner@epam.com",
-    "roles": ["NOT_ALLOWED_USER"],
-    "createdAt": { "$date" : "2017-07-23T05:23:17Z"},
-    "isActive" : true
+    "roles": [
+      "NOT_ALLOWED_USER"
+    ],
+    "createdAt": {
+      "$date": "2017-07-23T05:23:17Z"
+    },
+    "isActive": true
   },
   {
     "_id": "5u",
     "firstName": "Ernest",
     "lastName": "Hemingway",
     "email": "Ernest_Hemingway@epam.com",
-    "roles": ["USER", "ADMIN"],
-    "createdAt": { "$date" : "2017-12-31T23:05:15Z"},
-    "isActive" : true
+    "roles": [
+      "USER",
+      "ADMIN"
+    ],
+    "createdAt": {
+      "$date": "2017-12-31T23:05:15Z"
+    },
+    "isActive": true
   },
   {
     "_id": "6u",
     "firstName": "Steven",
     "lastName": "Tyler",
     "email": "Steven_Tyler@epam.com",
-    "roles": ["USER"],
-    "createdAt": { "$date" : "2017-06-02T18:30:35Z"},
-    "isActive" : false
+    "roles": [
+      "USER"
+    ],
+    "createdAt": {
+      "$date": "2017-06-02T18:30:35Z"
+    },
+    "isActive": false
   }
 ]
