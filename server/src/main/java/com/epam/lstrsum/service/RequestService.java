@@ -45,7 +45,7 @@ public class RequestService {
         List<Request> requestList = requestRepository.search(searchQuery);
         List<RequestAllFieldsDto> dtoList = new ArrayList<>();
         for (Request request : requestList) {
-            dtoList.add(modelDtoConverter.requestToAllFieldsDto(request));
+            dtoList.add(requestDtoConverter.modelToAllFieldsDto(request));
         }
         return dtoList;
     }
