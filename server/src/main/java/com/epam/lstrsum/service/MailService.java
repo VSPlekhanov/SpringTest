@@ -1,20 +1,35 @@
 package com.epam.lstrsum.service;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Profile;
 import org.springframework.integration.annotation.Poller;
 import org.springframework.integration.annotation.ServiceActivator;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.util.regex.Pattern;
 
 @Component
+@ConfigurationProperties(prefix = "mail")
 @Profile("email")
 @Slf4j
 public class MailService {
+
+    @Autowired
+    private MailSender mailSender;
+
+    @Setter
+    private String fromAddress;
+
 
     @ServiceActivator(inputChannel = "receiveChannel", poller = @Poller(fixedRate = "200"))
     public void showMessages(MimeMessage message) throws Exception {
@@ -52,5 +67,20 @@ public class MailService {
     private static boolean matchesToRegexp(String input, String regexp) {
         Pattern p = Pattern.compile(regexp);
         return p.asPredicate().test(input);
+    }
+
+
+    public void sendMessage(String subject, String text, String... to) throws MessagingException {
+        MimeMessage mimeMessage = ((JavaMailSenderImpl) mailSender).createMimeMessage();
+        MimeMessageHelper mailMsg = new MimeMessageHelper(mimeMessage);
+        mailMsg.setFrom(fromAddress);
+        mailMsg.setTo(to);
+        mailMsg.setSubject(subject);
+        mailMsg.setText(text);
+        ((JavaMailSenderImpl)mailSender).send(mimeMessage);
+    }
+
+    public void sendMessage(MimeMessage mimeMessage) throws MessagingException {
+        ((JavaMailSenderImpl) mailSender).send(mimeMessage);
     }
 }
