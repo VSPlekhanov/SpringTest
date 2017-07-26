@@ -64,6 +64,7 @@ public class RequestService {
         validateRequestData(requestPostDto, email);
         Request newRequest = requestDtoConverter.requestPostDtoAndAuthorEmailToRequest(requestPostDto, email);
         requestRepository.save(newRequest);
+        System.out.println(newRequest.getRequestId());
         return newRequest.getRequestId();
     }
 
@@ -75,6 +76,11 @@ public class RequestService {
     public RequestAppearanceDto getRequestAppearanceDtoByRequestId(String requestId) {
         Request request = requestRepository.findOne(requestId);
         return requestDtoConverter.modelToRequestAppearanceDto(request);
+    }
+
+    public Request getRequestById(String requestId){
+        return requestRepository.findOne(requestId);
+
     }
 
     public boolean contains(String objectsId) {

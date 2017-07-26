@@ -2,6 +2,21 @@ package com.epam.lstrsum.converter;
 
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
+import com.epam.lstrsum.dto.answer.AnswerPostDto;
+import com.epam.lstrsum.dto.request.RequestAllFieldsDto;
+import com.epam.lstrsum.dto.request.RequestAppearanceDto;
+import com.epam.lstrsum.dto.request.RequestBaseDto;
+import com.epam.lstrsum.dto.request.RequestPostDto;
+import com.epam.lstrsum.model.Answer;
+import com.epam.lstrsum.model.Request;
+import com.epam.lstrsum.model.User;
+import com.epam.lstrsum.service.AnswerService;
+import com.epam.lstrsum.service.RequestService;
+import com.epam.lstrsum.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.Instant;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Request;
 import com.epam.lstrsum.service.AnswerService;
@@ -21,6 +36,10 @@ public class AnswerDtoConverter implements BasicModelDtoConverter<Answer, Answer
     private RequestDtoConverter requestConverter;
     @Autowired
     private AnswerService answerService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private RequestService requestService;
 
     @Override
     public AnswerAllFieldsDto modelToAllFieldsDto(Answer answer) {
@@ -41,5 +60,20 @@ public class AnswerDtoConverter implements BasicModelDtoConverter<Answer, Answer
         answersToRequest.forEach(a -> answerBaseDtos.add(modelToBaseDto(a)));
 
         return answerBaseDtos;
+    }
+
+    public Answer answerPostDtoAndAuthorEmailToAnswer(AnswerPostDto answerPostDto, String email) {
+        Answer newAnswer = new Answer();
+        newAnswer.setUpVote(0);
+        newAnswer.setText(answerPostDto.getText());
+        newAnswer.setCreatedAt(Instant.now());
+
+        newAnswer.setParentId(requestService.getRequestById(answerPostDto.getParentId()));
+
+        // Instant can parse only this format of date "2017-11-29T10:15:30Z"
+        // throws DateTimeException if RequestPostDto got wrong data format
+        newAnswer.setAuthorId(userService.getUserByEmail(email));
+        newAnswer.setUpVote(0);
+        return newAnswer;
     }
 }

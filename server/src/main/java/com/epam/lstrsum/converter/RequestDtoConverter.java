@@ -1,5 +1,7 @@
 package com.epam.lstrsum.converter;
 
+
+
 import com.epam.lstrsum.dto.request.RequestAllFieldsDto;
 import com.epam.lstrsum.dto.request.RequestAppearanceDto;
 import com.epam.lstrsum.dto.request.RequestBaseDto;
@@ -64,6 +66,7 @@ public class RequestDtoConverter implements BasicModelDtoConverter<Request, Requ
         }
         newRequest.setAllowedSubs(subsForRequest);
         newRequest.setUpVote(0);
+        System.out.println(newRequest.getRequestId());
         return newRequest;
     }
 
@@ -73,3 +76,4 @@ public class RequestDtoConverter implements BasicModelDtoConverter<Request, Requ
         return requestBaseDtos;
     }
 }
+
