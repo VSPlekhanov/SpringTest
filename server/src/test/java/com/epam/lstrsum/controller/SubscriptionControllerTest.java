@@ -24,6 +24,7 @@ public class SubscriptionControllerTest extends SetUpDataBaseCollections {
     @Autowired
     private TestRestTemplate testRestTemplate;
 
+
     @Test
     public void getListOfSubscriptions() throws Exception {
         final ResponseEntity<List<Subscription>> responseEntity = testRestTemplate.exchange("/api/subscription",
