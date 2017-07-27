@@ -7,6 +7,8 @@ import com.epam.lstrsum.exception.AnswerValidationException;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Request;
 import com.epam.lstrsum.persistence.AnswerRepository;
+import com.epam.lstrsum.persistence.RequestRepository;
+import com.epam.lstrsum.persistence.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,13 @@ public class AnswerService {
 
     @Autowired
     private AnswerRepository answerRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private RequestRepository requestRepository;
+
 
     @Autowired
     private AnswerDtoConverter answerDtoConverter;
@@ -53,11 +62,20 @@ public class AnswerService {
         if (answerPostDto == null) {
             throw new AnswerValidationException("Answer must be not null!");
         }
+        if(email==null){
+            throw new AnswerValidationException("Author must be not null!");
+        }
+        else if(!userRepository.findByEmail(email).isPresent()){
+            throw new AnswerValidationException("No such user!");
+        }
         if (answerPostDto.getText() == null) {
-            throw new AnswerValidationException("null fields found in request " + answerPostDto.toJson());
+            throw new AnswerValidationException("null fields found in answer " + answerPostDto.toJson());
         }
         if (answerPostDto.getParentId() == null) {
             throw new AnswerValidationException("Parent is null " + answerPostDto.getParentId());
+        }
+        else if(requestRepository.findOne(answerPostDto.getParentId())==null){
+            throw new AnswerValidationException("No such request!");
         }
     }
 

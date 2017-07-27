@@ -80,7 +80,6 @@ public class RequestService {
 
     public Request getRequestById(String requestId){
         return requestRepository.findOne(requestId);
-
     }
 
     public boolean contains(String objectsId) {
