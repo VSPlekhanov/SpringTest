@@ -36,14 +36,14 @@ public class RequestDtoConverterTest extends SetUpDataBaseCollections {
     @Test
     public void convertFromPostDtoToRequestReturnsExpectedValue() {
         RequestPostDto postDto = new RequestPostDto("this the end", new String[]{"1", "2", "3", "go"},
-                "just some text", "2017-11-29T10:15:30Z",
+                "just some text", 1501145960439L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
         String authorEmail = "John_Doe@epam.com";
         Request convertedRequest = requestConverter.requestPostDtoAndAuthorEmailToRequest(postDto, authorEmail);
         assertThat(postDto.getTitle(), is(equalTo(convertedRequest.getTitle())));
         assertThat(postDto.getTags(), is(equalTo(convertedRequest.getTags())));
-        assertThat(Instant.parse(postDto.getDeadLine()), is(equalTo(convertedRequest.getDeadLine())));
+        assertThat(Instant.ofEpochMilli(postDto.getDeadLine()), is(equalTo(convertedRequest.getDeadLine())));
         assertThat(postDto.getText(), is(equalTo(convertedRequest.getText())));
         List<String> subsFromRequest = convertedRequest.getAllowedSubs().stream().map(User::getEmail).collect(Collectors.toList());
         assertThat(postDto.getAllowedSubs(), is(equalTo(subsFromRequest)));
@@ -72,7 +72,7 @@ public class RequestDtoConverterTest extends SetUpDataBaseCollections {
     @Test
     public void converterIsAbleToCreateRequestWithEmptySubList() {
         RequestPostDto postDto = new RequestPostDto("this the end", new String[]{"1", "2", "3", "go"},
-                "just some text", "2017-11-29T10:15:30Z",
+                "just some text", 1501100960439L,
                 Collections.emptyList());
         String authorEmail = "John_Doe@epam.com";
         Request request = requestConverter.requestPostDtoAndAuthorEmailToRequest(postDto, authorEmail);
@@ -82,7 +82,7 @@ public class RequestDtoConverterTest extends SetUpDataBaseCollections {
     @Test
     public void converterIsAbleToCreateRequestWithEmptyTagsArray() {
         RequestPostDto postDto = new RequestPostDto("this the end", new String[0],
-                "just some text", "2017-11-29T10:15:30Z",
+                "just some text", 1501111960439L,
                 Collections.emptyList());
         String authorEmail = "John_Doe@epam.com";
         Request request = requestConverter.requestPostDtoAndAuthorEmailToRequest(postDto, authorEmail);

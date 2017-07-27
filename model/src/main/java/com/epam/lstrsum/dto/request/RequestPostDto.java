@@ -17,7 +17,7 @@ public class RequestPostDto implements Serializable {
     private String title;
     private String[] tags;
     private String text;
-    private String deadLine;
+    private Long deadLine;
     private List<String> allowedSubs;
 
     @Override
@@ -25,14 +25,14 @@ public class RequestPostDto implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        RequestPostDto postDto = (RequestPostDto) o;
+        RequestPostDto that = (RequestPostDto) o;
 
-        if (title != null ? !title.equals(postDto.title) : postDto.title != null) return false;
+        if (title != null ? !title.equals(that.title) : that.title != null) return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
-        if (!Arrays.equals(tags, postDto.tags)) return false;
-        if (text != null ? !text.equals(postDto.text) : postDto.text != null) return false;
-        if (deadLine != null ? !deadLine.equals(postDto.deadLine) : postDto.deadLine != null) return false;
-        return allowedSubs != null ? allowedSubs.equals(postDto.allowedSubs) : postDto.allowedSubs == null;
+        if (!Arrays.equals(tags, that.tags)) return false;
+        if (text != null ? !text.equals(that.text) : that.text != null) return false;
+        if (deadLine != null ? !deadLine.equals(that.deadLine) : that.deadLine != null) return false;
+        return allowedSubs != null ? allowedSubs.equals(that.allowedSubs) : that.allowedSubs == null;
     }
 
     @Override

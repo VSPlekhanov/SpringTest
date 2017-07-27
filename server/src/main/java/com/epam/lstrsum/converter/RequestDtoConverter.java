@@ -55,7 +55,7 @@ public class RequestDtoConverter implements BasicModelDtoConverter<Request, Requ
         newRequest.setCreatedAt(Instant.now());
         // Instant can parse only this format of date "2017-11-29T10:15:30Z"
         // throws DateTimeException if RequestPostDto got wrong data format
-        newRequest.setDeadLine(Instant.parse(requestPostDto.getDeadLine()));
+        newRequest.setDeadLine(Instant.ofEpochMilli(requestPostDto.getDeadLine()));
         newRequest.setAuthorId(userService.getUserByEmail(email));
         List<String> subsFromDto = requestPostDto.getAllowedSubs();
         List<User> subsForRequest = new ArrayList<>();

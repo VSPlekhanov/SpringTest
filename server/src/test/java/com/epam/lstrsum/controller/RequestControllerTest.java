@@ -32,6 +32,9 @@ public class RequestControllerTest {
     @Mock
     private RequestService requestService;
 
+    @Mock
+    private UserRuntimeRequestComponent userRuntimeRequestComponent;
+
     @InjectMocks
     private RequestController controller;
 
@@ -44,8 +47,9 @@ public class RequestControllerTest {
     public void addRequestShouldSaveRequestTest() throws IOException {
         String authorEmail = "John_Doe@epam.com";
         RequestPostDto postDto = new RequestPostDto("some title", new String[]{"1", "2", "3", "4"}, "some txet",
-                "2017-11-29T10:15:30Z", Collections.singletonList("Bob_Hoplins@epam.com"));
-        controller.addRequest(null, postDto);
+                1501140060439L, Collections.singletonList("Bob_Hoplins@epam.com"));
+        when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");
+        controller.addRequest(postDto);
 
         verify(requestService).addNewRequest(postDto, authorEmail);
     }
@@ -54,10 +58,11 @@ public class RequestControllerTest {
     public void addRequestReturnValidResponseEntityTest() throws IOException {
         String authorEmail = "John_Doe@epam.com";
         RequestPostDto postDto = new RequestPostDto("some title", new String[]{"1", "2", "3", "4"}, "some txet",
-                "2017-11-29T10:15:30Z", Collections.singletonList("Bob_Hoplins@epam.com"));
+                1501145960400L, Collections.singletonList("Bob_Hoplins@epam.com"));
         String requestId = "Id11";
         when(requestService.addNewRequest(postDto, authorEmail)).thenReturn(requestId);
-        ResponseEntity<String> actualEntity = controller.addRequest(null, postDto);
+        when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");
+        ResponseEntity<String> actualEntity = controller.addRequest(postDto);
 
         ResponseEntity<String> expectedEntity = ResponseEntity.ok(requestId);
 
@@ -117,7 +122,7 @@ public class RequestControllerTest {
         when(requestService.contains(requestId)).thenReturn(true);
         when(requestService.getRequestAppearanceDtoByRequestId(requestId)).thenReturn(requestAppearanceDto);
 
-        ResponseEntity actual = controller.getRequestWithAnswers(null, requestId);
+        ResponseEntity actual = controller.getRequestWithAnswers(requestId);
         ResponseEntity expected = ResponseEntity.ok(requestAppearanceDto);
 
         assertThat(actual, is(equalTo(expected)));
@@ -129,7 +134,7 @@ public class RequestControllerTest {
 
         when(requestService.contains(requestId)).thenReturn(false);
 
-        ResponseEntity actual = controller.getRequestWithAnswers(null, requestId);
+        ResponseEntity actual = controller.getRequestWithAnswers(requestId);
         ResponseEntity expected = new ResponseEntity(HttpStatus.NOT_FOUND);
 
         assertThat(actual, is(equalTo(expected)));

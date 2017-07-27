@@ -57,7 +57,7 @@ public class RequestServiceTest extends SetUpDataBaseCollections {
     @Test
     public void addNewRequestConvertsPostDtoToRequestAndPutsItIntoDbTest() {
         RequestPostDto postDto = new RequestPostDto("this the end", new String[]{"1", "2", "3", "go"},
-                "just some text", "2017-11-29T10:15:30Z",
+                "just some text", 1501145960439L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
         String authorEmail = "John_Doe@epam.com";
@@ -101,7 +101,7 @@ public class RequestServiceTest extends SetUpDataBaseCollections {
     @Test(expected = RequestValidationException.class)
     public void requestServiceThrowsRequestValidationExceptionForNullTitleInPostDto() {
         RequestPostDto postDto = new RequestPostDto(null, new String[]{"1", "2", "3", "go"},
-                "just some text", "2017-11-29T10:15:30Z",
+                "just some text", 1501112360439L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
         String authorEmail = "John_Doe@epam.com";
@@ -111,7 +111,7 @@ public class RequestServiceTest extends SetUpDataBaseCollections {
     @Test(expected = RequestValidationException.class)
     public void requestServiceThrowsRequestValidationExceptionForNullTextInPostDtoTest() {
         RequestPostDto postDto = new RequestPostDto("just some title", new String[]{"1", "2", "3", "go"},
-                null, "2017-11-29T10:15:30Z",
+                null, 1501145111439L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
         String authorEmail = "John_Doe@epam.com";
@@ -121,7 +121,7 @@ public class RequestServiceTest extends SetUpDataBaseCollections {
     @Test(expected = RequestValidationException.class)
     public void requestServiceThrowsRequestValidationExceptionIfTextIsTooShortInPostDtoTest() {
         RequestPostDto postDto = new RequestPostDto("just some title", new String[]{"1", "2", "3", "go"},
-                "", "2017-11-29T10:15:30Z",
+                "", 1501145922239L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
         String authorEmail = "John_Doe@epam.com";
@@ -131,7 +131,7 @@ public class RequestServiceTest extends SetUpDataBaseCollections {
     @Test(expected = RequestValidationException.class)
     public void requestServiceThrowsRequestValidationExceptionIfTitleIsTooShortInPostDtoTest() {
         RequestPostDto postDto = new RequestPostDto("tle", new String[]{"1", "2", "3", "go"},
-                "just some text", "2017-11-29T10:15:30Z",
+                "just some text", 1501143330439L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
         String authorEmail = "John_Doe@epam.com";
@@ -147,7 +147,7 @@ public class RequestServiceTest extends SetUpDataBaseCollections {
     @Test(expected = RequestValidationException.class)
     public void addNewRequestThrowsRequestValidationExceptionIfRequestAuthorEmailIsNullTest() {
         requestService.addNewRequest(new RequestPostDto("just some title", new String[]{"1", "2", "3", "go"},
-                "just some text", "2017-11-29T10:15:30Z",
+                "just some text", 1501144323239L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com")), null);
     }
