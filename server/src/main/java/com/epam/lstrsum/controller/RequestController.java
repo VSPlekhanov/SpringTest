@@ -4,14 +4,12 @@ import com.epam.lstrsum.dto.request.RequestAllFieldsDto;
 import com.epam.lstrsum.dto.request.RequestAppearanceDto;
 import com.epam.lstrsum.dto.request.RequestBaseDto;
 import com.epam.lstrsum.dto.request.RequestPostDto;
-import com.epam.lstrsum.security.EpamEmployeePrincipal;
 import com.epam.lstrsum.service.RequestService;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -25,23 +23,26 @@ public class RequestController {
     @Setter
     private int maxRequestAmount;
 
-    @Autowired
     private final RequestService requestService;
 
-    public RequestController(RequestService requestService) {
+    private final UserRuntimeRequestComponent userRuntimeRequestComponent;
+
+    @Autowired
+    public RequestController(RequestService requestService, UserRuntimeRequestComponent userRuntimeRequestComponent) {
         this.requestService = requestService;
+        this.userRuntimeRequestComponent = userRuntimeRequestComponent;
     }
 
     @PostMapping()
-    public ResponseEntity<String> addRequest(Authentication authentication, @RequestBody() RequestPostDto dtoObject)
+    public ResponseEntity<String> addRequest(@RequestBody() RequestPostDto dtoObject)
             throws IOException {
-        String email = authentication != null ? ((EpamEmployeePrincipal) (authentication.getPrincipal())).getEmail() : "John_Doe@epam.com";
+        String email = userRuntimeRequestComponent.getEmail();
         String requestId = requestService.addNewRequest(dtoObject, email);
         return ResponseEntity.ok(requestId);
     }
 
     @GetMapping(value = "/{requestId}")
-    public ResponseEntity<RequestAppearanceDto> getRequestWithAnswers(Authentication authentication, @PathVariable String requestId) {
+    public ResponseEntity<RequestAppearanceDto> getRequestWithAnswers(@PathVariable String requestId) {
         if (requestService.contains(requestId)) {
             RequestAppearanceDto requestDto = requestService.getRequestAppearanceDtoByRequestId(requestId);
             return ResponseEntity.ok(requestDto);
