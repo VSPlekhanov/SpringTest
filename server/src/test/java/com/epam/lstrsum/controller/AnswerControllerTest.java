@@ -4,27 +4,34 @@ import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.dto.request.RequestBaseDto;
-import com.epam.lstrsum.dto.request.RequestPostDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.exception.AnswerValidationException;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Request;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.service.AnswerService;
-import com.epam.lstrsum.service.RequestService;
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.List;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,6 +45,8 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
     @Mock
     private AnswerService answerService;
 
+    @Autowired
+    private TestRestTemplate testRestTemplate;
 
     private String requestId = "1u_3r";
     private AnswerPostDto answerPostDto;
@@ -134,31 +143,20 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
     }
 
 
+
+
+    @Ignore
     @Test
-    public void addNewAnswerNoAuthorTest() throws IOException {
-        responseEntity = answerController.addAnswer(null, answerPostDto);
+    public void getListOfAnswers() throws Exception {
+
+        final ResponseEntity<List<Answer>> responseEntity = testRestTemplate.exchange("/api/answer",
+                HttpMethod.GET, null, new ParameterizedTypeReference<List<Answer>>() {
+                });
+        List<Answer> actualList = responseEntity.getBody();
+        //validate
+        assertThat(actualList.size(), is(12));
+        List<String> actualIds = actualList.stream().map(Answer::getAnswerId).collect(collectingAndThen(toList(), ImmutableList::copyOf));
+        assertThat(actualIds, containsInAnyOrder("1u_1r_1a", "1u_1r_2a", "1u_1r_3a", "1u_2r_1a", "1u_2r_2a",
+                "2u_3r_1a", "2u_3r_2a", "3u_4r_1a", "3u_4r_2a", "4u_5r_1a", "4u_5r_2a", "4u_5r_3a"));
     }
-
-    @Test(expected = AnswerValidationException.class)
-    public void addNewAnswerNoDTOTest() throws IOException {
-        when(answerService.addNewAnswer(null, email)).thenThrow(AnswerValidationException.class);
-        responseEntity = answerController.addAnswer(null, null);
-    }
-
-
-
-
-//    @Ignore
-//    @Test
-//    public void getListOfAnswers() throws Exception {
-//        final ResponseEntity<List<Answer>> responseEntity = testRestTemplate.exchange("/api/answer",
-//                HttpMethod.GET, null, new ParameterizedTypeReference<List<Answer>>() {
-//                });
-//        List<Answer> actualList = responseEntity.getBody();
-//        //validate
-//        assertThat(actualList.size(), is(12));
-//        List<String> actualIds = actualList.stream().map(Answer::getAnswerId).collect(collectingAndThen(toList(), ImmutableList::copyOf));
-//        assertThat(actualIds, containsInAnyOrder("1u_1r_1a", "1u_1r_2a", "1u_1r_3a", "1u_2r_1a", "1u_2r_2a",
-//                "2u_3r_1a", "2u_3r_2a", "3u_4r_1a", "3u_4r_2a", "4u_5r_1a", "4u_5r_2a", "4u_5r_3a"));
-//    }
 }

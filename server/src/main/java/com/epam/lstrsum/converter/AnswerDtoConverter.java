@@ -3,13 +3,8 @@ package com.epam.lstrsum.converter;
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
-import com.epam.lstrsum.dto.request.RequestAllFieldsDto;
-import com.epam.lstrsum.dto.request.RequestAppearanceDto;
-import com.epam.lstrsum.dto.request.RequestBaseDto;
-import com.epam.lstrsum.dto.request.RequestPostDto;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Request;
-import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.service.AnswerService;
 import com.epam.lstrsum.service.RequestService;
 import com.epam.lstrsum.service.UserService;
@@ -17,12 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import com.epam.lstrsum.model.Answer;
-import com.epam.lstrsum.model.Request;
-import com.epam.lstrsum.service.AnswerService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 
