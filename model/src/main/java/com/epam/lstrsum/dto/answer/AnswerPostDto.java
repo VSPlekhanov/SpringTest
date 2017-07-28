@@ -1,15 +1,12 @@
 package com.epam.lstrsum.dto.answer;
 
 
+import com.epam.lstrsum.exception.ConvertToJsonException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Arrays;
-
-import java.util.Arrays;
 
 
 @AllArgsConstructor
@@ -44,7 +41,7 @@ public class AnswerPostDto {
             return objectMapper.writeValueAsString(this);
         } catch (JsonProcessingException e) {
             log.error("RequestPostDto toJson() exception, probably during request validation" + e.getMessage());
-            return "Error has occurred";
+            throw new ConvertToJsonException("Can't convert answer to JSON!");
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.epam.lstrsum.dto.request;
 
+import com.epam.lstrsum.exception.ConvertToJsonException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -51,7 +52,7 @@ public class RequestPostDto implements Serializable {
             return objectMapper.writeValueAsString(this);
         } catch (JsonProcessingException e) {
             log.error("RequestPostDto toJson() exception, probably during request validation" + e.getMessage());
-            return "Error has occurred";
+            throw new ConvertToJsonException("Can't convert request to JSON!");
         }
     }
 }
