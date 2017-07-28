@@ -32,9 +32,7 @@ public class RequestService {
         this.requestRepository = requestRepository;
     }
 
-    public Request getRequestById(String requestId) {
-        return requestRepository.findOne(requestId);
-    }
+
 
     public List<RequestAllFieldsDto> findAll() {
         List<Request> requestList = requestRepository.findAll();
@@ -44,7 +42,7 @@ public class RequestService {
         }
         return dtoList;
     }
-    
+
     public List<RequestAllFieldsDto> search(String searchQuery) {
         List<Request> requestList = requestRepository.search(searchQuery);
         List<RequestAllFieldsDto> dtoList = new ArrayList<>();
@@ -79,6 +77,10 @@ public class RequestService {
     public RequestAppearanceDto getRequestAppearanceDtoByRequestId(String requestId) {
         Request request = requestRepository.findOne(requestId);
         return requestDtoConverter.modelToRequestAppearanceDto(request);
+    }
+
+    public Request getRequestById(String requestId){
+        return requestRepository.findOne(requestId);
     }
 
     public boolean contains(String objectsId) {

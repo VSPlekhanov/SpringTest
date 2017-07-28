@@ -19,6 +19,7 @@ public class Request {
 
     @Id
     private String requestId;
+
     private String title;
     private String[] tags;
     private String text;
