@@ -66,7 +66,6 @@ public class RequestDtoConverter implements BasicModelDtoConverter<Request, Requ
         }
         newRequest.setAllowedSubs(subsForRequest);
         newRequest.setUpVote(0);
-        System.out.println(newRequest.getRequestId());
         return newRequest;
     }
 

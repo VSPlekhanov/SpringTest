@@ -66,7 +66,6 @@ public class RequestService {
         validateRequestData(requestPostDto, email);
         Request newRequest = requestDtoConverter.requestPostDtoAndAuthorEmailToRequest(requestPostDto, email);
         requestRepository.save(newRequest);
-        System.out.println(newRequest.getRequestId());
         return newRequest.getRequestId();
     }
 
