@@ -40,10 +40,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AnswerControllerTest extends SetUpDataBaseCollections {
 
-    @Autowired
-    private TestRestTemplate testRestTemplate;
-    @InjectMocks
-    private AnswerController answerController;
 
     @Mock
     private AnswerService answerService;
@@ -153,12 +149,6 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
         responseEntity = answerController.addAnswer(answerPostDto);
     }
 
-    @Test(expected = AnswerValidationException.class)
-    public void addNewAnswerNoDTOTest() throws IOException {
-        when(answerService.addNewAnswer(null, email)).thenThrow(AnswerValidationException.class);
-        responseEntity = answerController.addAnswer(null, null);
-
-    }
     @Ignore
     @Test
     public void getListOfAnswers() throws Exception {
