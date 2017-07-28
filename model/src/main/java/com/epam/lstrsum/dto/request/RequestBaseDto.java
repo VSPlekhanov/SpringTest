@@ -45,6 +45,7 @@ public class RequestBaseDto {
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
         result = 31 * result + (deadLine != null ? deadLine.hashCode() : 0);
         result = 31 * result + (author != null ? author.hashCode() : 0);
+//        result = 31 * result + (answers != null ? answers.hashCode() : 0);
         result = 31 * result + (upVote != null ? upVote.hashCode() : 0);
         return result;
     }
