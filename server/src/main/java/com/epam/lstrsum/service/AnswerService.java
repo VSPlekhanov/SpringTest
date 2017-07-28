@@ -66,8 +66,8 @@ public class AnswerService {
         }
 
 
+    }
 
-}
     public List<Answer> findAnswersToThis(Request request) {
         List<Answer> answersToRequest = answerRepository.findAnswersByParentIdOrderByCreatedAtAsc(request);
         return answersToRequest != null ? answersToRequest : new ArrayList<>();
