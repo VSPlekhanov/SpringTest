@@ -23,6 +23,7 @@ public class UserControllerTest extends SetUpDataBaseCollections {
     @Autowired
     private TestRestTemplate restTemplate;
 
+
     @Test
     public void getListOfUsers() throws Exception {
         ResponseEntity<List<User>> responseEntity = restTemplate.exchange("/api/user",

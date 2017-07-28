@@ -32,6 +32,10 @@ public class RequestService {
         this.requestRepository = requestRepository;
     }
 
+    public Request getRequestById(String requestId) {
+        return requestRepository.findOne(requestId);
+    }
+
     public List<RequestAllFieldsDto> findAll() {
         List<Request> requestList = requestRepository.findAll();
         List<RequestAllFieldsDto> dtoList = new ArrayList<>();
