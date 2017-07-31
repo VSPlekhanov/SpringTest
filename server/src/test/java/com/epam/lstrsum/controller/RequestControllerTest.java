@@ -1,6 +1,7 @@
 package com.epam.lstrsum.controller;
 
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
+import com.epam.lstrsum.dto.request.RequestAllFieldsDto;
 import com.epam.lstrsum.dto.request.RequestAppearanceDto;
 import com.epam.lstrsum.dto.request.RequestBaseDto;
 import com.epam.lstrsum.dto.request.RequestPostDto;
@@ -23,6 +24,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -49,6 +51,12 @@ public class RequestControllerTest {
         RequestPostDto postDto = new RequestPostDto("some title", new String[]{"1", "2", "3", "4"}, "some txet",
                 1501140060439L, Collections.singletonList("Bob_Hoplins@epam.com"));
         when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");
+
+        String requestId = "Id11";
+        RequestAllFieldsDto dtoWithId = new RequestAllFieldsDto(requestId, null, null, null, null
+                , null, null, null, null);
+        when(requestService.addNewRequest(postDto, authorEmail)).thenReturn(dtoWithId);
+
         controller.addRequest(postDto);
 
         verify(requestService).addNewRequest(postDto, authorEmail);
@@ -59,8 +67,12 @@ public class RequestControllerTest {
         String authorEmail = "John_Doe@epam.com";
         RequestPostDto postDto = new RequestPostDto("some title", new String[]{"1", "2", "3", "4"}, "some txet",
                 1501145960400L, Collections.singletonList("Bob_Hoplins@epam.com"));
+
         String requestId = "Id11";
-        when(requestService.addNewRequest(postDto, authorEmail)).thenReturn(requestId);
+        RequestAllFieldsDto dtoWithId = new RequestAllFieldsDto(requestId, null, null, null, null
+                , null, null, null, null);
+        when(requestService.addNewRequest(postDto, authorEmail)).thenReturn(dtoWithId);
+
         when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");
         ResponseEntity<String> actualEntity = controller.addRequest(postDto);
 

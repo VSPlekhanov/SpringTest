@@ -36,11 +36,11 @@ public class AnswerService {
         this.answerRepository = answerRepository;
     }
 
-    public Answer addNewAnswer(AnswerPostDto answerPostDto, String email) {
+    public AnswerAllFieldsDto addNewAnswer(AnswerPostDto answerPostDto, String email) {
         validateAnswerData(answerPostDto, email);
         Answer newAnswer = answerDtoConverter.answerPostDtoAndAuthorEmailToAnswer(answerPostDto, email);
-        answerRepository.save(newAnswer);
-        return newAnswer;
+        Answer saved = answerRepository.save(newAnswer);
+        return answerDtoConverter.modelToAllFieldsDto(saved);
     }
 
     public AnswerAllFieldsDto answerToDto(Answer answer) {

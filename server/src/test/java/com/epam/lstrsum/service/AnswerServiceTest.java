@@ -1,6 +1,7 @@
 package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
+import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.exception.AnswerValidationException;
 import com.epam.lstrsum.model.Answer;
@@ -23,7 +24,7 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     public void addNewAnswerWithExistingRequestTest() throws Exception {
         AnswerPostDto postDto = new AnswerPostDto("1u_2r", "answer text");
 
-        Answer answer = answerService.addNewAnswer(postDto, authorEmail);
+        AnswerAllFieldsDto answer = answerService.addNewAnswer(postDto, authorEmail);
         assertThat(answer.getParentId(), notNullValue());
     }
 

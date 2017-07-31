@@ -80,7 +80,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
                 Collections.emptyList());
         String authorEmail = "John_Doe@epam.com";
 
-        String newRequestId = requestService.addNewRequest(postDto, authorEmail);
+        String newRequestId = requestService.addNewRequest(postDto, authorEmail).getRequestId();
 
         List<String> emails = subscriptionService.getEmailsOfAuthorAndAllowedSubsOfRequest(newRequestId);
 
@@ -96,7 +96,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
         String authorEmail = "John_Doe@epam.com";
 
-        String newRequestId = requestService.addNewRequest(postDto, authorEmail);
+        String newRequestId = requestService.addNewRequest(postDto, authorEmail).getRequestId();
 
         List<String> emails = subscriptionService.getEmailsOfAuthorAndAllowedSubsOfRequest(newRequestId);
 
@@ -111,7 +111,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
                 Collections.emptyList());
         String authorEmail = "John_Doe@epam.com";
 
-        String newRequestId = requestService.addNewRequest(postDto, authorEmail);
+        String newRequestId = requestService.addNewRequest(postDto, authorEmail).getRequestId();
 
         List<String> emails = subscriptionService.getEmailsToNotificateAboutNewRequest(newRequestId);
 
@@ -126,7 +126,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
         String authorEmail = "John_Doe@epam.com";
 
-        String newRequestId = requestService.addNewRequest(postDto, authorEmail);
+        String newRequestId = requestService.addNewRequest(postDto, authorEmail).getRequestId();
 
         List<String> emails = subscriptionService.getEmailsToNotificateAboutNewRequest(newRequestId);
 
