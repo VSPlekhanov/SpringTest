@@ -1,4 +1,4 @@
-package com.epam.lstrsum.service;
+package com.epam.lstrsum.mail.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

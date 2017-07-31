@@ -1,4 +1,4 @@
-package com.epam.lstrsum.configuration;
+package com.epam.lstrsum.mail.configuration;
 
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
