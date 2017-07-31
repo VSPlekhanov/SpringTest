@@ -8,58 +8,40 @@ import com.epam.lstrsum.dto.request.RequestPostDto;
 import com.epam.lstrsum.exception.RequestValidationException;
 import com.epam.lstrsum.model.Request;
 import com.epam.lstrsum.persistence.RequestRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 
 @Service
+@RequiredArgsConstructor
 public class RequestService {
 
     private final static int REQUEST_TITLE_LENGTH = 5;
     private final static int REQUEST_TEXT_LENGTH = 5;
 
-    @Autowired
-    private RequestDtoConverter requestDtoConverter;
+    private final RequestDtoConverter requestDtoConverter;
     private final RequestRepository requestRepository;
-
-    @Autowired
-    public RequestService(RequestRepository requestRepository) {
-        this.requestRepository = requestRepository;
-    }
-
-
 
     public List<RequestAllFieldsDto> findAll() {
         List<Request> requestList = requestRepository.findAll();
-        List<RequestAllFieldsDto> dtoList = new ArrayList<>();
-        for (Request request : requestList) {
-            dtoList.add(requestDtoConverter.modelToAllFieldsDto(request));
-        }
-        return dtoList;
+        return mapList(requestList, requestDtoConverter::modelToAllFieldsDto);
     }
 
     public List<RequestAllFieldsDto> search(String searchQuery) {
         List<Request> requestList = requestRepository.search(searchQuery);
-        List<RequestAllFieldsDto> dtoList = new ArrayList<>();
-        for (Request request : requestList) {
-            dtoList.add(requestDtoConverter.modelToAllFieldsDto(request));
-        }
-        return dtoList;
+        return mapList(requestList, requestDtoConverter::modelToAllFieldsDto);
     }
 
     public List<RequestBaseDto> findAllRequestsBaseDto(int requestPage, int requestAmount) {
         Pageable pageable = new PageRequest(requestPage, requestAmount);
         List<Request> requestList = requestRepository.findAllByOrderByCreatedAtDesc(pageable);
-        List<RequestBaseDto> dtoList = new ArrayList<>();
-        for (Request request : requestList) {
-            dtoList.add(requestDtoConverter.modelToBaseDto(request));
-        }
-        return dtoList;
+        return mapList(requestList, requestDtoConverter::modelToBaseDto);
     }
 
     public RequestAllFieldsDto addNewRequest(RequestPostDto requestPostDto, String email) {
@@ -103,5 +85,15 @@ public class RequestService {
         if (requestPostDto.getText().length() < REQUEST_TEXT_LENGTH) {
             throw new RequestValidationException("Text is too short " + requestPostDto.toJson());
         }
+    }
+
+    private static<T1,T2> List<T2> mapList(List<T1> list, Function<T1, T2> mapper) {
+        List<T2> result = new ArrayList<>();
+
+        for (T1 value : list) {
+            result.add(mapper.apply(value));
+        }
+
+        return result;
     }
 }

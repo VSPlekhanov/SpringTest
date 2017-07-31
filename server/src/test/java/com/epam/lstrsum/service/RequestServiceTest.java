@@ -21,6 +21,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 
 @FixMethodOrder
 public class RequestServiceTest extends SetUpDataBaseCollections {
@@ -33,6 +34,34 @@ public class RequestServiceTest extends SetUpDataBaseCollections {
 
     @Autowired
     private RequestRepository requestRepository;
+
+    @Test
+    public void findAllReturnsCorrectValuesTest() {
+        List<Request> requestList = requestRepository.findAll();
+        List<RequestAllFieldsDto> expectedAllFieldsDto = new ArrayList<>();
+        for (Request request : requestList) {
+            expectedAllFieldsDto.add(requestDtoConverter.modelToAllFieldsDto(request));
+        }
+        List<RequestAllFieldsDto> actualList = requestService.findAll();
+
+        assertEquals(expectedAllFieldsDto, actualList);
+    }
+
+    @Test
+    public void searchReturnsCorrectValue() {
+        String searchPhrase = "android";
+        List<Request> requestList = requestRepository.search(searchPhrase);
+
+        List<RequestAllFieldsDto> expectedAllFieldsDto = new ArrayList<>();
+        for (Request request : requestList) {
+            expectedAllFieldsDto.add(requestDtoConverter.modelToAllFieldsDto(request));
+        }
+
+        List<RequestAllFieldsDto> actualList = requestService.search(searchPhrase);
+
+        assertEquals(expectedAllFieldsDto, actualList);
+        //assertThat(expectedAllFieldsDto.size(), greaterThan(0));
+    }
 
     @Test
     public void getRequestReturnsCorrectDtoObject() {

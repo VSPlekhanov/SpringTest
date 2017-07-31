@@ -4,7 +4,7 @@ import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.service.AnswerService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,16 +15,11 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/answer")
+@RequiredArgsConstructor
 public class AnswerController {
 
     private final AnswerService answerService;
     private final UserRuntimeRequestComponent userRuntimeRequestComponent;
-
-    @Autowired
-    public AnswerController(AnswerService answerService, UserRuntimeRequestComponent userRuntimeRequestComponent) {
-        this.answerService = answerService;
-        this.userRuntimeRequestComponent = userRuntimeRequestComponent;
-    }
 
     @PostMapping()
     public ResponseEntity<AnswerAllFieldsDto> addAnswer(@RequestBody() AnswerPostDto dtoObject)

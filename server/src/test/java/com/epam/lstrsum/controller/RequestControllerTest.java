@@ -151,4 +151,23 @@ public class RequestControllerTest {
 
         assertThat(actual, is(equalTo(expected)));
     }
+
+    @Test
+    public void searchSuccessful() {
+        String requestId = "requestId";
+        String searchString = "search";
+        String requestTitle = "requestTitle";
+
+        List<RequestAllFieldsDto> requestAllFieldsDtos = Arrays.asList(
+                new RequestAllFieldsDto(requestId, requestTitle, new String[]{"tag1", "tag2", "tag3"}, Instant.now(), Instant.now(),
+                        new UserBaseDto("userId", "userName", "userSurname", "user@epam.com"),
+                        2, Collections.emptyList(), "text")
+        );
+        when(requestService.search(searchString)).thenReturn(requestAllFieldsDtos);
+
+        ResponseEntity<List<RequestAllFieldsDto>> actual = controller.search(searchString);
+        ResponseEntity<List<RequestAllFieldsDto>> expected = ResponseEntity.ok(requestAllFieldsDtos);
+
+        assertThat(actual, equalTo(expected));
+    }
 }

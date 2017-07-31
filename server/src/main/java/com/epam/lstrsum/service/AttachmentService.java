@@ -3,7 +3,7 @@ package com.epam.lstrsum.service;
 import com.epam.lstrsum.converter.AttachmentDtoConverter;
 import com.epam.lstrsum.dto.attachment.AttachmentAllFieldsDto;
 import com.epam.lstrsum.model.Attachment;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,17 +12,11 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AttachmentService {
 
     private final CrudRepository<Attachment, String> repository;
     private final AttachmentDtoConverter converter;
-
-    @Autowired
-    public AttachmentService(CrudRepository<Attachment, String> repository, AttachmentDtoConverter converter) {
-        this.repository = repository;
-        this.converter = converter;
-    }
-
 
     public AttachmentAllFieldsDto save(AttachmentAllFieldsDto attachmentAllFieldsDto) {
         Attachment attachment = new Attachment();

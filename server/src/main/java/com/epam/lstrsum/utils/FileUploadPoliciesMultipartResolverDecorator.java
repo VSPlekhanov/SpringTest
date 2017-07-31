@@ -78,9 +78,9 @@ public class FileUploadPoliciesMultipartResolverDecorator implements MultipartRe
     // If you know better solution, please, refactor.
     private boolean isSizeLimitException(MultipartException e) {
         return Optional.ofNullable(e.getCause())
-                .map((th) -> Optional.ofNullable(th.getCause()))
-                .flatMap(o -> o)
-                .map(th -> th.getClass().equals(FileUploadBase.SizeLimitExceededException.class))
+                .flatMap((th) -> Optional.ofNullable(th.getCause()))
+                .map(Throwable::getClass)
+                .map(FileUploadBase.SizeLimitExceededException.class::equals)
                 .orElse(false);
     }
 

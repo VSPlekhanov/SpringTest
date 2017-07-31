@@ -1,14 +1,13 @@
 package com.epam.lstrsum.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Profile;
 import org.springframework.integration.annotation.Poller;
 import org.springframework.integration.annotation.ServiceActivator;
-import org.springframework.mail.MailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
@@ -22,14 +21,12 @@ import java.util.regex.Pattern;
 @ConfigurationProperties(prefix = "mail")
 @Profile("email")
 @Slf4j
+@RequiredArgsConstructor
 public class MailService {
-
-    @Autowired
-    private MailSender mailSender;
+    private final JavaMailSender mailSender;
 
     @Setter
     private String fromAddress;
-
 
     @ServiceActivator(inputChannel = "receiveChannel", poller = @Poller(fixedRate = "200"))
     public void showMessages(MimeMessage message) throws Exception {
@@ -71,16 +68,16 @@ public class MailService {
 
 
     public void sendMessage(String subject, String text, String... to) throws MessagingException {
-        MimeMessage mimeMessage = ((JavaMailSenderImpl) mailSender).createMimeMessage();
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper mailMsg = new MimeMessageHelper(mimeMessage);
         mailMsg.setFrom(fromAddress);
         mailMsg.setTo(to);
         mailMsg.setSubject(subject);
         mailMsg.setText(text);
-        ((JavaMailSenderImpl)mailSender).send(mimeMessage);
+        sendMessage(mimeMessage);
     }
 
     public void sendMessage(MimeMessage mimeMessage) throws MessagingException {
-        ((JavaMailSenderImpl) mailSender).send(mimeMessage);
+        mailSender.send(mimeMessage);
     }
 }
