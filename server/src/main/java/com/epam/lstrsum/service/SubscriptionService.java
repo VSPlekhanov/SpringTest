@@ -4,7 +4,7 @@ import com.epam.lstrsum.model.Request;
 import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.SubscriptionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -13,16 +13,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
     private final RequestService requestService;
-
-    @Autowired
-    public SubscriptionService(SubscriptionRepository subscriptionRepository, RequestService requestService) {
-        this.subscriptionRepository = subscriptionRepository;
-        this.requestService = requestService;
-    }
 
     public List<Subscription> findAll() {
         return subscriptionRepository.findAll();

@@ -5,8 +5,8 @@ import com.epam.lstrsum.dto.request.RequestAppearanceDto;
 import com.epam.lstrsum.dto.request.RequestBaseDto;
 import com.epam.lstrsum.dto.request.RequestPostDto;
 import com.epam.lstrsum.service.RequestService;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,20 +18,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/request")
 @ConfigurationProperties(prefix = "request")
+@RequiredArgsConstructor
 public class RequestController {
 
     @Setter
     private int maxRequestAmount;
 
     private final RequestService requestService;
-
     private final UserRuntimeRequestComponent userRuntimeRequestComponent;
-
-    @Autowired
-    public RequestController(RequestService requestService, UserRuntimeRequestComponent userRuntimeRequestComponent) {
-        this.requestService = requestService;
-        this.userRuntimeRequestComponent = userRuntimeRequestComponent;
-    }
 
     @PostMapping()
     public ResponseEntity<String> addRequest(@RequestBody() RequestPostDto dtoObject)

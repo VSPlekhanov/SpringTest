@@ -2,7 +2,7 @@ package com.epam.lstrsum.controller;
 
 import com.epam.lstrsum.dto.attachment.AttachmentAllFieldsDto;
 import com.epam.lstrsum.service.AttachmentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -17,14 +17,10 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/attachment")
+@RequiredArgsConstructor
 public class AttachmentController {
 
     private final AttachmentService attachmentService;
-
-    @Autowired
-    public AttachmentController(AttachmentService attachmentService) {
-        this.attachmentService = attachmentService;
-    }
 
     @PostMapping
     public ResponseEntity<String> uploadAttachment(@RequestParam("file") MultipartFile file) throws IOException {

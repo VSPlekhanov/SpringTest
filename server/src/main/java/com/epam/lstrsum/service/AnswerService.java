@@ -9,6 +9,7 @@ import com.epam.lstrsum.model.Request;
 import com.epam.lstrsum.persistence.AnswerRepository;
 import com.epam.lstrsum.persistence.RequestRepository;
 import com.epam.lstrsum.persistence.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class AnswerService {
 
     @Autowired
@@ -29,12 +31,6 @@ public class AnswerService {
     private AnswerDtoConverter answerDtoConverter;
 
     private final AnswerRepository answerRepository;
-
-
-    @Autowired
-    public AnswerService(AnswerRepository answerRepository) {
-        this.answerRepository = answerRepository;
-    }
 
     public AnswerAllFieldsDto addNewAnswer(AnswerPostDto answerPostDto, String email) {
         validateAnswerData(answerPostDto, email);

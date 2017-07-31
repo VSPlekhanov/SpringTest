@@ -3,6 +3,7 @@ package com.epam.lstrsum.security;
 import com.epam.lstrsum.security.role.RoleService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,16 +21,10 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 import java.util.Map;
 
 @Slf4j
+@RequiredArgsConstructor
 public class CustomResourceServerTokenServices implements ResourceServerTokenServices {
-
-    private final AuthorizationCodeResourceDetails authorizationCodeResourceDetails;
-
     private final RoleService roleService;
-
-    public CustomResourceServerTokenServices(RoleService roleService, AuthorizationCodeResourceDetails authorizationCodeResourceDetails) {
-        this.roleService = roleService;
-        this.authorizationCodeResourceDetails = authorizationCodeResourceDetails;
-    }
+    private final AuthorizationCodeResourceDetails authorizationCodeResourceDetails;
 
     public OAuth2Authentication loadAuthentication(String accessToken) throws AuthenticationException, InvalidTokenException {
 
