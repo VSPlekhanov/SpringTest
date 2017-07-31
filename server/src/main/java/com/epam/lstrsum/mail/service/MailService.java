@@ -15,6 +15,11 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 
 @Component
@@ -28,9 +33,14 @@ public class MailService {
     @Setter
     private String fromAddress;
 
+    @Setter
+    private String backupDir;
+
     @ServiceActivator(inputChannel = "receiveChannel", poller = @Poller(fixedRate = "200"))
     public void showMessages(MimeMessage message) throws Exception {
         log.debug("showMessages; Message received: {}", message);
+
+        backupEmail(message);
 
         StringBuilder debugLogMessage = new StringBuilder();
 
@@ -59,6 +69,18 @@ public class MailService {
         );
 
         log.debug(debugLogMessage.toString());
+    }
+
+    private void backupEmail(MimeMessage mimeMessage) throws IOException, MessagingException {
+        if (backupDir.isEmpty()) {
+            return;
+        }
+
+        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
+        LocalDateTime now = LocalDateTime.now();
+
+        FileOutputStream output = new FileOutputStream(backupDir + date.format(now) + ".eml");
+        mimeMessage.writeTo(output);
     }
 
     private static boolean matchesToRegexp(String input, String regexp) {
