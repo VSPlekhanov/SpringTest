@@ -3,6 +3,8 @@ package com.epam.lstrsum.converter;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.dto.request.RequestAllFieldsDto;
+import com.epam.lstrsum.dto.request.RequestAppearanceDto;
+import com.epam.lstrsum.dto.request.RequestBaseDto;
 import com.epam.lstrsum.dto.request.RequestPostDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.model.Request;
@@ -17,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
@@ -32,6 +35,9 @@ public class RequestDtoConverterTest extends SetUpDataBaseCollections {
 
     @Autowired
     private RequestRepository requestRepository;
+
+    @Autowired
+    private AnswerDtoConverter answerConverter;
 
     @Test
     public void convertFromPostDtoToRequestReturnsExpectedValue() {
@@ -89,4 +95,28 @@ public class RequestDtoConverterTest extends SetUpDataBaseCollections {
         assertThat(request, notNullValue());
     }
 
+    @Test
+    public void ConvertFromModelToRequestAppearanceDtoReturnsExcpectedValue() {
+        Request request = requestRepository.findOne("1u_1r");
+        RequestAppearanceDto requestAppearanceDto = requestConverter.modelToRequestAppearanceDto(request);
+
+        assertThat(requestAppearanceDto)
+                .hasFieldOrPropertyWithValue("requestId", request.getRequestId())
+                .hasFieldOrPropertyWithValue("title", request.getTitle())
+                .hasFieldOrPropertyWithValue("tags", request.getTags())
+                .hasFieldOrPropertyWithValue("text", request.getText())
+                .hasFieldOrPropertyWithValue("createdAt", request.getCreatedAt())
+                .hasFieldOrPropertyWithValue("upVote", request.getUpVote())
+                .hasFieldOrPropertyWithValue("deadLine", request.getDeadLine())
+                .hasFieldOrPropertyWithValue("author", userConverter.modelToBaseDto(request.getAuthorId()))
+                .hasFieldOrPropertyWithValue("answers", answerConverter.answersToRequestInAnswerBaseDto(request));
+    }
+
+    @Test
+    public void subscriptionsToListOfRequestBaseDto() {
+        List<Request> requests = Collections.singletonList(requestRepository.findOne("1u_1r"));
+        List<RequestBaseDto> requestBaseDtos = requestConverter.subscriptionsToListOfRequestBaseDto(requests);
+
+        assertThat(requestBaseDtos.size(), is(equalTo(requests.size())));
+    }
 }
