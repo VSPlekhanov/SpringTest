@@ -62,11 +62,11 @@ public class RequestService {
         return dtoList;
     }
 
-    public String addNewRequest(RequestPostDto requestPostDto, String email) {
+    public RequestAllFieldsDto addNewRequest(RequestPostDto requestPostDto, String email) {
         validateRequestData(requestPostDto, email);
         Request newRequest = requestDtoConverter.requestPostDtoAndAuthorEmailToRequest(requestPostDto, email);
-        requestRepository.save(newRequest);
-        return newRequest.getRequestId();
+        Request saved = requestRepository.save(newRequest);
+        return requestDtoConverter.modelToAllFieldsDto(saved);
     }
 
     public RequestAllFieldsDto getRequestAllFieldDtoByRequestId(String requestId) {

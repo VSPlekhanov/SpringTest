@@ -61,7 +61,7 @@ public class RequestServiceTest extends SetUpDataBaseCollections {
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
         String authorEmail = "John_Doe@epam.com";
-        String newRequestId = requestService.addNewRequest(postDto, authorEmail);
+        String newRequestId = requestService.addNewRequest(postDto, authorEmail).getRequestId();
         assertThat(requestService.contains(newRequestId), is(true));
     }
 

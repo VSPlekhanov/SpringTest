@@ -37,7 +37,7 @@ public class RequestController {
     public ResponseEntity<String> addRequest(@RequestBody() RequestPostDto dtoObject)
             throws IOException {
         String email = userRuntimeRequestComponent.getEmail();
-        String requestId = requestService.addNewRequest(dtoObject, email);
+        String requestId = requestService.addNewRequest(dtoObject, email).getRequestId();
         return ResponseEntity.ok(requestId);
     }
 

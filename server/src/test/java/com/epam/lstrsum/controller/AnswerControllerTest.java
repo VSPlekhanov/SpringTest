@@ -116,7 +116,7 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
     @Test
     public void addNewAnswerTest() throws IOException {
         answerPostDto = new AnswerPostDto(requestId, "text");
-        when(answerService.addNewAnswer(answerPostDto, authorEmail)).thenReturn(answer);
+        when(answerService.addNewAnswer(answerPostDto, authorEmail)).thenReturn(answerAllFieldsDto);
         when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");
         when(answerService.answerToDto(answer)).thenReturn(answerAllFieldsDto);
         responseEntity = answerController.addAnswer(answerPostDto);

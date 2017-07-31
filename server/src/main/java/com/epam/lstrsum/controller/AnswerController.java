@@ -30,8 +30,7 @@ public class AnswerController {
     public ResponseEntity<AnswerAllFieldsDto> addAnswer(@RequestBody() AnswerPostDto dtoObject)
             throws IOException {
         String email = userRuntimeRequestComponent.getEmail();
-        Answer answer = answerService.addNewAnswer(dtoObject, email);
-        AnswerAllFieldsDto answerAllFieldsDto = answerService.answerToDto(answer);
+        AnswerAllFieldsDto answerAllFieldsDto = answerService.addNewAnswer(dtoObject, email);
         return ResponseEntity.ok(answerAllFieldsDto);
     }
 }
