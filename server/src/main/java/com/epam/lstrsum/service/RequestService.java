@@ -11,21 +11,36 @@ import com.epam.lstrsum.mail.template.NewRequestNotificationTemplate;
 import com.epam.lstrsum.model.Request;
 import com.epam.lstrsum.persistence.RequestRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
 
 
 @Service
 @RequiredArgsConstructor
+@ConfigurationProperties(prefix = "request")
 public class RequestService {
 
     private final static int REQUEST_TITLE_LENGTH = 5;
     private final static int REQUEST_TEXT_LENGTH = 5;
+    private final static int MIN_PAGE_SIZE = 0;
+
+    @Setter
+    private int searchDefaultPageSize;
+
+    @Setter
+    private int searchMaxPageSize;
 
     private final RequestDtoConverter requestDtoConverter;
     private final RequestRepository requestRepository;
@@ -35,9 +50,37 @@ public class RequestService {
         return mapList(requestList, requestDtoConverter::modelToAllFieldsDto);
     }
 
-    public List<RequestAllFieldsDto> search(String searchQuery) {
-        List<Request> requestList = requestRepository.search(searchQuery);
-        return mapList(requestList, requestDtoConverter::modelToAllFieldsDto);
+    /**
+     * Performs fulltext search (by db text index).
+     *
+     * @param searchQuery Phrase to find. Searches by every word separately and by different word's forms.
+     * @param page Page number to show, begins from 0.
+     * @param size Size of a page.
+     * @return List of requests.
+     */
+    public List<RequestAllFieldsDto> search(String searchQuery, Integer page, Integer size) {
+        if (isNull(size) || size <= 0) {
+            size = searchDefaultPageSize;
+        }
+        if (size > searchMaxPageSize) {
+            size = searchMaxPageSize;
+        }
+        if (isNull(page) || page < MIN_PAGE_SIZE) {
+            page = MIN_PAGE_SIZE;
+        }
+
+        Sort sort = new Sort("score");
+        TextCriteria criteria = TextCriteria.forDefaultLanguage().matching(searchQuery);
+        List<Request> requestList = requestRepository.findAllBy(criteria, new PageRequest(page, size, sort));
+
+        return requestList
+                .stream()
+                .map(requestDtoConverter::modelToAllFieldsDto)
+                .collect(Collectors.toList());
+    }
+
+    public Integer getTextSearchResultsCount(String query) {
+        return requestRepository.getTextSearchResultsCount(query);
     }
 
     public List<RequestBaseDto> findAllRequestsBaseDto(int requestPage, int requestAmount) {

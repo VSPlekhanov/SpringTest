@@ -86,6 +86,12 @@
             <version>3.8.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>de.flapdoodle.embed</groupId>
+            <artifactId>de.flapdoodle.embed.mongo</artifactId>
+            <scope>test</scope>
+            <version>${version.embedded.mongo}</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

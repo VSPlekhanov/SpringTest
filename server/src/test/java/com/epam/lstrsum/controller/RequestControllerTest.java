@@ -24,9 +24,8 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class RequestControllerTest {
@@ -163,11 +162,23 @@ public class RequestControllerTest {
                         new UserBaseDto("userId", "userName", "userSurname", "user@epam.com"),
                         2, Collections.emptyList(), "text")
         );
-        when(requestService.search(searchString)).thenReturn(requestAllFieldsDtos);
+        when(requestService.search(searchString, 0, 20)).thenReturn(requestAllFieldsDtos);
 
-        ResponseEntity<List<RequestAllFieldsDto>> actual = controller.search(searchString);
+        ResponseEntity<List<RequestAllFieldsDto>> actual = controller.search(searchString, 0, 20);
         ResponseEntity<List<RequestAllFieldsDto>> expected = ResponseEntity.ok(requestAllFieldsDtos);
 
         assertThat(actual, equalTo(expected));
+    }
+
+    @Test
+    public void countSearchResult() {
+        String searchQuery = "android";
+        doReturn(2).when(requestService).getTextSearchResultsCount(searchQuery);
+
+        ResponseEntity<Integer> actual = controller.searchCount(searchQuery);
+
+        verify(requestService).getTextSearchResultsCount(eq(searchQuery));
+        assertThat(actual.getStatusCode(), is(HttpStatus.OK));
+        assertThat(actual.getBody(), is(2));
     }
 }
