@@ -1,5 +1,6 @@
 package com.epam.lstrsum.mail.service;
 
+import com.epam.lstrsum.persistence.EmailRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -26,11 +27,14 @@ public class MailServiceTest {
 
     private MailService mailService;
 
+    @Mock
+    private EmailRepository emailRepository;
+
     @Before
     public void setUp() {
         initMocks(this);
 
-        mailService = new MailService(mailSender);
+        mailService = new MailService(mailSender, emailRepository);
     }
 
     @Test

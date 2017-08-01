@@ -1,5 +1,7 @@
 package com.epam.lstrsum.mail.service;
 
+import com.epam.lstrsum.model.Email;
+import com.epam.lstrsum.persistence.EmailRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +13,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+import javax.mail.Address;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -21,6 +24,8 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Component
 @ConfigurationProperties(prefix = "mail")
@@ -30,11 +35,15 @@ import java.util.regex.Pattern;
 public class MailService {
     private final JavaMailSender mailSender;
 
+    private final String backupDateFormat = "yyyy-MM-dd_HH-mm-ss";
+
     @Setter
     private String fromAddress;
 
     @Setter
     private String backupDir;
+
+    private final EmailRepository emailRepository;
 
     @ServiceActivator(inputChannel = "receiveChannel", poller = @Poller(fixedRate = "200"))
     public void showMessages(MimeMessage message) throws Exception {
@@ -60,10 +69,11 @@ public class MailService {
             log.warn("Unknown mime type!");
         }
 
-        InternetAddress address = (InternetAddress) message.getFrom()[0];
+        //InternetAddress address = (InternetAddress) message.getFrom()[0];
+        String address = getAddressFrom(message.getFrom());
 
         debugLogMessage.append(
-                "\nFrom: " + address.getAddress() +
+                "\nFrom: " + address +
                         " \nSubject: " + message.getSubject() +
                         " \nContent: \n" + content
         );
@@ -71,16 +81,41 @@ public class MailService {
         log.debug(debugLogMessage.toString());
     }
 
-    private void backupEmail(MimeMessage mimeMessage) throws IOException, MessagingException {
-        if (backupDir.isEmpty()) {
-            return;
-        }
+    private String getAddressFrom(Address[] rawAddress) {
+        InternetAddress internetAddress = (InternetAddress) rawAddress[0];
+        return internetAddress.getAddress();
+    }
 
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
+    private void backupEmail(MimeMessage mimeMessage) throws IOException, MessagingException {
+        // save email to file
+        DateTimeFormatter date = DateTimeFormatter.ofPattern(backupDateFormat);
         LocalDateTime now = LocalDateTime.now();
 
-        FileOutputStream output = new FileOutputStream(backupDir + date.format(now) + ".eml");
-        mimeMessage.writeTo(output);
+        String baseFileName = date.format(now) + ".eml";
+        String fullFileName = baseFileName + ".zip";
+
+        FileOutputStream fileOutput = new FileOutputStream(backupDir + fullFileName);
+
+        ZipOutputStream zipOutput = new ZipOutputStream(fileOutput);
+
+        ZipEntry zipEntry = new ZipEntry(baseFileName);
+        zipOutput.putNextEntry(zipEntry);
+
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        mimeMessage.writeTo(byteStream);
+
+        zipOutput.write(byteStream.toByteArray());
+        zipOutput.closeEntry();
+        zipOutput.close();
+
+        String addressFrom = getAddressFrom(mimeMessage.getFrom());
+
+        // save email to db
+        Email email = new Email();
+        email.setFileName(fullFileName);
+        email.setFrom(addressFrom);
+        email.setSubject(mimeMessage.getSubject());
+        emailRepository.insert(email);
     }
 
     private static boolean matchesToRegexp(String input, String regexp) {
