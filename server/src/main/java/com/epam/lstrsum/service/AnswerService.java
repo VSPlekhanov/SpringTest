@@ -15,7 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import static java.util.Objects.isNull;
 
 @Service
 @RequiredArgsConstructor
@@ -44,20 +45,20 @@ public class AnswerService {
     }
 
     private void validateAnswerData(AnswerPostDto answerPostDto, String email) {
-        if (Objects.isNull(answerPostDto)) {
+        if (isNull(answerPostDto)) {
             throw new AnswerValidationException("Answer must be not null!");
         }
-        if (Objects.isNull(email)) {
-            throw new AnswerValidationException("Author must be not null!");
+        if (isNull(email) || email.trim().isEmpty()) {
+            throw new AnswerValidationException("Author must be not null or empty!");
         } else if (!userRepository.findByEmail(email).isPresent()) {
             throw new AnswerValidationException("No such user!");
         }
-        if (Objects.isNull(answerPostDto.getText())) {
-            throw new AnswerValidationException("null fields found in answer " + answerPostDto.toJson());
+        if (isNull(answerPostDto.getText()) || answerPostDto.getText().trim().isEmpty()) {
+            throw new AnswerValidationException("Null or empty fields found in answer " + answerPostDto.toJson());
         }
-        if (Objects.isNull(answerPostDto.getParentId())) {
-            throw new AnswerValidationException("Parent is null " + answerPostDto.getParentId());
-        } else if (Objects.isNull(requestRepository.findOne(answerPostDto.getParentId()))) {
+        if (isNull(answerPostDto.getParentId()) || answerPostDto.getParentId().trim().isEmpty()) {
+            throw new AnswerValidationException("Parent is null or empty" + answerPostDto.getParentId());
+        } else if (isNull(requestRepository.findOne(answerPostDto.getParentId()))) {
             throw new AnswerValidationException("No such request!");
         }
 

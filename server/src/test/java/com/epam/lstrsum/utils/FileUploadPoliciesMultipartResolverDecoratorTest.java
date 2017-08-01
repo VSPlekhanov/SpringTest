@@ -6,9 +6,11 @@ import org.apache.tomcat.util.http.fileupload.FileUploadBase;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockMultipartHttpServletRequest;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -18,7 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class FileUploadPoliciesMultipartResolverDecoratorTest {
@@ -95,5 +98,27 @@ public class FileUploadPoliciesMultipartResolverDecoratorTest {
         return new MultipartException("",
                 new IllegalArgumentException(
                         new FileUploadBase.SizeLimitExceededException("to large", 0, 1)));
+    }
+
+    public FileUploadPoliciesMultipartResolverDecoratorTest() {
+        super();
+    }
+
+    @Test
+    public void resolverShouldCleanupMultipart() {
+        MockMultipartFile multipartFile = new MockMultipartFile("file", "file.doc", MediaType.TEXT_HTML.toString(), new byte[0]);
+        MockMultipartFile anotherMultipartFile = new MockMultipartFile("file2", "file2.doc", MediaType.TEXT_HTML.toString(), new byte[0]);
+
+        MockMultipartHttpServletRequest multipartRequest = new MockMultipartHttpServletRequest();
+        multipartRequest.setContentType(MediaType.MULTIPART_FORM_DATA_VALUE);
+        multipartRequest.setMethod(HttpMethod.POST.name());
+        multipartRequest.addFile(multipartFile);
+        multipartRequest.addFile(anotherMultipartFile);
+
+        doNothing().when(decorated).cleanupMultipart(any(MultipartHttpServletRequest.class));
+
+        resolver.cleanupMultipart(multipartRequest);
+
+        verify(decorated, times(1)).cleanupMultipart(any(MultipartHttpServletRequest.class));
     }
 }
