@@ -57,8 +57,17 @@ public class RequestController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<RequestAllFieldsDto>> search(@RequestParam(value = "query") String query) {
-        List<RequestAllFieldsDto> requestDtoList = requestService.search(query);
+    public ResponseEntity<List<RequestAllFieldsDto>> search(
+            @RequestParam("query") String query,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "size", required = false) Integer size) {
+        List<RequestAllFieldsDto> requestDtoList = requestService.search(query, page, size);
         return ResponseEntity.ok(requestDtoList);
+    }
+    @GetMapping("/getTextSearchResultsCount")
+    public ResponseEntity<Integer> searchCount(@RequestParam("query") String query) {
+        Integer count  = requestService.getTextSearchResultsCount(query);
+
+        return ResponseEntity.ok(count);
     }
 }
