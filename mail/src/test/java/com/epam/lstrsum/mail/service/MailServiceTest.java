@@ -1,6 +1,6 @@
 package com.epam.lstrsum.mail.service;
 
-import com.epam.lstrsum.persistence.EmailRepository;
+import com.epam.lstrsum.mail.persistence.EmailRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -91,7 +91,6 @@ public class MailServiceTest {
 
         verify(mailSender, times(1)).createMimeMessage();
         verify(mailSender, times(1)).send(eq(mimeMessageMock));
-
         verify(mimeMessageMock, times(1)).setFrom(any(InternetAddress.class));
         verify(mimeMessageMock, times(1)).setRecipients(eq(Message.RecipientType.TO), any(InternetAddress[].class));
         verify(mimeMessageMock, times(1)).setSubject(eq(subject));

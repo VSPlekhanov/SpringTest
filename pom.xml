@@ -1,118 +1,142 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.epam.lstrsum</groupId>
     <artifactId>lstrsum-parent</artifactId>
-    <version>0.1</version>
+    <version>0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>lstrsum-parent</name>
     <description>Parent configuration for maven</description>
 
-    <modules>
-        <module>model</module>
-        <module>server</module>
-    </modules>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.8</java.version>
-        <version.junit>4.12</version.junit>
-        <version.spring.boot>1.5.4.RELEASE</version.spring.boot>
-        <version.maven.compiler.plugin>3.6.0</version.maven.compiler.plugin>
-        <version.swagger>2.7.0</version.swagger>
-        <version.fongo>2.1.0</version.fongo>
-        <version.lombok>1.16.18</version.lombok>
-        <spring.version>4.3.9.RELEASE</spring.version>
-        <version.simple.json>1.1.1</version.simple.json>
-        <version.jsr310>2.8.9</version.jsr310>
-        <version.org.reflection>0.9.11</version.org.reflection>
-        <version.com.fasterxml.jackson.core>2.8.9</version.com.fasterxml.jackson.core>
-        <version.commons-fileupload>1.3.3</version.commons-fileupload>
-        <version.jacoco-maven-plugin>0.7.9</version.jacoco-maven-plugin>
-        <version.embedded.mongo>2.0.0</version.embedded.mongo>
-        <version.jsoup>1.9.2</version.jsoup>
-        <version.commons-email>1.3.1</version.commons-email>
-    </properties>
-
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.4.RELEASE</version>
+        <version>1.5.6.RELEASE</version>
     </parent>
 
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${version.junit}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-            <version>${version.spring.boot}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-mongodb</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.fakemongo</groupId>
-            <artifactId>fongo</artifactId>
-            <version>${version.fongo}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${version.lombok}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.googlecode.json-simple</groupId>
-            <artifactId>json-simple</artifactId>
-            <version>${version.simple.json}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>${version.jsr310}</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>${version.commons-fileupload}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>${version.jsoup}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-email</artifactId>
-            <version>${version.commons-email}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-cache</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.ehcache</groupId>
-            <artifactId>ehcache-core</artifactId>
-            <version>2.6.10</version>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>model</module>
+        <module>server</module>
+        <module>mail</module>
+    </modules>
+
+    <properties>
+
+        <!--Project properties-->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
+        <exp.project.version>0.1-SNAPSHOT</exp.project.version>
+
+        <!--Maven-->
+        <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
+        <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
+        <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
+        <jacoco-maven-plugin.version>0.7.9</jacoco-maven-plugin.version>
+        <spring-boot-maven-plugin.version>1.5.6.RELEASE</spring-boot-maven-plugin.version>
+
+        <!--Testing and tools-->
+        <swagger.version>2.7.0</swagger.version>
+        <fongo.version>2.1.0</fongo.version>
+        <assertj-core.version>3.8.0</assertj-core.version>
+
+        <!--Others-->
+        <jsoup.version>1.10.3</jsoup.version>
+        <commons-io.version>2.5</commons-io.version>
+        <commons-email.version>1.4</commons-email.version>
+        <ehcache.version>2.10.4</ehcache.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!--Project modules-->
+            <dependency>
+                <groupId>com.epam.lstrsum</groupId>
+                <artifactId>lstrsum-model</artifactId>
+                <version>0.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.epam.lstrsum</groupId>
+                <artifactId>lstrsum-mail</artifactId>
+                <version>0.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.epam.lstrsum</groupId>
+                <artifactId>lstrsum-server</artifactId>
+                <version>0.1-SNAPSHOT</version>
+            </dependency>
+
+            <!--Testing and tools-->
+            <dependency>
+                <groupId>com.github.fakemongo</groupId>
+                <artifactId>fongo</artifactId>
+                <version>${fongo.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+
+            <!--Others-->
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-email</artifactId>
+                <version>${commons-email.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.ehcache</groupId>
+                <artifactId>ehcache</artifactId>
+                <version>${ehcache.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj-core.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot-maven-plugin.version}</version>
+                    <configuration>
+                        <mainClass>com.epam.lstrsum.Application</mainClass>
+                        <profiles>
+                            <profile>dev</profile>
+                            <profile>unsecured</profile>
+                            <profile>email</profile>
+                        </profiles>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${version.maven.compiler.plugin}</version>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -120,8 +144,26 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>${maven-release-plugin.version}</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>update-versions</goal>
+                        </goals>
+                        <configuration>
+                            <autoVersionSubmodules>true</autoVersionSubmodules>
+                            <developmentVersion>${exp.project.version}</developmentVersion>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.20</version>
+                <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <!-- Sets the VM argument line used when unit tests are run. -->
                     <argLine>${surefireArgLine}</argLine>
@@ -136,7 +178,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${version.jacoco-maven-plugin}</version>
+                <version>${jacoco-maven-plugin.version}</version>
                 <executions>
                     <!--
                         Prepares the property pointing to the JaCoCo runtime agent which

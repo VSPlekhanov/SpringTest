@@ -1,7 +1,7 @@
 package com.epam.lstrsum.mail.service;
 
+import com.epam.lstrsum.mail.persistence.EmailRepository;
 import com.epam.lstrsum.model.Email;
-import com.epam.lstrsum.persistence.EmailRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

@@ -7,8 +7,6 @@ import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.mail.exception.EmailValidationException;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
-import com.epam.lstrsum.service.QuestionService;
-import com.epam.lstrsum.service.UserService;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -31,10 +29,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class EmailParserService {
-
-    private final QuestionService questionService;
-    private final UserService userService;
+public class EmailParser {
 
     public EmailForExperienceApplication getParsedMessage(@NonNull MimeMessage message) throws Exception {
         String title = message.getSubject();
@@ -117,14 +112,12 @@ public class EmailParserService {
             return replier != null & answerText != null;
         }
 
+        // TODO: Should be implemented after AnswerPostDto refactoring
         public Optional<AnswerPostDto> getAnswerPostDto() {
-            final User authorId = userService.getUserByEmail(replier);
-            final Question parent = questionService.findQuestionByTitleAndTextAndAuthorId(subject, requestText, authorId);
-            final AnswerPostDto answerPostDto = new AnswerPostDto(parent.getQuestionId(), answerText);
-            return Optional.of(answerPostDto);
+            throw new UnsupportedOperationException("Not implemented yet");
         }
 
-        public Optional<QuestionPostDto> getRequestPostDto() {
+        public Optional<QuestionPostDto> getQuestionPostDto() {
             final QuestionPostDto requestPostDto = new QuestionPostDto(subject, null, requestText, 0L, receivers);
             return Optional.of(requestPostDto);
         }

@@ -1,10 +1,14 @@
 package com.epam.lstrsum.service;
 
+import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
+import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
+import com.epam.lstrsum.mail.EmailCollection;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.SubscriptionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -53,5 +57,21 @@ public class SubscriptionService {
         emails.add(question.getAuthorId().getEmail());
 
         return emails;
+    }
+
+    @Component
+    public class RequestEmailCollectionAdapter implements EmailCollection<QuestionAllFieldsDto> {
+        @Override
+        public Set<String> getEmails(QuestionAllFieldsDto request) {
+            return new HashSet<>(getEmailsToNotificateAboutNewQuestion(request.getQuestionId()));
+        }
+    }
+
+    @Component
+    public class AnswerEmailCollectionAdapter implements EmailCollection<AnswerAllFieldsDto> {
+        @Override
+        public Set<String> getEmails(AnswerAllFieldsDto answer) {
+            return new HashSet<>(getEmailsToNotificateAboutNewAnswer(answer.getParentId().getQuestionId()));
+        }
     }
 }

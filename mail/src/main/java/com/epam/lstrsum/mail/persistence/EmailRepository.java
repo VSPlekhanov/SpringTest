@@ -1,4 +1,4 @@
-package com.epam.lstrsum.persistence;
+package com.epam.lstrsum.mail.persistence;
 
 import com.epam.lstrsum.model.Email;
 import org.springframework.data.mongodb.repository.MongoRepository;
