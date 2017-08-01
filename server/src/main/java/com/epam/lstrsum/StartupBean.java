@@ -16,8 +16,15 @@ public class StartupBean {
     @Setter
     private String backupDir;
 
+    @Setter
+    private boolean ignoreInvalidSettings = false;
+
     @PostConstruct
     public void init() throws Exception {
+        if (ignoreInvalidSettings) {
+            return;
+        }
+
         File backupDirHandler = new File(backupDir);
 
         if (backupDir.isEmpty()) {

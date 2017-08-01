@@ -41,7 +41,7 @@ public class MailService {
     private String fromAddress;
 
     @Setter
-    private String backupDir;
+    private String backupDir = "";
 
     private final EmailRepository emailRepository;
 
@@ -87,35 +87,39 @@ public class MailService {
     }
 
     private void backupEmail(MimeMessage mimeMessage) throws IOException, MessagingException {
-        // save email to file
+        // generate file name
         DateTimeFormatter date = DateTimeFormatter.ofPattern(backupDateFormat);
         LocalDateTime now = LocalDateTime.now();
 
         String baseFileName = date.format(now) + ".eml";
         String fullFileName = baseFileName + ".zip";
 
-        FileOutputStream fileOutput = new FileOutputStream(backupDir + fullFileName);
-
-        ZipOutputStream zipOutput = new ZipOutputStream(fileOutput);
-
-        ZipEntry zipEntry = new ZipEntry(baseFileName);
-        zipOutput.putNextEntry(zipEntry);
-
-        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-        mimeMessage.writeTo(byteStream);
-
-        zipOutput.write(byteStream.toByteArray());
-        zipOutput.closeEntry();
-        zipOutput.close();
-
+        // save email to db
         String addressFrom = getAddressFrom(mimeMessage.getFrom());
 
-        // save email to db
         Email email = new Email();
         email.setFileName(fullFileName);
         email.setFrom(addressFrom);
         email.setSubject(mimeMessage.getSubject());
+
         emailRepository.insert(email);
+
+        // save email to file
+        if (!backupDir.isEmpty()) {
+            FileOutputStream fileOutput = new FileOutputStream(backupDir + fullFileName);
+
+            ZipOutputStream zipOutput = new ZipOutputStream(fileOutput);
+
+            ZipEntry zipEntry = new ZipEntry(baseFileName);
+            zipOutput.putNextEntry(zipEntry);
+
+            ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+            mimeMessage.writeTo(byteStream);
+
+            zipOutput.write(byteStream.toByteArray());
+            zipOutput.closeEntry();
+            zipOutput.close();
+        }
     }
 
     private static boolean matchesToRegexp(String input, String regexp) {
