@@ -10,11 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public class SubscriptionServiceTest extends SetUpDataBaseCollections {
@@ -132,5 +135,17 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
         MatcherAssert.assertThat(emails, containsInAnyOrder("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                 "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
+    }
+
+    @Test
+    public void getEmailsToNotificateAboutNewAnswerReturnsSetWithEmails() {
+        String requestId = "1u_1r";
+        String user = "Bob_Hoplins@epam.com";
+
+        Set<String> emails = subscriptionService.getEmailsToNotificateAboutNewAnswer(requestId);
+
+        assertNotNull(emails);
+        assertThat(emails.size(), is(5));
+        assertThat(emails, hasItem(user));
     }
 }

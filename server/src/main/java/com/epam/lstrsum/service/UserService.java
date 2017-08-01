@@ -4,10 +4,10 @@ import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +24,6 @@ public class UserService {
     }
 
     public User getUserById(String userId) {
-        return userRepository.findOne(userId);
+        return Optional.ofNullable(userRepository.findOne(userId)).orElseThrow(() -> new NoSuchUserException("No such User in user Collection"));
     }
 }

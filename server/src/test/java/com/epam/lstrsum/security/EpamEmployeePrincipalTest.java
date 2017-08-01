@@ -8,17 +8,15 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 public class EpamEmployeePrincipalTest {
     private static String SOME_EMAIL = "email";
     private static String SOME_UNIQUE_NAME = "unique_name";
     private static String SOME_USER_ID = "user_id";
-
 
 
     @Test
@@ -74,4 +72,16 @@ public class EpamEmployeePrincipalTest {
                 .hasMessageMatching(".*Wrong map format.*");
     }
 
+    @Test
+    public void checkGetNameReturnDisplayName() {
+        Map<String, Object> epamEmployeePrincipalMap = new HashMap<>();
+
+        epamEmployeePrincipalMap.put(EpamEmployeePrincipal.EMAIL, SOME_EMAIL);
+        epamEmployeePrincipalMap.put(EpamEmployeePrincipal.UNIQUE_NAME, SOME_UNIQUE_NAME);
+        epamEmployeePrincipalMap.put(EpamEmployeePrincipal.USER_ID, SOME_USER_ID);
+
+        EpamEmployeePrincipal epamEmployeePrincipal = EpamEmployeePrincipal.ofMap(epamEmployeePrincipalMap);
+
+        assertEquals(epamEmployeePrincipal.getName(), SOME_UNIQUE_NAME);
+    }
 }

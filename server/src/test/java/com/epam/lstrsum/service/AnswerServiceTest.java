@@ -77,6 +77,18 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     }
 
     @Test(expected = AnswerValidationException.class)
+    public void addNewAnswerWithEmptyText() throws IOException {
+        AnswerPostDto postDto = new AnswerPostDto("1u_2r", "     ");
+        answerService.addNewAnswer(postDto, authorEmail);
+    }
+
+    @Test(expected = AnswerValidationException.class)
+    public void addNewAnswerWithNullParentId() throws IOException {
+        AnswerPostDto postDto = new AnswerPostDto(null, "answer text");
+        answerService.addNewAnswer(postDto, authorEmail);
+    }
+
+    @Test(expected = AnswerValidationException.class)
     public void addNewAnswerWithNoExistingUserTest() throws IOException {
         AnswerPostDto postDto = new AnswerPostDto("1u_2r", "answer text");
         answerService.addNewAnswer(postDto, "someone_nonexisting@epam.com");
