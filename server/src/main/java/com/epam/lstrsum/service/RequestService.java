@@ -5,10 +5,12 @@ import com.epam.lstrsum.dto.request.RequestAllFieldsDto;
 import com.epam.lstrsum.dto.request.RequestAppearanceDto;
 import com.epam.lstrsum.dto.request.RequestBaseDto;
 import com.epam.lstrsum.dto.request.RequestPostDto;
+import com.epam.lstrsum.exception.NoSuchRequestException;
 import com.epam.lstrsum.exception.RequestValidationException;
 import com.epam.lstrsum.mail.EmailNotification;
 import com.epam.lstrsum.mail.template.NewRequestNotificationTemplate;
 import com.epam.lstrsum.model.Request;
+import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.RequestRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -141,5 +143,10 @@ public class RequestService {
         }
 
         return result;
+    }
+
+    public Request findRequestByTitleAndTextAndAuthorId(String requestTitle, String requestText, User authorId) {
+        return requestRepository.findRequestByTitleAndTextAndAuthorId(requestTitle, requestText, authorId).
+                orElseThrow(() -> new NoSuchRequestException("No such a Request in request Collection"));
     }
 }
