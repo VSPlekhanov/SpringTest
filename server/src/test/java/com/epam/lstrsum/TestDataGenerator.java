@@ -23,6 +23,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,7 +50,7 @@ public class TestDataGenerator {
                 users.add(authorOfRequest);
             }
 
-            final Request request = buildRequest(i, authorOfRequest, users);
+            final Request request = buildRequest(i, authorOfRequest);
             requests.add(request);
             final Answer answer = buildAnswer(i, request);
             answers.add(answer);
@@ -106,17 +109,15 @@ public class TestDataGenerator {
 
 
     private static Answer buildAnswer(int numberOfAnswer, Request request) {
-        final Answer answer = new Answer();
-        answer.setAnswerId("AnswerId" + numberOfAnswer);
-        answer.setParentId(request);
-        answer.setText("Some interesting answer for some interesting request" + numberOfAnswer);
-        answer.setCreatedAt(Instant.now());
-        final Random rnd = new Random();
-        final int rndId = rnd.nextInt(21);
-        final User authorOfAnswer = request.getAllowedSubs().get(rndId);
-        answer.setAuthorId(authorOfAnswer);
-        answer.setUpVote(rnd.nextInt(15));
-        return answer;
+        int rndId = ThreadLocalRandom.current().nextInt(request.getAllowedSubs().size());
+        return Answer.builder()
+                .answerId("AnswerId" + numberOfAnswer)
+                .parentId(request)
+                .text("Some interesting answer for some interesting request" + numberOfAnswer)
+                .createdAt(Instant.now())
+                .authorId(request.getAllowedSubs().get(rndId))
+                .upVote(ThreadLocalRandom.current().nextInt(15))
+                .build();
     }
 
     private static Subscription buildSubscription(int numberOfSubscription, User user, List<Request> requests) {
@@ -134,26 +135,23 @@ public class TestDataGenerator {
         return subscription;
     }
 
-    private static Request buildRequest(int numberOfRequest, User authorOfRequest, List<User> users) {
-        final Request request = new Request();
-        request.setRequestId("RequestId" + numberOfRequest);
-        request.setTitle("Some important for epam employees" + numberOfRequest);
-        request.setTags(new String[]{"tag1" + numberOfRequest, "tag2" + numberOfRequest, "tag3" + numberOfRequest});
-        request.setText("Some interesting text of request" + numberOfRequest);
-        request.setCreatedAt(Instant.now());
-        request.setDeadLine(Instant.now());
-        request.setAuthorId(authorOfRequest);
-        final List<User> allowedSubs = new ArrayList<>();
-        final Random rnd = new Random();
+    private static Request buildRequest(int numberOfRequest, User authorOfRequest) {
+        final List<User> allowedSubs = IntStream.range(0, 21)
+                .map(i -> ThreadLocalRandom.current().nextInt(1001))
+                .mapToObj(TestDataGenerator::buildAuthorOf)
+                .collect(Collectors.toList());
 
-        for (int i = 0; i < 21; i++) {
-            final int rndId = rnd.nextInt(1001);
-            final User allowedPerson = buildAuthorOf(rndId);
-            allowedSubs.add(allowedPerson);
-        }
-        request.setAllowedSubs(allowedSubs);
-        request.setUpVote(rnd.nextInt(21));
-        return request;
+        return Request.builder()
+                .requestId("RequestId" + numberOfRequest)
+                .title("Some important for epam employees" + numberOfRequest)
+                .tags(new String[]{"tag1" + numberOfRequest, "tag2" + numberOfRequest, "tag3" + numberOfRequest})
+                .text("Some interesting text of request" + numberOfRequest)
+                .createdAt(Instant.now())
+                .deadLine(Instant.now())
+                .authorId(authorOfRequest)
+                .allowedSubs(allowedSubs)
+                .upVote(21)
+                .build();
     }
 
     @AfterClass

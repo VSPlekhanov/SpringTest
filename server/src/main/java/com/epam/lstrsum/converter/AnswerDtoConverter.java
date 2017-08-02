@@ -8,6 +8,7 @@ import com.epam.lstrsum.model.Request;
 import com.epam.lstrsum.service.AnswerService;
 import com.epam.lstrsum.service.RequestService;
 import com.epam.lstrsum.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,17 +17,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AnswerDtoConverter implements BasicModelDtoConverter<Answer, AnswerBaseDto>,
         AllFieldModelDtoConverter<Answer, AnswerAllFieldsDto> {
 
-    @Autowired
-    private UserDtoConverter userConverter;
+    private final UserDtoConverter userConverter;
+    private final UserService userService;
+
     @Autowired
     private RequestDtoConverter requestConverter;
     @Autowired
     private AnswerService answerService;
-    @Autowired
-    private UserService userService;
     @Autowired
     private RequestService requestService;
 
@@ -52,14 +53,13 @@ public class AnswerDtoConverter implements BasicModelDtoConverter<Answer, Answer
     }
 
     public Answer answerPostDtoAndAuthorEmailToAnswer(AnswerPostDto answerPostDto, String email) {
-        Answer newAnswer = new Answer();
-        newAnswer.setUpVote(0);
-        newAnswer.setText(answerPostDto.getText());
-        newAnswer.setCreatedAt(Instant.now());
-        newAnswer.setParentId(requestService.getRequestById(answerPostDto.getParentId()));
-        newAnswer.setAuthorId(userService.getUserByEmail(email));
-        newAnswer.setUpVote(0);
-        return newAnswer;
+        return Answer.builder()
+                .upVote(0)
+                .text(answerPostDto.getText())
+                .createdAt(Instant.now())
+                .parentId(requestService.getRequestById(answerPostDto.getParentId()))
+                .authorId(userService.getUserByEmail(email))
+                .build();
     }
 
 }

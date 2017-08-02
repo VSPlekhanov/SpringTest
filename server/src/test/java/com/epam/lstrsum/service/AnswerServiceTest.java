@@ -46,14 +46,22 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     }
 
     private Answer createAnswer() {
-        return new Answer("answerId", createRequest(),"text",
-                Instant.now(), createUser(),2);
+        return new Answer("answerId", createRequest(), "text",
+                Instant.now(), createUser(), 2);
     }
 
     private Request createRequest() {
-        return new Request("requestId", "title", new String[]{},
-                "text", Instant.now(), Instant.now(),
-                createUser(), Collections.emptyList(), 2);
+        return Request.builder()
+                .requestId("requestId")
+                .title("title")
+                .tags(new String[]{})
+                .text("text")
+                .createdAt(Instant.now())
+                .deadLine(Instant.now())
+                .authorId(createUser())
+                .allowedSubs(Collections.emptyList())
+                .upVote(2)
+                .build();
     }
 
     private User createUser() {
@@ -62,7 +70,7 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     }
 
     private AnswerAllFieldsDto nonNullAnswerAllFieldsDto() {
-        return new AnswerAllFieldsDto(null, null, null, null, null , null);
+        return new AnswerAllFieldsDto(null, null, null, null, null, null);
     }
 
     @Test(expected = AnswerValidationException.class)

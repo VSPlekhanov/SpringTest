@@ -24,10 +24,8 @@ public class AnswerService {
 
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private RequestRepository requestRepository;
-
     @Autowired
     private AnswerDtoConverter answerDtoConverter;
 

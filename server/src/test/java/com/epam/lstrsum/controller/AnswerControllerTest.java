@@ -83,23 +83,23 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
                         0));
         answer = new Answer(
                 "answerId1",
-                new Request(
-                        requestId,
-                        "title",
-                        new String[]{"tag1", "tag2"},
-                        "text",
-                        Instant.now(),
-                        Instant.now(),
-                        new User(
-                                "userId2",
+                Request.builder()
+                        .requestId(requestId)
+                        .title("title")
+                        .tags(new String[]{"tag1", "tag2"})
+                        .text("text")
+                        .createdAt(Instant.now())
+                        .deadLine(Instant.now())
+                        .authorId(new User("userId2",
                                 "user2firstName",
                                 "lastName",
                                 "user2firstName_lastName@epam.com",
                                 new String[]{"allowed"},
                                 Instant.now(),
-                                true),
-                        Collections.EMPTY_LIST,
-                        0),
+                                true))
+                        .allowedSubs(Collections.EMPTY_LIST)
+                        .upVote(0)
+                        .build(),
                 "text",
                 Instant.now(),
                 new User(
