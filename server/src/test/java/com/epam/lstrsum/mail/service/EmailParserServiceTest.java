@@ -1,10 +1,10 @@
 package com.epam.lstrsum.mail.service;
 
-import com.epam.lstrsum.dto.request.RequestPostDto;
+import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.mail.exception.EmailValidationException;
-import com.epam.lstrsum.model.Request;
+import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
-import com.epam.lstrsum.service.RequestService;
+import com.epam.lstrsum.service.QuestionService;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +31,7 @@ public class EmailParserServiceTest {
     @Autowired
     private EmailParserService parserService;
     @Autowired
-    private RequestService requestService;
+    private QuestionService questionService;
 
     @Autowired
     private JavaMailSenderImpl javaMailSender;
@@ -118,13 +118,13 @@ public class EmailParserServiceTest {
         messageHelper.setTo("Stan_Chivs@epam.com");
         final EmailParserService.EmailForExperienceApplication parsedMessage = parserService.getParsedMessage(simpleEmail);
         if (!parsedMessage.isAnswer()){
-            final RequestPostDto requestPostDto = parsedMessage.getRequestPostDto().orElse(null);
-            requestService.addNewRequest(requestPostDto,parsedMessage.getSender());
+            final QuestionPostDto requestPostDto = parsedMessage.getRequestPostDto().orElse(null);
+            questionService.addNewQuestion(requestPostDto,parsedMessage.getSender());
         }
-        final Request createdRequest = requestService.findRequestByTitleAndTextAndAuthorId("Simple request title", "Simple request text", authorOfEmail);
+        final Question createdRequest = questionService.findQuestionByTitleAndTextAndAuthorId("Simple request title", "Simple request text", authorOfEmail);
         assertThat(createdRequest.getTitle(), is("Simple request title"));
         assertThat(createdRequest.getText(), is("Simple request text"));
         mongoTemplate.dropCollection(User.class);
-        mongoTemplate.dropCollection(Request.class);
+        mongoTemplate.dropCollection(Question.class);
     }
 }

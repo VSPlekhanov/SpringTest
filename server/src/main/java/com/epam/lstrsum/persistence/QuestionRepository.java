@@ -21,5 +21,5 @@ public interface QuestionRepository extends MongoRepository<Question, String> {
     @CountQuery("{$text: {$search: ?0}}")
     int getTextSearchResultsCount(String query);
 
-    Optional<Question> findRequestByTitleAndTextAndAuthorId(String subject, String requestText, User authorId);
+    Optional<Question> findQuestionByTitleAndTextAndAuthorId(String subject, String requestText, User authorId);
 }

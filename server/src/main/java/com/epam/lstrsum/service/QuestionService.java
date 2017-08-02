@@ -5,10 +5,12 @@ import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
 import com.epam.lstrsum.dto.question.QuestionBaseDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
+import com.epam.lstrsum.exception.NoSuchRequestException;
 import com.epam.lstrsum.exception.QuestionValidationException;
 import com.epam.lstrsum.mail.EmailNotification;
 import com.epam.lstrsum.mail.template.NewQuestionNotificationTemplate;
 import com.epam.lstrsum.model.Question;
+import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -141,5 +143,10 @@ public class QuestionService {
         }
 
         return result;
+    }
+
+    public Question findQuestionByTitleAndTextAndAuthorId(String requestTitle, String requestText, User authorId) {
+        return questionRepository.findQuestionByTitleAndTextAndAuthorId(requestTitle, requestText, authorId).
+                orElseThrow(() -> new NoSuchRequestException("No such a Request in request Collection"));
     }
 }
