@@ -181,4 +181,13 @@ public class QuestionControllerTest {
         assertThat(actual.getStatusCode(), is(HttpStatus.OK));
         assertThat(actual.getBody(), is(2));
     }
+
+    @Test
+    public void getRelevantTags() {
+        final String keyTag = "j";
+        ResponseEntity<List<String>> actual = controller.getRelevantTags(keyTag);
+
+        verify(questionService, times(1)).getRelevantTags(eq(keyTag));
+        assertThat(actual.getStatusCode(), is(HttpStatus.OK));
+    }
 }

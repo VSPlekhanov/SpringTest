@@ -1,0 +1,21 @@
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="ehcache.xsd"
+         updateCheck="true"
+         monitoring="autodetect"
+         dynamicConfig="true">
+    <!--maxBytesLocalHeap="100M"-->
+    <!--maxBytesLocalOffHeap="10G"-->
+    <!--maxBytesLocalDisk="50G">-->
+
+    <cache name="tagsRating"
+           maxEntriesLocalHeap="5000"
+           maxEntriesLocalDisk="1000"
+           eternal="false"
+           diskSpoolBufferSizeMB="20"
+           timeToIdleSeconds="200"
+           timeToLiveSeconds="500"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="localTempSwap"/>
+    </cache>
+</ehcache>

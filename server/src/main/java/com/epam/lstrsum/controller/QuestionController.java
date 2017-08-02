@@ -64,10 +64,16 @@ public class QuestionController {
         List<QuestionAllFieldsDto> questionDtoList = questionService.search(query, page, size);
         return ResponseEntity.ok(questionDtoList);
     }
+
     @GetMapping("/getTextSearchResultsCount")
     public ResponseEntity<Integer> searchCount(@RequestParam("query") String query) {
         Integer count  = questionService.getTextSearchResultsCount(query);
 
         return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/getRelevantTags")
+    public ResponseEntity<List<String>> getRelevantTags(@RequestParam("key") String key) {
+        return ResponseEntity.ok(questionService.getRelevantTags(key));
     }
 }

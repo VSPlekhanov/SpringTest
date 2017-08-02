@@ -15,6 +15,7 @@ import com.epam.lstrsum.persistence.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -44,6 +45,7 @@ public class QuestionService {
     @Setter
     private int searchMaxPageSize;
 
+    private final TagService tagService;
     private final QuestionDtoConverter questionDtoConverter;
     private final QuestionRepository questionRepository;
 
@@ -91,6 +93,11 @@ public class QuestionService {
         return mapList(questionList, questionDtoConverter::modelToBaseDto);
     }
 
+    public List<String> getRelevantTags(String key){
+        return tagService.getTagsRating().stream().filter(e -> e.startsWith(key)).collect(Collectors.toList());
+    }
+
+    @CacheEvict(value = "tagsRating", allEntries=true)
     @EmailNotification(template = NewQuestionNotificationTemplate.class)
     public QuestionAllFieldsDto addNewQuestion(QuestionPostDto questionPostDto, String email) {
         validateQuestionData(questionPostDto, email);
