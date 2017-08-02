@@ -1,6 +1,6 @@
 package com.epam.lstrsum.mail.template;
 
-import com.epam.lstrsum.dto.request.RequestAllFieldsDto;
+import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.service.SubscriptionService;
 import org.junit.Before;
@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class NewRequestNotificationTemplateTest {
+public class NewQuestionNotificationTemplateTest {
 
     @Mock
     private SubscriptionService subscriptionService;
@@ -32,22 +32,22 @@ public class NewRequestNotificationTemplateTest {
     }
 
     @Test
-    public void requestNotificationTemplateShouldNotTakeNotCorrectEmails() throws Exception {
-        NewRequestNotificationTemplate template = new NewRequestNotificationTemplate(subscriptionService);
+    public void questionNotificationTemplateShouldNotTakeNotCorrectEmails() throws Exception {
+        NewQuestionNotificationTemplate template = new NewQuestionNotificationTemplate(subscriptionService);
 
         UserBaseDto userBaseDto = new UserBaseDto("uid", "Vasya",
                 "Pupkin", "(invalid_mail");
 
         String id = "id";
         List<UserBaseDto> allowedSubs = Collections.singletonList(userBaseDto);
-        RequestAllFieldsDto requestAllFieldsDto = new RequestAllFieldsDto(id, "title", new String[]{"tag"}, Instant.now(),
+        QuestionAllFieldsDto questionAllFieldsDto = new QuestionAllFieldsDto(id, "title", new String[]{"tag"}, Instant.now(),
                 Instant.now(), userBaseDto, 0, allowedSubs, "text");
 
         String validMail = "valid@mail.dom";
-        when(subscriptionService.getEmailsToNotificateAboutNewRequest(id))
+        when(subscriptionService.getEmailsToNotificateAboutNewQuestion(id))
                 .thenReturn(Arrays.asList(allowedSubs.get(0).getEmail(), validMail));
 
-        MimeMessage mimeMessage = template.buildMailMessage(requestAllFieldsDto);
+        MimeMessage mimeMessage = template.buildMailMessage(questionAllFieldsDto);
 
         Address[] recipients = mimeMessage.getRecipients(Message.RecipientType.TO);
 

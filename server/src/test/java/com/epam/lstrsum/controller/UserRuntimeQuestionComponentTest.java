@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class UserRuntimeRequestComponentTest {
+public class UserRuntimeQuestionComponentTest {
 
     @Mock
     private HttpServletRequest httpRequest;

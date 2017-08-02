@@ -24,5 +24,5 @@ public class Subscription {
     private User userId;
     @DBRef
     @Indexed
-    private List<Request> requestIds;
+    private List<Question> questionIds;
 }

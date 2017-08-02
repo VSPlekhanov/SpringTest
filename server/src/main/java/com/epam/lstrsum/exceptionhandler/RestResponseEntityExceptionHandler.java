@@ -1,7 +1,7 @@
 package com.epam.lstrsum.exceptionhandler;
 
 import com.epam.lstrsum.exception.NoSuchUserException;
-import com.epam.lstrsum.exception.RequestValidationException;
+import com.epam.lstrsum.exception.QuestionValidationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,7 @@ import java.util.NoSuchElementException;
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(value = {RequestValidationException.class})
+    @ExceptionHandler(value = {QuestionValidationException.class})
     protected ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
         String bodyOfResponse = "Request is not valid " + ex.getMessage();
         return handleExceptionInternal(ex, bodyOfResponse,

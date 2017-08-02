@@ -1,7 +1,7 @@
 package com.epam.lstrsum;
 
 import com.epam.lstrsum.model.Answer;
-import com.epam.lstrsum.model.Request;
+import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
 import com.mongodb.BasicDBList;
@@ -23,6 +23,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,26 +38,26 @@ public class TestDataGenerator {
     private MongoTemplate mongoTemplate;
 
     private static List<User> users = new ArrayList<>(1000);
-    private static List<Request> requests = new ArrayList<>(1000);
+    private static List<Question> questions = new ArrayList<>(1000);
     private static List<Answer> answers = new ArrayList<>(1000);
     private static List<Subscription> subscriptions = new ArrayList<>(1000);
 
     @BeforeClass
     public static void generateCollectionLists() {
         for (int i = 0; i < 1000; i++) {
-            final User authorOfRequest = buildAuthorOf(i);
-            if (!users.contains(authorOfRequest)) {
-                users.add(authorOfRequest);
+            final User authorOfQuestion = buildAuthorOf(i);
+            if (!users.contains(authorOfQuestion)) {
+                users.add(authorOfQuestion);
             }
 
-            final Request request = buildRequest(i, authorOfRequest, users);
-            requests.add(request);
-            final Answer answer = buildAnswer(i, request);
+            final Question question = buildQuestion(i, authorOfQuestion);
+            questions.add(question);
+            final Answer answer = buildAnswer(i, question);
             answers.add(answer);
         }
         int i = 0;
         for (User u : users) {
-            Subscription subscription = buildSubscription(i, u, requests);
+            Subscription subscription = buildSubscription(i, u, questions);
             subscriptions.add(subscription);
             i++;
         }
@@ -73,13 +76,13 @@ public class TestDataGenerator {
 
     @Ignore
     @Test
-    public void generateRequestCollectionTest() throws IOException {
-        assertThat(requests.size(), is(1000));
+    public void generateQuestionCollectionTest() throws IOException {
+        assertThat(questions.size(), is(1000));
         final DBObject dbObject = new BasicDBList();
-        mongoTemplate.getConverter().write(requests, dbObject);
-        final String dbRequests = dbObject.toString().replace("_class\" : \"" + Request.class.getCanonicalName() + "\" ,", "");
-        final String dbRequests2 = dbRequests.replace(", \"_class\" : \"" + Request.class.getCanonicalName() + "\"", "");
-        Files.write(Paths.get("src/test/resources/data/generated/Requests.json"), dbRequests2.getBytes());
+        mongoTemplate.getConverter().write(questions, dbObject);
+        final String dbQuestions = dbObject.toString().replace("_class\" : \"" + Question.class.getCanonicalName() + "\" ,", "");
+        final String dbQuestion2 = dbQuestions.replace(", \"_class\" : \"" + Question.class.getCanonicalName() + "\"", "");
+        Files.write(Paths.get("src/test/resources/data/generated/Questions.json"), dbQuestion2.getBytes());
     }
 
     @Ignore
@@ -105,61 +108,56 @@ public class TestDataGenerator {
     }
 
 
-    private static Answer buildAnswer(int numberOfAnswer, Request request) {
-        final Answer answer = new Answer();
-        answer.setAnswerId("AnswerId" + numberOfAnswer);
-        answer.setParentId(request);
-        answer.setText("Some interesting answer for some interesting request" + numberOfAnswer);
-        answer.setCreatedAt(Instant.now());
-        final Random rnd = new Random();
-        final int rndId = rnd.nextInt(21);
-        final User authorOfAnswer = request.getAllowedSubs().get(rndId);
-        answer.setAuthorId(authorOfAnswer);
-        answer.setUpVote(rnd.nextInt(15));
-        return answer;
+    private static Answer buildAnswer(int numberOfAnswer, Question question) {
+        int rndId = ThreadLocalRandom.current().nextInt(question.getAllowedSubs().size());
+        return Answer.builder()
+                .answerId("AnswerId" + numberOfAnswer)
+                .parentId(question)
+                .text("Some interesting answer for some interesting question" + numberOfAnswer)
+                .createdAt(Instant.now())
+                .authorId(question.getAllowedSubs().get(rndId))
+                .upVote(ThreadLocalRandom.current().nextInt(15))
+                .build();
     }
 
-    private static Subscription buildSubscription(int numberOfSubscription, User user, List<Request> requests) {
+    private static Subscription buildSubscription(int numberOfSubscription, User user, List<Question> questions) {
         final Subscription subscription = new Subscription();
         subscription.setSubscriptionId("SubscriptionId" + numberOfSubscription);
         subscription.setUserId(user);
-        final List<Request> subRequests = new ArrayList<>();
+        final List<Question> subQuestions = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
-            final Request request = requests.get(new Random().nextInt(1000));
-            if (!subRequests.contains(request)) {
-                subRequests.add(request);
+            final Question question = questions.get(new Random().nextInt(1000));
+            if (!subQuestions.contains(question)) {
+                subQuestions.add(question);
             }
         }
-        subscription.setRequestIds(subRequests);
+        subscription.setQuestionIds(subQuestions);
         return subscription;
     }
 
-    private static Request buildRequest(int numberOfRequest, User authorOfRequest, List<User> users) {
-        final Request request = new Request();
-        request.setRequestId("RequestId" + numberOfRequest);
-        request.setTitle("Some important for epam employees" + numberOfRequest);
-        request.setTags(new String[]{"tag1" + numberOfRequest, "tag2" + numberOfRequest, "tag3" + numberOfRequest});
-        request.setText("Some interesting text of request" + numberOfRequest);
-        request.setCreatedAt(Instant.now());
-        request.setDeadLine(Instant.now());
-        request.setAuthorId(authorOfRequest);
-        final List<User> allowedSubs = new ArrayList<>();
-        final Random rnd = new Random();
+    private static Question buildQuestion(int numberOfQuestion, User authorOfQuestion) {
+        final List<User> allowedSubs = IntStream.range(0, 21)
+                .map(i -> ThreadLocalRandom.current().nextInt(1001))
+                .mapToObj(TestDataGenerator::buildAuthorOf)
+                .collect(Collectors.toList());
 
-        for (int i = 0; i < 21; i++) {
-            final int rndId = rnd.nextInt(1001);
-            final User allowedPerson = buildAuthorOf(rndId);
-            allowedSubs.add(allowedPerson);
-        }
-        request.setAllowedSubs(allowedSubs);
-        request.setUpVote(rnd.nextInt(21));
-        return request;
+        return Question.builder()
+                .questionId("QuestionId" + numberOfQuestion)
+                .title("Some important for epam employees" + numberOfQuestion)
+                .tags(new String[]{"tag1" + numberOfQuestion, "tag2" + numberOfQuestion, "tag3" + numberOfQuestion})
+                .text("Some interesting text of question" + numberOfQuestion)
+                .createdAt(Instant.now())
+                .deadLine(Instant.now())
+                .authorId(authorOfQuestion)
+                .allowedSubs(allowedSubs)
+                .upVote(21)
+                .build();
     }
 
     @AfterClass
     public static void tearDown() {
         users = null;
-        requests = null;
+        questions = null;
         answers = null;
         subscriptions = null;
     }

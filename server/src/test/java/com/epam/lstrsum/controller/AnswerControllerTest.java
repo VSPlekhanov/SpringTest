@@ -3,11 +3,11 @@ package com.epam.lstrsum.controller;
 import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
-import com.epam.lstrsum.dto.request.RequestBaseDto;
+import com.epam.lstrsum.dto.question.QuestionBaseDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.exception.AnswerValidationException;
 import com.epam.lstrsum.model.Answer;
-import com.epam.lstrsum.model.Request;
+import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.service.AnswerService;
 import com.google.common.collect.ImmutableList;
@@ -50,7 +50,7 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
 
     private AnswerController answerController;
 
-    private String requestId = "1u_3r";
+    private String questionId = "1u_3r";
     private AnswerPostDto answerPostDto;
     private AnswerAllFieldsDto answerAllFieldsDto;
     private Answer answer;
@@ -69,8 +69,8 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
                         "Doe",
                         authorEmail),
                 0, "answerId1",
-                new RequestBaseDto(
-                        requestId,
+                new QuestionBaseDto(
+                        questionId,
                         "title",
                         new String[]{"tag1", "tag2"},
                         Instant.now(),
@@ -83,23 +83,23 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
                         0));
         answer = new Answer(
                 "answerId1",
-                new Request(
-                        requestId,
-                        "title",
-                        new String[]{"tag1", "tag2"},
-                        "text",
-                        Instant.now(),
-                        Instant.now(),
-                        new User(
-                                "userId2",
+                Question.builder()
+                        .questionId(questionId)
+                        .title("title")
+                        .tags(new String[]{"tag1", "tag2"})
+                        .text("text")
+                        .createdAt(Instant.now())
+                        .deadLine(Instant.now())
+                        .authorId(new User("userId2",
                                 "user2firstName",
                                 "lastName",
                                 "user2firstName_lastName@epam.com",
                                 new String[]{"allowed"},
                                 Instant.now(),
-                                true),
-                        Collections.EMPTY_LIST,
-                        0),
+                                true))
+                        .allowedSubs(Collections.EMPTY_LIST)
+                        .upVote(0)
+                        .build(),
                 "text",
                 Instant.now(),
                 new User(
@@ -115,7 +115,7 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
 
     @Test
     public void addNewAnswerTest() throws IOException {
-        answerPostDto = new AnswerPostDto(requestId, "text");
+        answerPostDto = new AnswerPostDto(questionId, "text");
         when(answerService.addNewAnswer(answerPostDto, authorEmail)).thenReturn(answerAllFieldsDto);
         when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");
         when(answerService.answerToDto(answer)).thenReturn(answerAllFieldsDto);
@@ -132,7 +132,7 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
 
     @Test(expected = AnswerValidationException.class)
     //TODO Test purposes only
-    public void addNewAnswerNoRequestTest() throws IOException {
+    public void addNewAnswerNoQuestionTest() throws IOException {
         answerPostDto = new AnswerPostDto(null, "text");
         when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");
         when(answerService.addNewAnswer(answerPostDto, authorEmail)).thenThrow(AnswerValidationException.class);
@@ -142,7 +142,7 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
     @Test(expected = AnswerValidationException.class)
     //TODO Test purposes only
     public void addNewAnswerWithNoTextTest() throws IOException {
-        answerPostDto = new AnswerPostDto(requestId, null);
+        answerPostDto = new AnswerPostDto(questionId, null);
         when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");
         when(answerService.addNewAnswer(answerPostDto, authorEmail)).thenThrow(AnswerValidationException.class);
         responseEntity = answerController.addAnswer(answerPostDto);

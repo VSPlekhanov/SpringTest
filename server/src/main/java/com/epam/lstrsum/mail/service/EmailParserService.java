@@ -3,22 +3,18 @@ package com.epam.lstrsum.mail.service;
 
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.dto.attachment.AttachmentAllFieldsDto;
-import com.epam.lstrsum.dto.request.RequestPostDto;
+import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.mail.exception.EmailValidationException;
-import com.epam.lstrsum.model.Request;
+import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
-import com.epam.lstrsum.service.RequestService;
+import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.UserService;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NonNull;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
 import org.bson.types.ObjectId;
 import org.jsoup.Jsoup;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.activation.DataSource;
@@ -34,16 +30,11 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class EmailParserService {
 
-    private final RequestService requestService;
+    private final QuestionService questionService;
     private final UserService userService;
-
-    @Autowired
-    public EmailParserService(RequestService requestService, UserService userService) {
-        this.requestService = requestService;
-        this.userService = userService;
-    }
 
     public EmailForExperienceApplication getParsedMessage(@NonNull MimeMessage message) throws Exception {
         String title = message.getSubject();
@@ -128,13 +119,13 @@ public class EmailParserService {
 
         public Optional<AnswerPostDto> getAnswerPostDto() {
             final User authorId = userService.getUserByEmail(replier);
-            final Request parent = requestService.findRequestByTitleAndTextAndAuthorId(subject, requestText, authorId);
-            final AnswerPostDto answerPostDto = new AnswerPostDto(parent.getRequestId(), answerText);
+            final Question parent = questionService.findQuestionByTitleAndTextAndAuthorId(subject, requestText, authorId);
+            final AnswerPostDto answerPostDto = new AnswerPostDto(parent.getQuestionId(), answerText);
             return Optional.of(answerPostDto);
         }
 
-        public Optional<RequestPostDto> getRequestPostDto() {
-            final RequestPostDto requestPostDto = new RequestPostDto(subject, null, requestText, 0L, receivers);
+        public Optional<QuestionPostDto> getRequestPostDto() {
+            final QuestionPostDto requestPostDto = new QuestionPostDto(subject, null, requestText, 0L, receivers);
             return Optional.of(requestPostDto);
         }
 

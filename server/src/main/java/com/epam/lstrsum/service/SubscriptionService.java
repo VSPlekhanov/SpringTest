@@ -1,6 +1,6 @@
 package com.epam.lstrsum.service;
 
-import com.epam.lstrsum.model.Request;
+import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.SubscriptionRepository;
@@ -17,40 +17,40 @@ import java.util.stream.Collectors;
 public class SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
-    private final RequestService requestService;
+    private final QuestionService questionService;
 
     public List<Subscription> findAll() {
         return subscriptionRepository.findAll();
     }
 
-    public List<Subscription> findAllSubscriptionsEntitiesToRequestWithThisId(String requestId) {
-        return subscriptionRepository.findAllByRequestIdsContains(requestId);
+    public List<Subscription> findAllSubscriptionsEntitiesToQuestionWithThisId(String questionId) {
+        return subscriptionRepository.findAllByQuestionIdsContains(questionId);
     }
 
-    public List<String> getEmailsToNotificateAboutNewRequest(String requestId) {
-        Request request = requestService.getRequestById(requestId);
+    public List<String> getEmailsToNotificateAboutNewQuestion(String questionId) {
+        Question question = questionService.getQuestionById(questionId);
 
-        return request.getAllowedSubs().stream().map(User::getEmail).collect(Collectors.toList());
+        return question.getAllowedSubs().stream().map(User::getEmail).collect(Collectors.toList());
     }
 
-    public Set<String> getEmailsToNotificateAboutNewAnswer(String requestId) {
+    public Set<String> getEmailsToNotificateAboutNewAnswer(String questionId) {
         Set<String> emailsWithNoDups = new HashSet<>();
-        emailsWithNoDups.addAll(getEmailsOfAuthorAndAllowedSubsOfRequest(requestId));
-        emailsWithNoDups.addAll(getEmailsOfSubscribersOfRequest(requestId));
+        emailsWithNoDups.addAll(getEmailsOfAuthorAndAllowedSubsOfQuestion(questionId));
+        emailsWithNoDups.addAll(getEmailsOfSubscribersOfQuestion(questionId));
 
         return emailsWithNoDups;
     }
 
-    List<String> getEmailsOfSubscribersOfRequest(String requestId) {
-        return subscriptionRepository.findAllByRequestIdsContains(requestId).stream()
+    List<String> getEmailsOfSubscribersOfQuestion(String questionId) {
+        return subscriptionRepository.findAllByQuestionIdsContains(questionId).stream()
                 .map(s -> s.getUserId().getEmail()).collect(Collectors.toList());
     }
 
-    List<String> getEmailsOfAuthorAndAllowedSubsOfRequest(String requestId) {
-        Request request = requestService.getRequestById(requestId);
+    List<String> getEmailsOfAuthorAndAllowedSubsOfQuestion(String questionId) {
+        Question question = questionService.getQuestionById(questionId);
 
-        List<String> emails = request.getAllowedSubs().stream().map(User::getEmail).collect(Collectors.toList());
-        emails.add(request.getAuthorId().getEmail());
+        List<String> emails = question.getAllowedSubs().stream().map(User::getEmail).collect(Collectors.toList());
+        emails.add(question.getAuthorId().getEmail());
 
         return emails;
     }

@@ -1,7 +1,7 @@
 package com.epam.lstrsum;
 
 import com.epam.lstrsum.model.Answer;
-import com.epam.lstrsum.model.Request;
+import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
 import org.bson.Document;
@@ -36,8 +36,8 @@ public abstract class SetUpDataBaseCollections {
         loadJsonResourcesAndFillDBCollectionWithThem("src/test/resources/data/userLoad.json",
                 User.USER_COLLECTION_NAME);
 
-        loadJsonResourcesAndFillDBCollectionWithThem("src/test/resources/data/requestLoad.json",
-                Request.REQUEST_COLLECTION_NAME);
+        loadJsonResourcesAndFillDBCollectionWithThem("src/test/resources/data/questionLoad.json",
+                Question.QUESTION_COLLECTION_NAME);
 
         loadJsonResourcesAndFillDBCollectionWithThem("src/test/resources/data/answerLoad.json",
                 Answer.ANSWER_COLLECTION_NAME);
@@ -48,7 +48,7 @@ public abstract class SetUpDataBaseCollections {
 
     @After
     public void tearDown() throws Exception {
-        List<Class> collections = Arrays.asList(User.class, Request.class, Answer.class, Subscription.class);
+        List<Class> collections = Arrays.asList(User.class, Question.class, Answer.class, Subscription.class);
         collections.forEach(c -> mongoTemplate.dropCollection(c.getName()));
     }
 

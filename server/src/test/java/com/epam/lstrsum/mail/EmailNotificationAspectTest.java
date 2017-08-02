@@ -1,11 +1,11 @@
 package com.epam.lstrsum.mail;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
-import com.epam.lstrsum.dto.request.RequestAllFieldsDto;
-import com.epam.lstrsum.dto.request.RequestPostDto;
+import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
+import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.mail.service.MailService;
-import com.epam.lstrsum.mail.template.NewRequestNotificationTemplate;
-import com.epam.lstrsum.service.RequestService;
+import com.epam.lstrsum.mail.template.NewQuestionNotificationTemplate;
+import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.SubscriptionService;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.Test;
@@ -29,10 +29,10 @@ import static org.mockito.Mockito.*;
 public class EmailNotificationAspectTest extends SetUpDataBaseCollections {
 
     @Autowired
-    private NewRequestNotificationTemplate template;
+    private NewQuestionNotificationTemplate template;
 
     @Autowired
-    private RequestService requestService;
+    private QuestionService questionService;
 
     @Autowired
     private SubscriptionService subscriptionService;
@@ -46,12 +46,12 @@ public class EmailNotificationAspectTest extends SetUpDataBaseCollections {
     @Test
     public void whenNewRequestAddedMailWithExpectedSubjectShouldBeSent() throws Exception {
         String authorEmail = "John_Doe@epam.com";
-        RequestPostDto postDto = new RequestPostDto("this the end", new String[]{"1", "2", "3", "go"},
+        QuestionPostDto postDto = new QuestionPostDto("this the end", new String[]{"1", "2", "3", "go"},
                 "just some text", 11223344L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
 
-        RequestAllFieldsDto savedDto = requestService.addNewRequest(postDto, authorEmail);
+        QuestionAllFieldsDto savedDto = questionService.addNewQuestion(postDto, authorEmail);
 
         MimeMessage expected = template.buildMailMessage(savedDto);
 
@@ -65,16 +65,16 @@ public class EmailNotificationAspectTest extends SetUpDataBaseCollections {
     @Test
     public void whenNewRequestAddedNotificationShouldBeSentToCorrectMailingList() throws Exception {
         String authorEmail = "John_Doe@epam.com";
-        RequestPostDto postDto = new RequestPostDto("this the end", new String[]{"1", "2", "3", "go"},
+        QuestionPostDto postDto = new QuestionPostDto("this the end", new String[]{"1", "2", "3", "go"},
                 "just some text", 11223344L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
 
-        RequestAllFieldsDto savedDto = requestService.addNewRequest(postDto, authorEmail);
+        QuestionAllFieldsDto savedDto = questionService.addNewQuestion(postDto, authorEmail);
 
         MimeMessage expected = template.buildMailMessage(savedDto);
 
-        List<String> expectedEmails = subscriptionService.getEmailsToNotificateAboutNewRequest(savedDto.getRequestId());
+        List<String> expectedEmails = subscriptionService.getEmailsToNotificateAboutNewQuestion(savedDto.getQuestionId());
 
         doAnswer((i) -> {
             MimeMessage actual = (MimeMessage) i.getArguments()[0];
@@ -88,7 +88,7 @@ public class EmailNotificationAspectTest extends SetUpDataBaseCollections {
     @Test
     public void whenRequestServiceThrowExceptionNotificationShouldNotBeSent() throws Exception {
         try {
-            requestService.addNewRequest(null, "");
+            questionService.addNewQuestion(null, "");
         } catch (Exception e) {
             verify(mailService, never()).sendMessage(any());
         }
