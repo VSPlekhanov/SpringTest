@@ -1,4 +1,4 @@
-package com.epam.lstrsum.dto.request;
+package com.epam.lstrsum.dto.question;
 
 
 import com.epam.lstrsum.dto.user.UserBaseDto;
@@ -10,8 +10,8 @@ import java.util.Arrays;
 
 @AllArgsConstructor
 @Getter
-public class RequestBaseDto {
-    private String requestId;
+public class QuestionBaseDto {
+    private String questionId;
     private String title;
     private String[] tags;
     private Instant createdAt;
@@ -25,9 +25,9 @@ public class RequestBaseDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        RequestBaseDto that = (RequestBaseDto) o;
+        QuestionBaseDto that = (QuestionBaseDto) o;
 
-        if (requestId != null ? !requestId.equals(that.requestId) : that.requestId != null) return false;
+        if (questionId != null ? !questionId.equals(that.questionId) : that.questionId != null) return false;
         if (title != null ? !title.equals(that.title) : that.title != null) return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
         if (!Arrays.equals(tags, that.tags)) return false;
@@ -39,7 +39,7 @@ public class RequestBaseDto {
 
     @Override
     public int hashCode() {
-        int result = requestId != null ? requestId.hashCode() : 0;
+        int result = questionId != null ? questionId.hashCode() : 0;
         result = 31 * result + (title != null ? title.hashCode() : 0);
         result = 31 * result + Arrays.hashCode(tags);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);

@@ -21,7 +21,7 @@ public class SubscriptionDtoConverterTest extends SetUpDataBaseCollections {
     private UserDtoConverter userConverter;
 
     @Autowired
-    private RequestDtoConverter requestConverter;
+    private QuestionDtoConverter questionDtoConverter;
 
     @Test
     public void ConvertModelToAllFieldsDtoReturnsExcpectedValue() throws Exception {
@@ -31,8 +31,8 @@ public class SubscriptionDtoConverterTest extends SetUpDataBaseCollections {
         assertThat(subscriptionConverter.modelToAllFieldsDto(subscription))
                 .hasFieldOrPropertyWithValue("subscriptionId", subscription.getSubscriptionId())
                 .hasFieldOrPropertyWithValue("userId", userConverter.modelToBaseDto(subscription.getUserId()))
-                .hasFieldOrPropertyWithValue("requestIds", subscription.getRequestIds().stream()
-                        .map(s -> requestConverter.modelToBaseDto(s))
+                .hasFieldOrPropertyWithValue("questionIds", subscription.getQuestionIds().stream()
+                        .map(s -> questionDtoConverter.modelToBaseDto(s))
                         .collect(Collectors.toList()));
     }
 }

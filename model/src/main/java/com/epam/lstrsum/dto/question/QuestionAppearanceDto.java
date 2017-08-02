@@ -1,4 +1,4 @@
-package com.epam.lstrsum.dto.request;
+package com.epam.lstrsum.dto.question;
 
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
@@ -9,13 +9,13 @@ import java.util.List;
 
 
 @Getter
-public class RequestAppearanceDto extends RequestBaseDto {
+public class QuestionAppearanceDto extends QuestionBaseDto {
     private String text;
     private List<AnswerBaseDto> answers;
 
-    public RequestAppearanceDto(String requestId, String title, String[] tags, Instant createdAt, Instant deadLine,
-                                UserBaseDto authorId, Integer upVote, String text, List<AnswerBaseDto> answers) {
-        super(requestId, title, tags, createdAt, deadLine, authorId, upVote);
+    public QuestionAppearanceDto(String questionId, String title, String[] tags, Instant createdAt, Instant deadLine,
+                                 UserBaseDto authorId, Integer upVote, String text, List<AnswerBaseDto> answers) {
+        super(questionId, title, tags, createdAt, deadLine, authorId, upVote);
         this.text = text;
         this.answers = answers;
     }
@@ -26,7 +26,7 @@ public class RequestAppearanceDto extends RequestBaseDto {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
 
-        RequestAppearanceDto that = (RequestAppearanceDto) o;
+        QuestionAppearanceDto that = (QuestionAppearanceDto) o;
 
         if (text != null ? !text.equals(that.text) : that.text != null) return false;
         return answers != null ? answers.equals(that.answers) : that.answers == null;

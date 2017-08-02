@@ -1,7 +1,7 @@
 package com.epam.lstrsum;
 
 import com.epam.lstrsum.model.Answer;
-import com.epam.lstrsum.model.Request;
+import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
 import com.mongodb.BasicDBList;
@@ -38,26 +38,26 @@ public class TestDataGenerator {
     private MongoTemplate mongoTemplate;
 
     private static List<User> users = new ArrayList<>(1000);
-    private static List<Request> requests = new ArrayList<>(1000);
+    private static List<Question> questions = new ArrayList<>(1000);
     private static List<Answer> answers = new ArrayList<>(1000);
     private static List<Subscription> subscriptions = new ArrayList<>(1000);
 
     @BeforeClass
     public static void generateCollectionLists() {
         for (int i = 0; i < 1000; i++) {
-            final User authorOfRequest = buildAuthorOf(i);
-            if (!users.contains(authorOfRequest)) {
-                users.add(authorOfRequest);
+            final User authorOfQuestion = buildAuthorOf(i);
+            if (!users.contains(authorOfQuestion)) {
+                users.add(authorOfQuestion);
             }
 
-            final Request request = buildRequest(i, authorOfRequest);
-            requests.add(request);
-            final Answer answer = buildAnswer(i, request);
+            final Question question = buildQuestion(i, authorOfQuestion);
+            questions.add(question);
+            final Answer answer = buildAnswer(i, question);
             answers.add(answer);
         }
         int i = 0;
         for (User u : users) {
-            Subscription subscription = buildSubscription(i, u, requests);
+            Subscription subscription = buildSubscription(i, u, questions);
             subscriptions.add(subscription);
             i++;
         }
@@ -76,13 +76,13 @@ public class TestDataGenerator {
 
     @Ignore
     @Test
-    public void generateRequestCollectionTest() throws IOException {
-        assertThat(requests.size(), is(1000));
+    public void generateQuestionCollectionTest() throws IOException {
+        assertThat(questions.size(), is(1000));
         final DBObject dbObject = new BasicDBList();
-        mongoTemplate.getConverter().write(requests, dbObject);
-        final String dbRequests = dbObject.toString().replace("_class\" : \"" + Request.class.getCanonicalName() + "\" ,", "");
-        final String dbRequests2 = dbRequests.replace(", \"_class\" : \"" + Request.class.getCanonicalName() + "\"", "");
-        Files.write(Paths.get("src/test/resources/data/generated/Requests.json"), dbRequests2.getBytes());
+        mongoTemplate.getConverter().write(questions, dbObject);
+        final String dbQuestions = dbObject.toString().replace("_class\" : \"" + Question.class.getCanonicalName() + "\" ,", "");
+        final String dbQuestion2 = dbQuestions.replace(", \"_class\" : \"" + Question.class.getCanonicalName() + "\"", "");
+        Files.write(Paths.get("src/test/resources/data/generated/Questions.json"), dbQuestion2.getBytes());
     }
 
     @Ignore
@@ -108,47 +108,47 @@ public class TestDataGenerator {
     }
 
 
-    private static Answer buildAnswer(int numberOfAnswer, Request request) {
-        int rndId = ThreadLocalRandom.current().nextInt(request.getAllowedSubs().size());
+    private static Answer buildAnswer(int numberOfAnswer, Question question) {
+        int rndId = ThreadLocalRandom.current().nextInt(question.getAllowedSubs().size());
         return Answer.builder()
                 .answerId("AnswerId" + numberOfAnswer)
-                .parentId(request)
-                .text("Some interesting answer for some interesting request" + numberOfAnswer)
+                .parentId(question)
+                .text("Some interesting answer for some interesting question" + numberOfAnswer)
                 .createdAt(Instant.now())
-                .authorId(request.getAllowedSubs().get(rndId))
+                .authorId(question.getAllowedSubs().get(rndId))
                 .upVote(ThreadLocalRandom.current().nextInt(15))
                 .build();
     }
 
-    private static Subscription buildSubscription(int numberOfSubscription, User user, List<Request> requests) {
+    private static Subscription buildSubscription(int numberOfSubscription, User user, List<Question> questions) {
         final Subscription subscription = new Subscription();
         subscription.setSubscriptionId("SubscriptionId" + numberOfSubscription);
         subscription.setUserId(user);
-        final List<Request> subRequests = new ArrayList<>();
+        final List<Question> subQuestions = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
-            final Request request = requests.get(new Random().nextInt(1000));
-            if (!subRequests.contains(request)) {
-                subRequests.add(request);
+            final Question question = questions.get(new Random().nextInt(1000));
+            if (!subQuestions.contains(question)) {
+                subQuestions.add(question);
             }
         }
-        subscription.setRequestIds(subRequests);
+        subscription.setQuestionIds(subQuestions);
         return subscription;
     }
 
-    private static Request buildRequest(int numberOfRequest, User authorOfRequest) {
+    private static Question buildQuestion(int numberOfQuestion, User authorOfQuestion) {
         final List<User> allowedSubs = IntStream.range(0, 21)
                 .map(i -> ThreadLocalRandom.current().nextInt(1001))
                 .mapToObj(TestDataGenerator::buildAuthorOf)
                 .collect(Collectors.toList());
 
-        return Request.builder()
-                .requestId("RequestId" + numberOfRequest)
-                .title("Some important for epam employees" + numberOfRequest)
-                .tags(new String[]{"tag1" + numberOfRequest, "tag2" + numberOfRequest, "tag3" + numberOfRequest})
-                .text("Some interesting text of request" + numberOfRequest)
+        return Question.builder()
+                .questionId("QuestionId" + numberOfQuestion)
+                .title("Some important for epam employees" + numberOfQuestion)
+                .tags(new String[]{"tag1" + numberOfQuestion, "tag2" + numberOfQuestion, "tag3" + numberOfQuestion})
+                .text("Some interesting text of question" + numberOfQuestion)
                 .createdAt(Instant.now())
                 .deadLine(Instant.now())
-                .authorId(authorOfRequest)
+                .authorId(authorOfQuestion)
                 .allowedSubs(allowedSubs)
                 .upVote(21)
                 .build();
@@ -157,7 +157,7 @@ public class TestDataGenerator {
     @AfterClass
     public static void tearDown() {
         users = null;
-        requests = null;
+        questions = null;
         answers = null;
         subscriptions = null;
     }

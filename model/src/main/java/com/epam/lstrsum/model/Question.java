@@ -14,12 +14,12 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Builder
-@Document(collection = Request.REQUEST_COLLECTION_NAME)
-public class Request {
-    public final static String REQUEST_COLLECTION_NAME = "request";
+@Document(collection = Question.QUESTION_COLLECTION_NAME)
+public class Question {
+    public final static String QUESTION_COLLECTION_NAME = "question";
 
     @Id
-    private String requestId;
+    private String questionId;
 
     private String title;
     private String[] tags;

@@ -23,7 +23,7 @@ public class Answer {
     private String answerId;
     @DBRef
     @Indexed
-    private Request parentId;
+    private Question parentId;
     private String text;
     private Instant createdAt;
 

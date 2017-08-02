@@ -6,7 +6,7 @@ import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.exception.AnswerValidationException;
 import com.epam.lstrsum.model.Answer;
-import com.epam.lstrsum.model.Request;
+import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     private final String authorEmail = "Bob_Hoplins@epam.com";
 
     @Test
-    public void addNewAnswerWithExistingRequestTest() throws Exception {
+    public void addNewAnswerWithExistingQuestionTest() throws Exception {
         AnswerPostDto postDto = new AnswerPostDto("1u_2r", "answer text");
 
         AnswerAllFieldsDto answer = answerService.addNewAnswer(postDto, authorEmail);
@@ -46,13 +46,13 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     }
 
     private Answer createAnswer() {
-        return new Answer("answerId", createRequest(), "text",
+        return new Answer("answerId", createQuestion(), "text",
                 Instant.now(), createUser(), 2);
     }
 
-    private Request createRequest() {
-        return Request.builder()
-                .requestId("requestId")
+    private Question createQuestion() {
+        return Question.builder()
+                .questionId("questionId")
                 .title("title")
                 .tags(new String[]{})
                 .text("text")
@@ -103,7 +103,7 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     }
 
     @Test(expected = AnswerValidationException.class)
-    public void addNewAnswerWithNoExistingRequestIDTest() throws IOException {
+    public void addNewAnswerWithNoExistingQuestionIDTest() throws IOException {
         AnswerPostDto postDto = new AnswerPostDto("1s_2r", "answer text");
         answerService.addNewAnswer(postDto, "John_Doe@epam.com");
     }

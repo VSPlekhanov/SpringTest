@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface SubscriptionRepository extends MongoRepository<Subscription, String> {
     @Query(fields = "{userId:1}")
-    List<Subscription> findAllByRequestIdsContains(String requestId);
+    List<Subscription> findAllByQuestionIdsContains(String questionId);
 }

@@ -1,4 +1,4 @@
-package com.epam.lstrsum.dto.request;
+package com.epam.lstrsum.dto.question;
 
 import com.epam.lstrsum.exception.ConvertToJsonException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @Slf4j
-public class RequestPostDto implements Serializable {
+public class QuestionPostDto implements Serializable {
     private String title;
     private String[] tags;
     private String text;
@@ -26,7 +26,7 @@ public class RequestPostDto implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        RequestPostDto that = (RequestPostDto) o;
+        QuestionPostDto that = (QuestionPostDto) o;
 
         if (title != null ? !title.equals(that.title) : that.title != null) return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
@@ -51,8 +51,8 @@ public class RequestPostDto implements Serializable {
         try {
             return objectMapper.writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            log.error("RequestPostDto toJson() exception, probably during request validation" + e.getMessage());
-            throw new ConvertToJsonException("Can't convert request to JSON!");
+            log.error("QuestionPostDto toJson() exception, probably during question validation" + e.getMessage());
+            throw new ConvertToJsonException("Can't convert question to JSON!");
         }
     }
 }

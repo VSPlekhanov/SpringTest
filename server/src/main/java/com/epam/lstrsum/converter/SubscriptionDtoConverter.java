@@ -11,12 +11,12 @@ public class SubscriptionDtoConverter implements AllFieldModelDtoConverter<Subsc
     @Autowired
     private UserDtoConverter userConverter;
     @Autowired
-    private RequestDtoConverter requestConverter;
+    private QuestionDtoConverter questionDtoConverter;
 
     @Override
     public SubscriptionAllFieldsDto modelToAllFieldsDto(Subscription subscription) {
         return new SubscriptionAllFieldsDto(subscription.getSubscriptionId(),
                 userConverter.modelToBaseDto(subscription.getUserId()),
-                requestConverter.subscriptionsToListOfRequestBaseDto(subscription.getRequestIds()));
+                questionDtoConverter.subscriptionsToListOfQuestionBaseDto(subscription.getQuestionIds()));
     }
 }

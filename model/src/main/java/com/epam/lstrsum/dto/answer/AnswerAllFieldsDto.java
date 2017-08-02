@@ -1,6 +1,6 @@
 package com.epam.lstrsum.dto.answer;
 
-import com.epam.lstrsum.dto.request.RequestBaseDto;
+import com.epam.lstrsum.dto.question.QuestionBaseDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import lombok.Getter;
 
@@ -9,10 +9,10 @@ import java.time.Instant;
 @Getter
 public class AnswerAllFieldsDto extends AnswerBaseDto {
     private String answerId;
-    private RequestBaseDto parentId;
+    private QuestionBaseDto parentId;
 
     public AnswerAllFieldsDto(String text, Instant createdAt, UserBaseDto authorId, Integer upVote, String answerId,
-                              RequestBaseDto parentId) {
+                              QuestionBaseDto parentId) {
         super(text, createdAt, authorId, upVote);
         this.answerId = answerId;
         this.parentId = parentId;

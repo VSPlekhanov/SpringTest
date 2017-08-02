@@ -1,4 +1,4 @@
-package com.epam.lstrsum.dto.request;
+package com.epam.lstrsum.dto.question;
 
 
 import com.epam.lstrsum.dto.user.UserBaseDto;
@@ -8,13 +8,13 @@ import java.time.Instant;
 import java.util.List;
 
 @Getter
-public class RequestAllFieldsDto extends RequestBaseDto {
+public class QuestionAllFieldsDto extends QuestionBaseDto {
     private List<UserBaseDto> allowedSubs;
     private String text;
 
-    public RequestAllFieldsDto(String requestId, String title, String[] tags, Instant createdAt, Instant deadLine,
-                               UserBaseDto author, Integer upVote, List<UserBaseDto> allowedSubs, String text) {
-        super(requestId, title, tags, createdAt, deadLine, author, upVote);
+    public QuestionAllFieldsDto(String questionId, String title, String[] tags, Instant createdAt, Instant deadLine,
+                                UserBaseDto author, Integer upVote, List<UserBaseDto> allowedSubs, String text) {
+        super(questionId, title, tags, createdAt, deadLine, author, upVote);
         this.allowedSubs = allowedSubs;
         this.text = text;
     }
@@ -25,7 +25,7 @@ public class RequestAllFieldsDto extends RequestBaseDto {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
 
-        RequestAllFieldsDto that = (RequestAllFieldsDto) o;
+        QuestionAllFieldsDto that = (QuestionAllFieldsDto) o;
 
         if (allowedSubs != null ? !allowedSubs.equals(that.allowedSubs) : that.allowedSubs != null) return false;
         return text != null ? text.equals(that.text) : that.text == null;

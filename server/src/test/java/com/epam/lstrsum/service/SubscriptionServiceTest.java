@@ -1,7 +1,7 @@
 package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
-import com.epam.lstrsum.dto.request.RequestPostDto;
+import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.model.Subscription;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
@@ -25,67 +25,67 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
     @Autowired
     private SubscriptionService subscriptionService;
     @Autowired
-    private RequestService requestService;
+    private QuestionService questionService;
 
     @Test
-    public void subscriptionSearchByRequestIdReturnsListOfMatchedSubscriptions() throws Exception {
-        String requestId = "1u_1r";
+    public void subscriptionSearchByQuestionIdReturnsListOfMatchedSubscriptions() throws Exception {
+        String questionId = "1u_1r";
 
-        List<Subscription> subscriptions = subscriptionService.findAllSubscriptionsEntitiesToRequestWithThisId(requestId);
+        List<Subscription> subscriptions = subscriptionService.findAllSubscriptionsEntitiesToQuestionWithThisId(questionId);
         List<String> subscriptionIds = subscriptions.stream().map(Subscription::getSubscriptionId).collect(Collectors.toList());
 
         assertThat(subscriptionIds, containsInAnyOrder("2u_1s", "3u_1s"));
     }
 
     @Test
-    public void subscriptionSearchByRequestIdReturnsEmptyListIfThisRequestHasNoSubscribers() throws Exception {
-        String requestId = "requestWithNoSubscribersId";
+    public void subscriptionSearchByQuestionIdReturnsEmptyListIfThisQuestionHasNoSubscribers() throws Exception {
+        String questionId = "questionWithNoSubscribersId";
 
-        List<Subscription> emptyList = subscriptionService.findAllSubscriptionsEntitiesToRequestWithThisId(requestId);
+        List<Subscription> emptyList = subscriptionService.findAllSubscriptionsEntitiesToQuestionWithThisId(questionId);
 
         assertThat(emptyList.isEmpty(), is(true));
     }
 
     @Test
-    public void subscriptionSearchQueryReturnsOnlyIdAndUserIdFieldsAndDoesNotReturnListOfRequestIds() {
-        String requsetId = "1u_1r";
+    public void subscriptionSearchQueryReturnsOnlyIdAndUserIdFieldsAndDoesNotReturnListOfQuestionIds() {
+        String questionId = "1u_1r";
 
-        List<Subscription> subscriptions = subscriptionService.findAllSubscriptionsEntitiesToRequestWithThisId(requsetId);
+        List<Subscription> subscriptions = subscriptionService.findAllSubscriptionsEntitiesToQuestionWithThisId(questionId);
 
         subscriptions.forEach(s -> assertThat(s.getSubscriptionId() == null, is(false)));
         subscriptions.forEach(s -> assertThat(s.getUserId() == null, is(false)));
 
-        subscriptions.forEach(s -> assertThat(s.getRequestIds() == null, is(true)));
+        subscriptions.forEach(s -> assertThat(s.getQuestionIds() == null, is(true)));
     }
 
     @Test
-    public void getEmailsForNotificationReturnsListOfEmailsWhereToSendNotificationAboutNewAnswerToThisRequestIfItHasSubscribedUsers() throws Exception {
-        String requestId = "1u_1r";
+    public void getEmailsForNotificationReturnsListOfEmailsWhereToSendNotificationAboutNewAnswerToThisQuestionIfItHasSubscribedUsers() throws Exception {
+        String questionId = "1u_1r";
 
-        List<String> emails = subscriptionService.getEmailsOfSubscribersOfRequest(requestId);
+        List<String> emails = subscriptionService.getEmailsOfSubscribersOfQuestion(questionId);
 
         assertThat(emails, containsInAnyOrder("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com"));
     }
 
     @Test
-    public void getEmailForNotificationReturnsEmptyListIfThisRequestHasNoSubscribers() throws Exception {
-        String requestId = "requestWithNoSubscribersId";
+    public void getEmailForNotificationReturnsEmptyListIfThisQuestionHasNoSubscribers() throws Exception {
+        String questionId = "questionWithNoSubscribersId";
 
-        List<String> emails = subscriptionService.getEmailsOfSubscribersOfRequest(requestId);
+        List<String> emails = subscriptionService.getEmailsOfSubscribersOfQuestion(questionId);
 
         assertThat(emails.isEmpty(), is(true));
     }
 
     @Test
     public void getEmailsForNotificationReturnsListWithOneEmailOfAuthorIfThereIsNoAllowedSubs() throws Exception {
-        RequestPostDto postDto = new RequestPostDto("this the end", new String[]{"1", "2", "3", "go"},
+        QuestionPostDto postDto = new QuestionPostDto("this the end", new String[]{"1", "2", "3", "go"},
                 "just some text", 1501144323239L,
                 Collections.emptyList());
         String authorEmail = "John_Doe@epam.com";
 
-        String newRequestId = requestService.addNewRequest(postDto, authorEmail).getRequestId();
+        String newQuestionId = questionService.addNewQuestion(postDto, authorEmail).getQuestionId();
 
-        List<String> emails = subscriptionService.getEmailsOfAuthorAndAllowedSubsOfRequest(newRequestId);
+        List<String> emails = subscriptionService.getEmailsOfAuthorAndAllowedSubsOfQuestion(newQuestionId);
 
         MatcherAssert.assertThat(emails.size(), equalTo(1));
         MatcherAssert.assertThat(emails.get(0), equalTo(authorEmail));
@@ -93,45 +93,45 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void getEmailsForNotificationReturnsListWithEmailsOfAuthorAndAllowedSubsIfThereIsSome() throws Exception {
-        RequestPostDto postDto = new RequestPostDto("this the end", new String[]{"1", "2", "3", "go"},
+        QuestionPostDto postDto = new QuestionPostDto("this the end", new String[]{"1", "2", "3", "go"},
                 "just some text", 1501144323239L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
         String authorEmail = "John_Doe@epam.com";
 
-        String newRequestId = requestService.addNewRequest(postDto, authorEmail).getRequestId();
+        String newQuestionId = questionService.addNewQuestion(postDto, authorEmail).getQuestionId();
 
-        List<String> emails = subscriptionService.getEmailsOfAuthorAndAllowedSubsOfRequest(newRequestId);
+        List<String> emails = subscriptionService.getEmailsOfAuthorAndAllowedSubsOfQuestion(newQuestionId);
 
         MatcherAssert.assertThat(emails, containsInAnyOrder("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                 "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com", "John_Doe@epam.com"));
     }
 
     @Test
-    public void getEmailsToNotificateAboutNewRequestReturnsEmptyListIfThereIsNoAllowedSubs() throws Exception {
-        RequestPostDto postDto = new RequestPostDto("this the end", new String[]{"1", "2", "3", "go"},
+    public void getEmailsToNotificateAboutNewQuestionReturnsEmptyListIfThereIsNoAllowedSubs() throws Exception {
+        QuestionPostDto postDto = new QuestionPostDto("this the end", new String[]{"1", "2", "3", "go"},
                 "just some text", 1501144323239L,
                 Collections.emptyList());
         String authorEmail = "John_Doe@epam.com";
 
-        String newRequestId = requestService.addNewRequest(postDto, authorEmail).getRequestId();
+        String newQuestionId = questionService.addNewQuestion(postDto, authorEmail).getQuestionId();
 
-        List<String> emails = subscriptionService.getEmailsToNotificateAboutNewRequest(newRequestId);
+        List<String> emails = subscriptionService.getEmailsToNotificateAboutNewQuestion(newQuestionId);
 
         MatcherAssert.assertThat(emails.isEmpty(), is(true));
     }
 
     @Test
-    public void getEmailsToNotificateAboutNewRequestReturnsListOfEmails() throws Exception {
-        RequestPostDto postDto = new RequestPostDto("this the end", new String[]{"1", "2", "3", "go"},
+    public void getEmailsToNotificateAboutNewQuestionReturnsListOfEmails() throws Exception {
+        QuestionPostDto postDto = new QuestionPostDto("this the end", new String[]{"1", "2", "3", "go"},
                 "just some text", 1501144323239L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
         String authorEmail = "John_Doe@epam.com";
 
-        String newRequestId = requestService.addNewRequest(postDto, authorEmail).getRequestId();
+        String newQuestionId = questionService.addNewQuestion(postDto, authorEmail).getQuestionId();
 
-        List<String> emails = subscriptionService.getEmailsToNotificateAboutNewRequest(newRequestId);
+        List<String> emails = subscriptionService.getEmailsToNotificateAboutNewQuestion(newQuestionId);
 
         MatcherAssert.assertThat(emails, containsInAnyOrder("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                 "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
@@ -139,10 +139,10 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void getEmailsToNotificateAboutNewAnswerReturnsSetWithEmails() {
-        String requestId = "1u_1r";
+        String questionId = "1u_1r";
         String user = "Bob_Hoplins@epam.com";
 
-        Set<String> emails = subscriptionService.getEmailsToNotificateAboutNewAnswer(requestId);
+        Set<String> emails = subscriptionService.getEmailsToNotificateAboutNewAnswer(questionId);
 
         assertNotNull(emails);
         assertThat(emails.size(), is(5));
