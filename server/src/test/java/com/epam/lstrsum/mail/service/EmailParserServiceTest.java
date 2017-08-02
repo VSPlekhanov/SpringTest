@@ -103,7 +103,7 @@ public class EmailParserServiceTest {
     }
 
     @Test
-    public void testThatReceivedEmailCreateNewRequestAndSaveItToFongo() throws Exception {
+    public void testThatReceivedEmailCreateNewRequestAndSaveItToMongo() throws Exception {
         final User authorOfEmail = new User(new ObjectId().toString(), "Eugen", "Sandrov",
                 "Eugen_Sandrov@epam.com", new String[]{"ADMIN", "USER"}, Instant.now(), true);
         final User receiverOfEmail = new User(new ObjectId().toString(), "Stan", "Chivs",
