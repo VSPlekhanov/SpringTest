@@ -11,6 +11,8 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.number.OrderingComparison.greaterThan;
+import static org.hamcrest.number.OrderingComparison.greaterThanOrEqualTo;
 import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.verify;
 
@@ -36,7 +38,7 @@ public class TagServiceTest extends SetUpDataBaseCollections {
     public void getTagsRatingReturnExpectedValue() throws Exception {
         List<String> actualTags = tagService.getTagsRating();
 
-        assertThat(actualTags.size(), is(TAG_COUNT));
+        assertThat(actualTags.size(), greaterThanOrEqualTo(TAG_COUNT));
         assertThat(actualTags.get(0), is(MOST_POPULAR_TAG));
     }
 
@@ -50,6 +52,6 @@ public class TagServiceTest extends SetUpDataBaseCollections {
                 "textlong", 1L, Collections.singletonList("Bob_Hoplins@epam.com")), "Bob_Hoplins@epam.com");
 
         List<String> afterAddTags = tagService.getTagsRating();
-        assertThat(afterAddTags.size(), is(beforeAddTags.size() + 1));
+        assertThat(afterAddTags.size(), greaterThan(beforeAddTags.size()));
     }
 }
