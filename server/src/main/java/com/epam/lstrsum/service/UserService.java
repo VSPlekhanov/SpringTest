@@ -1,5 +1,7 @@
 package com.epam.lstrsum.service;
 
+import com.epam.lstrsum.converter.UserDtoConverter;
+import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.UserRepository;
@@ -14,6 +16,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserDtoConverter userConverter;
 
     public List<User> findAll() {
         return userRepository.findAll();
@@ -25,5 +28,13 @@ public class UserService {
 
     public User getUserById(String userId) {
         return Optional.ofNullable(userRepository.findOne(userId)).orElseThrow(() -> new NoSuchUserException("No such User in user Collection"));
+    }
+
+    public UserBaseDto modelToBaseDto(User authorId) {
+        return userConverter.modelToBaseDto(authorId);
+    }
+
+    public List<UserBaseDto> allowedSubsToListOfUserBaseDtos(List<User> allowedSubs) {
+        return userConverter.allowedSubsToListOfUserBaseDtos(allowedSubs);
     }
 }

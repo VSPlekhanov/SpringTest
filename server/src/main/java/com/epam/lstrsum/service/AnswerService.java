@@ -2,6 +2,7 @@ package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.converter.AnswerDtoConverter;
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
+import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.exception.AnswerValidationException;
 import com.epam.lstrsum.model.Answer;
@@ -66,5 +67,9 @@ public class AnswerService {
     public List<Answer> findAnswersToThis(Question question) {
         List<Answer> answersToQuestion = answerRepository.findAnswersByParentIdOrderByCreatedAtAsc(question);
         return answersToQuestion != null ? answersToQuestion : new ArrayList<>();
+    }
+
+    public List<AnswerBaseDto> answersToQuestionInAnswerBaseDto(Question question) {
+        return answerDtoConverter.answersToQuestionInAnswerBaseDto(question);
     }
 }

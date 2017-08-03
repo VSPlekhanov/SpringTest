@@ -102,6 +102,7 @@
                     <profiles>
                         <profile>dev</profile>
                         <profile>unsecured</profile>
+                        <profile>email</profile>
                     </profiles>
                 </configuration>
             </plugin>

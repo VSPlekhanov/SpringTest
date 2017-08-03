@@ -156,4 +156,12 @@ public class QuestionService {
         return questionRepository.findQuestionByTitleAndTextAndAuthorId(requestTitle, requestText, authorId).
                 orElseThrow(() -> new NoSuchRequestException("No such a Request in request Collection"));
     }
+
+    public QuestionBaseDto modelToBaseDto(Question parentId) {
+        return questionDtoConverter.modelToBaseDto(parentId);
+    }
+
+    public List<QuestionBaseDto> subscriptionsToListOfQuestionBaseDto(List<Question> questionIds) {
+        return questionDtoConverter.subscriptionsToListOfQuestionBaseDto(questionIds);
+    }
 }

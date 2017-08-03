@@ -1,5 +1,6 @@
-package com.epam.lstrsum;
+package com.epam.lstrsum.configuration;
 
+import com.epam.lstrsum.Application;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.PathSelectors;

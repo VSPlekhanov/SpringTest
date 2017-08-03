@@ -6,8 +6,9 @@ import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
 import com.epam.lstrsum.dto.question.QuestionBaseDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.model.Question;
+import com.epam.lstrsum.service.AnswerService;
 import com.epam.lstrsum.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -15,36 +16,33 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class QuestionDtoConverter implements BasicModelDtoConverter<Question, QuestionBaseDto>,
         AllFieldModelDtoConverter<Question, QuestionAllFieldsDto> {
 
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private UserDtoConverter userConverter;
-    @Autowired
-    private AnswerDtoConverter answerConverter;
+    private final UserService userService;
+    private final AnswerService answerService;
 
     @Override
     public QuestionAllFieldsDto modelToAllFieldsDto(Question question) {
         return new QuestionAllFieldsDto(question.getQuestionId(), question.getTitle(),
                 question.getTags(), question.getCreatedAt(), question.getDeadLine(),
-                userConverter.modelToBaseDto(question.getAuthorId()), question.getUpVote(),
-                userConverter.allowedSubsToListOfUserBaseDtos(question.getAllowedSubs()), question.getText());
+                userService.modelToBaseDto(question.getAuthorId()), question.getUpVote(),
+                userService.allowedSubsToListOfUserBaseDtos(question.getAllowedSubs()), question.getText());
     }
 
     @Override
     public QuestionBaseDto modelToBaseDto(Question question) {
         return new QuestionBaseDto(question.getQuestionId(), question.getTitle(),
                 question.getTags(), question.getCreatedAt(), question.getDeadLine(),
-                userConverter.modelToBaseDto(question.getAuthorId()), question.getUpVote());
+                userService.modelToBaseDto(question.getAuthorId()), question.getUpVote());
     }
 
     public QuestionAppearanceDto modelToQuestionAppearanceDto(Question question) {
         return new QuestionAppearanceDto(question.getQuestionId(), question.getTitle(),
                 question.getTags(), question.getCreatedAt(), question.getDeadLine(),
-                userConverter.modelToBaseDto(question.getAuthorId()), question.getUpVote(),
-                question.getText(), answerConverter.answersToQuestionInAnswerBaseDto(question));
+                userService.modelToBaseDto(question.getAuthorId()), question.getUpVote(),
+                question.getText(), answerService.answersToQuestionInAnswerBaseDto(question));
     }
 
     public Question questionPostDtoAndAuthorEmailToQuestion(QuestionPostDto questionPostDto, String email) {

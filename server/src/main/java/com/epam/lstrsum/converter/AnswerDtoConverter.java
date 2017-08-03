@@ -9,7 +9,6 @@ import com.epam.lstrsum.service.AnswerService;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -21,27 +20,21 @@ import java.util.stream.Collectors;
 public class AnswerDtoConverter implements BasicModelDtoConverter<Answer, AnswerBaseDto>,
         AllFieldModelDtoConverter<Answer, AnswerAllFieldsDto> {
 
-    private final UserDtoConverter userConverter;
     private final UserService userService;
-
-    @Autowired
-    private QuestionDtoConverter questionDtoConverter;
-    @Autowired
-    private AnswerService answerService;
-    @Autowired
-    private QuestionService questionService;
+    private final AnswerService answerService;
+    private final QuestionService questionService;
 
     @Override
     public AnswerAllFieldsDto modelToAllFieldsDto(Answer answer) {
         return new AnswerAllFieldsDto(answer.getText(), answer.getCreatedAt(),
-                userConverter.modelToBaseDto(answer.getAuthorId()), answer.getUpVote(),
-                answer.getAnswerId(), questionDtoConverter.modelToBaseDto(answer.getParentId()));
+                userService.modelToBaseDto(answer.getAuthorId()), answer.getUpVote(),
+                answer.getAnswerId(), questionService.modelToBaseDto(answer.getParentId()));
     }
 
     @Override
     public AnswerBaseDto modelToBaseDto(Answer answer) {
         return new AnswerBaseDto(answer.getText(), answer.getCreatedAt(),
-                userConverter.modelToBaseDto(answer.getAuthorId()), answer.getUpVote());
+                userService.modelToBaseDto(answer.getAuthorId()), answer.getUpVote());
     }
 
     public List<AnswerBaseDto> answersToQuestionInAnswerBaseDto(Question question) {
