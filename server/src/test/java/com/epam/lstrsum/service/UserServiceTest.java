@@ -16,11 +16,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-/**
- * @author <a href="mailto:Daria_Makarova@epam.com">Daria Makarova</a>
- * @version 0.1
- * @since 0.1
- */
 public class UserServiceTest extends SetUpDataBaseCollections {
 
     static final String NON_EXISTING_EMAIL = "email@test.com";
