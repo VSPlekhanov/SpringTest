@@ -97,11 +97,11 @@ public class MailService {
         // save email to db
         String addressFrom = getAddressFrom(mimeMessage.getFrom());
 
-        Email email = new Email();
-        email.setFileName(fullFileName);
-        email.setFrom(addressFrom);
-        email.setSubject(mimeMessage.getSubject());
-
+        Email email = Email.builder()
+                .fileName(fullFileName)
+                .from(addressFrom)
+                .subject(mimeMessage.getSubject())
+                .build();
         emailRepository.insert(email);
 
         // save email to file

@@ -1,13 +1,15 @@
 package com.epam.lstrsum.security;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.Map;
 import java.util.Objects;
 
-@Data
+@Builder
+@Getter
 public class EpamEmployeePrincipal implements Principal, Serializable {
 
     public static final String USER_ID = "upn";
@@ -25,16 +27,18 @@ public class EpamEmployeePrincipal implements Principal, Serializable {
 
     public static EpamEmployeePrincipal ofMap(Map<String, Object> map) throws IllegalArgumentException {
         try {
-            EpamEmployeePrincipal empl = new EpamEmployeePrincipal();
+            EpamEmployeePrincipalBuilder principalBuilder = EpamEmployeePrincipal.builder();
+
             String userId = (String) map.get(USER_ID);
-            empl.setUserId(Objects.requireNonNull(userId));
+            principalBuilder.userId(Objects.requireNonNull(userId));
 
             String displayName = (String) map.get(UNIQUE_NAME);
-            empl.setDisplayName(Objects.requireNonNull(displayName));
+            principalBuilder.displayName(Objects.requireNonNull(displayName));
 
             String email = (String) map.get(EMAIL);
-            empl.setEmail(Objects.requireNonNull(email));
-            return empl;
+            principalBuilder.email(Objects.requireNonNull(email));
+
+            return principalBuilder.build();
         } catch (ClassCastException | NullPointerException e) {
             throw new IllegalArgumentException("Wrong map format.", e);
         }

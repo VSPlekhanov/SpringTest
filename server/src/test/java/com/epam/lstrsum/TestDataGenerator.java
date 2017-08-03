@@ -22,7 +22,6 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -33,18 +32,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class TestDataGenerator {
+    private static final int ALL_LISTS_INIT_CAPACITY = 1000;
 
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    private static List<User> users = new ArrayList<>(1000);
-    private static List<Question> questions = new ArrayList<>(1000);
-    private static List<Answer> answers = new ArrayList<>(1000);
-    private static List<Subscription> subscriptions = new ArrayList<>(1000);
+    private static List<User> users = new ArrayList<>(ALL_LISTS_INIT_CAPACITY);
+    private static List<Question> questions = new ArrayList<>(ALL_LISTS_INIT_CAPACITY);
+    private static List<Answer> answers = new ArrayList<>(ALL_LISTS_INIT_CAPACITY);
+    private static List<Subscription> subscriptions = new ArrayList<>(ALL_LISTS_INIT_CAPACITY);
 
     @BeforeClass
     public static void generateCollectionLists() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < ALL_LISTS_INIT_CAPACITY; i++) {
             final User authorOfQuestion = buildAuthorOf(i);
             if (!users.contains(authorOfQuestion)) {
                 users.add(authorOfQuestion);
@@ -66,7 +66,7 @@ public class TestDataGenerator {
     @Ignore
     @Test
     public void generateAnswerCollectionTest() throws IOException {
-        assertThat(answers.size(), is(1000));
+        assertThat(answers.size(), is(ALL_LISTS_INIT_CAPACITY));
         final DBObject dbObject = new BasicDBList();
         mongoTemplate.getConverter().write(answers, dbObject);
         final String dbAnswers = dbObject.toString().replace("_class\" : \"" + Answer.class.getCanonicalName() + "\" ,", "");
@@ -77,7 +77,7 @@ public class TestDataGenerator {
     @Ignore
     @Test
     public void generateQuestionCollectionTest() throws IOException {
-        assertThat(questions.size(), is(1000));
+        assertThat(questions.size(), is(ALL_LISTS_INIT_CAPACITY));
         final DBObject dbObject = new BasicDBList();
         mongoTemplate.getConverter().write(questions, dbObject);
         final String dbQuestions = dbObject.toString().replace("_class\" : \"" + Question.class.getCanonicalName() + "\" ,", "");
@@ -88,7 +88,7 @@ public class TestDataGenerator {
     @Ignore
     @Test
     public void generateSubscriptionCollectionTest() throws IOException {
-        assertThat(subscriptions.size(), is(1000));
+        assertThat(subscriptions.size(), is(ALL_LISTS_INIT_CAPACITY));
         final DBObject dbObject = new BasicDBList();
         mongoTemplate.getConverter().write(subscriptions, dbObject);
         final String dbSubscriptions = dbObject.toString().replace("_class\" : \"" + Subscription.class.getCanonicalName() + "\" ,", "");
@@ -99,7 +99,7 @@ public class TestDataGenerator {
     @Ignore
     @Test
     public void generateUserCollectionTest() throws IOException {
-        assertThat(users.size(), is(1000));
+        assertThat(users.size(), is(ALL_LISTS_INIT_CAPACITY));
         final DBObject dbObject = new BasicDBList();
         mongoTemplate.getConverter().write(users, dbObject);
         final String dbUsers = dbObject.toString().replace("\"_class\" : " + User.class.getCanonicalName() + "\" ,", "");
@@ -121,18 +121,17 @@ public class TestDataGenerator {
     }
 
     private static Subscription buildSubscription(int numberOfSubscription, User user, List<Question> questions) {
-        final Subscription subscription = new Subscription();
-        subscription.setSubscriptionId("SubscriptionId" + numberOfSubscription);
-        subscription.setUserId(user);
-        final List<Question> subQuestions = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            final Question question = questions.get(new Random().nextInt(1000));
-            if (!subQuestions.contains(question)) {
-                subQuestions.add(question);
-            }
-        }
-        subscription.setQuestionIds(subQuestions);
-        return subscription;
+        return Subscription.builder()
+                .subscriptionId("SubscriptionId" + numberOfSubscription)
+                .userId(user)
+                .questionIds(
+                        IntStream.range(0, 20)
+                                .map(i -> ThreadLocalRandom.current().nextInt(ALL_LISTS_INIT_CAPACITY))
+                                .distinct()
+                                .mapToObj(questions::get)
+                                .collect(Collectors.toList())
+                )
+                .build();
     }
 
     private static Question buildQuestion(int numberOfQuestion, User authorOfQuestion) {
@@ -163,14 +162,14 @@ public class TestDataGenerator {
     }
 
     private static User buildAuthorOf(int numberOfUser) {
-        final User author = new User();
-        author.setUserId("UserId" + numberOfUser);
-        author.setFirstName("FirstName" + numberOfUser);
-        author.setLastName("LastName" + numberOfUser);
-        author.setEmail("UserId" + numberOfUser + "_" + "LastName" + numberOfUser + "@epam.com");
-        author.setRoles(new String[]{"ADMIN, USER"});
-        author.setCreatedAt(Instant.now());
-        author.setIsActive(true);
-        return author;
+        return User.builder()
+                .userId("UserId" + numberOfUser)
+                .firstName("FirstName" + numberOfUser)
+                .lastName("LastName" + numberOfUser)
+                .email("UserId" + numberOfUser + "_" + "LastName" + numberOfUser + "@epam.com")
+                .roles(new String[]{"ADMIN, USER"})
+                .createdAt(Instant.now())
+                .isActive(true)
+                .build();
     }
 }

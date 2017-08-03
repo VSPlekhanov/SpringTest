@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,11 +45,9 @@ public class AnswerDtoConverter implements BasicModelDtoConverter<Answer, Answer
     }
 
     public List<AnswerBaseDto> answersToQuestionInAnswerBaseDto(Question question) {
-        List<Answer> answersToQuestion = answerService.findAnswersToThis(question);
-        List<AnswerBaseDto> answerBaseDtos = new ArrayList<>();
-        answersToQuestion.forEach(a -> answerBaseDtos.add(modelToBaseDto(a)));
-
-        return answerBaseDtos;
+        return answerService.findAnswersToThis(question).stream()
+                .map(this::modelToBaseDto)
+                .collect(Collectors.toList());
     }
 
     public Answer answerPostDtoAndAuthorEmailToAnswer(AnswerPostDto answerPostDto, String email) {

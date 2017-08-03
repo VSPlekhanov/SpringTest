@@ -19,21 +19,21 @@ public class AttachmentService {
     private final AttachmentDtoConverter converter;
 
     public AttachmentAllFieldsDto save(AttachmentAllFieldsDto attachmentAllFieldsDto) {
-        Attachment attachment = new Attachment();
-
-        attachment.setData(attachmentAllFieldsDto.getData());
-        attachment.setName(attachmentAllFieldsDto.getFileName());
-        attachment.setType(attachmentAllFieldsDto.getFileType());
+        Attachment attachment = Attachment.builder()
+                .data(attachmentAllFieldsDto.getData())
+                .name(attachmentAllFieldsDto.getFileName())
+                .type(attachmentAllFieldsDto.getFileType())
+                .build();
 
         return converter.modelToAllFieldsDto(repository.save(attachment));
     }
 
     public String saveMultipartFile(MultipartFile file) throws IOException {
-        Attachment attachment = new Attachment();
-
-        attachment.setData(file.getBytes());
-        attachment.setName(file.getOriginalFilename());
-        attachment.setType(file.getContentType());
+        Attachment attachment = Attachment.builder()
+                .data(file.getBytes())
+                .name(file.getOriginalFilename())
+                .type(file.getContentType())
+                .build();
 
         return repository.save(attachment).getId();
     }

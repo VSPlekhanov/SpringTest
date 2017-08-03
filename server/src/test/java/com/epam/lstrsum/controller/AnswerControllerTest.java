@@ -39,7 +39,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AnswerControllerTest extends SetUpDataBaseCollections {
 
-
     @Mock
     private AnswerService answerService;
 
