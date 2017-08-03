@@ -2,7 +2,7 @@ package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
-import com.epam.lstrsum.mail.EmailCollection;
+import com.epam.lstrsum.email.EmailCollection;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;

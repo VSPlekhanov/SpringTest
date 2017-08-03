@@ -22,7 +22,7 @@
         </dependency>
         <dependency>
             <groupId>com.epam.lstrsum</groupId>
-            <artifactId>lstrsum-mail</artifactId>
+            <artifactId>lstrsum-email</artifactId>
         </dependency>
 
         <!--Spring-->

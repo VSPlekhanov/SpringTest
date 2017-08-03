@@ -18,7 +18,7 @@
     <modules>
         <module>model</module>
         <module>server</module>
-        <module>mail</module>
+        <module>email</module>
     </modules>
 
     <properties>
@@ -58,7 +58,7 @@
             </dependency>
             <dependency>
                 <groupId>com.epam.lstrsum</groupId>
-                <artifactId>lstrsum-mail</artifactId>
+                <artifactId>lstrsum-email</artifactId>
                 <version>0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
@@ -126,7 +126,6 @@
                         <profiles>
                             <profile>dev</profile>
                             <profile>unsecured</profile>
-                            <profile>email</profile>
                         </profiles>
                     </configuration>
                 </plugin>
