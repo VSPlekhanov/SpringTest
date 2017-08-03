@@ -30,6 +30,9 @@ import static org.junit.Assert.assertEquals;
 @FixMethodOrder
 public class QuestionServiceTest extends SetUpDataBaseCollections {
     private static final String SEARCH_PHRASE = "android";
+    private static final String SEARCH_TAG = "j";
+    private static final String MOST_POPULAR_TAG = "javascript";
+
     private static final int PAGE_SIZE = 1;
     private static final int START_PAGE = 0;
     private static final int NONEXISTENT_PAGE = 2;
@@ -253,5 +256,14 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
                 "just some text", 1501144323239L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com")), null);
+    }
+
+    @Test
+    public void getAvailableTagsReturnsExpectedValue() {
+        List<String> actualTags = questionService.getRelevantTags(SEARCH_TAG);
+        final int expectedSize = 3;
+
+        assertThat(actualTags.size(), is(expectedSize));
+        assertThat(actualTags.get(0), is(MOST_POPULAR_TAG));
     }
 }
