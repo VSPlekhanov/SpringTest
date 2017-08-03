@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserDtoConverter implements BasicModelDtoConverter<User, UserBaseDto>,
@@ -24,9 +25,8 @@ public class UserDtoConverter implements BasicModelDtoConverter<User, UserBaseDt
     }
 
     public List<UserBaseDto> allowedSubsToListOfUserBaseDtos(List<User> allowedSubs) {
-        List<UserBaseDto> userBaseDtos = new ArrayList<>();
-        allowedSubs.forEach(user -> userBaseDtos.add(modelToBaseDto(user)));
-
-        return userBaseDtos;
+        return allowedSubs.stream()
+                .map(this::modelToBaseDto)
+                .collect(Collectors.toList());
     }
 }

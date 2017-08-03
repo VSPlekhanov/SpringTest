@@ -1,9 +1,6 @@
 package com.epam.lstrsum.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -12,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.Instant;
 
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @Builder
 @Document(collection = Answer.ANSWER_COLLECTION_NAME)

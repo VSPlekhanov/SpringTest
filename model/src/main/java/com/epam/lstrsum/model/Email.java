@@ -1,14 +1,13 @@
 package com.epam.lstrsum.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @AllArgsConstructor
-@NoArgsConstructor
-@Data
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+@Builder
 @Document(collection = Email.EMAIL_COLLECTION_NAME)
 public class Email {
     public final static String EMAIL_COLLECTION_NAME = "email";

@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.TextScore;
 import java.time.Instant;
 import java.util.List;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @Getter
 @Builder

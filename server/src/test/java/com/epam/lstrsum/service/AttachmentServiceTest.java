@@ -49,7 +49,7 @@ public class AttachmentServiceTest {
         byte[] content = {1, 2, 3};
 
         MockMultipartFile file = new MockMultipartFile("fileName", originalFileName, contentType, content);
-        Attachment expected = new Attachment(null, originalFileName, contentType, content);
+        Attachment expected = Attachment.builder().name(originalFileName).type(contentType).data(content).build();
 
         when(repository.save(expected)).thenReturn(expected);
         attachmentService.saveMultipartFile(file);

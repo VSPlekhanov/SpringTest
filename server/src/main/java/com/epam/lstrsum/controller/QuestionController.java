@@ -27,8 +27,8 @@ public class QuestionController {
     private final QuestionService questionService;
     private final UserRuntimeRequestComponent userRuntimeRequestComponent;
 
-    @PostMapping()
-    public ResponseEntity<String> addQuestion(@RequestBody() QuestionPostDto dtoObject)
+    @PostMapping
+    public ResponseEntity<String> addQuestion(@RequestBody QuestionPostDto dtoObject)
             throws IOException {
         String email = userRuntimeRequestComponent.getEmail();
         String questionId = questionService.addNewQuestion(dtoObject, email).getQuestionId();
@@ -40,12 +40,15 @@ public class QuestionController {
         if (questionService.contains(questionId)) {
             QuestionAppearanceDto questionDto = questionService.getQuestoinAppearanceDtoByQuestoinId(questionId);
             return ResponseEntity.ok(questionDto);
-        } else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<QuestionBaseDto>> getQuestions(@RequestParam(required = false, defaultValue = "-1") int questionPage,
-                                                             @RequestParam(required = false, defaultValue = "-1") int questionAmount) {
+    public ResponseEntity<List<QuestionBaseDto>> getQuestions(
+            @RequestParam(required = false, defaultValue = "-1") int questionPage,
+            @RequestParam(required = false, defaultValue = "-1") int questionAmount) {
         if ((questionAmount > maxQuestionAmount) || (questionAmount <= 0)) {
             questionAmount = maxQuestionAmount;
         }

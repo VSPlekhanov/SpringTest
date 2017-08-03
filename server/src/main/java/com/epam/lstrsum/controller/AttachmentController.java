@@ -24,7 +24,6 @@ public class AttachmentController {
 
     @PostMapping
     public ResponseEntity<String> uploadAttachment(@RequestParam("file") MultipartFile file) throws IOException {
-
         String savedId = attachmentService.saveMultipartFile(file);
 
         return ResponseEntity
@@ -41,7 +40,6 @@ public class AttachmentController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Resource> downloadFile(@PathVariable("id") String id) {
-
         Optional<AttachmentAllFieldsDto> one = attachmentService.findOne(id);
 
         return one

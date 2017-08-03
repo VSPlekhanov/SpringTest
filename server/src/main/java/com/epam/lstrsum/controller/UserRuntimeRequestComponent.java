@@ -8,8 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
 import javax.servlet.http.HttpServletRequest;
-
-import static java.util.Objects.isNull;
+import java.util.Optional;
 
 @Component
 @RequestScope
@@ -23,15 +22,13 @@ public class UserRuntimeRequestComponent {
     }
 
     private EpamEmployeePrincipal getPrincipal() {
-        OAuth2Authentication authentication = (OAuth2Authentication) request.getUserPrincipal();
-
-        if (isNull(authentication)) {
-            log.warn("Unsecured invocation detected");
-            EpamEmployeePrincipal epamEmployeePrincipal = new EpamEmployeePrincipal();
-            epamEmployeePrincipal.setEmail("John_Doe@epam.com");
-            return epamEmployeePrincipal;
-        }
-        return (EpamEmployeePrincipal) authentication.getPrincipal();
+        return Optional.ofNullable(request.getUserPrincipal())
+                .map(o -> (OAuth2Authentication)o)
+                .map(u -> (EpamEmployeePrincipal) u.getPrincipal())
+                .orElseGet(() -> {
+                    log.warn("Unsecured invocation detected");
+                    return EpamEmployeePrincipal.builder().email("John_Doe@epam.com").build();
+                });
     }
 }
 
