@@ -12,7 +12,6 @@ import com.epam.lstrsum.exception.QuestionValidationException;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.persistence.QuestionRepository;
 import org.assertj.core.api.Assertions;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,7 +26,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 
-@FixMethodOrder
 public class QuestionServiceTest extends SetUpDataBaseCollections {
     private static final String SEARCH_PHRASE = "android";
     private static final String SEARCH_TAG = "j";

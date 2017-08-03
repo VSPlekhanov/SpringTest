@@ -2,7 +2,6 @@ package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -10,13 +9,11 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import java.util.Collections;
 import java.util.List;
 
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.verify;
 
-@FixMethodOrder
 public class TagServiceTest extends SetUpDataBaseCollections {
     private static final int TAG_COUNT = 20;
     private static final String MOST_POPULAR_TAG = "javascript";
@@ -25,6 +22,15 @@ public class TagServiceTest extends SetUpDataBaseCollections {
 
     @SpyBean
     private TagService tagService;
+
+
+    @Test
+    public void cacheWorks() {
+        questionService.getRelevantTags("");
+        questionService.getRelevantTags("");
+
+        verify(tagService, atMost(1)).getTagsRating();
+    }
 
     @Test
     public void getTagsRatingReturnExpectedValue() throws Exception {
@@ -45,13 +51,5 @@ public class TagServiceTest extends SetUpDataBaseCollections {
 
         List<String> afterAddTags = tagService.getTagsRating();
         assertThat(afterAddTags.size(), is(beforeAddTags.size() + 1));
-    }
-
-    @Test
-    public void cacheWorks() {
-        questionService.getRelevantTags("");
-        questionService.getRelevantTags("");
-
-        verify(tagService, times(0)).getTagsRating();
     }
 }
