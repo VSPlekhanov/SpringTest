@@ -1,6 +1,6 @@
 package com.epam.lstrsum.email;
 
-import java.util.Set;
+import javax.mail.Address;
 
 /**
  * Implement this interface to define new way of obtaining emails set.
@@ -14,5 +14,5 @@ public interface EmailCollection<T> {
      * @param param - parameter
      * @return - set of emails or empty set
      */
-    Set<String> getEmails(T param);
+    Address[] getEmailAddresses(T param);
 }

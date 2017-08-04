@@ -4,6 +4,8 @@ import com.epam.lstrsum.converter.AnswerDtoConverter;
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
+import com.epam.lstrsum.email.EmailNotification;
+import com.epam.lstrsum.email.template.NewAnswerNotificationTemplate;
 import com.epam.lstrsum.exception.AnswerValidationException;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
@@ -32,6 +34,7 @@ public class AnswerService {
 
     private final AnswerRepository answerRepository;
 
+    @EmailNotification(template = NewAnswerNotificationTemplate.class)
     public AnswerAllFieldsDto addNewAnswer(AnswerPostDto answerPostDto, String email) {
         validateAnswerData(answerPostDto, email);
         Answer newAnswer = answerDtoConverter.answerPostDtoAndAuthorEmailToAnswer(answerPostDto, email);

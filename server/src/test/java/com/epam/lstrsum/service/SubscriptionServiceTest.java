@@ -13,9 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -116,7 +114,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
         String newQuestionId = questionService.addNewQuestion(postDto, authorEmail).getQuestionId();
 
-        List<String> emails = subscriptionService.getEmailsToNotificateAboutNewQuestion(newQuestionId);
+        Set<String> emails = subscriptionService.getEmailsToNotificateAboutNewQuestion(newQuestionId);
 
         MatcherAssert.assertThat(emails.isEmpty(), is(true));
     }
@@ -131,7 +129,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
         String newQuestionId = questionService.addNewQuestion(postDto, authorEmail).getQuestionId();
 
-        List<String> emails = subscriptionService.getEmailsToNotificateAboutNewQuestion(newQuestionId);
+        Set<String> emails = subscriptionService.getEmailsToNotificateAboutNewQuestion(newQuestionId);
 
         MatcherAssert.assertThat(emails, containsInAnyOrder("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                 "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
