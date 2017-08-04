@@ -19,23 +19,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-/**
- * @author <a href="mailto:Daria_Makarova@epam.com">Daria Makarova</a>
- * @version 0.1
- * @since 0.1
- */
 public class CustomResourceServerTokenServicesTest {
-    static final String ROLE_USER = "ROLE_USER";
-    static final String SOME_CLIENT_ID = "7643";
-    static final String SOME_EMAIL = "email@test.com";
-    static final String SOME_UNIQUE_NAME = "John Doe";
-    static final String SOME_USER_ID = "1";
+    private static final String ROLE_USER = "ROLE_USER";
+    private static final String SOME_CLIENT_ID = "7643";
+    private static final String SOME_EMAIL = "email@test.com";
+    private static final String SOME_UNIQUE_NAME = "John Doe";
+    private static final String SOME_USER_ID = "1";
 
 
-    static final String VALID_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cG4iOiIxIiwidW5pcXVlX25hbWUiOiJKb2huIERvZSIsImVtYWlsIjoiZW1haWxAdGVzdC5jb20ifQ" +
+    private static final String VALID_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cG4iOiIxIiwidW5pcXVlX25hbWUiOiJKb2huIERvZSIsImVtYWlsIjoiZW1haWxAdGVzdC5jb20ifQ" +
             ".VoZ16tq1IBirXoMaMPvSHSl7z_PVQjDOTAKiVkJTMsY";
 
-    static final String ACCESS_TOKEN_WITH_NO_SIGNATURE = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cG4iOiIxIiwidW5pcXVlX25hbWUiOiJKb2huIERvZSIsImVtYWlsIjoiZW1haWxAdGVzdC5jb20ifQ";
+    private static final String ACCESS_TOKEN_WITH_NO_SIGNATURE = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cG4iOiIxIiwidW5pcXVlX25hbWUiOiJKb2huIERvZSIsImVtYWlsIjoiZW1haWxAdGVzdC5jb20ifQ";
 
 
     @Mock

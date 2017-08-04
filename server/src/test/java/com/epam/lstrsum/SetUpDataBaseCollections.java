@@ -4,6 +4,7 @@ import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
+import com.epam.lstrsum.model.Vote;
 import org.bson.Document;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -44,11 +45,14 @@ public abstract class SetUpDataBaseCollections {
 
         loadJsonResourcesAndFillDBCollectionWithThem("src/test/resources/data/subscriptionLoad.json",
                 Subscription.SUBSCRIPTION_COLLECTION_NAME);
+
+        loadJsonResourcesAndFillDBCollectionWithThem("src/test/resources/data/voteLoad.json",
+                Vote.VOTE_COLLECTION_NAME);
     }
 
     @After
     public void tearDown() throws Exception {
-        List<Class> collections = Arrays.asList(User.class, Question.class, Answer.class, Subscription.class);
+        List<Class> collections = Arrays.asList(User.class, Question.class, Answer.class, Subscription.class, Vote.class);
         collections.forEach(c -> mongoTemplate.dropCollection(c.getName()));
     }
 
