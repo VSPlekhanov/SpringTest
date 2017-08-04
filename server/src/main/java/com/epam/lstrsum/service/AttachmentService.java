@@ -3,8 +3,8 @@ package com.epam.lstrsum.service;
 import com.epam.lstrsum.converter.AttachmentDtoConverter;
 import com.epam.lstrsum.dto.attachment.AttachmentAllFieldsDto;
 import com.epam.lstrsum.model.Attachment;
+import com.epam.lstrsum.persistence.AttachmentRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,7 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AttachmentService {
 
-    private final CrudRepository<Attachment, String> repository;
+    private final AttachmentRepository attachmentRepository;
     private final AttachmentDtoConverter converter;
 
     public AttachmentAllFieldsDto save(AttachmentAllFieldsDto attachmentAllFieldsDto) {
@@ -25,7 +25,7 @@ public class AttachmentService {
                 .type(attachmentAllFieldsDto.getFileType())
                 .build();
 
-        return converter.modelToAllFieldsDto(repository.save(attachment));
+        return converter.modelToAllFieldsDto(attachmentRepository.save(attachment));
     }
 
     public String saveMultipartFile(MultipartFile file) throws IOException {
@@ -35,17 +35,17 @@ public class AttachmentService {
                 .type(file.getContentType())
                 .build();
 
-        return repository.save(attachment).getId();
+        return attachmentRepository.save(attachment).getId();
     }
 
     public Optional<AttachmentAllFieldsDto> findOne(String id) {
         return Optional
-                .ofNullable(repository.findOne(id))
+                .ofNullable(attachmentRepository.findOne(id))
                 .map(converter::modelToAllFieldsDto);
     }
 
     public void delete(String id) {
-        repository.delete(id);
+        attachmentRepository.delete(id);
     }
 
 }

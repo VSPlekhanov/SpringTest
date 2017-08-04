@@ -3,10 +3,10 @@ package com.epam.lstrsum.service;
 import com.epam.lstrsum.converter.AttachmentDtoConverter;
 import com.epam.lstrsum.dto.attachment.AttachmentAllFieldsDto;
 import com.epam.lstrsum.model.Attachment;
+import com.epam.lstrsum.persistence.AttachmentRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.util.Optional;
@@ -19,7 +19,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class AttachmentServiceTest {
 
     @Mock
-    private CrudRepository<Attachment, String> repository;
+    private AttachmentRepository attachmentRepository;
 
     private AttachmentDtoConverter converter = new AttachmentDtoConverter();
 
@@ -28,7 +28,7 @@ public class AttachmentServiceTest {
     @Before
     public void setUp() {
         initMocks(this);
-        attachmentService = new AttachmentService(repository, converter);
+        attachmentService = new AttachmentService(attachmentRepository, converter);
     }
 
     @Test
@@ -36,10 +36,10 @@ public class AttachmentServiceTest {
         AttachmentAllFieldsDto newAttachment = new AttachmentAllFieldsDto(null, "testFile", "image/jpeg", new byte[]{1, 2, 3});
         Attachment attachment = new Attachment(null, newAttachment.getFileName(), newAttachment.getFileType(), newAttachment.getData());
 
-        when(repository.save(attachment)).thenReturn(attachment);
+        when(attachmentRepository.save(attachment)).thenReturn(attachment);
         attachmentService.save(newAttachment);
 
-        verify(repository).save(attachment);
+        verify(attachmentRepository).save(attachment);
     }
 
     @Test
@@ -51,16 +51,16 @@ public class AttachmentServiceTest {
         MockMultipartFile file = new MockMultipartFile("fileName", originalFileName, contentType, content);
         Attachment expected = Attachment.builder().name(originalFileName).type(contentType).data(content).build();
 
-        when(repository.save(expected)).thenReturn(expected);
+        when(attachmentRepository.save(expected)).thenReturn(expected);
         attachmentService.saveMultipartFile(file);
-        verify(repository).save(expected);
+        verify(attachmentRepository).save(expected);
     }
 
     @Test
     public void findOneShouldFindExistingObject() throws Exception {
         String existingId = "someId";
         Attachment att = new Attachment(existingId, "name", "type", new byte[]{1, 2, 3});
-        when(repository.findOne(existingId)).thenReturn(att);
+        when(attachmentRepository.findOne(existingId)).thenReturn(att);
 
         Optional<AttachmentAllFieldsDto> one = attachmentService.findOne(existingId);
 
@@ -73,7 +73,7 @@ public class AttachmentServiceTest {
     @Test
     public void fineOneShouldReturnEmptyOptionalIfNotFound() throws Exception {
         String notExistingId = "someId";
-        when(repository.findOne(notExistingId)).thenReturn(null);
+        when(attachmentRepository.findOne(notExistingId)).thenReturn(null);
 
         Optional<AttachmentAllFieldsDto> one = attachmentService.findOne(notExistingId);
 
@@ -85,7 +85,7 @@ public class AttachmentServiceTest {
         String id = "id";
 
         attachmentService.delete(id);
-        verify(repository).delete(id);
+        verify(attachmentRepository).delete(id);
     }
 
 }
