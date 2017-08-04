@@ -48,7 +48,7 @@ public class AttachmentServiceTest {
         String contentType = "contentType";
         byte[] content = {1, 2, 3};
 
-        MockMultipartFile file = new MockMultipartFile("fileName", originalFileName, contentType, content);
+        MockMultipartFile file = new MockMultipartFile("TEMP_FILE_NAME", originalFileName, contentType, content);
         Attachment expected = Attachment.builder().name(originalFileName).type(contentType).data(content).build();
 
         when(attachmentRepository.save(expected)).thenReturn(expected);
