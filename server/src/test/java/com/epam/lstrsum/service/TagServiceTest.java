@@ -44,14 +44,13 @@ public class TagServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void getAllTagsCacheWorksOk() {
-        List<String> beforeAddTags = tagService.getTagsRating();
-        tagService.getTagsRating();
+        final int beforeAddTags = tagService.getTagsRating().size();
 
         final String newTag = "newUniqueTag";
         questionService.addNewQuestion(new QuestionPostDto("title", new String[]{newTag},
                 "textlong", 1L, Collections.singletonList("Bob_Hoplins@epam.com")), "Bob_Hoplins@epam.com");
 
-        List<String> afterAddTags = tagService.getTagsRating();
-        assertThat(afterAddTags.size(), greaterThan(beforeAddTags.size()));
+        final int afterAddTags = tagService.getTagsRating().size();
+        assertThat(afterAddTags, greaterThan(beforeAddTags));
     }
 }

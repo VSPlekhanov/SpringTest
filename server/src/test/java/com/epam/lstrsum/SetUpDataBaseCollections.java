@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -47,6 +48,7 @@ public abstract class SetUpDataBaseCollections {
     }
 
     @After
+    @CacheEvict(value = "tagsRating", allEntries=true)
     public void tearDown() throws Exception {
         List<Class> collections = Arrays.asList(User.class, Question.class, Answer.class, Subscription.class);
         collections.forEach(c -> mongoTemplate.dropCollection(c.getName()));
