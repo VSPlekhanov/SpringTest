@@ -45,6 +45,7 @@
         <commons-io.version>2.5</commons-io.version>
         <commons-email.version>1.4</commons-email.version>
         <ehcache.version>2.10.4</ehcache.version>
+        <auto-service.version>1.0-rc3</auto-service.version>
     </properties>
 
     <dependencyManagement>
@@ -84,6 +85,11 @@
                 <artifactId>springfox-swagger-ui</artifactId>
                 <version>${swagger.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj-core.version}</version>
+            </dependency>
 
             <!--Others-->
             <dependency>
@@ -107,9 +113,9 @@
                 <version>${ehcache.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.assertj</groupId>
-                <artifactId>assertj-core</artifactId>
-                <version>${assertj-core.version}</version>
+                <groupId>com.google.auto.service</groupId>
+                <artifactId>auto-service</artifactId>
+                <version>${auto-service.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
