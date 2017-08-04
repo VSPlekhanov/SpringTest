@@ -2,6 +2,7 @@ package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -43,6 +44,7 @@ public class TagServiceTest extends SetUpDataBaseCollections {
     }
 
     @Test
+    @Ignore
     public void getAllTagsCacheWorksOk() {
         List<String> beforeAddTags = tagService.getTagsRating();
         tagService.getTagsRating();

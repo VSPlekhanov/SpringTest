@@ -29,6 +29,7 @@ import java.util.stream.IntStream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class TestDataGenerator {
