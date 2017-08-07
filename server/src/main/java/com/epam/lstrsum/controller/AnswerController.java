@@ -36,7 +36,7 @@ public class AnswerController {
         return ResponseEntity.ok(answerAllFieldsDto);
     }
 
-    @GetMapping("/vote/{answerId}")
+    @PostMapping("/vote/{answerId}")
     public ResponseEntity<VoteAllFieldsDto> addVote(@NotEmptyString @PathVariable(value = "answerId") final String answerId) {
         String email = userRuntimeRequestComponent.getEmail();
         VoteAllFieldsDto voteAllFieldsDto = voteService.addVoteToAnswer(email, answerId);

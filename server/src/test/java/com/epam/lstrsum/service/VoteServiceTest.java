@@ -77,6 +77,11 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
         voteService.deleteVoteToAnswer(alreadyVotedUserEmail, nonExistingAnswerId);
     }
 
+    @Test(expected = BusinessLogicException.class)
+    public void deleteVoteWithNonVotedUser() {
+        voteService.deleteVoteToAnswer(notVotedUserEmail, answerId);
+    }
+
     @Test
     public void deleteVote() {
         voteService.deleteVoteToAnswer(alreadyVotedUserEmail, answerId);
