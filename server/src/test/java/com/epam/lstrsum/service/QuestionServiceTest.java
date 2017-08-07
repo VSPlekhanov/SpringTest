@@ -171,21 +171,21 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void questionServiceIsAbleToGetQuestionAppearanceDTOFromDBIfIdIsValid() {
-        QuestionAppearanceDto dtoQuestionDto = questionService.getQuestoinAppearanceDtoByQuestoinId("1u_1r");
+        QuestionAppearanceDto dtoQuestionDto = questionService.getQuestionAppearanceDtoByQuestionId("1u_1r");
 
         assertThat(dtoQuestionDto == null, is(false));
     }
 
     @Test
     public void questionServiceIsAbleToGetQuestionWithAnswersFromDBIfQuestionHasThem() {
-        QuestionAppearanceDto dtoQuestionDtoWithAnswers = questionService.getQuestoinAppearanceDtoByQuestoinId("1u_1r");
+        QuestionAppearanceDto dtoQuestionDtoWithAnswers = questionService.getQuestionAppearanceDtoByQuestionId("1u_1r");
 
         assertThat(dtoQuestionDtoWithAnswers.getAnswers().isEmpty(), is(false));
     }
 
     @Test
     public void questionServiceIsAbleToGetQuestionWithoutAnswersFromDB() {
-        QuestionAppearanceDto dtoQuestionDtoWithoutAnswers = questionService.getQuestoinAppearanceDtoByQuestoinId("6u_6r");
+        QuestionAppearanceDto dtoQuestionDtoWithoutAnswers = questionService.getQuestionAppearanceDtoByQuestionId("6u_6r");
 
         assertThat(dtoQuestionDtoWithoutAnswers.getAnswers().isEmpty(), is(true));
         assertThat(dtoQuestionDtoWithoutAnswers.getAnswers() == null, is(false));
@@ -193,7 +193,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void questionServiceReturnsListOfQuestionAnswersInCorrectAscOrder() {
-        QuestionAppearanceDto dtoQuestionDtoWithAnswers = questionService.getQuestoinAppearanceDtoByQuestoinId("1u_1r");
+        QuestionAppearanceDto dtoQuestionDtoWithAnswers = questionService.getQuestionAppearanceDtoByQuestionId("1u_1r");
         List<AnswerBaseDto> questionAnswers = dtoQuestionDtoWithAnswers.getAnswers();
 
         for (int i = 1; i < questionAnswers.size(); i++) {

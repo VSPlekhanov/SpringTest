@@ -120,7 +120,7 @@ public class EmailParser {
             return Optional.of(requestPostDto);
         }
 
-        public boolean hasAttachement() {
+        public boolean hasAttachment() {
             return !attacheDataSourceList.isEmpty();
         }
 

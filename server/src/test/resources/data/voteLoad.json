@@ -1,0 +1,47 @@
+[
+  {
+    "_id": "1u_2r_1a_1v",
+    "isRevoked": false,
+    "answerId": {
+      "$ref": "answer",
+      "$id": "1u_2r_1a"
+    },
+    "userId": {
+      "$ref": "user",
+      "$id": "1u"
+    },
+    "createdAt": {
+      "$date": "2017-08-14T12:11:05Z"
+    }
+  },
+  {
+    "_id": "1u_2r_1a_2v",
+    "isRevoked": false,
+    "answerId": {
+      "$ref": "answer",
+      "$id": "1u_2r_1a"
+    },
+    "userId": {
+      "$ref": "user",
+      "$id": "3u"
+    },
+    "createdAt": {
+      "$date": "2017-08-14T12:11:05Z"
+    }
+  },
+  {
+    "_id": "1u_2r_1a_3v",
+    "isRevoked": true,
+    "answerId": {
+      "$ref": "answer",
+      "$id": "1u_2r_1a"
+    },
+    "userId": {
+      "$ref": "user",
+      "$id": "4u"
+    },
+    "createdAt": {
+      "$date": "2017-08-14T12:11:05Z"
+    }
+  }
+]

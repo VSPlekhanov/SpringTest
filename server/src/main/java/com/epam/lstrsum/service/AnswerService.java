@@ -7,6 +7,7 @@ import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.email.EmailNotification;
 import com.epam.lstrsum.email.template.NewAnswerNotificationTemplate;
 import com.epam.lstrsum.exception.AnswerValidationException;
+import com.epam.lstrsum.exception.NoSuchAnswerException;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.persistence.AnswerRepository;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Objects.isNull;
 
@@ -63,8 +65,6 @@ public class AnswerService {
         } else if (isNull(questionRepository.findOne(answerPostDto.getParentId()))) {
             throw new AnswerValidationException("No such question!");
         }
-
-
     }
 
     public List<Answer> findAnswersToThis(Question question) {
@@ -74,5 +74,13 @@ public class AnswerService {
 
     public List<AnswerBaseDto> answersToQuestionInAnswerBaseDto(Question question) {
         return answerDtoConverter.answersToQuestionInAnswerBaseDto(question);
+    }
+
+    public Answer getAnswerById(String answerId) {
+        return Optional.ofNullable(answerRepository.findOne(answerId)).orElseThrow(() -> new NoSuchAnswerException("No such Answer in user Collection"));
+    }
+
+    public void save(Answer answer) {
+        answerRepository.save(answer);
     }
 }

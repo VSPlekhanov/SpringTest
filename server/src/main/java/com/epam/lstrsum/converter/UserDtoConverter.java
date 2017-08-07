@@ -5,7 +5,6 @@ import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.model.User;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
