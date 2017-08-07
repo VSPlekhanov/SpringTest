@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 public class VoteServiceTest extends SetUpDataBaseCollections {
     private static final String alreadyVotedUserEmail = "John_Doe@epam.com";
     private static final String notVotedUserEmail = "Bob_Hoplins@epam.com";
+    private static final String oneMoreNotVotedUserEmail = "Ernest_Hemingway@epam.com";
     private static final List<String> notVotedUserEmailsList = Arrays.asList("Bob_Hoplins@epam.com", "Ernest_Hemingway@epam.com", "Steven_Tyler@epam.com");
     private static final String answerId = "1u_2r_1a";
     private static final String nonExistingAnswerId = "17635r929";
@@ -79,7 +80,7 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
 
     @Test(expected = BusinessLogicException.class)
     public void deleteVoteWithNonVotedUser() {
-        voteService.deleteVoteToAnswer(notVotedUserEmail, answerId);
+        voteService.deleteVoteToAnswer(oneMoreNotVotedUserEmail, answerId);
     }
 
     @Test

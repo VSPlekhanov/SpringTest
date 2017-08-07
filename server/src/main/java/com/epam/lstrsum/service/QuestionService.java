@@ -111,7 +111,7 @@ public class QuestionService {
         return questionDtoConverter.modelToAllFieldsDto(question);
     }
 
-    public QuestionAppearanceDto getQuestoinAppearanceDtoByQuestoinId(String questionId) {
+    public QuestionAppearanceDto getQuestionAppearanceDtoByQuestionId(String questionId) {
         Question question = questionRepository.findOne(questionId);
         return questionDtoConverter.modelToQuestionAppearanceDto(question);
     }

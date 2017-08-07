@@ -131,7 +131,7 @@ public class QuestionControllerTest {
                                 new UserBaseDto("user2Id", "user2Name", "user2Surname", "user2@epam.com"), 3)));
 
         when(questionService.contains(questionId)).thenReturn(true);
-        when(questionService.getQuestoinAppearanceDtoByQuestoinId(questionId)).thenReturn(questionAppearanceDto);
+        when(questionService.getQuestionAppearanceDtoByQuestionId(questionId)).thenReturn(questionAppearanceDto);
 
         ResponseEntity actual = controller.getQuestionWithAnswers(questionId);
         ResponseEntity expected = ResponseEntity.ok(questionAppearanceDto);
