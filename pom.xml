@@ -46,6 +46,9 @@
         <commons-email.version>1.4</commons-email.version>
         <ehcache.version>2.10.4</ehcache.version>
         <auto-service.version>1.0-rc3</auto-service.version>
+        <org.mapstruct.version>1.2.0.CR1</org.mapstruct.version>
+        <org.projectlombok.version>1.16.18</org.projectlombok.version>
+        <org.maven.compiler.plugin.version>3.6.1</org.maven.compiler.plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -117,12 +120,32 @@
                 <artifactId>auto-service</artifactId>
                 <version>${auto-service.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${org.projectlombok.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${org.mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${org.mapstruct.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                </plugin>
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>

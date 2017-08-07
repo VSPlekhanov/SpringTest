@@ -75,7 +75,7 @@ public class SubscriptionService {
         @Override
         public Address[] getEmailAddresses(AnswerAllFieldsDto answer) {
             return getAddressesFromEmails(
-                    new HashSet<>(getEmailsToNotificateAboutNewAnswer(answer.getParentId().getQuestionId())));
+                    new HashSet<>(getEmailsToNotificateAboutNewAnswer(answer.getQuestionId().getQuestionId())));
         }
     }
 

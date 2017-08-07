@@ -28,6 +28,6 @@ public class Vote {
     @DBRef
     private Answer answerId;
     @Setter
-    private Boolean isRevoked;
+    private boolean isRevoked;
 
 }

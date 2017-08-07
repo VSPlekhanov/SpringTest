@@ -1,11 +1,15 @@
 package com.epam.lstrsum.dto.user;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.Instant;
 import java.util.Arrays;
 
 @Getter
+@Setter
+@NoArgsConstructor
 public class UserAllFieldsDto extends UserBaseDto {
     private String[] roles;
     private Instant createdAt;

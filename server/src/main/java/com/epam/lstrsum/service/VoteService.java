@@ -1,6 +1,6 @@
 package com.epam.lstrsum.service;
 
-import com.epam.lstrsum.converter.VoteDtoConverter;
+import com.epam.lstrsum.aggregators.VoteAggregator;
 import com.epam.lstrsum.dto.vote.VoteAllFieldsDto;
 import com.epam.lstrsum.exception.BusinessLogicException;
 import com.epam.lstrsum.model.Answer;
@@ -9,7 +9,6 @@ import com.epam.lstrsum.model.Vote;
 import com.epam.lstrsum.persistence.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -24,14 +23,10 @@ public class VoteService {
     private static final int INCREASE_AMOUNT = 1;
     private static final int DECREASE_AMOUNT = -1;
 
-    @Autowired
-    private VoteRepository voteRepository;
-    @Autowired
-    private AnswerService answerService;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private VoteDtoConverter voteDtoConverter;
+    private final VoteRepository voteRepository;
+    private final AnswerService answerService;
+    private final UserService userService;
+    private final VoteAggregator aggregator;
 
     public Optional<Vote> getVoteByUserAndAnswerId(User user, String answerId) {
         return voteRepository.findVoteByUserIdAndAnswerId(user, answerId);
@@ -47,16 +42,16 @@ public class VoteService {
 
         Vote saved;
         if (vote.isPresent()) {
-            vote.get().setIsRevoked(false);
+            vote.get().setRevoked(false);
             saved = voteRepository.save(vote.get());
         } else {
             saved = voteRepository.save(createNewVoteForAnswerByUser(user, answer));
         }
-        return voteDtoConverter.modelToAllFieldsDto(saved);
+        return aggregator.modelToAllFieldsDto(saved);
     }
 
     private void checkUserAbilityToAddVote(Optional<Vote> vote, String email) {
-        if (vote.isPresent() && !vote.get().getIsRevoked()) {
+        if (vote.isPresent() && !vote.get().isRevoked()) {
             log.warn("User with email = {} already voted for answer id = {}", email, vote.get().getAnswerId().getAnswerId());
             throw new BusinessLogicException("User with email = " + email + " already voted for answer id = " + vote.get().getAnswerId().getAnswerId());
         }
@@ -85,12 +80,11 @@ public class VoteService {
         List<Vote> votesForAnswerList = voteRepository.findByAnswerId(answerId);
         return votesForAnswerList
                 .stream()
-                .map(voteDtoConverter::modelToAllFieldsDto)
+                .map(aggregator::modelToAllFieldsDto)
                 .collect(Collectors.toList());
     }
 
     public void deleteVoteToAnswer(String email, String answerId) {
-
         User user = userService.getUserByEmail(email);
         Answer answer = answerService.getAnswerById(answerId);
 
@@ -99,12 +93,12 @@ public class VoteService {
         checkUserAbilityToDeleteVote(vote, email);
         updateAnswerVoteCounter(answer, DECREASE_AMOUNT);
 
-        vote.get().setIsRevoked(true);
+        vote.get().setRevoked(true);
         voteRepository.save(vote.get());
     }
 
     private void checkUserAbilityToDeleteVote(Optional<Vote> vote, String email) {
-        if (!vote.isPresent() || vote.get().getIsRevoked()) {
+        if (!vote.isPresent() || vote.get().isRevoked()) {
             log.error("User with email = {} didn't vote or already revoked his vote", email);
             throw new BusinessLogicException("User with email = " + email + " didn't vote or already revoked his vote");
         }

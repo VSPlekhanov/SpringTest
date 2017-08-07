@@ -1,6 +1,6 @@
 package com.epam.lstrsum.service;
 
-import com.epam.lstrsum.converter.AttachmentDtoConverter;
+import com.epam.lstrsum.aggregators.AttachmentAggregator;
 import com.epam.lstrsum.dto.attachment.AttachmentAllFieldsDto;
 import com.epam.lstrsum.model.Attachment;
 import com.epam.lstrsum.persistence.AttachmentRepository;
@@ -18,19 +18,19 @@ import java.util.Optional;
 public class AttachmentService {
 
     private final AttachmentRepository attachmentRepository;
-    private final AttachmentDtoConverter converter;
+    private final AttachmentAggregator attachmentAggregator;
 
     public AttachmentAllFieldsDto save(AttachmentAllFieldsDto attachmentAllFieldsDto) {
         Attachment attachment = Attachment.builder()
                 .data(attachmentAllFieldsDto.getData())
-                .name(attachmentAllFieldsDto.getFileName())
-                .type(attachmentAllFieldsDto.getFileType())
+                .name(attachmentAllFieldsDto.getName())
+                .type(attachmentAllFieldsDto.getType())
                 .build();
 
         Attachment save = attachmentRepository.save(attachment);
         log.debug("Add new Attachment with id {}", save.getId());
 
-        return converter.modelToAllFieldsDto(save);
+        return attachmentAggregator.modelToAllFieldsDto(save);
     }
 
     public String saveMultipartFile(MultipartFile file) throws IOException {
@@ -40,21 +40,17 @@ public class AttachmentService {
                 .type(file.getContentType())
                 .build();
 
-        Attachment save = attachmentRepository.save(attachment);
-        log.debug("Save new Attachment with id {}", save.getId());
-
-        return save.getId();
+        return attachmentRepository.save(attachment).getId();
     }
 
     public Optional<AttachmentAllFieldsDto> findOne(String id) {
         return Optional
                 .ofNullable(attachmentRepository.findOne(id))
-                .map(converter::modelToAllFieldsDto);
+                .map(attachmentAggregator::modelToAllFieldsDto);
     }
 
     public void delete(String id) {
         log.debug("Delete attachment with id {}", id);
         attachmentRepository.delete(id);
     }
-
 }

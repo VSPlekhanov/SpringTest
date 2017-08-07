@@ -1,4 +1,4 @@
-package com.epam.lstrsum.converter;
+package com.epam.lstrsum.converter.contract;
 
 import org.springframework.stereotype.Service;
 

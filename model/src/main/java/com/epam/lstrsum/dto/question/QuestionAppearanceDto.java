@@ -3,12 +3,16 @@ package com.epam.lstrsum.dto.question;
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.Instant;
 import java.util.List;
 
 
 @Getter
+@NoArgsConstructor
+@Setter
 public class QuestionAppearanceDto extends QuestionBaseDto {
     private String text;
     private List<AnswerBaseDto> answers;

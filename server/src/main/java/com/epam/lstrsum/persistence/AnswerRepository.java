@@ -7,5 +7,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 public interface AnswerRepository extends MongoRepository<Answer, String> {
-    List<Answer> findAnswersByParentIdOrderByCreatedAtAsc(Question parentId);
+    List<Answer> findAnswersByQuestionIdOrderByCreatedAtAsc(Question question);
 }

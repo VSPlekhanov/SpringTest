@@ -1,11 +1,13 @@
 package com.epam.lstrsum.dto.user;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class UserBaseDto {
     private String userId;
     private String firstName;

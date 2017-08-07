@@ -10,9 +10,10 @@ import org.springframework.data.mongodb.core.mapping.TextScore;
 import java.time.Instant;
 import java.util.List;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Setter
 @Builder
 @Document(collection = Question.QUESTION_COLLECTION_NAME)
 public class Question {

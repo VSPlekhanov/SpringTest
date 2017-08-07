@@ -47,7 +47,7 @@ public class SubscriptionServiceUnitTest {
                     add(correctEmail);
                 }});
 
-        when(answer.getParentId()).thenReturn(new QuestionBaseDto("question_id",
+        when(answer.getQuestionId()).thenReturn(new QuestionBaseDto("question_id",
                 null, null, null, null, null, null));
 
         Address[] emailAddresses = adapter.getEmailAddresses(answer);

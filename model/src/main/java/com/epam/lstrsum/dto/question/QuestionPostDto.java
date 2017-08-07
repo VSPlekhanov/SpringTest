@@ -3,8 +3,7 @@ package com.epam.lstrsum.dto.question;
 import com.epam.lstrsum.exception.ConvertToJsonException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
@@ -12,13 +11,17 @@ import java.util.Arrays;
 import java.util.List;
 
 @Getter
+@NoArgsConstructor
+@Setter
 @AllArgsConstructor
 @Slf4j
+@Builder
 public class QuestionPostDto implements Serializable {
     private String title;
     private String[] tags;
     private String text;
     private Long deadLine;
+
     private List<String> allowedSubs;
 
     @Override

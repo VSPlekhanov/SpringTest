@@ -1,6 +1,7 @@
 package com.epam.lstrsum.controller;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
+import com.epam.lstrsum.aggregators.AnswerAggregator;
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
@@ -52,6 +53,9 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
 
     @Mock
     private AnswerService answerService;
+
+    @Mock
+    private AnswerAggregator answerAggregator;
 
     @Mock
     private VoteService voteService;
@@ -146,13 +150,13 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
         answerPostDto = new AnswerPostDto(questionId, "text");
         when(answerService.addNewAnswer(answerPostDto, authorEmail)).thenReturn(answerAllFieldsDto);
         when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");
-        when(answerService.answerToDto(answer)).thenReturn(answerAllFieldsDto);
+        when(answerAggregator.modelToAllFieldsDto(answer)).thenReturn(answerAllFieldsDto);
         responseEntity = answerController.addAnswer(answerPostDto);
         verify(answerService).addNewAnswer(answerPostDto, authorEmail);
         assertThat(responseEntity, notNullValue());
         assertThat(responseEntity.getBody(), notNullValue());
         assertThat(responseEntity.getBody().getAuthorId(), notNullValue());
-        assertThat(responseEntity.getBody().getParentId(), notNullValue());
+        assertThat(responseEntity.getBody().getQuestionId(), notNullValue());
         assertThat(responseEntity.getBody().getCreatedAt(), notNullValue());
         assertThat(responseEntity.getBody().getText(), is("text"));
         assertThat(responseEntity.getBody().getUpVote(), is(0));
