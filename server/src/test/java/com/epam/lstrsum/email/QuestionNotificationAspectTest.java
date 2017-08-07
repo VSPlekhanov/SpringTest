@@ -17,7 +17,6 @@ import javax.mail.Message;
 import javax.mail.internet.MimeMessage;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,7 +25,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 @ActiveProfiles("email")
-public class EmailNotificationAspectTest extends SetUpDataBaseCollections {
+public class QuestionNotificationAspectTest extends SetUpDataBaseCollections {
 
     @Autowired
     private NewQuestionNotificationTemplate template;
@@ -35,7 +34,7 @@ public class EmailNotificationAspectTest extends SetUpDataBaseCollections {
     private QuestionService questionService;
 
     @Autowired
-    private EmailCollection<QuestionAllFieldsDto> requestEmailCollection;
+    private EmailCollection<QuestionAllFieldsDto> questionEmailCollection;
 
     @MockBean
     private MailService mailService;
@@ -44,7 +43,7 @@ public class EmailNotificationAspectTest extends SetUpDataBaseCollections {
     private EmailNotificationAspect aspect;
 
     @Test
-    public void whenNewRequestAddedMailWithExpectedSubjectShouldBeSent() throws Exception {
+    public void whenNewQuestionAddedMailWithExpectedSubjectShouldBeSent() throws Exception {
         String authorEmail = "John_Doe@epam.com";
         QuestionPostDto postDto = new QuestionPostDto("this the end", new String[]{"1", "2", "3", "go"},
                 "just some text", 11223344L,
@@ -65,7 +64,7 @@ public class EmailNotificationAspectTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void whenNewRequestAddedMailShouldBeSentOnce() throws Exception {
+    public void whenNewQuestionAddedMailShouldBeSentOnce() throws Exception {
         String authorEmail = "John_Doe@epam.com";
         QuestionPostDto postDto = new QuestionPostDto("this the end", new String[]{"1", "2", "3", "go"},
                 "just some text", 11223344L,
@@ -80,7 +79,7 @@ public class EmailNotificationAspectTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void whenNewRequestAddedNotificationShouldBeSentToCorrectMailingList() throws Exception {
+    public void whenNewQuestionAddedNotificationShouldBeSentToCorrectMailingList() throws Exception {
         String authorEmail = "John_Doe@epam.com";
         QuestionPostDto postDto = new QuestionPostDto("this the end", new String[]{"1", "2", "3", "go"},
                 "just some text", 11223344L,
@@ -91,7 +90,7 @@ public class EmailNotificationAspectTest extends SetUpDataBaseCollections {
 
         MimeMessage expected = template.buildMailMessage(savedDto);
 
-        Set<String> expectedEmails = requestEmailCollection.getEmails(savedDto);
+        Address[] expectedEmails = questionEmailCollection.getEmailAddresses(savedDto);
 
         verify(mailService).sendMessage(any());
 
@@ -105,7 +104,7 @@ public class EmailNotificationAspectTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void whenRequestServiceThrowExceptionNotificationShouldNotBeSent() throws Exception {
+    public void whenQuestionServiceThrowExceptionNotificationShouldNotBeSent() throws Exception {
         try {
             questionService.addNewQuestion(null, "");
         } catch (Exception e) {
