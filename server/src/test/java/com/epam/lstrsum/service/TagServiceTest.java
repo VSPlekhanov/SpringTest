@@ -25,6 +25,9 @@ public class TagServiceTest extends SetUpDataBaseCollections {
     @SpyBean
     private TagService tagService;
 
+    @Autowired
+    net.sf.ehcache.CacheManager internalCacheManager;
+
 
     @Test
     public void cacheWorks() {
@@ -45,6 +48,7 @@ public class TagServiceTest extends SetUpDataBaseCollections {
     @Test
     public void getAllTagsCacheWorksOk() {
         final int beforeAddTags = tagService.getTagsRating().size();
+        internalCacheManager.clearAll();
 
         final String newTag = "newUniqueTag";
         questionService.addNewQuestion(new QuestionPostDto("title", new String[]{newTag},

@@ -12,8 +12,13 @@ import org.springframework.core.io.ClassPathResource;
 @EnableCaching
 public class CacheConfiguration {
     @Bean
-    public CacheManager cacheManager() {
-        return new EhCacheCacheManager(ehCacheCacheManager().getObject());
+    public CacheManager cacheManager(net.sf.ehcache.CacheManager internalCacheManager) {
+        return new EhCacheCacheManager(internalCacheManager);
+    }
+
+    @Bean
+    public net.sf.ehcache.CacheManager internalCacheManager() {
+        return ehCacheCacheManager().getObject();
     }
 
     @Bean
