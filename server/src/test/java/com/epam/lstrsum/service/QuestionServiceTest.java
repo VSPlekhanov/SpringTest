@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Objects.isNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
@@ -171,29 +172,29 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void questionServiceIsAbleToGetQuestionAppearanceDTOFromDBIfIdIsValid() {
-        QuestionAppearanceDto dtoQuestionDto = questionService.getQuestionAppearanceDtoByQuestionId("1u_1r");
+        QuestionAppearanceDto dtoQuestionDto = questionService.getQuestionAppearanceDotByQuestionId("1u_1r");
 
-        assertThat(dtoQuestionDto == null, is(false));
+        assertThat(isNull(dtoQuestionDto), is(false));
     }
 
     @Test
     public void questionServiceIsAbleToGetQuestionWithAnswersFromDBIfQuestionHasThem() {
-        QuestionAppearanceDto dtoQuestionDtoWithAnswers = questionService.getQuestionAppearanceDtoByQuestionId("1u_1r");
+        QuestionAppearanceDto dtoQuestionDtoWithAnswers = questionService.getQuestionAppearanceDotByQuestionId("1u_1r");
 
         assertThat(dtoQuestionDtoWithAnswers.getAnswers().isEmpty(), is(false));
     }
 
     @Test
     public void questionServiceIsAbleToGetQuestionWithoutAnswersFromDB() {
-        QuestionAppearanceDto dtoQuestionDtoWithoutAnswers = questionService.getQuestionAppearanceDtoByQuestionId("6u_6r");
+        QuestionAppearanceDto dtoQuestionDtoWithoutAnswers = questionService.getQuestionAppearanceDotByQuestionId("6u_6r");
 
         assertThat(dtoQuestionDtoWithoutAnswers.getAnswers().isEmpty(), is(true));
-        assertThat(dtoQuestionDtoWithoutAnswers.getAnswers() == null, is(false));
+        assertThat(isNull(dtoQuestionDtoWithoutAnswers.getAnswers()), is(false));
     }
 
     @Test
     public void questionServiceReturnsListOfQuestionAnswersInCorrectAscOrder() {
-        QuestionAppearanceDto dtoQuestionDtoWithAnswers = questionService.getQuestionAppearanceDtoByQuestionId("1u_1r");
+        QuestionAppearanceDto dtoQuestionDtoWithAnswers = questionService.getQuestionAppearanceDotByQuestionId("1u_1r");
         List<AnswerBaseDto> questionAnswers = dtoQuestionDtoWithAnswers.getAnswers();
 
         for (int i = 1; i < questionAnswers.size(); i++) {

@@ -2,11 +2,13 @@ package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.model.Question;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,28 +19,33 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TagService {
     private final MongoTemplate mongoTemplate;
+    private JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
 
     @Cacheable(value = "tagsRating", key = "'tags'")
     public List<String> getTagsRating() {
-        JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
+        Aggregation aggregation = newAggregation(
+                project("tags"),
+                unwind("tags"),
+                group("tags").count().as("n"),
+                sort(DESC, "n"),
+                project("tags")
+        );
 
-        return mongoTemplate.aggregate(
-                newAggregation(
-                        project("tags"),
-                        unwind("tags"),
-                        group("tags").count().as("n"),
-                        sort(DESC, "n"),
-                        project("tags")
-                ),
-                Question.QUESTION_COLLECTION_NAME, String.class).getMappedResults().stream().map(e -> {
-            try {
-                return ((JSONObject) parser.parse(e)).getAsString("_id");
-            } catch (ParseException e1) {
-                e1.printStackTrace();
-            }
+        return mongoTemplate.aggregate(aggregation, Question.QUESTION_COLLECTION_NAME, String.class)
+                .getMappedResults()
+                .stream()
+                .map(this::parseTag).collect(Collectors.toList());
+    }
+
+    private String parseTag(String tag) {
+        try {
+            return parser.parse(tag, JSONObject.class).getAsString("_id");
+        } catch (ParseException e1) {
+            log.warn("Can't parse tag. Gotten json = {}", tag);
             return "";
-        }).collect(Collectors.toList());
+        }
     }
 }

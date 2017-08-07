@@ -50,7 +50,7 @@ public class EmailParseAndSaveTest extends SetUpDataBaseCollections {
         messageHelper.setTo("Stan_Chivs@epam.com");
         final EmailParser.EmailForExperienceApplication parsedMessage = emailParser.getParsedMessage(simpleEmail);
         if (!parsedMessage.isAnswer()){
-            final QuestionPostDto requestPostDto = parsedMessage.getQuestionPostDto().orElse(null);
+            final QuestionPostDto requestPostDto = parsedMessage.getQuestionPostDto();
             questionService.addNewQuestion(requestPostDto,parsedMessage.getSender());
         }
         final Question createdRequest = questionService.findQuestionByTitleAndTextAndAuthorId("Simple request title", "Simple request text", authorOfEmail);
