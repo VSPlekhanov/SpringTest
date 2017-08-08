@@ -56,7 +56,7 @@ public class QuestionDtoConverter implements BasicModelDtoConverter<Question, Qu
                 .deadLine(Instant.ofEpochMilli(questionPostDto.getDeadLine()))
                 .authorId(userService.getUserByEmail(email))
                 .allowedSubs(questionPostDto.getAllowedSubs().stream()
-                        .map(userEmail -> userService.getUserByEmail(userEmail))
+                        .map(userService::getUserByEmail)
                         .collect(Collectors.toList()))
                 .upVote(0)
                 .build();

@@ -14,6 +14,7 @@ import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.PageRequest;
@@ -33,6 +34,7 @@ import static java.util.Objects.isNull;
 @Service
 @RequiredArgsConstructor
 @ConfigurationProperties(prefix = "question")
+@Slf4j
 public class QuestionService {
 
     private final static int QUESTION_TITLE_LENGTH = 5;
@@ -100,6 +102,7 @@ public class QuestionService {
     @CacheEvict(value = "tagsRating", allEntries=true)
     @EmailNotification(template = NewQuestionNotificationTemplate.class)
     public QuestionAllFieldsDto addNewQuestion(QuestionPostDto questionPostDto, String email) {
+        log.debug("Add new Question with email {}", email);
         validateQuestionData(questionPostDto, email);
         Question newQuestion = questionDtoConverter.questionPostDtoAndAuthorEmailToQuestion(questionPostDto, email);
         Question saved = questionRepository.save(newQuestion);
@@ -111,7 +114,7 @@ public class QuestionService {
         return questionDtoConverter.modelToAllFieldsDto(question);
     }
 
-    public QuestionAppearanceDto getQuestionAppearanceDtoByQuestionId(String questionId) {
+    public QuestionAppearanceDto getQuestionAppearanceDotByQuestionId(String questionId) {
         Question question = questionRepository.findOne(questionId);
         return questionDtoConverter.modelToQuestionAppearanceDto(question);
     }

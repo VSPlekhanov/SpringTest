@@ -24,6 +24,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.epam.lstrsum.email.service.EmailParserUtil.*;
+import static java.util.Objects.isNull;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -31,24 +34,19 @@ public class EmailParser {
 
     public EmailForExperienceApplication getParsedMessage(@NonNull MimeMessage message) throws Exception {
         String title = message.getSubject();
-        if (title == null) {
-            throw new NullPointerException("There is no title");
-        }
-        log.debug("Subject:", title);
-        if (title.trim().isEmpty()) {
-            log.error("Error: received email has empty title");
-            throw new EmailValidationException("Email has empty subject");
-        }
+        validateNotEmptyString(title);
+
         final String sender = getSender(message);
-        log.debug("Sender's email address: ", sender);
-        final List<String> receives = Arrays.stream(message.getAllRecipients()).map(Address::toString).collect(Collectors.toList());
+        log.debug("Sender's email address: {}", sender);
+
         final MimeMessageParser messageParser = new MimeMessageParser(message);
+        messageParser.parse();
+
         String requestText;
         String answerText = null;
-        messageParser.parse();
         final String replyTo = getReplyTo(message);
-        final List<DataSource> attachmentList = messageParser.getAttachmentList();
-        if (replyTo == null) {
+
+        if (mailIsAnswer(replyTo)) {
             log.debug("Received email is answer");
             if (messageParser.hasPlainContent()) {
                 log.debug("email's type is plain/text");
@@ -84,7 +82,33 @@ public class EmailParser {
                 throw new EmailValidationException("Email has empty body");
             }
         }
-        return new EmailForExperienceApplication(title, requestText, answerText, sender, receives, replyTo, attachmentList);
+
+        return new EmailForExperienceApplication(
+                title, requestText, answerText,
+                sender, getReceiversFromMessage(message), replyTo,
+                messageParser.getAttachmentList()
+        );
+    }
+
+    private List<String> getReceiversFromMessage(MimeMessage message) throws MessagingException {
+        return Arrays.stream(message.getAllRecipients())
+                .map(Address::toString)
+                .collect(Collectors.toList());
+    }
+
+    private boolean mailIsAnswer(String replyTo) {
+        return isNull(replyTo);
+    }
+
+    private void validateNotEmptyString(String title) {
+        if (isNull(title)) {
+            throw new NullPointerException("There is no title");
+        }
+        log.debug("Subject:", title);
+        if (title.trim().isEmpty()) {
+            log.error("Error: received email has empty title");
+            throw new EmailValidationException("Email has empty subject");
+        }
     }
 
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -115,9 +139,8 @@ public class EmailParser {
             throw new UnsupportedOperationException("Not implemented yet");
         }
 
-        public Optional<QuestionPostDto> getQuestionPostDto() {
-            final QuestionPostDto requestPostDto = new QuestionPostDto(subject, null, requestText, 0L, receivers);
-            return Optional.of(requestPostDto);
+        public QuestionPostDto getQuestionPostDto() {
+            return new QuestionPostDto(subject, null, requestText, 0L, receivers);
         }
 
         public boolean hasAttachment() {
@@ -136,48 +159,16 @@ public class EmailParser {
         }
     }
 
-    private String getReplyTo(MimeMessage mimeMessage) throws MessagingException {
-        if (mimeMessage.getHeader("Reply-To") == null){
-            return null;
-        }
-        return mimeMessage.getHeader("Reply-To")[0];
-    }
-
-    private String getSender(MimeMessage mimeMessage) throws MessagingException {
-        return mimeMessage.getFrom()[0].toString();
-    }
-
-    private String getAnswerTextFromHtmlAnswer(String htmlText) {
-        return Jsoup.parseBodyFragment(htmlText).select("div").first().text();
-    }
-
     private String getAnswerTextFromPlainAnswer(String plainContent) {
-        final StringBuilder answerText = new StringBuilder();
-        final String[] split = plainContent.split("\\n");
-        for (String line : split) {
-            if (line.startsWith("On") & line.endsWith("wrote:")) {
-                answerText.append(line.replace(line, ""));
-            } else if (line.startsWith(">")) {
-                answerText.append(line.replace(line, ""));
-            } else {
-                answerText.append(line).append("\n");
-            }
-        }
-        return answerText.toString();
-    }
-
-    private String getRequestTextFromHtmlAnswer(String htmlContent) {
-        return Jsoup.parse(htmlContent).select("div").last().text();
+        return Arrays.stream(plainContent.split("\\n"))
+                .map(EmailParserUtil::mapPlainAnswerString)
+                .collect(Collectors.joining());
     }
 
     private String getRequestTextFromPlainAnswer(String plainContent) {
-        final StringBuilder stringBuilder = new StringBuilder();
-        String[] split = plainContent.split("\\n");
-        for (String line : split) {
-            if (line.startsWith(">")) {
-                stringBuilder.append(line.replaceFirst(">", "")).append("\n");
-            }
-        }
-        return stringBuilder.toString();
+        return Arrays.stream(plainContent.split("\\n"))
+                .filter(line -> line.startsWith(">"))
+                .map(line -> line.replaceFirst(">", ""))
+                .collect(Collectors.joining());
     }
 }

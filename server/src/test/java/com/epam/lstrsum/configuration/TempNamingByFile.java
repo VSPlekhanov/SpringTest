@@ -22,7 +22,7 @@ public class TempNamingByFile implements ITempNaming {
 
         if (informationFile.exists()) {
             try {
-                String fileContent = FileUtils.readFileToString(informationFile);
+                String fileContent = FileUtils.readFileToString(informationFile, "UTF-8");
                 int value = Integer.parseInt(fileContent) + 1;
 
                 FileWriter fooWriter = new FileWriter(informationFile, false);

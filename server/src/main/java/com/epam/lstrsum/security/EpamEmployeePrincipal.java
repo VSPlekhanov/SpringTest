@@ -2,6 +2,7 @@ package com.epam.lstrsum.security;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.security.Principal;
@@ -10,6 +11,7 @@ import java.util.Objects;
 
 @Builder
 @Getter
+@Slf4j
 public class EpamEmployeePrincipal implements Principal, Serializable {
 
     public static final String USER_ID = "upn";
@@ -40,6 +42,7 @@ public class EpamEmployeePrincipal implements Principal, Serializable {
 
             return principalBuilder.build();
         } catch (ClassCastException | NullPointerException e) {
+            log.error("Wrong format with exception = {}", e.getMessage());
             throw new IllegalArgumentException("Wrong map format.", e);
         }
     }

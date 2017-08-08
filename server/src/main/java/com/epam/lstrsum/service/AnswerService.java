@@ -14,6 +14,7 @@ import com.epam.lstrsum.persistence.AnswerRepository;
 import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.persistence.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ import static java.util.Objects.isNull;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AnswerService {
 
     @Autowired
@@ -38,6 +40,7 @@ public class AnswerService {
 
     @EmailNotification(template = NewAnswerNotificationTemplate.class)
     public AnswerAllFieldsDto addNewAnswer(AnswerPostDto answerPostDto, String email) {
+        log.debug("Add new answer with email {}", email);
         validateAnswerData(answerPostDto, email);
         Answer newAnswer = answerDtoConverter.answerPostDtoAndAuthorEmailToAnswer(answerPostDto, email);
         Answer saved = answerRepository.save(newAnswer);
