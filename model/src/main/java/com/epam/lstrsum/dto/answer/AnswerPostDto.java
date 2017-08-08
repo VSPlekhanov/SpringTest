@@ -5,17 +5,20 @@ import com.epam.lstrsum.exception.ConvertToJsonException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Getter
 @Slf4j
 public class AnswerPostDto {
-    private String parentId;
+    private String questionId;
     private String text;
-
 
     @Override
     public boolean equals(Object o) {
@@ -24,13 +27,13 @@ public class AnswerPostDto {
 
         AnswerPostDto postDto = (AnswerPostDto) o;
 
-        if (parentId != null ? !parentId.equals(postDto.parentId) : postDto.parentId != null) return false;
+        if (questionId != null ? !questionId.equals(postDto.questionId) : postDto.questionId != null) return false;
         return text != null ? !text.equals(postDto.text) : postDto.text != null;
     }
 
     @Override
     public int hashCode() {
-        int result = parentId != null ? parentId.hashCode() : 0;
+        int result = questionId != null ? questionId.hashCode() : 0;
         result = 31 * result + (text != null ? text.hashCode() : 0);
         return result;
     }

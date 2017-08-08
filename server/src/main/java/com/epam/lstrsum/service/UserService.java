@@ -1,6 +1,6 @@
 package com.epam.lstrsum.service;
 
-import com.epam.lstrsum.converter.UserDtoConverter;
+import com.epam.lstrsum.aggregators.UserAggregator;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.model.User;
@@ -16,7 +16,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final UserDtoConverter userConverter;
+    private final UserAggregator userAggregator;
 
     public List<User> findAll() {
         return userRepository.findAll();
@@ -31,10 +31,6 @@ public class UserService {
     }
 
     public UserBaseDto modelToBaseDto(User authorId) {
-        return userConverter.modelToBaseDto(authorId);
-    }
-
-    public List<UserBaseDto> allowedSubsToListOfUserBaseDtos(List<User> allowedSubs) {
-        return userConverter.allowedSubsToListOfUserBaseDtos(allowedSubs);
+        return userAggregator.modelToBaseDto(authorId);
     }
 }

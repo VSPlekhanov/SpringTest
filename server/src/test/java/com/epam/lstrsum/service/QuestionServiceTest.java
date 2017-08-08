@@ -1,7 +1,7 @@
 package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
-import com.epam.lstrsum.converter.QuestionDtoConverter;
+import com.epam.lstrsum.aggregators.QuestionAggregator;
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
@@ -56,7 +56,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
     );
 
     @Autowired
-    private QuestionDtoConverter questionDtoConverter;
+    private QuestionAggregator questionAggregator;
 
     @Autowired
     private QuestionService questionService;
@@ -69,7 +69,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
         List<Question> questionList = questionRepository.findAll();
         List<QuestionAllFieldsDto> expectedAllFieldsDto = new ArrayList<>();
         for (Question question : questionList) {
-            expectedAllFieldsDto.add(questionDtoConverter.modelToAllFieldsDto(question));
+            expectedAllFieldsDto.add(questionAggregator.modelToAllFieldsDto(question));
         }
         List<QuestionAllFieldsDto> actualList = questionService.findAll();
 
@@ -142,7 +142,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
     @Test
     public void getQuestionReturnsCorrectDtoObject() {
         Question question = questionRepository.findOne("1u_1r");
-        QuestionAllFieldsDto dtoQuestionFromRepo = questionDtoConverter.modelToAllFieldsDto(question);
+        QuestionAllFieldsDto dtoQuestionFromRepo = questionAggregator.modelToAllFieldsDto(question);
         QuestionAllFieldsDto dtoQuestionFromService = questionService.getQuestionAllFieldDtoByQuestionId("1u_1r");
         assertThat(dtoQuestionFromRepo, is(equalTo(dtoQuestionFromService)));
     }
@@ -153,7 +153,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
         List<Question> questionList = questionRepository.findAllByOrderByCreatedAtDesc();
         List<QuestionBaseDto> expectedDtoList = new ArrayList<>();
         for (Question question : questionList) {
-            expectedDtoList.add(questionDtoConverter.modelToBaseDto(question));
+            expectedDtoList.add(questionAggregator.modelToBaseDto(question));
         }
         List<QuestionBaseDto> actualList = questionService.findAllQuestionsBaseDto(0, questionCount);
         assertThat(actualList.equals(expectedDtoList), is(true));

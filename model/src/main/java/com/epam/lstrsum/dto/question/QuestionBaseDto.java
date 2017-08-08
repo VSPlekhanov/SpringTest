@@ -2,14 +2,16 @@ package com.epam.lstrsum.dto.question;
 
 
 import com.epam.lstrsum.dto.user.UserBaseDto;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.Arrays;
 
+@NoArgsConstructor
 @AllArgsConstructor
+@Setter
 @Getter
+@Builder
 public class QuestionBaseDto {
     private String questionId;
     private String title;

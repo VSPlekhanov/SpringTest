@@ -90,6 +90,7 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
                 .stream()
                 .filter(v -> userService.getUserById(v.getUserBaseDto().getUserId()).getEmail().equals(alreadyVotedUserEmail))
                 .collect(Collectors.toList()).get(0);
+
         assertThat(revokedVote.isRevoked(), is(true));
     }
 
@@ -107,7 +108,7 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
         Answer answerBeforeMultipleVoteAdding = answerService.getAnswerById(answerId);
         assertThat(answerBeforeMultipleVoteAdding.getUpVote(), is(3));
         assertThat(answerBeforeMultipleVoteAdding.getAnswerId(), is("1u_2r_1a"));
-        assertThat(answerBeforeMultipleVoteAdding.getParentId().getQuestionId(), is("1u_2r"));
+        assertThat(answerBeforeMultipleVoteAdding.getQuestionId().getQuestionId(), is("1u_2r"));
 
         notVotedUserEmailsList.forEach(e -> voteService.addVoteToAnswer(e, answerId));
 
@@ -119,6 +120,6 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
         Answer answerAfterMultipleVoteDeleting = answerService.getAnswerById(answerId);
         assertThat(answerAfterMultipleVoteDeleting.getUpVote(), is(4));
         assertEquals(answerAfterMultipleVoteDeleting.getAnswerId(), answerBeforeMultipleVoteAdding.getAnswerId());
-        assertEquals(answerAfterMultipleVoteDeleting.getParentId().getQuestionId(), answerBeforeMultipleVoteAdding.getParentId().getQuestionId());
+        assertEquals(answerAfterMultipleVoteDeleting.getQuestionId().getQuestionId(), answerBeforeMultipleVoteAdding.getQuestionId().getQuestionId());
     }
 }

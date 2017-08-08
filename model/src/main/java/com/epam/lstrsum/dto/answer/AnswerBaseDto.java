@@ -2,12 +2,17 @@ package com.epam.lstrsum.dto.answer;
 
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.*;
 
 import java.time.Instant;
 
 @AllArgsConstructor
 @Getter
+@Setter
+@Builder
+@NoArgsConstructor
 public class AnswerBaseDto {
     private String text;
     private Instant createdAt;

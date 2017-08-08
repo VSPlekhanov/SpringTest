@@ -113,7 +113,7 @@ public class TestDataGenerator {
         int rndId = ThreadLocalRandom.current().nextInt(question.getAllowedSubs().size());
         return Answer.builder()
                 .answerId("AnswerId" + numberOfAnswer)
-                .parentId(question)
+                .questionId(question)
                 .text("Some interesting answer for some interesting question" + numberOfAnswer)
                 .createdAt(Instant.now())
                 .authorId(question.getAllowedSubs().get(rndId))

@@ -59,14 +59,14 @@ public class AttachmentController {
         MediaType mediaType;
 
         try {
-            mediaType = MediaType.valueOf(dto.getFileType());
+            mediaType = MediaType.valueOf(dto.getType());
         } catch (InvalidMediaTypeException e) {
             mediaType = MediaType.APPLICATION_OCTET_STREAM;
         }
 
         return ResponseEntity
                 .ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + dto.getFileName() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + dto.getName() + "\"")
                 .contentType(mediaType)
                 .body(file);
     }

@@ -1,20 +1,18 @@
 package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
-import com.epam.lstrsum.converter.AnswerDtoConverter;
+import com.epam.lstrsum.aggregators.AnswerAggregator;
+import com.epam.lstrsum.converter.AnswerDtoMapper;
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.exception.AnswerValidationException;
 import com.epam.lstrsum.model.Answer;
-import com.epam.lstrsum.model.Question;
-import com.epam.lstrsum.model.User;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.util.Collections;
 
+import static com.epam.lstrsum.InstantiateUtil.someAnswer;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -24,7 +22,10 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     private AnswerService answerService;
 
     @Autowired
-    private AnswerDtoConverter answerDtoConverter;
+    private AnswerAggregator answerAggregator;
+
+    @Autowired
+    private AnswerDtoMapper answerMapper;
 
     private final String authorEmail = "Bob_Hoplins@epam.com";
 
@@ -33,44 +34,15 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
         AnswerPostDto postDto = new AnswerPostDto("1u_2r", "answer text");
 
         AnswerAllFieldsDto answer = answerService.addNewAnswer(postDto, authorEmail);
-        assertThat(answer.getParentId(), notNullValue());
+        assertThat(answer.getQuestionId(), notNullValue());
     }
 
     @Test
     public void checkAnswerDtoConverterInvocation() {
-        Answer someAnswer = createAnswer();
-        AnswerAllFieldsDto expected = answerDtoConverter.modelToAllFieldsDto(someAnswer);
+        Answer someAnswer = someAnswer();
+        AnswerAllFieldsDto expected = answerAggregator.modelToAllFieldsDto(someAnswer);
 
-        assertThat(answerService.answerToDto(someAnswer), equalTo(expected));
-
-    }
-
-    private Answer createAnswer() {
-        return new Answer("answerId", createQuestion(), "text",
-                Instant.now(), createUser(), 2);
-    }
-
-    private Question createQuestion() {
-        return Question.builder()
-                .questionId("questionId")
-                .title("title")
-                .tags(new String[]{})
-                .text("text")
-                .createdAt(Instant.now())
-                .deadLine(Instant.now())
-                .authorId(createUser())
-                .allowedSubs(Collections.emptyList())
-                .upVote(2)
-                .build();
-    }
-
-    private User createUser() {
-        return new User("userId", "firstName", "lastName",
-                "email", new String[]{}, Instant.now(), false);
-    }
-
-    private AnswerAllFieldsDto nonNullAnswerAllFieldsDto() {
-        return new AnswerAllFieldsDto(null, null, null, null, null, null);
+        assertThat(answerAggregator.modelToAllFieldsDto(someAnswer), equalTo(expected));
     }
 
     @Test(expected = AnswerValidationException.class)

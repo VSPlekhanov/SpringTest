@@ -1,14 +1,14 @@
 package com.epam.lstrsum.service;
 
-import com.epam.lstrsum.converter.QuestionDtoConverter;
+import com.epam.lstrsum.aggregators.QuestionAggregator;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
 import com.epam.lstrsum.dto.question.QuestionBaseDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
-import com.epam.lstrsum.exception.NoSuchRequestException;
-import com.epam.lstrsum.exception.QuestionValidationException;
 import com.epam.lstrsum.email.EmailNotification;
 import com.epam.lstrsum.email.template.NewQuestionNotificationTemplate;
+import com.epam.lstrsum.exception.NoSuchRequestException;
+import com.epam.lstrsum.exception.QuestionValidationException;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.QuestionRepository;
@@ -48,20 +48,20 @@ public class QuestionService {
     private int searchMaxPageSize;
 
     private final TagService tagService;
-    private final QuestionDtoConverter questionDtoConverter;
+    private final QuestionAggregator questionAggregator;
     private final QuestionRepository questionRepository;
 
     public List<QuestionAllFieldsDto> findAll() {
         List<Question> questionList = questionRepository.findAll();
-        return mapList(questionList, questionDtoConverter::modelToAllFieldsDto);
+        return mapList(questionList, questionAggregator::modelToAllFieldsDto);
     }
 
     /**
      * Performs fulltext search (by db text index).
      *
      * @param searchQuery Phrase to find. Searches by every word separately and by different word's forms.
-     * @param page Page number to show, begins from 0.
-     * @param size Size of a page.
+     * @param page        Page number to show, begins from 0.
+     * @param size        Size of a page.
      * @return List of questions.
      */
     public List<QuestionAllFieldsDto> search(String searchQuery, Integer page, Integer size) {
@@ -81,7 +81,7 @@ public class QuestionService {
 
         return questionList
                 .stream()
-                .map(questionDtoConverter::modelToAllFieldsDto)
+                .map(questionAggregator::modelToAllFieldsDto)
                 .collect(Collectors.toList());
     }
 
@@ -92,34 +92,34 @@ public class QuestionService {
     public List<QuestionBaseDto> findAllQuestionsBaseDto(int questionPage, int questionAmount) {
         Pageable pageable = new PageRequest(questionPage, questionAmount);
         List<Question> questionList = questionRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return mapList(questionList, questionDtoConverter::modelToBaseDto);
+        return mapList(questionList, questionAggregator::modelToBaseDto);
     }
 
-    public List<String> getRelevantTags(String key){
+    public List<String> getRelevantTags(String key) {
         return tagService.getTagsRating().stream().filter(e -> e.startsWith(key)).collect(Collectors.toList());
     }
 
-    @CacheEvict(value = "tagsRating", allEntries=true)
+    @CacheEvict(value = "tagsRating", allEntries = true)
     @EmailNotification(template = NewQuestionNotificationTemplate.class)
     public QuestionAllFieldsDto addNewQuestion(QuestionPostDto questionPostDto, String email) {
         log.debug("Add new Question with email {}", email);
         validateQuestionData(questionPostDto, email);
-        Question newQuestion = questionDtoConverter.questionPostDtoAndAuthorEmailToQuestion(questionPostDto, email);
+        Question newQuestion = questionAggregator.questionPostDtoAndAuthorEmailToQuestion(questionPostDto, email);
         Question saved = questionRepository.save(newQuestion);
-        return questionDtoConverter.modelToAllFieldsDto(saved);
+        return questionAggregator.modelToAllFieldsDto(saved);
     }
 
     public QuestionAllFieldsDto getQuestionAllFieldDtoByQuestionId(String questionId) {
         Question question = questionRepository.findOne(questionId);
-        return questionDtoConverter.modelToAllFieldsDto(question);
+        return questionAggregator.modelToAllFieldsDto(question);
     }
 
     public QuestionAppearanceDto getQuestionAppearanceDotByQuestionId(String questionId) {
         Question question = questionRepository.findOne(questionId);
-        return questionDtoConverter.modelToQuestionAppearanceDto(question);
+        return questionAggregator.modelToQuestionAppearanceDto(question);
     }
 
-    public Question getQuestionById(String questionId){
+    public Question getQuestionById(String questionId) {
         return questionRepository.findOne(questionId);
     }
 
@@ -145,26 +145,16 @@ public class QuestionService {
         }
     }
 
-    private static<T1,T2> List<T2> mapList(List<T1> list, Function<T1, T2> mapper) {
+    private static <T1, T2> List<T2> mapList(List<T1> list, Function<T1, T2> mapper) {
         List<T2> result = new ArrayList<>();
-
         for (T1 value : list) {
             result.add(mapper.apply(value));
         }
-
         return result;
     }
 
     public Question findQuestionByTitleAndTextAndAuthorId(String requestTitle, String requestText, User authorId) {
         return questionRepository.findQuestionByTitleAndTextAndAuthorId(requestTitle, requestText, authorId).
                 orElseThrow(() -> new NoSuchRequestException("No such a Request in request Collection"));
-    }
-
-    public QuestionBaseDto modelToBaseDto(Question parentId) {
-        return questionDtoConverter.modelToBaseDto(parentId);
-    }
-
-    public List<QuestionBaseDto> subscriptionsToListOfQuestionBaseDto(List<Question> questionIds) {
-        return questionDtoConverter.subscriptionsToListOfQuestionBaseDto(questionIds);
     }
 }

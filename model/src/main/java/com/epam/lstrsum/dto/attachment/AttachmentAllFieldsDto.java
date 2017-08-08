@@ -2,13 +2,17 @@ package com.epam.lstrsum.dto.attachment;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Setter
 public class AttachmentAllFieldsDto {
     private String id;
-    private String fileName;
-    private String fileType;
+    private String name;
+    private String type;
     private byte[] data;
 
     @Override
@@ -19,15 +23,15 @@ public class AttachmentAllFieldsDto {
         AttachmentAllFieldsDto that = (AttachmentAllFieldsDto) o;
 
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (fileName != null ? !fileName.equals(that.fileName) : that.fileName != null) return false;
-        return fileType != null ? fileType.equals(that.fileType) : that.fileType == null;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        return type != null ? type.equals(that.type) : that.type == null;
     }
 
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (fileName != null ? fileName.hashCode() : 0);
-        result = 31 * result + (fileType != null ? fileType.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (type != null ? type.hashCode() : 0);
         return result;
     }
 }

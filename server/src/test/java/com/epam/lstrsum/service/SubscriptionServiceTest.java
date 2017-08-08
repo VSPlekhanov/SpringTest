@@ -101,7 +101,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
         List<String> emails = subscriptionService.getEmailsOfAuthorAndAllowedSubsOfQuestion(newQuestionId);
 
-        MatcherAssert.assertThat(emails, containsInAnyOrder("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
+        assertThat(emails, containsInAnyOrder("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                 "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com", "John_Doe@epam.com"));
     }
 
@@ -131,7 +131,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
         Set<String> emails = subscriptionService.getEmailsToNotificateAboutNewQuestion(newQuestionId);
 
-        MatcherAssert.assertThat(emails, containsInAnyOrder("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
+        assertThat(emails, containsInAnyOrder("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                 "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
     }
 
