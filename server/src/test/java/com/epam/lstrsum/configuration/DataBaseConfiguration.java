@@ -31,7 +31,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import static com.epam.lstrsum.configuration.TempNamingByFile.TEMP_FILE_NAME;
 
 @Configuration
 @EnableConfigurationProperties(MongoProperties.class)
@@ -71,15 +74,19 @@ public class DataBaseConfiguration extends AbstractMongoConfiguration {
 
     @Bean
     File tempFile() throws IOException {
-        File tempFile = new File(TempNamingByFile.TEMP_FILE_NAME);
-        tempFile.deleteOnExit();
+        File tempFile;
 
-        if (!Files.exists(Paths.get(TempNamingByFile.TEMP_FILE_NAME))) {
+        Path tempFilePath = Paths.get(System.getProperty("java.io.tmpdir") + File.separator + TEMP_FILE_NAME);
+        if (Files.exists(tempFilePath)) {
+            tempFile = tempFilePath.toFile();
+        } else {
+            tempFile = Files.createFile(tempFilePath).toFile();
             FileWriter fileWriter = new FileWriter(tempFile, false);
             fileWriter.write(DEFAULT_VALUE_FOR_MONGO_BIN);
             fileWriter.close();
-
         }
+        tempFile.deleteOnExit();
+
         return tempFile;
     }
 
