@@ -53,7 +53,7 @@ public class EmailParseAndSaveTest extends SetUpDataBaseCollections {
             final QuestionPostDto requestPostDto = parsedMessage.getQuestionPostDto();
             questionService.addNewQuestion(requestPostDto,parsedMessage.getSender());
         }
-        final Question createdRequest = questionService.findQuestionByTitleAndTextAndAuthorId("Simple request title", "Simple request text", authorOfEmail);
+        final Question createdRequest = questionService.findQuestionByTitleAndAuthorEmail("Simple request title", authorOfEmail);
         assertThat(createdRequest.getTitle(), is("Simple request title"));
         assertThat(createdRequest.getText(), is("Simple request text"));
         mongoTemplate.dropCollection(User.class);

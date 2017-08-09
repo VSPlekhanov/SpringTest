@@ -36,7 +36,9 @@ public interface QuestionDtoMapper {
             @Mapping(target = "allowedSubs", source = "allowedSubs"),
             @Mapping(target = "deadLine", expression = "java( java.time.Instant.ofEpochMilli(questionPostDto.getDeadLine()))"),
             @Mapping(target = "authorId", source = "authorId"),
-            @Mapping(target = "upVote", constant = "0")
+            @Mapping(target = "upVote", constant = "0"),
+            @Mapping(target = "score", constant = "0"),
+            @Mapping(target = "questionId", ignore = true)
     })
     Question questionPostDtoAndAuthorEmailToQuestion(QuestionPostDto questionPostDto, User authorId, List<User> allowedSubs);
 

@@ -10,10 +10,13 @@ import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.exception.QuestionValidationException;
 import com.epam.lstrsum.model.Question;
+import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.QuestionRepository;
+import com.epam.lstrsum.persistence.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -21,7 +24,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.epam.lstrsum.InstantiateUtil.*;
+import static java.util.Collections.singletonList;
 import static java.util.Objects.isNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
@@ -63,6 +69,9 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Autowired
     private QuestionRepository questionRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     public void findAllReturnsCorrectValuesTest() {
@@ -264,5 +273,34 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
         assertThat(actualTags.size(), is(expectedSize));
         assertThat(actualTags.get(0), is(MOST_POPULAR_TAG));
+    }
+
+    @Test(expected = DuplicateKeyException.class)
+    public void addTwoQuestionWithSimilarTitleFromOneAuthorRefused() {
+        final QuestionPostDto questionPostDto = new QuestionPostDto(
+                someString(), new String[]{}, someString(),
+                someLong(), singletonList(SOME_USER_EMAIL)
+        );
+
+        questionService.addNewQuestion(questionPostDto, SOME_USER_EMAIL);
+        questionService.addNewQuestion(questionPostDto, SOME_USER_EMAIL);
+    }
+
+    @Test
+    public void findQuestionByTitleAndAuthorId() {
+        final String title = someString();
+        final User user = userRepository.findOne("1u");
+        final QuestionPostDto questionPostDto = new QuestionPostDto(
+                title, new String[]{}, someString(),
+                someLong(), singletonList(SOME_USER_EMAIL)
+        );
+
+        questionService.addNewQuestion(questionPostDto, SOME_USER_EMAIL);
+
+        assertThat(questionService.findQuestionByTitleAndAuthorEmail(title, user))
+                .satisfies(q -> {
+                    assertThat(q.getAuthorId().getEmail()).isEqualTo(SOME_USER_EMAIL);
+                    assertThat(q.getTitle()).isEqualTo(title);
+                });
     }
 }

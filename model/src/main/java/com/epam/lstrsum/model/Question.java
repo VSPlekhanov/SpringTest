@@ -2,6 +2,7 @@ package com.epam.lstrsum.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,6 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
+@CompoundIndex(unique = true, def = "{'title': 1, 'authorId': 1}")
 @Document(collection = Question.QUESTION_COLLECTION_NAME)
 public class Question {
     public final static String QUESTION_COLLECTION_NAME = "question";

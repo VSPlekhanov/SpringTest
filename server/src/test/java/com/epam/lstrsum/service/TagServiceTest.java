@@ -10,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import java.util.Collections;
 import java.util.List;
 
+import static com.epam.lstrsum.InstantiateUtil.someString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
@@ -49,12 +50,14 @@ public class TagServiceTest extends SetUpDataBaseCollections {
     @Test
     @Ignore
     public void getAllTagsCacheWorksOk() {
-        final int beforeAddTags = tagService.getTagsRating().size();
         internalCacheManager.clearAll();
+        final int beforeAddTags = tagService.getTagsRating().size();
 
         final String newTag = "newUniqueTag";
-        questionService.addNewQuestion(new QuestionPostDto("title", new String[]{newTag},
-                "textlong", 1L, Collections.singletonList("Bob_Hoplins@epam.com")), "Bob_Hoplins@epam.com");
+        questionService.addNewQuestion(
+                new QuestionPostDto(someString(), new String[]{newTag},
+                        someString(), 1L, Collections.singletonList("Bob_Hoplins@epam.com")),
+                "Bob_Hoplins@epam.com");
 
         final int afterAddTags = tagService.getTagsRating().size();
         assertThat(afterAddTags, greaterThan(beforeAddTags));

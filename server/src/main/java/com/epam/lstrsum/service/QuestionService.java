@@ -153,8 +153,8 @@ public class QuestionService {
         return result;
     }
 
-    public Question findQuestionByTitleAndTextAndAuthorId(String requestTitle, String requestText, User authorId) {
-        return questionRepository.findQuestionByTitleAndTextAndAuthorId(requestTitle, requestText, authorId).
-                orElseThrow(() -> new NoSuchRequestException("No such a Request in request Collection"));
+    public Question findQuestionByTitleAndAuthorEmail(String title, User authorId) {
+        return questionRepository.findQuestionByTitleAndAuthorId(title, authorId).
+                orElseThrow(() -> new NoSuchRequestException("No such question"));
     }
 }

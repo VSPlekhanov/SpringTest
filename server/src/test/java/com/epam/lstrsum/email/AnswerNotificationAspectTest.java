@@ -20,6 +20,8 @@ import javax.mail.internet.MimeMessage;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static com.epam.lstrsum.InstantiateUtil.someLong;
+import static com.epam.lstrsum.InstantiateUtil.someString;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
@@ -47,8 +49,8 @@ public class AnswerNotificationAspectTest extends SetUpDataBaseCollections {
     public void setUpCommonAnswerAndQuestion() throws Exception {
         this.questionAuthorEmail = "John_Doe@epam.com";
         this.answerAuthorEmail = "Ernest_Hemingway@epam.com";
-        this.questionPostDto = new QuestionPostDto("this the end", new String[]{"1", "2", "3", "go"},
-                "just some text", 11223344L,
+        this.questionPostDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
+                someString(), someLong(),
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", answerAuthorEmail));
     }
@@ -70,6 +72,7 @@ public class AnswerNotificationAspectTest extends SetUpDataBaseCollections {
 
     @Test
     public void whenNewAnswerWasAddedMailWithExpectedBodyAndBodyTypeShouldBeSent() throws Exception {
+        questionPostDto.setTitle(someString());
         MimeMessage expected = addNewQuestionAndAnswerToItInDBAndGetExpectedMimeMessage(
                 questionPostDto, questionAuthorEmail, answerAuthorEmail);
 
@@ -85,8 +88,8 @@ public class AnswerNotificationAspectTest extends SetUpDataBaseCollections {
 
     @Test
     public void whenNewAnswerWasAddedMailShouldBeSendToAuthorOnlyIfQuestionHasNoSubscribersOrCC() throws Exception {
-        QuestionPostDto questionWithNoCC = new QuestionPostDto("this the end", new String[]{"1", "2", "3", "go"},
-                "just some text", 11223344L,
+        QuestionPostDto questionWithNoCC = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
+                someString(), someLong(),
                 Collections.emptyList());
 
         MimeMessage expected = addNewQuestionAndAnswerToItInDBAndGetExpectedMimeMessage(
@@ -104,6 +107,7 @@ public class AnswerNotificationAspectTest extends SetUpDataBaseCollections {
 
     @Test
     public void whenNewAnswerWasAddedMailShouldBeSendToAuthorAndCCOnlyIfQuestionHasNoSubscribers() throws Exception {
+        questionPostDto.setTitle(someString());
         MimeMessage expected = addNewQuestionAndAnswerToItInDBAndGetExpectedMimeMessage(
                 questionPostDto, questionAuthorEmail, answerAuthorEmail);
 
@@ -119,7 +123,7 @@ public class AnswerNotificationAspectTest extends SetUpDataBaseCollections {
 
     @Test
     public void whenNewAnswerWasAddedMailShouldNotBeDuplicatedToOneUserIfUserIsDuplicatedInAuthorOrSubscriptionOrCCFields() throws Exception {
-        QuestionPostDto questionWithDuplicates = new QuestionPostDto("this the end", new String[]{"1", "2", "3", "go"},
+        QuestionPostDto questionWithDuplicates = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 "just some text", 11223344L,
                 Collections.nCopies(4, questionAuthorEmail));
 
