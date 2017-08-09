@@ -19,6 +19,8 @@ import static com.epam.lstrsum.email.service.MailService.getAddressFrom;
 @RequiredArgsConstructor
 @Slf4j
 public class MailReceiver {
+    private static final Pattern EMAIL_MULTIPART_PATTERN = Pattern.compile("^multipart\\/.*");
+    private static final Pattern EMAIL_TEXT_PATTERN = Pattern.compile("^text\\/.*");
 
     private final MailService mailService;
 
@@ -28,39 +30,23 @@ public class MailReceiver {
 
         mailService.backupEmail(message);
 
-        StringBuilder debugLogMessage = new StringBuilder();
-
         String contentType = message.getContentType();
-        debugLogMessage.append(contentType);
-
         String content = "";
-        if (matchesToRegexp(contentType, "^multipart\\/.*")) {
+        String type = "";
+
+        if (EMAIL_MULTIPART_PATTERN.asPredicate().test(contentType)) {
             MimeMultipart rawContent = (MimeMultipart) message.getContent();
             content = (String) rawContent.getBodyPart(0).getContent();
-
-            debugLogMessage.append("mime is multi");
-        } else if (matchesToRegexp(contentType, "^text\\/.*")) {
+            type = "multi";
+        } else if (EMAIL_TEXT_PATTERN.asPredicate().test(contentType)) {
             content = (String) message.getContent();
-            debugLogMessage.append("mime is text");
+            type = "text";
         } else {
             log.warn("Unknown mime type!");
         }
 
-        //InternetAddress address = (InternetAddress) message.getFrom()[0];
         String address = getAddressFrom(message.getFrom());
 
-        debugLogMessage.append(
-                "\nFrom: " + address +
-                        " \nSubject: " + message.getSubject() +
-                        " \nContent: \n" + content
-        );
-
-        log.debug(debugLogMessage.toString());
+        log.debug("From: {}\nSubject: {}\nContentType : \nContent: {}\nWith type: {}", address, message.getSubject(), contentType, content, type);
     }
-
-    private static boolean matchesToRegexp(String input, String regexp) {
-        Pattern p = Pattern.compile(regexp);
-        return p.asPredicate().test(input);
-    }
-
 }
