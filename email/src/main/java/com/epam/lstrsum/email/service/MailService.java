@@ -16,6 +16,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -66,7 +67,7 @@ public class MailService {
 
         // save email to file
         if (!backupDir.isEmpty()) {
-            FileOutputStream fileOutput = new FileOutputStream(backupDir + fullFileName);
+            FileOutputStream fileOutput = new FileOutputStream(backupDir + File.separator + fullFileName);
 
             ZipOutputStream zipOutput = new ZipOutputStream(fileOutput);
 
