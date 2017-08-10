@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.epam.lstrsum.InstantiateUtil.someString;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
@@ -45,7 +46,7 @@ public class QuestionNotificationAspectTest extends SetUpDataBaseCollections {
     @Test
     public void whenNewQuestionAddedMailWithExpectedSubjectShouldBeSent() throws Exception {
         String authorEmail = "John_Doe@epam.com";
-        QuestionPostDto postDto = new QuestionPostDto("this the end", new String[]{"1", "2", "3", "go"},
+        QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 "just some text", 11223344L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
@@ -66,7 +67,7 @@ public class QuestionNotificationAspectTest extends SetUpDataBaseCollections {
     @Test
     public void whenNewQuestionAddedMailShouldBeSentOnce() throws Exception {
         String authorEmail = "John_Doe@epam.com";
-        QuestionPostDto postDto = new QuestionPostDto("this the end", new String[]{"1", "2", "3", "go"},
+        QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 "just some text", 11223344L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
@@ -81,7 +82,7 @@ public class QuestionNotificationAspectTest extends SetUpDataBaseCollections {
     @Test
     public void whenNewQuestionAddedNotificationShouldBeSentToCorrectMailingList() throws Exception {
         String authorEmail = "John_Doe@epam.com";
-        QuestionPostDto postDto = new QuestionPostDto("this the end", new String[]{"1", "2", "3", "go"},
+        QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 "just some text", 11223344L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));

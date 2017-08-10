@@ -104,5 +104,4 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
         assertThat(questionBaseDto.getTags()).isEqualTo(question.getTags());
         assertThat(questionBaseDto.getUpVote()).isEqualTo(question.getUpVote());
     }
-
 }

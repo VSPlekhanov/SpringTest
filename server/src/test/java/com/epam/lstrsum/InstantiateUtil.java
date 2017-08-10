@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 
 public class InstantiateUtil {
     private static SecureRandom SECURE_RANDOM = new SecureRandom();
+    public static final String SOME_USER_EMAIL = "John_Doe@epam.com";
 
     public static Subscription someSubscription() {
         return Subscription.builder()
@@ -91,7 +92,7 @@ public class InstantiateUtil {
     public static QuestionPostDto someQuestionPostDto() {
         return QuestionPostDto.builder()
                 .allowedSubs(initList(InstantiateUtil::someString))
-                .deadLine(SECURE_RANDOM.nextLong())
+                .deadLine(someLong())
                 .tags(initList(InstantiateUtil::someString).toArray(new String[0]))
                 .text(someString())
                 .title(someString())
@@ -141,5 +142,9 @@ public class InstantiateUtil {
 
     public static String someString() {
         return new BigInteger(130, SECURE_RANDOM).toString(32);
+    }
+
+    public static long someLong() {
+        return SECURE_RANDOM.nextLong();
     }
 }

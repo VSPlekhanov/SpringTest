@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.epam.lstrsum.InstantiateUtil.someString;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
@@ -76,7 +77,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void getEmailsForNotificationReturnsListWithOneEmailOfAuthorIfThereIsNoAllowedSubs() throws Exception {
-        QuestionPostDto postDto = new QuestionPostDto("this the end", new String[]{"1", "2", "3", "go"},
+        QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 "just some text", 1501144323239L,
                 Collections.emptyList());
         String authorEmail = "John_Doe@epam.com";
@@ -91,7 +92,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void getEmailsForNotificationReturnsListWithEmailsOfAuthorAndAllowedSubsIfThereIsSome() throws Exception {
-        QuestionPostDto postDto = new QuestionPostDto("this the end", new String[]{"1", "2", "3", "go"},
+        QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 "just some text", 1501144323239L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
@@ -107,7 +108,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void getEmailsToNotificateAboutNewQuestionReturnsEmptyListIfThereIsNoAllowedSubs() throws Exception {
-        QuestionPostDto postDto = new QuestionPostDto("this the end", new String[]{"1", "2", "3", "go"},
+        QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 "just some text", 1501144323239L,
                 Collections.emptyList());
         String authorEmail = "John_Doe@epam.com";
@@ -121,7 +122,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void getEmailsToNotificateAboutNewQuestionReturnsListOfEmails() throws Exception {
-        QuestionPostDto postDto = new QuestionPostDto("this the end", new String[]{"1", "2", "3", "go"},
+        QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 "just some text", 1501144323239L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));

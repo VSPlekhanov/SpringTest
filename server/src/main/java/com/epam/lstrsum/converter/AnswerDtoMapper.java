@@ -45,6 +45,7 @@ public interface AnswerDtoMapper {
             @Mapping(target = "upVote", constant = "0"),
             @Mapping(target = "questionId", source = "questionId"),
             @Mapping(target = "authorId", source = "authorId"),
+            @Mapping(target = "answerId", ignore = true)
 
     })
     Answer answerPostDtoAndAuthorEmailToAnswer(AnswerPostDto answer, User authorId, Question questionId);
