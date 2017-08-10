@@ -157,4 +157,8 @@ public class QuestionService {
         return questionRepository.findQuestionByTitleAndAuthorId(title, authorId).
                 orElseThrow(() -> new NoSuchRequestException("No such question"));
     }
+
+    public Long getQuestionCount() {
+        return questionRepository.count();
+    }
 }

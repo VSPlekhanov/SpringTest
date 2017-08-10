@@ -74,6 +74,13 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
     private UserRepository userRepository;
 
     @Test
+    public void countQuestionCorrect() {
+        assertThat(questionService.getQuestionCount())
+                .isEqualTo(questionRepository.count())
+                .isEqualTo(6);
+    }
+
+    @Test
     public void findAllReturnsCorrectValuesTest() {
         List<Question> questionList = questionRepository.findAll();
         List<QuestionAllFieldsDto> expectedAllFieldsDto = new ArrayList<>();
