@@ -1,6 +1,7 @@
 package com.epam.lstrsum.email.service;
 
 import com.epam.lstrsum.email.exception.EmailValidationException;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
@@ -8,13 +9,23 @@ import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import java.util.List;
 
+import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class EmailParserTest {
 
-    private EmailParser emailParser = new EmailParser();
+    private ExchangeServiceHelper exchangeServiceHelper = mock(ExchangeServiceHelper.class);
+    private EmailParser emailParser = new EmailParser(exchangeServiceHelper);
+
+    @Before
+    public void setUp() {
+        when(exchangeServiceHelper.resolveGroup(anyString())).thenAnswer(invocation -> singletonList(invocation.getArguments()[0]));
+    }
 
     @Test(expected = NullPointerException.class)
     public void TestThatParserThrowsExceptionWithNullArgs() throws Exception {

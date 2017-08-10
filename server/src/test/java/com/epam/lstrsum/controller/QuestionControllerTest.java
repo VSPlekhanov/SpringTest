@@ -6,6 +6,7 @@ import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
 import com.epam.lstrsum.dto.question.QuestionBaseDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
+import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.service.QuestionService;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,8 +60,7 @@ public class QuestionControllerTest {
         when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");
 
         String questionId = "Id11";
-        QuestionAllFieldsDto dtoWithId = new QuestionAllFieldsDto(questionId, null, null, null, null
-                , null, null, null, null);
+        Question dtoWithId = Question.builder().questionId(questionId).build();
         when(questionService.addNewQuestion(postDto, authorEmail)).thenReturn(dtoWithId);
 
         controller.addQuestion(postDto);
@@ -75,8 +75,7 @@ public class QuestionControllerTest {
                 1501145960400L, Collections.singletonList("Bob_Hoplins@epam.com"));
 
         String questionId = "Id11";
-        QuestionAllFieldsDto dtoWithId = new QuestionAllFieldsDto(questionId, null, null, null, null
-                , null, null, null, null);
+        Question dtoWithId = Question.builder().questionId(questionId).build();
         when(questionService.addNewQuestion(postDto, authorEmail)).thenReturn(dtoWithId);
 
         when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");

@@ -1,7 +1,7 @@
 package com.epam.lstrsum.service;
 
+import com.epam.lstrsum.converter.QuestionDtoMapper;
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
-import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.email.EmailCollection;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
@@ -9,6 +9,7 @@ import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.SubscriptionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +22,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class SubscriptionService {
-
     private final SubscriptionRepository subscriptionRepository;
     private final QuestionService questionService;
+    private final MongoTemplate mongoTemplate;
+    private final QuestionDtoMapper questionDtoMapper;
 
     public List<Subscription> findAll() {
         return subscriptionRepository.findAll();
@@ -33,9 +35,7 @@ public class SubscriptionService {
         return subscriptionRepository.findAllByQuestionIdsContains(questionId);
     }
 
-    public Set<String> getEmailsToNotificateAboutNewQuestion(String questionId) {
-        Question question = questionService.getQuestionById(questionId);
-
+    public Set<String> getEmailsToNotificateAboutNewQuestion(Question question) {
         return question.getAllowedSubs().stream().map(User::getEmail).collect(Collectors.toSet());
     }
 
@@ -62,11 +62,11 @@ public class SubscriptionService {
     }
 
     @Component
-    public class QuestionEmailCollectionAdapter implements EmailCollection<QuestionAllFieldsDto> {
+    public class QuestionEmailCollectionAdapter implements EmailCollection<Question> {
         @Override
-        public Address[] getEmailAddresses(QuestionAllFieldsDto question) {
+        public Address[] getEmailAddresses(Question question) {
             return getAddressesFromEmails(
-                    new HashSet<>(getEmailsToNotificateAboutNewQuestion(question.getQuestionId())));
+                    new HashSet<>(getEmailsToNotificateAboutNewQuestion(question)));
         }
     }
 

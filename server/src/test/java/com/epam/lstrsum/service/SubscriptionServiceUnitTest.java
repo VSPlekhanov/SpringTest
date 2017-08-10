@@ -1,8 +1,8 @@
 package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
-import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionBaseDto;
+import com.epam.lstrsum.model.Question;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -26,7 +26,7 @@ public class SubscriptionServiceUnitTest {
     private AnswerAllFieldsDto answer;
 
     @Mock
-    private QuestionAllFieldsDto question;
+    private Question question;
 
     @Before
     public void intiMocks() throws Exception {

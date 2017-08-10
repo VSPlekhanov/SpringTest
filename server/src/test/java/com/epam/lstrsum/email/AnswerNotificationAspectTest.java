@@ -3,10 +3,10 @@ package com.epam.lstrsum.email;
 import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
-import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.email.service.MailService;
 import com.epam.lstrsum.email.template.NewAnswerNotificationTemplate;
+import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.service.AnswerService;
 import com.epam.lstrsum.service.QuestionService;
 import org.junit.Before;
@@ -20,8 +20,8 @@ import javax.mail.internet.MimeMessage;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static com.epam.lstrsum.InstantiateUtil.someLong;
-import static com.epam.lstrsum.InstantiateUtil.someString;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someLong;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
@@ -141,7 +141,7 @@ public class AnswerNotificationAspectTest extends SetUpDataBaseCollections {
 
     private MimeMessage addNewQuestionAndAnswerToItInDBAndGetExpectedMimeMessage(QuestionPostDto question, String questionAuthor,
                                                                                  String answerAuthor) throws Exception {
-        QuestionAllFieldsDto savedQuestion = questionService.addNewQuestion(question, questionAuthor);
+        Question savedQuestion = questionService.addNewQuestion(question, questionAuthor);
 
         AnswerPostDto answerPost = new AnswerPostDto(savedQuestion.getQuestionId(), "Text of Answer");
 
