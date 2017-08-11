@@ -150,5 +150,3 @@ public class AnswerNotificationAspectTest extends SetUpDataBaseCollections {
         return answerTemplate.buildMailMessage(savedAnswer);
     }
 }
-
-

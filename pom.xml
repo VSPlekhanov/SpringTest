@@ -153,7 +153,7 @@
                     <configuration>
                         <mainClass>com.epam.lstrsum.Application</mainClass>
                         <profiles>
-                            <profile>dev</profile>
+                            <profile>local</profile>
                             <profile>unsecured</profile>
                         </profiles>
                     </configuration>
