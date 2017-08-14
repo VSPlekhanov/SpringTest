@@ -24,7 +24,6 @@ public class SubscriptionControllerTest extends SetUpDataBaseCollections {
     @Autowired
     private TestRestTemplate testRestTemplate;
 
-
     @Test
     public void getListOfSubscriptions() throws Exception {
         final ResponseEntity<List<Subscription>> responseEntity = testRestTemplate.exchange("/api/subscription",
@@ -33,7 +32,12 @@ public class SubscriptionControllerTest extends SetUpDataBaseCollections {
         List<Subscription> actualList = responseEntity.getBody();
         //validate
         assertThat(actualList.size(), is(6));
-        List<String> actualIds = actualList.stream().map(Subscription::getUserId).map(User::getUserId).collect(collectingAndThen(toList(), ImmutableList::copyOf));
+
+        List<String> actualIds = actualList.stream()
+                .map(Subscription::getUserId)
+                .map(User::getUserId)
+                .collect(collectingAndThen(toList(), ImmutableList::copyOf));
+
         assertThat(actualIds, containsInAnyOrder("1u", "2u", "3u", "4u", "5u", "6u"));
     }
 }

@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 @Document(collection = Subscription.SUBSCRIPTION_COLLECTION_NAME)
 public class Subscription {
-    public final static String SUBSCRIPTION_COLLECTION_NAME = "subscription";
+    public final static String SUBSCRIPTION_COLLECTION_NAME = "Subscription";
 
     @Id
     private String subscriptionId;

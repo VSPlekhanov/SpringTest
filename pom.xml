@@ -49,6 +49,7 @@
         <org.mapstruct.version>1.2.0.CR1</org.mapstruct.version>
         <org.projectlombok.version>1.16.18</org.projectlombok.version>
         <org.maven.compiler.plugin.version>3.6.1</org.maven.compiler.plugin.version>
+        <ews.version>2.0</ews.version>
     </properties>
 
     <dependencyManagement>
@@ -134,6 +135,11 @@
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct-processor</artifactId>
                 <version>${org.mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.microsoft.ews-java-api</groupId>
+                <artifactId>ews-java-api</artifactId>
+                <version>${ews.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

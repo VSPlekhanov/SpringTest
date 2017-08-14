@@ -1,4 +1,4 @@
-package com.epam.lstrsum;
+package com.epam.lstrsum.testutils;
 
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
@@ -6,16 +6,7 @@ import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionBaseDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
-import com.epam.lstrsum.dto.user.telescope.TelescopeDataDto;
-import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
-import com.epam.lstrsum.dto.user.telescope.TelescopeProfileDto;
-import com.epam.lstrsum.enums.UserRoleType;
-import com.epam.lstrsum.model.Answer;
-import com.epam.lstrsum.model.Attachment;
-import com.epam.lstrsum.model.Question;
-import com.epam.lstrsum.model.Subscription;
-import com.epam.lstrsum.model.User;
-import com.epam.lstrsum.model.Vote;
+import com.epam.lstrsum.model.*;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -45,7 +36,7 @@ public class InstantiateUtil {
                 .lastName(someString())
                 .isActive(true)
                 .createdAt(Instant.now())
-                .roles(Collections.singletonList(UserRoleType.ROLE_EXTENDED_USER))
+                .roles(new String[]{"ROLE_USER"})
                 .email(someString())
                 .build();
     }
@@ -56,39 +47,6 @@ public class InstantiateUtil {
                 .firstName(someString())
                 .lastName(someString())
                 .userId(someString())
-                .build();
-    }
-
-    public static TelescopeEmployeeEntityDto someTelescopeEmployeeEntityDto() {
-        return TelescopeEmployeeEntityDto.builder()
-                .data(someTelescopeDataDto())
-                .build();
-    }
-
-    public static TelescopeDataDto someTelescopeDataDto() {
-        return TelescopeDataDto.builder()
-                ._e3sId("8841d390-36fa-4173-8430-6849da54881a")
-                .email(new String[]{"Ivan_Ivanov@epam.com"})
-                .fullName(new String[]{"Ivanov Ivan Ivanovich"})
-                .firstName("Ivan")
-                .lastName("Ivanov")
-                .displayName("Ivanov Ivan")
-                .primarySkill("DevOps/Automation")
-                .primaryTitle("Systems Engineer")
-                .manager("Olga Petrova")
-                .profile(Collections.singletonMap("UPSA", new TelescopeProfileDto[]{someTelescopeProfileDto()}))
-                .photo(new String[]{"attachment:///upsa_profilePhoto.4060641410043119281_1.GIF_b8f369df-8a70-4d79-8413-120b31e39016"})
-                .unitPath("Cloud & DevOps / NA / MX / DevOps")
-                .build();
-    }
-
-    private static TelescopeProfileDto someTelescopeProfileDto() {
-        return TelescopeProfileDto.builder()
-                .origin("UPSA")
-                .id("40607414003048743")
-                .status("Active")
-                .url("https://upsa.epam.com/workload/employeeView.do?employeeId=406074147648379594")
-                .visibility("public")
                 .build();
     }
 

@@ -10,7 +10,7 @@
     ],
     "text": "I have this call in async task. All parameters are correct. In postman or advance rest client the call work fine and It return a json with a list of objects. But if I try to do this call in android with spring I have this error:",
     "authorId": {
-      "$ref": "user",
+      "$ref": "User",
       "$id": "5u"
     },
     "createdAt": {
@@ -19,23 +19,23 @@
     "upVote": 0,
     "allowedSubs": [
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "2u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "3u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "4u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "5u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "6u"
       }
     ],
@@ -54,7 +54,7 @@
     ],
     "text": "I am new into Appium iOS, Can someone give me the step by step installation process for Appium test on Mac OS using simulator. Note - I have installed Xcode, and have source file of app. Now which setting is required and which capabilities I need to add in code in Eclipse",
     "authorId": {
-      "$ref": "user",
+      "$ref": "User",
       "$id": "1u"
     },
     "createdAt": {
@@ -63,23 +63,23 @@
     "upVote": 0,
     "allowedSubs": [
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "2u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "3u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "4u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "5u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "6u"
       }
     ],
@@ -97,7 +97,7 @@
     ],
     "text": "I have a scenario that,I am using a JavaScript function for min and max values for input type date.It is working fine on android mobile,but in I phone Am unable to restrict the calendar with max and min values.",
     "authorId": {
-      "$ref": "user",
+      "$ref": "User",
       "$id": "2u"
     },
     "createdAt": {
@@ -106,23 +106,23 @@
     "upVote": 0,
     "allowedSubs": [
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "1u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "3u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "4u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "5u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "6u"
       }
     ],
@@ -141,7 +141,7 @@
     ],
     "text": "in my case , i have query result came from database : the result is a array, i want to pass result in multiple object and get result. i try to use mediator pattern but it wont work in my case , because i need to get result from first object and pass theme to second and so on .",
     "authorId": {
-      "$ref": "user",
+      "$ref": "User",
       "$id": "3u"
     },
     "createdAt": {
@@ -150,23 +150,23 @@
     "upVote": 0,
     "allowedSubs": [
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "1u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "2u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "4u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "5u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "6u"
       }
     ],
@@ -184,7 +184,7 @@
     ],
     "text": "I'm new to Protoype.JS and just testing it a bit because I heard it was good, but I'm stuck quite quickly. As easy as this is with jQuery, it seems to be the end of the world to get the 'Text' in an element. I've tried innerHTML in multiple ways but the only thing I can get is 'undefined'.",
     "authorId": {
-      "$ref": "user",
+      "$ref": "User",
       "$id": "4u"
     },
     "createdAt": {
@@ -193,23 +193,23 @@
     "upVote": 0,
     "allowedSubs": [
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "1u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "2u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "3u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "5u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "6u"
       }
     ],
@@ -227,7 +227,7 @@
     ],
     "text": "Elixir has the possibility to pipe input into a function, which makes code more readable very often. For example something like this",
     "authorId": {
-      "$ref": "user",
+      "$ref": "User",
       "$id": "6u"
     },
     "createdAt": {
@@ -236,23 +236,23 @@
     "upVote": 0,
     "allowedSubs": [
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "1u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "2u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "3u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "4u"
       },
       {
-        "$ref": "user",
+        "$ref": "User",
         "$id": "5u"
       }
     ],

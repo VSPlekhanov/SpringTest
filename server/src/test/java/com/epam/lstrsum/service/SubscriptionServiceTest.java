@@ -2,6 +2,7 @@ package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
+import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.epam.lstrsum.InstantiateUtil.someString;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
@@ -113,9 +114,8 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
                 Collections.emptyList());
         String authorEmail = "John_Doe@epam.com";
 
-        String newQuestionId = questionService.addNewQuestion(postDto, authorEmail).getQuestionId();
-
-        Set<String> emails = subscriptionService.getEmailsToNotificateAboutNewQuestion(newQuestionId);
+        Question question = questionService.addNewQuestion(postDto, authorEmail);
+        Set<String> emails = subscriptionService.getEmailsToNotificateAboutNewQuestion(question);
 
         MatcherAssert.assertThat(emails.isEmpty(), is(true));
     }
@@ -128,9 +128,8 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
         String authorEmail = "John_Doe@epam.com";
 
-        String newQuestionId = questionService.addNewQuestion(postDto, authorEmail).getQuestionId();
-
-        Set<String> emails = subscriptionService.getEmailsToNotificateAboutNewQuestion(newQuestionId);
+        Question question = questionService.addNewQuestion(postDto, authorEmail);
+        Set<String> emails = subscriptionService.getEmailsToNotificateAboutNewQuestion(question);
 
         assertThat(emails, containsInAnyOrder("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                 "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));

@@ -7,7 +7,6 @@ import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
 import com.epam.lstrsum.dto.question.QuestionBaseDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
-import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.exception.QuestionValidationException;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
@@ -18,13 +17,13 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.epam.lstrsum.InstantiateUtil.*;
+import static com.epam.lstrsum.InstantiateUtil.SOME_USER_EMAIL;
+import static com.epam.lstrsum.InstantiateUtil.someLong;
+import static com.epam.lstrsum.InstantiateUtil.someString;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.isNull;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,25 +40,6 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
     private static final int PAGE_SIZE = 1;
     private static final int START_PAGE = 0;
     private static final int NONEXISTENT_PAGE = 2;
-    private static final QuestionAllFieldsDto QUESTION_WITH_ANDROID_TEXT = new QuestionAllFieldsDto(
-            "1u_1r",
-            "JsonMappingException on android spring httprequest",
-            new String[]{"java", "android", "json", "spring"},
-            LocalDateTime.parse("2016-04-19T11:00:00").toInstant(ZoneOffset.UTC),
-            LocalDateTime.parse("2016-05-19T11:00:00").toInstant(ZoneOffset.UTC),
-            new UserBaseDto(
-                    "5u", "Ernest", "Hemingway", "Ernest_Hemingway@epam.com"
-            ),
-            0,
-            Arrays.asList(
-                    new UserBaseDto("2u", "Bob", "Hoplins", "Bob_Hoplins@epam.com"),
-                    new UserBaseDto("3u", "Tyler", "Greeds", "Tyler_Greeds@epam.com"),
-                    new UserBaseDto("4u", "Donald", "Gardner", "Donald_Gardner@epam.com"),
-                    new UserBaseDto("5u", "Ernest", "Hemingway", "Ernest_Hemingway@epam.com"),
-                    new UserBaseDto("6u", "Steven", "Tyler", "Steven_Tyler@epam.com")
-            ),
-            "I have this call in async task. All parameters are correct. In postman or advance rest client the call work fine and It return a json with a list of objects. But if I try to do this call in android with spring I have this error:"
-    );
 
     @Autowired
     private QuestionAggregator questionAggregator;
@@ -72,6 +52,13 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Test
+    public void countQuestionCorrect() {
+        assertThat(questionService.getQuestionCount())
+                .isEqualTo(questionRepository.count())
+                .isEqualTo(6);
+    }
 
     @Test
     public void findAllReturnsCorrectValuesTest() {
@@ -95,35 +82,35 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
     public void searchReturnsCorrectValueFromStartOfList() {
         List<QuestionAllFieldsDto> actualList = questionService.search(SEARCH_PHRASE, START_PAGE, PAGE_SIZE);
 
-        assertThatListHasRightSizeAndContainsCorrectValue(actualList, 1, QUESTION_WITH_ANDROID_TEXT, SEARCH_PHRASE);
+        assertThatListHasRightSizeAndContainsCorrectValue(actualList, 1, SEARCH_PHRASE);
     }
 
     @Test
     public void searchWithNullSize() {
         List<QuestionAllFieldsDto> actualList = questionService.search(SEARCH_PHRASE, START_PAGE, null);
 
-        assertThatListHasRightSizeAndContainsCorrectValue(actualList, 2, QUESTION_WITH_ANDROID_TEXT, SEARCH_PHRASE);
+        assertThatListHasRightSizeAndContainsCorrectValue(actualList, 2, SEARCH_PHRASE);
     }
 
     @Test
     public void searchWithNegativeSize() {
         List<QuestionAllFieldsDto> actualList = questionService.search(SEARCH_PHRASE, START_PAGE, -5);
 
-        assertThatListHasRightSizeAndContainsCorrectValue(actualList, 2, QUESTION_WITH_ANDROID_TEXT, SEARCH_PHRASE);
+        assertThatListHasRightSizeAndContainsCorrectValue(actualList, 2, SEARCH_PHRASE);
     }
 
     @Test
     public void searchWithTooBigPageSize() {
         List<QuestionAllFieldsDto> actualList = questionService.search(SEARCH_PHRASE, START_PAGE, 100000);
 
-        assertThatListHasRightSizeAndContainsCorrectValue(actualList, 2, QUESTION_WITH_ANDROID_TEXT, SEARCH_PHRASE);
+        assertThatListHasRightSizeAndContainsCorrectValue(actualList, 2, SEARCH_PHRASE);
     }
 
     @Test
     public void searchWithNegativeStartPage() {
         List<QuestionAllFieldsDto> actualList = questionService.search(SEARCH_PHRASE, -1, PAGE_SIZE);
 
-        assertThatListHasRightSizeAndContainsCorrectValue(actualList, 1, QUESTION_WITH_ANDROID_TEXT, SEARCH_PHRASE);
+        assertThatListHasRightSizeAndContainsCorrectValue(actualList, 1, SEARCH_PHRASE);
     }
 
     @Test
@@ -137,12 +124,10 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
     private void assertThatListHasRightSizeAndContainsCorrectValue(
             List<QuestionAllFieldsDto> actualList,
             int size,
-            QuestionAllFieldsDto oneOfQuestions,
             String searchPhrase
     ) {
         Assertions.assertThat(actualList)
-                .hasSize(size)
-                .contains(oneOfQuestions);
+                .hasSize(size);
         assertThat(actualList.isEmpty(), is(false));
         Assertions.assertThat(actualList)
                 .allMatch(questionAllFieldsDto -> questionAllFieldsDto.getText().contains(searchPhrase));

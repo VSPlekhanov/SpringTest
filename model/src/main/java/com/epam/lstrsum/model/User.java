@@ -20,7 +20,7 @@ import java.util.List;
 @Builder
 @Document(collection = User.USER_COLLECTION_NAME)
 public class User {
-    public final static String USER_COLLECTION_NAME = "user";
+    public final static String USER_COLLECTION_NAME = "User";
 
     @Id
     private String userId;

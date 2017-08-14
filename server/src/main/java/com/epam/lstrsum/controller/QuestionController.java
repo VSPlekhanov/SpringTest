@@ -59,6 +59,11 @@ public class QuestionController {
         return ResponseEntity.ok(amountFrom);
     }
 
+    @GetMapping("/count")
+    public ResponseEntity<Long> getQuestionCount() {
+        return ResponseEntity.ok().body(questionService.getQuestionCount());
+    }
+
     @GetMapping("/search")
     public ResponseEntity<List<QuestionAllFieldsDto>> search(
             @RequestParam("query") String query,

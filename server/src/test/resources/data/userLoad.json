@@ -79,5 +79,18 @@
       "$date": "2017-06-02T18:30:35Z"
     },
     "isActive": false
+  },
+  {
+    "_id": "7u",
+    "firstName": "Tyler",
+    "lastName": "Derden",
+    "email": "Tyler_Derden@mylo.com",
+    "roles": [
+      "USER"
+    ],
+    "createdAt": {
+      "$date": "2017-06-02T18:30:35Z"
+    },
+    "isActive": true
   }
 ]
