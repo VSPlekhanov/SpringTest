@@ -45,6 +45,13 @@ public class QuestionControllerTest {
     }
 
     @Test
+    public void getQuestionCount() {
+        controller.getQuestionCount();
+
+        verify(questionService, times(1)).getQuestionCount();
+    }
+
+    @Test
     public void addQuestionShouldSaveQuestionTest() throws IOException {
         String authorEmail = "John_Doe@epam.com";
         QuestionPostDto postDto = new QuestionPostDto("some title", new String[]{"1", "2", "3", "4"}, "some txet",
