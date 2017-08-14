@@ -8,6 +8,7 @@ import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.dto.question.QuestionBaseDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.dto.vote.VoteAllFieldsDto;
+import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.exception.AnswerValidationException;
 import com.epam.lstrsum.exception.NoSuchAnswerException;
 import com.epam.lstrsum.exception.NoSuchUserException;
@@ -112,7 +113,7 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
                                 "user2firstName",
                                 "lastName",
                                 "user2firstName_lastName@epam.com",
-                                new String[]{"allowed"},
+                                Collections.singletonList(UserRoleType.ROLE_EXTENDED_USER),
                                 Instant.now(),
                                 true))
                         .allowedSubs(Collections.EMPTY_LIST)
@@ -125,7 +126,7 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
                         "John",
                         "Doe",
                         authorEmail,
-                        new String[]{"allowed"},
+                        Collections.singletonList(UserRoleType.ROLE_EXTENDED_USER),
                         Instant.now(),
                         true),
                 0);
@@ -266,7 +267,7 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
         when(userRuntimeRequestComponent.getEmail()).thenReturn(voterEmail);
         doNothing().when(voteService).deleteVoteToAnswer(voterEmail, someAnswerId);
 
-        ResponseEntity<Boolean> responseEntity = answerController.deleteVote(someAnswerId);
+        ResponseEntity<Boolean> responseEntity = answerController.revokeVote(someAnswerId);
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
         assertThat(responseEntity.getBody(), is(true));
 

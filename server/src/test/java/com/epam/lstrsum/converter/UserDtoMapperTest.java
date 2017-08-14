@@ -3,11 +3,13 @@ package com.epam.lstrsum.converter;
 import com.epam.lstrsum.InstantiateUtil;
 import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.dto.user.UserBaseDto;
+import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.User;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.InstantiateUtil.initList;
 import static com.epam.lstrsum.InstantiateUtil.someUser;
@@ -20,13 +22,14 @@ public class UserDtoMapperTest extends SetUpDataBaseCollections {
     @Test
     public void modelToAllFieldsDto() throws Exception {
         final User user = someUser();
+        List<String> roles = user.getRoles().stream().map(UserRoleType::name).collect(Collectors.toList());
 
         assertThat(userMapper.modelToAllFieldsDto(user))
                 .satisfies(u -> {
                     checkUserBaseDto(u, user);
                     assertThat(u.getCreatedAt()).isEqualTo(user.getCreatedAt());
                     assertThat(u.getIsActive()).isEqualTo(user.getIsActive());
-                    assertThat(u.getRoles()).isEqualTo(user.getRoles());
+                    assertThat(u.getRoles()).isEqualTo(roles.toArray());
                 });
     }
 

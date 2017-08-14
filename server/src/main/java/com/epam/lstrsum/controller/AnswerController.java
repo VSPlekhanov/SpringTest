@@ -36,21 +36,21 @@ public class AnswerController {
         return ResponseEntity.ok(answerAllFieldsDto);
     }
 
-    @PostMapping("/vote/{answerId}")
+    @PostMapping("/{answerId}/vote")
     public ResponseEntity<VoteAllFieldsDto> addVote(@NotEmptyString @PathVariable(value = "answerId") final String answerId) {
         String email = userRuntimeRequestComponent.getEmail();
         VoteAllFieldsDto voteAllFieldsDto = voteService.addVoteToAnswer(email, answerId);
         return ResponseEntity.ok(voteAllFieldsDto);
     }
 
-    @PutMapping("/vote/{answerId}")
-    public ResponseEntity<Boolean> deleteVote(@NotEmptyString @PathVariable(value = "answerId") final String answerId) {
+    @PutMapping("/{answerId}/vote")
+    public ResponseEntity<Boolean> revokeVote(@NotEmptyString @PathVariable(value = "answerId") final String answerId) {
         String email = userRuntimeRequestComponent.getEmail();
         voteService.deleteVoteToAnswer(email, answerId);
         return ResponseEntity.ok(true);
     }
 
-    @GetMapping("/vote/all/{answerId}")
+    @GetMapping("/{answerId}/vote/all")
     public ResponseEntity<List<VoteAllFieldsDto>> getAllAnswerVotes(@NotEmptyString @PathVariable(value = "answerId") final String answerId) {
         List<VoteAllFieldsDto> allVotesForAnswer = voteService.findAllVotesForAnswer(answerId);
         return ResponseEntity.ok(allVotesForAnswer);

@@ -5,6 +5,8 @@ import com.epam.lstrsum.converter.contract.AllFieldModelDtoConverter;
 import com.epam.lstrsum.converter.contract.BasicModelDtoConverter;
 import com.epam.lstrsum.dto.user.UserAllFieldsDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
+import com.epam.lstrsum.dto.user.telescope.TelescopeDataDto;
+import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.UserRepository;
@@ -36,10 +38,14 @@ public class UserAggregator implements BasicModelDtoConverter<User, UserBaseDto>
         return userMapper.allowedSubsToListOfUserBaseDtos(allowedSubs);
     }
 
-    public User findByEmail(String email){
+    public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> {
-                log.debug("No user with such email = {}", email);
-                return new NoSuchUserException("No user with such email = "+ email);
+            log.debug("No user with such email = {}", email);
+            return new NoSuchUserException("No user with such email = " + email);
         });
+    }
+
+    public User userTelescopeInfoDtoToUser(TelescopeDataDto userDto, String email, List<UserRoleType> userRoles) {
+        return userMapper.userTelescopeInfoDtoToUser(userDto, email, userRoles);
     }
 }
