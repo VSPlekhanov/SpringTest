@@ -1,6 +1,7 @@
 package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
+import com.epam.lstrsum.service.http.HttpRequestService;
 import com.epam.lstrsum.utils.HttpUtilEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +20,10 @@ public class TelescopeService {
     private final HttpRequestService httpRequestService;
 
     @Value("${email.from-address}")
-    private String TELESCOPE_USERNAME;
+    private String telescopeUsername;
 
     @Value("${email.password}")
-    private String TELESCOPE_PASSWORD;
+    private String telescopePassword;
 
     private final String TELESCOPE_API_FTS_SEARCH_URL = "https://telescope.epam.com/eco/rest/e3s-eco-scripting-impl/0.1.0/data/searchFts";
     private final String TELESCOPE_API_PHOTO_URL = "https://telescope.epam.com/rest/logo/v1/logo";
@@ -46,8 +47,8 @@ public class TelescopeService {
             return new TelescopeEmployeeEntityDto[]{};
         }
         HttpUtilEntity httpUtilEntity = HttpUtilEntity.builder()
-                .username(TELESCOPE_USERNAME)
-                .password(TELESCOPE_PASSWORD)
+                .username(telescopeUsername)
+                .password(telescopePassword)
                 .url(TELESCOPE_API_FTS_SEARCH_URL)
                 .parametersNames(Arrays.asList("metaType", "query", "fields"))
                 .parametersValues(Arrays.asList(TELESCOPE_API_META_TYPE_FIELD_VALUE,
@@ -80,8 +81,8 @@ public class TelescopeService {
             return new TelescopeEmployeeEntityDto[]{};
         }
         HttpUtilEntity httpUtilEntity = HttpUtilEntity.builder()
-                .username(TELESCOPE_USERNAME)
-                .password(TELESCOPE_PASSWORD)
+                .username(telescopeUsername)
+                .password(telescopePassword)
                 .url(TELESCOPE_API_FTS_SEARCH_URL)
                 .parametersNames(Arrays.asList("metaType", "query", "fields"))
                 .parametersValues(Arrays.asList(TELESCOPE_API_META_TYPE_FIELD_VALUE,

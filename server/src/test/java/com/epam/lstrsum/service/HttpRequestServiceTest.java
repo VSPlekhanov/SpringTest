@@ -1,6 +1,7 @@
 package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.exception.BusinessLogicException;
+import com.epam.lstrsum.service.http.HttpRequestService;
 import com.epam.lstrsum.utils.HttpUtilEntity;
 import org.junit.Before;
 import org.junit.Test;

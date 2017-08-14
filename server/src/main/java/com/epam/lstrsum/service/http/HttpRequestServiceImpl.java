@@ -1,4 +1,4 @@
-package com.epam.lstrsum.service;
+package com.epam.lstrsum.service.http;
 
 import com.epam.lstrsum.exception.BusinessLogicException;
 import com.epam.lstrsum.utils.HttpUtilEntity;
@@ -27,7 +27,7 @@ import static java.util.Objects.isNull;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class HttpRequestService {
+public class HttpRequestServiceImpl implements HttpRequestService {
 
     private final RestTemplate restTemplate;
 

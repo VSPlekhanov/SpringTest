@@ -32,7 +32,7 @@ public interface UserDtoMapper {
 
     @Mappings({
             @Mapping(target = "createdAt", expression = "java(java.time.Instant.now())"),
-            @Mapping(target = "isActive", expression = "java(java.lang.Boolean.TRUE)"),
+            @Mapping(target = "isActive", constant = "true"),
             @Mapping(target = "email", source = "email"),
             @Mapping(target = "roles", source = "roles"),
     })
