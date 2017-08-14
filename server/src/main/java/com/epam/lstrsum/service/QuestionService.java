@@ -101,12 +101,11 @@ public class QuestionService {
 
     @CacheEvict(value = "tagsRating", allEntries = true)
     @EmailNotification(template = NewQuestionNotificationTemplate.class)
-    public QuestionAllFieldsDto addNewQuestion(QuestionPostDto questionPostDto, String email) {
+    public Question addNewQuestion(QuestionPostDto questionPostDto, String email) {
         log.debug("Add new Question with email {}", email);
         validateQuestionData(questionPostDto, email);
         Question newQuestion = questionAggregator.questionPostDtoAndAuthorEmailToQuestion(questionPostDto, email);
-        Question saved = questionRepository.save(newQuestion);
-        return questionAggregator.modelToAllFieldsDto(saved);
+        return questionRepository.save(newQuestion);
     }
 
     public QuestionAllFieldsDto getQuestionAllFieldDtoByQuestionId(String questionId) {
@@ -156,5 +155,9 @@ public class QuestionService {
     public Question findQuestionByTitleAndAuthorEmail(String title, User authorId) {
         return questionRepository.findQuestionByTitleAndAuthorId(title, authorId).
                 orElseThrow(() -> new NoSuchRequestException("No such question"));
+    }
+
+    public Long getQuestionCount() {
+        return questionRepository.count();
     }
 }

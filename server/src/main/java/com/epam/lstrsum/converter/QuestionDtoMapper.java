@@ -47,4 +47,5 @@ public interface QuestionDtoMapper {
                 .mapToObj(i -> modelToBaseDto(subscriptions.get(i), author.get(i)))
                 .collect(Collectors.toList());
     }
+
 }

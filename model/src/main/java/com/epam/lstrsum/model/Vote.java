@@ -18,7 +18,7 @@ import java.time.Instant;
 @Builder
 @Document(collection = Vote.VOTE_COLLECTION_NAME)
 public class Vote {
-    public final static String VOTE_COLLECTION_NAME = "vote";
+    public final static String VOTE_COLLECTION_NAME = "Vote";
 
     @Id
     private String voteId;

@@ -12,7 +12,7 @@ import java.util.Arrays;
 @Builder
 @Document(collection = Attachment.ATTACHMENT_COLLECTION_NAME)
 public class Attachment {
-    public final static String ATTACHMENT_COLLECTION_NAME = "attachment";
+    public final static String ATTACHMENT_COLLECTION_NAME = "Attachment";
 
     @Id
     private String id;

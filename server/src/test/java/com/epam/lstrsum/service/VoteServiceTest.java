@@ -59,7 +59,7 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
         VoteAllFieldsDto voteDto = voteService.addVoteToAnswer(notVotedUserEmail, answerId);
         assertNotNull(voteDto);
         assertThat(voteDto.isRevoked(), is(false));
-        assertTrue(voteDto.getCreatedAt().isBefore(Instant.now()));
+        assertTrue(voteDto.getCreatedAt().isBefore(Instant.now().plusMillis(1)));
 
         UserBaseDto userDto = voteDto.getUserBaseDto();
         assertThat(userDto.getUserId(), is("2u"));
@@ -88,7 +88,7 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
         voteService.deleteVoteToAnswer(alreadyVotedUserEmail, answerId);
         VoteAllFieldsDto revokedVote = voteService.findAllVotesForAnswer(answerId)
                 .stream()
-                .filter(v -> userService.getUserById(v.getUserBaseDto().getUserId()).getEmail().equals(alreadyVotedUserEmail))
+                .filter(v -> userService.findUserById(v.getUserBaseDto().getUserId()).getEmail().equals(alreadyVotedUserEmail))
                 .collect(Collectors.toList()).get(0);
 
         assertThat(revokedVote.isRevoked(), is(true));

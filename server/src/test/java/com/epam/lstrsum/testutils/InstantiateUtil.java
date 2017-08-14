@@ -1,4 +1,4 @@
-package com.epam.lstrsum;
+package com.epam.lstrsum.testutils;
 
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
