@@ -8,8 +8,8 @@
     <!--maxBytesLocalDisk="50G">-->
 
     <cache name="tagsRating"
-           maxEntriesLocalHeap="5000"
-           maxEntriesLocalDisk="1000"
+           maxEntriesLocalHeap="1000"
+           maxEntriesLocalDisk="2000"
            eternal="false"
            diskSpoolBufferSizeMB="20"
            timeToIdleSeconds="200"

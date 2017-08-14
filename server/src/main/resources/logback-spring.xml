@@ -28,6 +28,13 @@
         </encoder>
     </appender>
 
+    <springProfile name="local">
+        <root level="DEBUG">
+            <appender-ref ref="ROLLING-FILE"/>
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
     <springProfile name="dev">
         <root level="DEBUG">
             <appender-ref ref="ROLLING-FILE"/>

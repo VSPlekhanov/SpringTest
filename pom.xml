@@ -49,6 +49,7 @@
         <org.mapstruct.version>1.2.0.CR1</org.mapstruct.version>
         <org.projectlombok.version>1.16.18</org.projectlombok.version>
         <org.maven.compiler.plugin.version>3.6.1</org.maven.compiler.plugin.version>
+        <jasypt.version>1.14</jasypt.version>
         <ews.version>2.0</ews.version>
     </properties>
 
@@ -141,6 +142,11 @@
                 <artifactId>ews-java-api</artifactId>
                 <version>${ews.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.github.ulisesbocchio</groupId>
+                <artifactId>jasypt-spring-boot-starter</artifactId>
+                <version>${jasypt.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -159,7 +165,7 @@
                     <configuration>
                         <mainClass>com.epam.lstrsum.Application</mainClass>
                         <profiles>
-                            <profile>dev</profile>
+                            <profile>local</profile>
                             <profile>unsecured</profile>
                         </profiles>
                     </configuration>
