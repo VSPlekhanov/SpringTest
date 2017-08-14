@@ -6,7 +6,13 @@ import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionBaseDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
-import com.epam.lstrsum.model.*;
+import com.epam.lstrsum.enums.UserRoleType;
+import com.epam.lstrsum.model.Answer;
+import com.epam.lstrsum.model.Attachment;
+import com.epam.lstrsum.model.Question;
+import com.epam.lstrsum.model.Subscription;
+import com.epam.lstrsum.model.User;
+import com.epam.lstrsum.model.Vote;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -36,7 +42,7 @@ public class InstantiateUtil {
                 .lastName(someString())
                 .isActive(true)
                 .createdAt(Instant.now())
-                .roles(new String[]{"ROLE_USER"})
+                .roles(Collections.singletonList(UserRoleType.ROLE_EXTENDED_USER))
                 .email(someString())
                 .build();
     }

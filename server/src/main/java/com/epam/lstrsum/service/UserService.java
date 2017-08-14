@@ -46,7 +46,7 @@ public class UserService {
         return mongoTemplate.updateMulti(new Query(inEmails), Update.update("isActive", active), User.class).getN();
     }
 
-    public List<User> findAllWithRole(final String role) {
+    public List<User> findAllWithRole(final UserRoleType role) {
         final Criteria roles = Criteria.where("roles").elemMatch(new Criteria().in(role));
         return mongoTemplate.find(new Query(roles), User.class);
     }
@@ -59,14 +59,14 @@ public class UserService {
         return userAggregator.modelToBaseDto(authorId);
     }
 
-    public long addIfNotExistAllWithRole(final List<String> userEmails, String[] roles) {
+    public long addIfNotExistAllWithRole(final List<String> userEmails, List<UserRoleType> roles) {
         // TODO: 8/9/2017 RETRIEVE INFORMATION ABOUT ALL USERS FROM TELESCOPE
         return userEmails.stream()
                 .filter(email -> addIfNotExist(email, roles))
                 .count();
     }
 
-    private boolean addIfNotExist(final String email, String[] roles) {
+    private boolean addIfNotExist(final String email, List<UserRoleType> roles) {
         final Optional<User> byEmail = userRepository.findByEmail(email);
         if (!byEmail.isPresent()) {
             userRepository.save(User.builder()

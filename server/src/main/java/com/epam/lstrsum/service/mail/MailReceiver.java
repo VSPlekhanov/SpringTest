@@ -1,13 +1,11 @@
 package com.epam.lstrsum.service.mail;
 
-import com.epam.lstrsum.aggregators.QuestionAggregator;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.email.service.EmailParser;
-import com.epam.lstrsum.email.service.ExchangeServiceHelper;
 import com.epam.lstrsum.email.service.MailService;
+import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.service.QuestionService;
-import com.epam.lstrsum.service.SubscriptionService;
 import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +15,7 @@ import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
+import java.util.Collections;
 
 import static com.epam.lstrsum.email.service.MailService.getAddressFrom;
 
@@ -57,7 +56,7 @@ public class MailReceiver {
             final QuestionPostDto questionPostDto = parsedMessage.getQuestionPostDto();
 
             final long users = userService.addIfNotExistAllWithRole(
-                    questionPostDto.getAllowedSubs(), new String[]{"ANOTHER_USER"}
+                    questionPostDto.getAllowedSubs(), Collections.singletonList(UserRoleType.ROLE_SIMPLE_USER)
             );
             if (users > 0) {
                 log.debug("Detected {} users not in base and added as another user", users);

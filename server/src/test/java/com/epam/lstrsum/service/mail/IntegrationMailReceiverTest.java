@@ -1,6 +1,7 @@
 package com.epam.lstrsum.service.mail;
 
 import com.epam.lstrsum.email.service.MailService;
+import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.UserRepository;
 import com.epam.lstrsum.testutils.model.CompositeMimeMessage;
@@ -71,7 +72,7 @@ public class IntegrationMailReceiverTest {
                 .firstName("someName")
                 .lastName("someLastName")
                 .isActive(true)
-                .roles(new String[]{"USER"});
+                .roles(Collections.singletonList(UserRoleType.ROLE_EXTENDED_USER));
 
         for (String userEmail : userEmails) {
             userRepository.save(builder.email(userEmail).build());

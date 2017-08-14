@@ -86,7 +86,7 @@
     "lastName": "Derden",
     "email": "Tyler_Derden@mylo.com",
     "roles": [
-      "USER"
+      "ROLE_EXTENDED_USER"
     ],
     "createdAt": {
       "$date": "2017-06-02T18:30:35Z"

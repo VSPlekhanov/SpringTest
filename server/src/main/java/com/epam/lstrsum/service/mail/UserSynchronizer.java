@@ -2,6 +2,7 @@ package com.epam.lstrsum.service.mail;
 
 
 import com.epam.lstrsum.email.service.ExchangeServiceHelper;
+import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,8 +29,8 @@ import static java.util.Objects.nonNull;
 public class UserSynchronizer {
     private final ExchangeServiceHelper exchangeServiceHelper;
     private final UserService userService;
-    private static final String COMMON_USER_ROLE = "USER";
-    private static final String[] ONLY_COMMON_USER_ROLES = {COMMON_USER_ROLE};
+    private static final UserRoleType COMMON_USER_ROLE = UserRoleType.ROLE_EXTENDED_USER;
+    private static final List<UserRoleType> ONLY_COMMON_USER_ROLES = Collections.singletonList(COMMON_USER_ROLE);
 
     @Setter
     private String distributionList;
