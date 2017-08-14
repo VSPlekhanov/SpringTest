@@ -2,16 +2,16 @@
   {
     "_id": "1u_1s",
     "userId": {
-      "$ref": "user",
+      "$ref": "User",
       "$id": "1u"
     },
     "questionIds": [
       {
-        "$ref": "question",
+        "$ref": "Question",
         "$id": "6u_6r"
       },
       {
-        "$ref": "question",
+        "$ref": "Question",
         "$id": "2u_3r"
       }
     ]
@@ -19,20 +19,20 @@
   {
     "_id": "2u_1s",
     "userId": {
-      "$ref": "user",
+      "$ref": "User",
       "$id": "2u"
     },
     "questionIds": [
       {
-        "$ref": "question",
+        "$ref": "Question",
         "$id": "1u_1r"
       },
       {
-        "$ref": "question",
+        "$ref": "Question",
         "$id": "1u_2r"
       },
       {
-        "$ref": "question",
+        "$ref": "Question",
         "$id": "6u_6r"
       }
     ]
@@ -40,20 +40,20 @@
   {
     "_id": "3u_1s",
     "userId": {
-      "$ref": "user",
+      "$ref": "User",
       "$id": "3u"
     },
     "questionIds": [
       {
-        "$ref": "question",
+        "$ref": "Question",
         "$id": "1u_1r"
       },
       {
-        "$ref": "question",
+        "$ref": "Question",
         "$id": "4u_5r"
       },
       {
-        "$ref": "question",
+        "$ref": "Question",
         "$id": "6u_6r"
       }
     ]
@@ -61,20 +61,20 @@
   {
     "_id": "4u_1s",
     "userId": {
-      "$ref": "user",
+      "$ref": "User",
       "$id": "4u"
     },
     "questionIds": [
       {
-        "$ref": "question",
+        "$ref": "Question",
         "$id": "1u_2r"
       },
       {
-        "$ref": "question",
+        "$ref": "Question",
         "$id": "2u_3r"
       },
       {
-        "$ref": "question",
+        "$ref": "Question",
         "$id": "6u_6r"
       }
     ]
@@ -82,7 +82,7 @@
   {
     "_id": "5u_1s",
     "userId": {
-      "$ref": "user",
+      "$ref": "User",
       "$id": "5u"
     },
     "questionIds": []
@@ -90,20 +90,20 @@
   {
     "_id": "6u_1s",
     "userId": {
-      "$ref": "user",
+      "$ref": "User",
       "$id": "6u"
     },
     "questionIds": [
       {
-        "$ref": "question",
+        "$ref": "Question",
         "$id": "1u_2r"
       },
       {
-        "$ref": "question",
+        "$ref": "Question",
         "$id": "2u_3r"
       },
       {
-        "$ref": "question",
+        "$ref": "Question",
         "$id": "6u_6r"
       }
     ]

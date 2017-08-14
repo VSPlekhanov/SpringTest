@@ -108,6 +108,7 @@ public class DataBaseConfiguration extends AbstractMongoConfiguration {
         return new MongodConfigBuilder()
                 .cmdOptions(new MongoCmdOptionsBuilder()
                         .useStorageEngine("mmapv1")
+                        .enableTextSearch(true)
                         .build())
                 .version(Version.Main.V3_3)
                 .build();

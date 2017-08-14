@@ -33,7 +33,7 @@ public class VoteService {
     }
 
     public VoteAllFieldsDto addVoteToAnswer(String email, String answerId) {
-        User user = userService.getUserByEmail(email);
+        User user = userService.findUserByEmail(email);
         Answer answer = answerService.getAnswerById(answerId);
         Optional<Vote> vote = getVoteByUserAndAnswerId(user, answerId);
 
@@ -85,7 +85,7 @@ public class VoteService {
     }
 
     public void deleteVoteToAnswer(String email, String answerId) {
-        User user = userService.getUserByEmail(email);
+        User user = userService.findUserByEmail(email);
         Answer answer = answerService.getAnswerById(answerId);
 
         Optional<Vote> vote = getVoteByUserAndAnswerId(user, answerId);

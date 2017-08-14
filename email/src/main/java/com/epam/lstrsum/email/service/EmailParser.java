@@ -1,7 +1,6 @@
 package com.epam.lstrsum.email.service;
 
 
-import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.dto.attachment.AttachmentAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.email.exception.EmailValidationException;
@@ -11,26 +10,29 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
 import org.bson.types.ObjectId;
 import org.jsoup.Jsoup;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import javax.activation.DataSource;
-import javax.mail.Address;
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.epam.lstrsum.email.service.EmailParserUtil.*;
+import static com.epam.lstrsum.email.service.EmailParserUtil.getReplyTo;
+import static com.epam.lstrsum.email.service.EmailParserUtil.getSender;
 import static java.util.Objects.isNull;
 
+@Profile("email")
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class EmailParser {
+    private final ExchangeServiceHelper exchangeServiceHelper;
 
     public EmailForExperienceApplication getParsedMessage(@NonNull MimeMessage message) throws Exception {
         String title = message.getSubject();
@@ -42,23 +44,22 @@ public class EmailParser {
         final MimeMessageParser messageParser = new MimeMessageParser(message);
         messageParser.parse();
 
-        String requestText;
-        String answerText = null;
+        String questionText;
         final String replyTo = getReplyTo(message);
 
-        if (mailIsAnswer(replyTo)) {
-            log.debug("Received email is answer");
+        if (mailIsQuestion(replyTo)) {
+            log.debug("Received email is question");
             if (messageParser.hasPlainContent()) {
                 log.debug("email's type is plain/text");
-                requestText = messageParser.getPlainContent();
-                if (requestText.trim().isEmpty()) {
+                questionText = messageParser.getPlainContent();
+                if (questionText.trim().isEmpty()) {
                     log.error("Error: Email has empty body");
                     throw new EmailValidationException("Email has empty body");
                 }
             } else if (messageParser.hasHtmlContent()) {
                 log.debug("email's type is plain/html");
-                requestText = Jsoup.parseBodyFragment(messageParser.getHtmlContent()).select("body").text();
-                if (requestText.trim().isEmpty()) {
+                questionText = Jsoup.parseBodyFragment(messageParser.getHtmlContent()).select("body").text();
+                if (questionText.trim().isEmpty()) {
                     log.error("Error: Email has empty body");
                     throw new EmailValidationException("Email has empty body");
                 }
@@ -67,36 +68,26 @@ public class EmailParser {
                 throw new EmailValidationException("Email has wrong format");
             }
         } else {
-            log.debug("Received email is request");
-            title = title.replaceFirst("Re:", "");
-            if (messageParser.hasPlainContent()) {
-                log.debug("email's type is plain/text");
-                requestText = getRequestTextFromPlainAnswer(messageParser.getPlainContent());
-                answerText = getAnswerTextFromPlainAnswer(messageParser.getPlainContent());
-            } else if (messageParser.hasHtmlContent()) {
-                log.debug("email's type is plain/html");
-                requestText = getRequestTextFromHtmlAnswer(messageParser.getHtmlContent());
-                answerText = getAnswerTextFromHtmlAnswer(messageParser.getHtmlContent());
-            } else {
-                log.error("Error: Email has empty body");
-                throw new EmailValidationException("Email has empty body");
-            }
+            log.debug("Received email is answer. We do not handle it");
+            throw new UnsupportedOperationException("Answer is not our business");
         }
 
         return new EmailForExperienceApplication(
-                title, requestText, answerText,
-                sender, getReceiversFromMessage(message), replyTo,
+                title, questionText,
+                sender, getReceiversFromMessage(message),
                 messageParser.getAttachmentList()
         );
     }
 
     private List<String> getReceiversFromMessage(MimeMessage message) throws MessagingException {
         return Arrays.stream(message.getAllRecipients())
-                .map(Address::toString)
+                .map(i -> (InternetAddress)i)
+                .map(InternetAddress::getAddress)
+                .flatMap(email -> exchangeServiceHelper.resolveGroup(email).stream())
                 .collect(Collectors.toList());
     }
 
-    private boolean mailIsAnswer(String replyTo) {
+    private boolean mailIsQuestion(String replyTo) {
         return isNull(replyTo);
     }
 
@@ -114,33 +105,19 @@ public class EmailParser {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public class EmailForExperienceApplication {
 
-        @NonNull
-        private final String subject;
-        @NonNull
-        private final String requestText;
-        private final String answerText;
+        @NonNull private final String subject;
+        @NonNull private final String questionText;
 
         @Getter
-        @NonNull
-        private final String sender;
-        @NonNull
+        @NonNull private final String sender;
+
         @Getter
-        private final List<String> receivers;
-        private final String replier;
-        @NonNull
-        private final List<DataSource> attacheDataSourceList;
+        @NonNull private final List<String> receivers;
 
-        public boolean isAnswer() {
-            return replier != null & answerText != null;
-        }
-
-        // TODO: Should be implemented after AnswerPostDto refactoring
-        public Optional<AnswerPostDto> getAnswerPostDto() {
-            throw new UnsupportedOperationException("Not implemented yet");
-        }
+        @NonNull private final List<DataSource> attacheDataSourceList;
 
         public QuestionPostDto getQuestionPostDto() {
-            return new QuestionPostDto(subject, null, requestText, 0L, receivers);
+            return new QuestionPostDto(subject, null, questionText, 0L, receivers);
         }
 
         public boolean hasAttachment() {
@@ -157,18 +134,5 @@ public class EmailParser {
             }
             return attached;
         }
-    }
-
-    private String getAnswerTextFromPlainAnswer(String plainContent) {
-        return Arrays.stream(plainContent.split("\\n"))
-                .map(EmailParserUtil::mapPlainAnswerString)
-                .collect(Collectors.joining());
-    }
-
-    private String getRequestTextFromPlainAnswer(String plainContent) {
-        return Arrays.stream(plainContent.split("\\n"))
-                .filter(line -> line.startsWith(">"))
-                .map(line -> line.replaceFirst(">", ""))
-                .collect(Collectors.joining());
     }
 }

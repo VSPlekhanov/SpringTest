@@ -3,11 +3,11 @@
     "_id": "1u_2r_1a_1v",
     "isRevoked": false,
     "answerId": {
-      "$ref": "answer",
+      "$ref": "Answer",
       "$id": "1u_2r_1a"
     },
     "userId": {
-      "$ref": "user",
+      "$ref": "User",
       "$id": "1u"
     },
     "createdAt": {
@@ -18,11 +18,11 @@
     "_id": "1u_2r_1a_2v",
     "isRevoked": false,
     "answerId": {
-      "$ref": "answer",
+      "$ref": "Answer",
       "$id": "1u_2r_1a"
     },
     "userId": {
-      "$ref": "user",
+      "$ref": "User",
       "$id": "3u"
     },
     "createdAt": {
@@ -33,11 +33,11 @@
     "_id": "1u_2r_1a_3v",
     "isRevoked": true,
     "answerId": {
-      "$ref": "answer",
+      "$ref": "Answer",
       "$id": "1u_2r_1a"
     },
     "userId": {
-      "$ref": "user",
+      "$ref": "User",
       "$id": "4u"
     },
     "createdAt": {

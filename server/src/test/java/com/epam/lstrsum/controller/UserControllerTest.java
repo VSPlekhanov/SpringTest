@@ -31,8 +31,8 @@ public class UserControllerTest extends SetUpDataBaseCollections {
                 });
         List<User> actualList = responseEntity.getBody();
         //validate
-        assertThat(actualList.size(), is(6));
+        assertThat(actualList.size(), is(7));
         List<String> actualIds = actualList.stream().map(User::getUserId).collect(collectingAndThen(toList(), ImmutableList::copyOf));
-        assertThat(actualIds, containsInAnyOrder("1u", "2u", "3u", "4u", "5u", "6u"));
+        assertThat(actualIds, containsInAnyOrder("1u", "2u", "3u", "4u", "5u", "6u", "7u"));
     }
 }

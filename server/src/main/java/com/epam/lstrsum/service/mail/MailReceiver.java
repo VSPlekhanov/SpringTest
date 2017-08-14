@@ -1,6 +1,14 @@
 package com.epam.lstrsum.service.mail;
 
+import com.epam.lstrsum.aggregators.QuestionAggregator;
+import com.epam.lstrsum.dto.question.QuestionPostDto;
+import com.epam.lstrsum.email.service.EmailParser;
+import com.epam.lstrsum.email.service.ExchangeServiceHelper;
 import com.epam.lstrsum.email.service.MailService;
+import com.epam.lstrsum.model.Question;
+import com.epam.lstrsum.service.QuestionService;
+import com.epam.lstrsum.service.SubscriptionService;
+import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -9,8 +17,6 @@ import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import java.util.regex.Pattern;
 
 import static com.epam.lstrsum.email.service.MailService.getAddressFrom;
 
@@ -19,34 +25,48 @@ import static com.epam.lstrsum.email.service.MailService.getAddressFrom;
 @RequiredArgsConstructor
 @Slf4j
 public class MailReceiver {
-    private static final Pattern EMAIL_MULTIPART_PATTERN = Pattern.compile("^multipart\\/.*");
-    private static final Pattern EMAIL_TEXT_PATTERN = Pattern.compile("^text\\/.*");
+    private static final String INTERNET_ADDRESS_TYPE = "rfc822";
 
     private final MailService mailService;
+    private final UserService userService;
+    private final QuestionService questionService;
+    private final EmailParser emailParser;
 
     @ServiceActivator(inputChannel = "receiveChannel", poller = @Poller(fixedRate = "200"))
-    public void showMessages(MimeMessage message) throws Exception {
+    public void showMessages(final MimeMessage message) throws Exception {
         log.debug("showMessages; Message received: {}", message);
 
         mailService.backupEmail(message);
 
         String contentType = message.getContentType();
         String content = "";
-        String type = "";
-
-        if (EMAIL_MULTIPART_PATTERN.asPredicate().test(contentType)) {
-            MimeMultipart rawContent = (MimeMultipart) message.getContent();
-            content = (String) rawContent.getBodyPart(0).getContent();
-            type = "multi";
-        } else if (EMAIL_TEXT_PATTERN.asPredicate().test(contentType)) {
-            content = (String) message.getContent();
-            type = "text";
-        } else {
-            log.warn("Unknown mime type!");
-        }
 
         String address = getAddressFrom(message.getFrom());
 
-        log.debug("From: {}\nSubject: {}\nContentType : \nContent: {}\nWith type: {}", address, message.getSubject(), contentType, content, type);
+        log.debug("From: {}\nSubject: {}\nContentType : {}\nContent: {}", address, message.getSubject(), contentType, content);
+
+        handleMessage(message);
+    }
+
+    private void handleMessage(final MimeMessage message) {
+        log.debug("Try to handle email");
+        try {
+            final EmailParser.EmailForExperienceApplication parsedMessage = emailParser.getParsedMessage(message);
+
+            final String authorEmail = parsedMessage.getSender();
+            final QuestionPostDto questionPostDto = parsedMessage.getQuestionPostDto();
+
+            final long users = userService.addIfNotExistAllWithRole(
+                    questionPostDto.getAllowedSubs(), new String[]{"ANOTHER_USER"}
+            );
+            if (users > 0) {
+                log.debug("Detected {} users not in base and added as another user", users);
+            }
+
+            final Question newQuestion = questionService.addNewQuestion(questionPostDto, authorEmail);
+            log.debug("Added new question with title {}", newQuestion.getTitle());
+        } catch (Exception e) {
+            log.warn("Can't parse received message\nWith error {}", e.getMessage());
+        }
     }
 }

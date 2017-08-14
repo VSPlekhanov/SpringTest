@@ -11,7 +11,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import java.util.Collections;
 import java.util.List;
 
-import static com.epam.lstrsum.InstantiateUtil.someString;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
@@ -50,7 +50,6 @@ public class TagServiceTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    //TODO: remove me after investigation
     public void getAllTagsCacheWorksOkForJenkins() {
         log.debug("getAllTagsCacheWorksOkForJenkins; cache names: {}, cache tagsRating.tags content: {}",
                 internalCacheManager.getCacheNames(), internalCacheManager.getCache("tagsRating").get("tags"));

@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Builder
 @Document(collection = Email.EMAIL_COLLECTION_NAME)
 public class Email {
-    public final static String EMAIL_COLLECTION_NAME = "email";
+    public final static String EMAIL_COLLECTION_NAME = "Email";
 
     @Id
     private String id;

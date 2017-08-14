@@ -15,7 +15,7 @@ import java.time.Instant;
 @Setter
 @Document(collection = Answer.ANSWER_COLLECTION_NAME)
 public class Answer {
-    public final static String ANSWER_COLLECTION_NAME = "answer";
+    public final static String ANSWER_COLLECTION_NAME = "Answer";
 
     @Id
     private String answerId;

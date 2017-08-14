@@ -1,10 +1,11 @@
 package com.epam.lstrsum.email;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
-import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
+import com.epam.lstrsum.aggregators.QuestionAggregator;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.email.service.MailService;
 import com.epam.lstrsum.email.template.NewQuestionNotificationTemplate;
+import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.service.QuestionService;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.Test;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.epam.lstrsum.InstantiateUtil.someString;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
@@ -35,7 +36,10 @@ public class QuestionNotificationAspectTest extends SetUpDataBaseCollections {
     private QuestionService questionService;
 
     @Autowired
-    private EmailCollection<QuestionAllFieldsDto> questionEmailCollection;
+    private EmailCollection<Question> questionEmailCollection;
+
+    @Autowired
+    private QuestionAggregator questionAggregator;
 
     @MockBean
     private MailService mailService;
@@ -51,7 +55,7 @@ public class QuestionNotificationAspectTest extends SetUpDataBaseCollections {
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
 
-        QuestionAllFieldsDto savedDto = questionService.addNewQuestion(postDto, authorEmail);
+        Question savedDto = questionService.addNewQuestion(postDto, authorEmail);
 
         MimeMessage expected = template.buildMailMessage(savedDto);
 
@@ -72,7 +76,7 @@ public class QuestionNotificationAspectTest extends SetUpDataBaseCollections {
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
 
-        QuestionAllFieldsDto savedDto = questionService.addNewQuestion(postDto, authorEmail);
+        Question savedDto = questionService.addNewQuestion(postDto, authorEmail);
 
         MimeMessage expected = template.buildMailMessage(savedDto);
 
@@ -87,7 +91,7 @@ public class QuestionNotificationAspectTest extends SetUpDataBaseCollections {
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
 
-        QuestionAllFieldsDto savedDto = questionService.addNewQuestion(postDto, authorEmail);
+        Question savedDto = questionService.addNewQuestion(postDto, authorEmail);
 
         MimeMessage expected = template.buildMailMessage(savedDto);
 
