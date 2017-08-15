@@ -2,6 +2,7 @@ package com.epam.lstrsum.service.mail;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.email.service.ExchangeServiceHelper;
+import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.service.UserService;
 import org.junit.Test;
@@ -48,10 +49,10 @@ public class UserSynchronizerTest extends SetUpDataBaseCollections {
         assertThat(userService.findUserByEmail(bobHoplins).getIsActive())
                 .isTrue();
 
-        assertThat(userService.findAllWithRole("USER").stream().filter(User::getIsActive))
+        assertThat(userService.findAllWithRole(UserRoleType.ROLE_EXTENDED_USER).stream().filter(User::getIsActive))
                 .hasSize(2);
-        assertThat(userService.findAllWithRole("USER").stream().filter(u -> !u.getIsActive()))
-                .hasSize(4);
+        assertThat(userService.findAllWithRole(UserRoleType.ROLE_EXTENDED_USER).stream().filter(u -> !u.getIsActive()))
+                .hasSize(3);
 
     }
 

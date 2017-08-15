@@ -1,6 +1,7 @@
 package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
+import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.model.User;
 import org.hamcrest.Matchers;
@@ -8,6 +9,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,7 +39,7 @@ public class UserServiceTest extends SetUpDataBaseCollections {
     }
 
     public void findAllWithRole() {
-        assertEquals(userService.findAllWithRole("USER").size(), 7);
+        assertEquals(userService.findAllWithRole(UserRoleType.ROLE_EXTENDED_USER).size(), 5);
     }
 
     @Test
@@ -84,7 +86,7 @@ public class UserServiceTest extends SetUpDataBaseCollections {
                 .collect(Collectors.toList());
 
         final long actual = userService.addIfNotExistAllWithRole(
-                concat.stream().map(User::getEmail).collect(Collectors.toList()), new String[]{"_USER"}
+                concat.stream().map(User::getEmail).collect(Collectors.toList()), Collections.singletonList(UserRoleType.ROLE_SIMPLE_USER)
         );
 
         assertEquals(actual, notInBaseUsers.length);

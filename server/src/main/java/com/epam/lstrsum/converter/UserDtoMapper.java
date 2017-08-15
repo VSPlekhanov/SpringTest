@@ -2,6 +2,8 @@ package com.epam.lstrsum.converter;
 
 import com.epam.lstrsum.dto.user.UserAllFieldsDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
+import com.epam.lstrsum.dto.user.telescope.TelescopeDataDto;
+import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -27,4 +29,12 @@ public interface UserDtoMapper {
                 .map(this::modelToBaseDto)
                 .collect(Collectors.toList());
     }
+
+    @Mappings({
+            @Mapping(target = "createdAt", expression = "java(java.time.Instant.now())"),
+            @Mapping(target = "isActive", constant = "true"),
+            @Mapping(target = "email", source = "email"),
+            @Mapping(target = "roles", source = "roles"),
+    })
+    User userTelescopeInfoDtoToUser(TelescopeDataDto userDto, String email, List<UserRoleType> roles);
 }

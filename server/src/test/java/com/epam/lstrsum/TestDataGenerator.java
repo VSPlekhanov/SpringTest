@@ -1,5 +1,6 @@
 package com.epam.lstrsum;
 
+import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
@@ -21,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -168,7 +170,7 @@ public class TestDataGenerator {
                 .firstName("FirstName" + numberOfUser)
                 .lastName("LastName" + numberOfUser)
                 .email("UserId" + numberOfUser + "_" + "LastName" + numberOfUser + "@epam.com")
-                .roles(new String[]{"ADMIN, USER"})
+                .roles(Arrays.asList(UserRoleType.ROLE_EXTENDED_USER, UserRoleType.ROLE_ADMIN))
                 .createdAt(Instant.now())
                 .isActive(true)
                 .build();

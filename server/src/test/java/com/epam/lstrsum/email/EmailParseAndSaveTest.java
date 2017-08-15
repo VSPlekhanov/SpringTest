@@ -4,6 +4,7 @@ import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.email.service.EmailParser;
 import com.epam.lstrsum.email.service.ExchangeServiceHelper;
+import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.service.QuestionService;
@@ -18,6 +19,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import javax.mail.internet.MimeMessage;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.Collections;
 
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -49,9 +52,9 @@ public class EmailParseAndSaveTest extends SetUpDataBaseCollections {
     @Test
     public void testThatReceivedEmailCreateNewQuestionAndSaveItToMongo() throws Exception {
         final User authorOfEmail = new User(new ObjectId().toString(), "Eugen", "Sandrov",
-                "Eugen_Sandrov@epam.com", new String[]{"ADMIN", "USER"}, Instant.now(), true);
+                "Eugen_Sandrov@epam.com", Arrays.asList(UserRoleType.ROLE_EXTENDED_USER, UserRoleType.ROLE_ADMIN), Instant.now(), true);
         final User receiverOfEmail = new User(new ObjectId().toString(), "Stan", "Chivs",
-                "Stan_Chivs@epam.com", new String[]{"USER"}, Instant.now(), true);
+                "Stan_Chivs@epam.com", Collections.singletonList(UserRoleType.ROLE_SIMPLE_USER), Instant.now(), true);
         mongoTemplate.save(authorOfEmail);
         mongoTemplate.save(receiverOfEmail);
         final MimeMessage simpleEmail = javaMailSender.createMimeMessage();
