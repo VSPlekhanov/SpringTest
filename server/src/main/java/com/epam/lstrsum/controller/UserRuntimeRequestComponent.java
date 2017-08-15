@@ -22,8 +22,9 @@ public class UserRuntimeRequestComponent {
     }
 
     private EpamEmployeePrincipal getPrincipal() {
+        log.debug("getPrincipal.enter; request {}", request);
         return Optional.ofNullable(request.getUserPrincipal())
-                .map(o -> (OAuth2Authentication)o)
+                .map(o -> (OAuth2Authentication) o)
                 .map(u -> (EpamEmployeePrincipal) u.getPrincipal())
                 .orElseGet(() -> {
                     log.warn("Unsecured invocation detected");
