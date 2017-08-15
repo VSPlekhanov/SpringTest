@@ -147,7 +147,7 @@ public class QuestionServiceImpl implements QuestionService {
     public void addAttachmentsToQuestion(String questionId, List<String> attachmentIds) {
         mongoTemplate.findAndModify(
                 new Query(Criteria.where("questionId").is(questionId)),
-                new Update().addToSet("attachments").each(attachmentIds),
+                new Update().addToSet("attachmentIds").each(attachmentIds),
                 Question.class
         );
     }

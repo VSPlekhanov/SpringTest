@@ -1,6 +1,6 @@
 package com.epam.lstrsum.controller;
 
-import com.epam.lstrsum.controller.model.Counter;
+import com.epam.lstrsum.dto.common.CounterDto;
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.question.*;
 import com.epam.lstrsum.dto.user.UserBaseDto;
@@ -181,7 +181,7 @@ public class QuestionControllerTest {
         String searchQuery = "android";
         doReturn(2L).when(questionService).getTextSearchResultsCount(searchQuery);
 
-        ResponseEntity<Counter> actual = controller.searchCount(searchQuery);
+        ResponseEntity<CounterDto> actual = controller.searchCount(searchQuery);
 
         verify(questionService).getTextSearchResultsCount(eq(searchQuery));
         assertThat(actual.getStatusCode(), is(HttpStatus.OK));

@@ -1,6 +1,6 @@
 package com.epam.lstrsum.controller;
 
-import com.epam.lstrsum.controller.model.Counter;
+import com.epam.lstrsum.dto.common.CounterDto;
 import com.epam.lstrsum.dto.question.*;
 import com.epam.lstrsum.service.QuestionService;
 import lombok.RequiredArgsConstructor;
@@ -69,8 +69,8 @@ public class QuestionController {
     }
 
     @GetMapping("/count")
-    public ResponseEntity<Counter> getQuestionCount() {
-        return ResponseEntity.ok().body(new Counter(questionService.getQuestionCount()));
+    public ResponseEntity<CounterDto> getQuestionCount() {
+        return ResponseEntity.ok().body(new CounterDto(questionService.getQuestionCount()));
     }
 
     @GetMapping("/search")
@@ -83,9 +83,9 @@ public class QuestionController {
     }
 
     @GetMapping("/getTextSearchResultsCount")
-    public ResponseEntity<Counter> searchCount(@RequestParam("query") String query) {
+    public ResponseEntity<CounterDto> searchCount(@RequestParam("query") String query) {
         return ResponseEntity.ok()
-                .body(new Counter(questionService.getTextSearchResultsCount(query)));
+                .body(new CounterDto(questionService.getTextSearchResultsCount(query)));
     }
 
     @GetMapping("/getRelevantTags")

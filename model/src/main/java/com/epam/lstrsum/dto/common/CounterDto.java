@@ -1,4 +1,4 @@
-package com.epam.lstrsum.controller.model;
+package com.epam.lstrsum.dto.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,6 @@ import lombok.Setter;
 @Builder
 @Setter
 @Getter
-public class Counter {
+public class CounterDto {
     Long count;
 }
