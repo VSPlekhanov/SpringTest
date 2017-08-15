@@ -3,6 +3,7 @@ package com.epam.lstrsum.service;
 import com.epam.lstrsum.dto.user.telescope.TelescopeDataDto;
 import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
 import com.epam.lstrsum.service.http.HttpRequestService;
+import com.epam.lstrsum.service.impl.TelescopeServiceImpl;
 import com.epam.lstrsum.utils.HttpUtilEntity;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +32,7 @@ public class TelescopeServiceTest {
     public void setUp() {
         initMocks(this);
 
-        telescopeService = new TelescopeService(httpRequestService);
+        telescopeService = new TelescopeServiceImpl(httpRequestService);
     }
 
     @Test

@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
 import org.bson.types.ObjectId;
 import org.jsoup.Jsoup;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,9 @@ import static java.util.Objects.isNull;
 @RequiredArgsConstructor
 public class EmailParser {
     private final ExchangeServiceHelper exchangeServiceHelper;
+
+    @Value("#{'${multipart.allowed-extensions}'.split(',')}")
+    private List<String> allowedExtensions;
 
     public EmailForExperienceApplication getParsedMessage(@NonNull MimeMessage message) throws Exception {
         String title = message.getSubject();
@@ -128,11 +132,20 @@ public class EmailParser {
             final List<AttachmentAllFieldsDto> attached = new ArrayList<>();
             for (DataSource datasource : attacheDataSourceList) {
                 final String fileName = datasource.getName();
+
+                if (notAllowedFile(fileName))
+                    continue;
+
                 final String fileType = datasource.getContentType();
                 final byte[] data = IOUtils.toByteArray(datasource.getInputStream());
                 attached.add(new AttachmentAllFieldsDto(new ObjectId().toString(), fileName, fileType, data));
             }
             return attached;
+        }
+
+        private boolean notAllowedFile(String fileName) {
+            return allowedExtensions.stream()
+                    .noneMatch(fileName::endsWith);
         }
     }
 }

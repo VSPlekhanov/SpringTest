@@ -3,6 +3,10 @@ package com.epam.lstrsum.testutils;
 import com.epam.lstrsum.testutils.model.CompositeMimeMessage;
 import org.apache.commons.mail.HtmlEmail;
 
+import javax.activation.FileDataSource;
+import javax.mail.util.ByteArrayDataSource;
+import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -38,8 +42,31 @@ public class MimeMessageCreatorUtil {
             email.setMsg(text);
             builder.text(text);
 
+            CompositeMimeMessage.Attach allowedAttach = CompositeMimeMessage.Attach.builder()
+                    .dataSource(new ByteArrayDataSource(new byte[]{0, 1, 2, 3}, "text/plain"))
+                    .name(ByteArrayDataSource.class.getName() + ".jpg")
+                    .description("It is a " + ByteArrayDataSource.class.getName())
+                    .build();
+
+            CompositeMimeMessage.Attach notAllowedAttach = CompositeMimeMessage.Attach.builder()
+                    .dataSource(new ByteArrayDataSource(new byte[]{0, 1, 2, 3}, "text/plain"))
+                    .name("file.exe")
+                    .description("It is an exe file ")
+                    .build();
+
+            CompositeMimeMessage.Attach allowedButBigAttach = CompositeMimeMessage.Attach.builder()
+                    .dataSource(new FileDataSource(new File("src/test/resources/data/bigfile.jpg")))
+                    .name("bigfile.log")
+                    .description("description")
+                    .build();
+
+            email.attach(allowedAttach.getDataSource(), allowedAttach.getName(), allowedAttach.getDescription());
+            email.attach(notAllowedAttach.getDataSource(), notAllowedAttach.getName(), notAllowedAttach.getDescription());
+            email.attach(allowedButBigAttach.getDataSource(), allowedButBigAttach.getName(), allowedButBigAttach.getDescription());
+
             email.buildMimeMessage();
             builder.mimeMessage(email.getMimeMessage());
+            builder.attaches(Collections.singletonList(allowedAttach));
 
             return builder.build();
         } catch (Exception e) {

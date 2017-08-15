@@ -4,6 +4,7 @@ import com.epam.lstrsum.aggregators.AttachmentAggregator;
 import com.epam.lstrsum.dto.attachment.AttachmentAllFieldsDto;
 import com.epam.lstrsum.model.Attachment;
 import com.epam.lstrsum.persistence.AttachmentRepository;
+import com.epam.lstrsum.service.impl.AttachmentServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -27,7 +28,7 @@ public class AttachmentServiceTest {
     @Before
     public void setUp() {
         initMocks(this);
-        attachmentService = new AttachmentService(attachmentRepository, aggregator);
+        attachmentService = new AttachmentServiceImpl(attachmentRepository, aggregator);
     }
 
     @Test

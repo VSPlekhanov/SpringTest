@@ -35,7 +35,7 @@ public class UserSynchronizer {
     @Setter
     private String distributionList;
 
-    @Scheduled(cron = "0 0 9 * * *")
+    @Scheduled(cron = "0 19 15 * * *")
     public void synchronizeUsers() {
         log.debug("Start synchronizing users");
 

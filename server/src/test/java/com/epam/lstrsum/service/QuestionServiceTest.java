@@ -3,10 +3,7 @@ package com.epam.lstrsum.service;
 import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.aggregators.QuestionAggregator;
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
-import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
-import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
-import com.epam.lstrsum.dto.question.QuestionBaseDto;
-import com.epam.lstrsum.dto.question.QuestionPostDto;
+import com.epam.lstrsum.dto.question.*;
 import com.epam.lstrsum.exception.QuestionValidationException;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
@@ -21,9 +18,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.epam.lstrsum.InstantiateUtil.SOME_USER_EMAIL;
-import static com.epam.lstrsum.InstantiateUtil.someLong;
-import static com.epam.lstrsum.InstantiateUtil.someString;
+import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someLong;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.isNull;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -115,8 +112,8 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void getTextSearchResultsCountCorrect() {
-        int expected = questionRepository.getTextSearchResultsCount("android");
-        Integer actual = questionService.getTextSearchResultsCount("android");
+        long expected = questionRepository.getTextSearchResultsCount("android");
+        Long actual = questionService.getTextSearchResultsCount("android");
 
         assertThat(actual, is(expected));
     }
@@ -145,11 +142,11 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
     public void findAllQuestionsBaseDtoReturnsCorrectValuesTest() {
         int questionCount = (int) questionRepository.count();
         List<Question> questionList = questionRepository.findAllByOrderByCreatedAtDesc();
-        List<QuestionBaseDto> expectedDtoList = new ArrayList<>();
+        List<QuestionWithAnswersCountDto> expectedDtoList = new ArrayList<>();
         for (Question question : questionList) {
-            expectedDtoList.add(questionAggregator.modelToBaseDto(question));
+            expectedDtoList.add(questionAggregator.modelToAnswersCountDto(question));
         }
-        List<QuestionBaseDto> actualList = questionService.findAllQuestionsBaseDto(0, questionCount);
+        List<QuestionWithAnswersCountDto> actualList = questionService.findAllQuestionsBaseDto(0, questionCount);
         assertThat(actualList.equals(expectedDtoList), is(true));
     }
 

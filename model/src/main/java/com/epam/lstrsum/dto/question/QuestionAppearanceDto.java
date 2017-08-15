@@ -17,8 +17,10 @@ public class QuestionAppearanceDto extends QuestionBaseDto {
     private String text;
     private List<AnswerBaseDto> answers;
 
-    public QuestionAppearanceDto(String questionId, String title, String[] tags, Instant createdAt, Instant deadLine,
-                                 UserBaseDto authorId, Integer upVote, String text, List<AnswerBaseDto> answers) {
+    public QuestionAppearanceDto(
+            String questionId, String title, String[] tags, Instant createdAt, Instant deadLine,
+            UserBaseDto authorId, Integer upVote, String text, List<AnswerBaseDto> answers
+    ) {
         super(questionId, title, tags, createdAt, deadLine, authorId, upVote);
         this.text = text;
         this.answers = answers;

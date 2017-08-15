@@ -1,18 +1,18 @@
 package com.epam.lstrsum.converter;
 
-import com.epam.lstrsum.InstantiateUtil;
 import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.User;
+import com.epam.lstrsum.testutils.InstantiateUtil;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.epam.lstrsum.InstantiateUtil.initList;
-import static com.epam.lstrsum.InstantiateUtil.someUser;
+import static com.epam.lstrsum.testutils.InstantiateUtil.initList;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserDtoMapperTest extends SetUpDataBaseCollections {

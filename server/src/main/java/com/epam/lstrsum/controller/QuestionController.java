@@ -1,9 +1,7 @@
 package com.epam.lstrsum.controller;
 
-import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
-import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
-import com.epam.lstrsum.dto.question.QuestionBaseDto;
-import com.epam.lstrsum.dto.question.QuestionPostDto;
+import com.epam.lstrsum.controller.model.Counter;
+import com.epam.lstrsum.dto.question.*;
 import com.epam.lstrsum.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -57,7 +55,7 @@ public class QuestionController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<QuestionBaseDto>> getQuestions(
+    public ResponseEntity<List<QuestionWithAnswersCountDto>> getQuestions(
             @RequestParam(required = false, defaultValue = "-1") int questionPage,
             @RequestParam(required = false, defaultValue = "-1") int questionAmount) {
         if ((questionAmount > maxQuestionAmount) || (questionAmount <= 0)) {
@@ -66,13 +64,13 @@ public class QuestionController {
         if ((questionPage <= 0)) {
             questionPage = 0;
         }
-        List<QuestionBaseDto> amountFrom = questionService.findAllQuestionsBaseDto(questionPage, questionAmount);
+        List<QuestionWithAnswersCountDto> amountFrom = questionService.findAllQuestionsBaseDto(questionPage, questionAmount);
         return ResponseEntity.ok(amountFrom);
     }
 
     @GetMapping("/count")
-    public ResponseEntity<Long> getQuestionCount() {
-        return ResponseEntity.ok().body(questionService.getQuestionCount());
+    public ResponseEntity<Counter> getQuestionCount() {
+        return ResponseEntity.ok().body(new Counter(questionService.getQuestionCount()));
     }
 
     @GetMapping("/search")
@@ -85,10 +83,9 @@ public class QuestionController {
     }
 
     @GetMapping("/getTextSearchResultsCount")
-    public ResponseEntity<Integer> searchCount(@RequestParam("query") String query) {
-        Integer count = questionService.getTextSearchResultsCount(query);
-
-        return ResponseEntity.ok(count);
+    public ResponseEntity<Counter> searchCount(@RequestParam("query") String query) {
+        return ResponseEntity.ok()
+                .body(new Counter(questionService.getTextSearchResultsCount(query)));
     }
 
     @GetMapping("/getRelevantTags")

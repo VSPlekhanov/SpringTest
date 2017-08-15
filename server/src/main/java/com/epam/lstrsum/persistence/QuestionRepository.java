@@ -19,7 +19,7 @@ public interface QuestionRepository extends MongoRepository<Question, String> {
     List<Question> findAllByOrderByCreatedAtDesc();
 
     @CountQuery("{$text: {$search: ?0}}")
-    int getTextSearchResultsCount(String query);
+    long getTextSearchResultsCount(String query);
 
     Optional<Question> findQuestionByTitleAndAuthorId(String title, User authorId);
 }

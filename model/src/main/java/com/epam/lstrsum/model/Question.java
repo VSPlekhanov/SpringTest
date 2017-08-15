@@ -40,5 +40,8 @@ public class Question {
     private User authorId;
     @DBRef
     private List<User> allowedSubs;
+    @DBRef(db = Attachment.ATTACHMENT_COLLECTION_NAME)
+    private List<String> attachments;
+
     private Integer upVote;
 }
