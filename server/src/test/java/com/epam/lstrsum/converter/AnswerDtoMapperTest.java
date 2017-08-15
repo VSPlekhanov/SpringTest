@@ -1,6 +1,5 @@
 package com.epam.lstrsum.converter;
 
-import com.epam.lstrsum.InstantiateUtil;
 import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
@@ -9,13 +8,14 @@ import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
+import com.epam.lstrsum.testutils.InstantiateUtil;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Instant;
 import java.util.List;
 
-import static com.epam.lstrsum.InstantiateUtil.*;
+import static com.epam.lstrsum.testutils.InstantiateUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 

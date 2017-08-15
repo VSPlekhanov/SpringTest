@@ -2,7 +2,6 @@ package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.aggregators.AnswerAggregator;
-import com.epam.lstrsum.converter.AnswerDtoMapper;
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.exception.AnswerValidationException;
@@ -12,7 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 
-import static com.epam.lstrsum.InstantiateUtil.someAnswer;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswer;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -25,7 +25,7 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     private AnswerAggregator answerAggregator;
 
     @Autowired
-    private AnswerDtoMapper answerMapper;
+    private QuestionService questionService;
 
     private final String authorEmail = "Bob_Hoplins@epam.com";
 
@@ -80,4 +80,14 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
         answerService.addNewAnswer(postDto, "John_Doe@epam.com");
     }
 
+    @Test
+    public void deleteAllAnswersToQuestion() {
+        final String validQuestionId = "1u_1r";
+
+        assertThat(questionService.getQuestionAppearanceDotByQuestionId(validQuestionId).getAnswers().size()).isGreaterThan(0);
+
+        answerService.deleteAllAnswersOnQuestion(validQuestionId);
+
+        assertThat(questionService.getQuestionAppearanceDotByQuestionId(validQuestionId).getAnswers()).hasSize(0);
+    }
 }

@@ -5,8 +5,8 @@
     "lastName": "Doe",
     "email": "John_Doe@epam.com",
     "roles": [
-      "ROLE_EXTENDED_USER",
-      "ROLE_ADMIN"
+      "EXTENDED_USER",
+      "ADMIN"
     ],
     "createdAt": {
       "$date": "2017-08-15T11:16:34Z"
@@ -19,7 +19,7 @@
     "lastName": "Hoplins",
     "email": "Bob_Hoplins@epam.com",
     "roles": [
-      "ROLE_EXTENDED_USER"
+      "EXTENDED_USER"
     ],
     "createdAt": {
       "$date": "2017-01-01T10:12:05Z"
@@ -32,8 +32,8 @@
     "lastName": "Greeds",
     "email": "Tyler_Greeds@epam.com",
     "roles": [
-      "ROLE_EXTENDED_USER",
-      "ROLE_ADMIN"
+      "EXTENDED_USER",
+      "ADMIN"
     ],
     "createdAt": {
       "$date": "2017-03-08T09:50:15Z"
@@ -46,7 +46,7 @@
     "lastName": "Gardner",
     "email": "Donald_Gardner@epam.com",
     "roles": [
-      "ROLE_NOT_ALLOWED_USER"
+      "NOT_ALLOWED_USER"
     ],
     "createdAt": {
       "$date": "2017-07-23T05:23:17Z"
@@ -59,8 +59,8 @@
     "lastName": "Hemingway",
     "email": "Ernest_Hemingway@epam.com",
     "roles": [
-      "ROLE_SIMPLE_USER",
-      "ROLE_ADMIN"
+      "SIMPLE_USER",
+      "ADMIN"
     ],
     "createdAt": {
       "$date": "2017-12-31T23:05:15Z"
@@ -73,7 +73,7 @@
     "lastName": "Tyler",
     "email": "Steven_Tyler@epam.com",
     "roles": [
-      "ROLE_EXTENDED_USER"
+      "EXTENDED_USER"
     ],
     "createdAt": {
       "$date": "2017-06-02T18:30:35Z"
@@ -86,7 +86,7 @@
     "lastName": "Derden",
     "email": "Tyler_Derden@mylo.com",
     "roles": [
-      "ROLE_EXTENDED_USER"
+      "EXTENDED_USER"
     ],
     "createdAt": {
       "$date": "2017-06-02T18:30:35Z"

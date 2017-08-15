@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.TestingAuthenticationProvider;
@@ -27,9 +28,7 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 @Configuration
 @EnableOAuth2Client
@@ -44,6 +43,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private String authorizationAccessTokenUri;
     @Setter
     private String authorizationUserUri;
+    @Setter
+    private List<String> envsToDisableCsrf;
 
     @Autowired
     @SuppressWarnings("all")
@@ -53,10 +54,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         new TrustAllCertificatesSSL();
     }
 
+    @Autowired
+    private Environment env;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
         RoleService roleService = roleService();
+
+        if (firstContainsAny(Arrays.asList(env.getActiveProfiles()), envsToDisableCsrf)) {
+            http.csrf().disable();
+        }
 
         http.authorizeRequests()
                 .antMatchers("/sso/**").permitAll().and();
@@ -71,6 +79,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(auth2ClientAuthenticationProcessingFilter(), BasicAuthenticationFilter.class)
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
                 .accessDeniedPage("/unauthorized");
+    }
+
+    private boolean firstContainsAny(List<String> envs, List<String> envsToDisable) {
+        return !Collections.disjoint(envs, envsToDisable);
     }
 
     @Override

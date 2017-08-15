@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface AnswerRepository extends MongoRepository<Answer, String> {
     List<Answer> findAnswersByQuestionIdOrderByCreatedAtAsc(Question question);
+
+    void deleteAllByQuestionId_QuestionId(String questionId);
 }

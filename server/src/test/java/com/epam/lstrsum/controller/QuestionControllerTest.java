@@ -1,10 +1,8 @@
 package com.epam.lstrsum.controller;
 
+import com.epam.lstrsum.dto.common.CounterDto;
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
-import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
-import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
-import com.epam.lstrsum.dto.question.QuestionBaseDto;
-import com.epam.lstrsum.dto.question.QuestionPostDto;
+import com.epam.lstrsum.dto.question.*;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.service.QuestionService;
@@ -91,17 +89,19 @@ public class QuestionControllerTest {
         int questionAmount = 15;
         int questionPage = 4;
         controller.setMaxQuestionAmount(questionAmount);
-        List<QuestionBaseDto> list = Arrays.asList(new QuestionBaseDto("u1", "some title 2", null,
+        List<QuestionWithAnswersCountDto> list = Arrays.asList(
+                new QuestionWithAnswersCountDto("u1", "some title 2", null,
                         Instant.now(), Instant.now(),
                         new UserBaseDto("some user id 2", "first name", "last name", "some@email.com"),
-                        1),
-                new QuestionBaseDto("u2", "some title 2", null,
+                        1, 7),
+                new QuestionWithAnswersCountDto("u2", "some title 2", null,
                         Instant.now(), Instant.now(),
                         new UserBaseDto("some user id 2", "first name", "last name", "some@email.com"),
-                        1));
+                        1, 8)
+        );
         when(questionService.findAllQuestionsBaseDto(questionPage, questionAmount)).thenReturn(list);
-        ResponseEntity<List<QuestionBaseDto>> actualEntity = controller.getQuestions(questionPage, questionAmount);
-        ResponseEntity<List<QuestionBaseDto>> expectedEntity = ResponseEntity.ok(list);
+        ResponseEntity<List<QuestionWithAnswersCountDto>> actualEntity = controller.getQuestions(questionPage, questionAmount);
+        ResponseEntity<List<QuestionWithAnswersCountDto>> expectedEntity = ResponseEntity.ok(list);
         assertThat(actualEntity, is(equalTo(expectedEntity)));
     }
 
@@ -116,8 +116,8 @@ public class QuestionControllerTest {
         List list = new ArrayList();
         when(questionService.findAllQuestionsBaseDto(minQuestionPage, maxQuestionAmount)).thenReturn(list);
 
-        ResponseEntity<List<QuestionBaseDto>> actualEntity = controller.getQuestions(questionPage, questionAmount);
-        ResponseEntity<List<QuestionBaseDto>> expectedEntity = ResponseEntity.ok(list);
+        ResponseEntity<List<QuestionWithAnswersCountDto>> actualEntity = controller.getQuestions(questionPage, questionAmount);
+        ResponseEntity<List<QuestionWithAnswersCountDto>> expectedEntity = ResponseEntity.ok(list);
 
         assertThat(actualEntity, is(equalTo(expectedEntity)));
     }
@@ -163,7 +163,7 @@ public class QuestionControllerTest {
         String searchString = "search";
         String questionTitle = "questionTitle";
 
-        List<QuestionAllFieldsDto> questionAllFieldsDtos = Arrays.asList(
+        List<QuestionAllFieldsDto> questionAllFieldsDtos = Collections.singletonList(
                 new QuestionAllFieldsDto(questionId, questionTitle, new String[]{"tag1", "tag2", "tag3"}, Instant.now(), Instant.now(),
                         new UserBaseDto("userId", "userName", "userSurname", "user@epam.com"),
                         2, Collections.emptyList(), "text")
@@ -179,13 +179,13 @@ public class QuestionControllerTest {
     @Test
     public void countSearchResult() {
         String searchQuery = "android";
-        doReturn(2).when(questionService).getTextSearchResultsCount(searchQuery);
+        doReturn(2L).when(questionService).getTextSearchResultsCount(searchQuery);
 
-        ResponseEntity<Integer> actual = controller.searchCount(searchQuery);
+        ResponseEntity<CounterDto> actual = controller.searchCount(searchQuery);
 
         verify(questionService).getTextSearchResultsCount(eq(searchQuery));
         assertThat(actual.getStatusCode(), is(HttpStatus.OK));
-        assertThat(actual.getBody(), is(2));
+        assertThat(actual.getBody().getCount(), is(2L));
     }
 
     @Test

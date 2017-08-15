@@ -3,6 +3,7 @@ package com.epam.lstrsum.service;
 import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.ehcache.CacheManager;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,7 @@ public class TagServiceTest extends SetUpDataBaseCollections {
     private TagService tagService;
 
     @Autowired
-    net.sf.ehcache.CacheManager internalCacheManager;
-
+    CacheManager internalCacheManager;
 
     @Test
     public void cacheWorks() {

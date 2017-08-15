@@ -5,7 +5,7 @@ import com.epam.lstrsum.model.Attachment;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.epam.lstrsum.InstantiateUtil.someAttachment;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someAttachment;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AttachmentDtoMapperTest extends SetUpDataBaseCollections {

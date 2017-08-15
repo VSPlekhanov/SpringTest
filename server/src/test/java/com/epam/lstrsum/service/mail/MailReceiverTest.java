@@ -5,6 +5,7 @@ import com.epam.lstrsum.email.persistence.EmailRepository;
 import com.epam.lstrsum.email.service.EmailParser;
 import com.epam.lstrsum.email.service.ExchangeServiceHelper;
 import com.epam.lstrsum.email.service.MailService;
+import com.epam.lstrsum.service.AttachmentService;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.SubscriptionService;
 import com.epam.lstrsum.service.UserService;
@@ -42,6 +43,9 @@ public class MailReceiverTest {
     private QuestionService questionService;
 
     @Mock
+    private AttachmentService attachmentService;
+
+    @Mock
     private SubscriptionService subscriptionService;
 
     @Mock
@@ -66,7 +70,7 @@ public class MailReceiverTest {
         mailService = new MailService(mailSender, emailRepository);
         mailReceiver = new MailReceiver(
                 mailService, userService,
-                questionService, emailParser
+                questionService, attachmentService, emailParser
         );
     }
 

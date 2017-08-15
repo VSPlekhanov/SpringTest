@@ -3,12 +3,13 @@ package com.epam.lstrsum.service;
 import com.epam.lstrsum.dto.user.telescope.TelescopeDataDto;
 import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
 import com.epam.lstrsum.service.http.HttpRequestService;
+import com.epam.lstrsum.service.impl.TelescopeServiceImpl;
 import com.epam.lstrsum.utils.HttpUtilEntity;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import static com.epam.lstrsum.InstantiateUtil.someTelescopeEmployeeEntityDto;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeEmployeeEntityDto;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertNotNull;
@@ -31,7 +32,7 @@ public class TelescopeServiceTest {
     public void setUp() {
         initMocks(this);
 
-        telescopeService = new TelescopeService(httpRequestService);
+        telescopeService = new TelescopeServiceImpl(httpRequestService);
     }
 
     @Test

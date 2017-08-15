@@ -35,6 +35,7 @@ public interface UserDtoMapper {
             @Mapping(target = "isActive", constant = "true"),
             @Mapping(target = "email", source = "email"),
             @Mapping(target = "roles", source = "roles"),
+            @Mapping(target = "userId", ignore = true)
     })
     User userTelescopeInfoDtoToUser(TelescopeDataDto userDto, String email, List<UserRoleType> roles);
 }

@@ -113,7 +113,7 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
                                 "user2firstName",
                                 "lastName",
                                 "user2firstName_lastName@epam.com",
-                                Collections.singletonList(UserRoleType.ROLE_EXTENDED_USER),
+                                Collections.singletonList(UserRoleType.EXTENDED_USER),
                                 Instant.now(),
                                 true))
                         .allowedSubs(Collections.EMPTY_LIST)
@@ -126,7 +126,7 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
                         "John",
                         "Doe",
                         authorEmail,
-                        Collections.singletonList(UserRoleType.ROLE_EXTENDED_USER),
+                        Collections.singletonList(UserRoleType.EXTENDED_USER),
                         Instant.now(),
                         true),
                 0);

@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import static com.epam.lstrsum.InstantiateUtil.someAttachment;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someAttachment;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
