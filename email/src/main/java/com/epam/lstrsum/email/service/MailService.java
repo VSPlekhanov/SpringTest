@@ -67,9 +67,8 @@ public class MailService {
 
         // save email to file
         if (!backupDir.isEmpty()) {
-            FileOutputStream fileOutput = new FileOutputStream(backupDir + File.separator + fullFileName);
-
-            ZipOutputStream zipOutput = new ZipOutputStream(fileOutput);
+            ZipOutputStream zipOutput = new ZipOutputStream(
+                    new FileOutputStream(backupDir + File.separator + fullFileName));
 
             ZipEntry zipEntry = new ZipEntry(baseFileName);
             zipOutput.putNextEntry(zipEntry);
