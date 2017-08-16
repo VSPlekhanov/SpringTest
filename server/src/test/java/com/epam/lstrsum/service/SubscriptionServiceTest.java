@@ -4,6 +4,8 @@ import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
+import com.epam.lstrsum.persistence.QuestionRepository;
+import com.epam.lstrsum.persistence.SubscriptionRepository;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
@@ -26,6 +29,56 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
     private SubscriptionService subscriptionService;
     @Autowired
     private QuestionService questionService;
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
+    @Autowired
+    private QuestionRepository questionRepository;
+
+    @Test
+    public void addSubscriptionAlreadyAdded() {
+        String userId = "1u";
+        String alreadySubscribed = "6u_6r";
+
+        int previousSize = findAllQuestionWhichSubscribedByUserId(userId).size();
+
+        subscriptionService.addOrUpdate(userId, questionRepository.findOne(alreadySubscribed).getQuestionId());
+        int sizeAfterAdd = findAllQuestionWhichSubscribedByUserId(userId).size();
+
+        assertEquals(previousSize, sizeAfterAdd);
+    }
+
+    @Test
+    public void updateListOfSubscription() {
+        String userWithSubscriptions = "6u";
+        int previousSize = findAllQuestionWhichSubscribedByUserId(userWithSubscriptions).size();
+
+        subscriptionService.addOrUpdate(userWithSubscriptions, questionRepository.findOne("1u_1r").getQuestionId());
+        int actual = findAllQuestionWhichSubscribedByUserId(userWithSubscriptions).size();
+
+        assertThat(previousSize + 1, is(actual));
+    }
+
+    @Test
+    public void addWhenTryToUpdate() {
+        String userWithoutSubscriptions = "7u";
+        assertThat(findAllQuestionWhichSubscribedByUserId(userWithoutSubscriptions).size(), is(0));
+
+        List<Question> allQuestion = questionRepository.findAll();
+        subscriptionService.addOrUpdate(
+                userWithoutSubscriptions,
+                allQuestion.stream().map(Question::getQuestionId).collect(Collectors.toList())
+        );
+
+        assertThat(findAllQuestionWhichSubscribedByUserId(userWithoutSubscriptions).size(), is(allQuestion.size()));
+    }
+
+    private List<Question> findAllQuestionWhichSubscribedByUserId(String id) {
+        return subscriptionService.findAll()
+                .stream()
+                .filter(u -> u.getUserId().getUserId().equals(id))
+                .flatMap(s -> s.getQuestionIds().stream())
+                .collect(Collectors.toList());
+    }
 
     @Test
     public void subscriptionSearchByQuestionIdReturnsListOfMatchedSubscriptions() throws Exception {

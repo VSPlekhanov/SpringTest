@@ -8,8 +8,13 @@ import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.SubscriptionRepository;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.SubscriptionService;
+import com.mongodb.DBRef;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +29,7 @@ import java.util.stream.Collectors;
 public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final QuestionService questionService;
+    private final MongoTemplate mongoTemplate;
 
     @Override
     public List<Subscription> findAll() {
@@ -63,6 +69,19 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         emails.add(question.getAuthorId().getEmail());
 
         return emails;
+    }
+
+    @Override
+    public void addOrUpdate(String userId, List<String> questionIds) {
+        // TODO: 16.08.17 it will add user even if user is not exists
+        mongoTemplate.upsert(
+                new Query(Criteria.where("userId").is(new DBRef(User.USER_COLLECTION_NAME, userId))),
+                new Update().addToSet("questionIds").each(
+                        questionIds.stream()
+                                .map(question -> new DBRef(Question.QUESTION_COLLECTION_NAME, question))
+                                .toArray()),
+                Subscription.class
+        );
     }
 
     @Component
