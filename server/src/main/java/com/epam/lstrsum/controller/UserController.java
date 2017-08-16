@@ -37,7 +37,10 @@ public class UserController {
      * @return json with users info
      */
     @GetMapping("/telescope/info")
-    public ResponseEntity<TelescopeEmployeeEntityDto[]> getUserInfoByFullName(@NotEmptyString @RequestParam String fullName, @Max(5000) @Min(0) @RequestParam(required = false, defaultValue = "5") Integer maxUsersAmountInResult) {
+    public ResponseEntity<TelescopeEmployeeEntityDto[]> getUserInfoByFullName(
+            @NotEmptyString @RequestParam String fullName,
+            @Max(5000) @Min(0) @RequestParam(required = false, defaultValue = "5") Integer maxUsersAmountInResult
+    ) {
         return ResponseEntity.ok(userService.getUserInfoByFullName(fullName, maxUsersAmountInResult));
     }
 

@@ -1,9 +1,8 @@
 package com.epam.lstrsum.testutils.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
+import javax.activation.DataSource;
 import javax.mail.internet.MimeMessage;
 import java.util.List;
 
@@ -16,4 +15,16 @@ public class CompositeMimeMessage {
     private List<String> to;
     private String subject;
     private String text;
+
+    private List<Attach> attaches;
+
+    @Builder
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @Getter
+    public static class Attach {
+        private DataSource dataSource;
+        private String name;
+        private String description;
+    }
 }

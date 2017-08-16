@@ -4,10 +4,7 @@ import com.epam.lstrsum.converter.QuestionDtoMapper;
 import com.epam.lstrsum.converter.UserDtoMapper;
 import com.epam.lstrsum.converter.contract.AllFieldModelDtoConverter;
 import com.epam.lstrsum.converter.contract.BasicModelDtoConverter;
-import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
-import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
-import com.epam.lstrsum.dto.question.QuestionBaseDto;
-import com.epam.lstrsum.dto.question.QuestionPostDto;
+import com.epam.lstrsum.dto.question.*;
 import com.epam.lstrsum.model.Question;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,6 +37,14 @@ public class QuestionAggregator implements BasicModelDtoConverter<Question, Ques
         return questionMapper.modelToBaseDto(
                 question,
                 userMapper.modelToBaseDto(question.getAuthorId())
+        );
+    }
+
+    public QuestionWithAnswersCountDto modelToAnswersCountDto(Question question) {
+        return questionMapper.modelToAnswersCount(
+                question,
+                userMapper.modelToBaseDto(question.getAuthorId()),
+                answerAggregator.answersToQuestionInAnswerBaseDto(question)
         );
     }
 

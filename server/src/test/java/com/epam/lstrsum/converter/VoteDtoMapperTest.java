@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Instant;
 
-import static com.epam.lstrsum.InstantiateUtil.*;
+import static com.epam.lstrsum.testutils.InstantiateUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class VoteDtoMapperTest extends SetUpDataBaseCollections {

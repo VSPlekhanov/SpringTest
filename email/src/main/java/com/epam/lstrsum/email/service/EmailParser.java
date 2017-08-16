@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
 import org.bson.types.ObjectId;
 import org.jsoup.Jsoup;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,9 @@ import static java.util.Objects.isNull;
 @RequiredArgsConstructor
 public class EmailParser {
     private final ExchangeServiceHelper exchangeServiceHelper;
+
+    @Value("#{'${multipart.allowed-extensions}'.split(',')}")
+    private List<String> allowedExtensions;
 
     public EmailForExperienceApplication getParsedMessage(@NonNull MimeMessage message) throws Exception {
         String title = message.getSubject();
@@ -81,7 +85,7 @@ public class EmailParser {
 
     private List<String> getReceiversFromMessage(MimeMessage message) throws MessagingException {
         return Arrays.stream(message.getAllRecipients())
-                .map(i -> (InternetAddress)i)
+                .map(i -> (InternetAddress) i)
                 .map(InternetAddress::getAddress)
                 .flatMap(email -> exchangeServiceHelper.resolveGroup(email).stream())
                 .collect(Collectors.toList());
@@ -105,16 +109,21 @@ public class EmailParser {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public class EmailForExperienceApplication {
 
-        @NonNull private final String subject;
-        @NonNull private final String questionText;
+        @NonNull
+        private final String subject;
+        @NonNull
+        private final String questionText;
 
         @Getter
-        @NonNull private final String sender;
+        @NonNull
+        private final String sender;
 
         @Getter
-        @NonNull private final List<String> receivers;
+        @NonNull
+        private final List<String> receivers;
 
-        @NonNull private final List<DataSource> attacheDataSourceList;
+        @NonNull
+        private final List<DataSource> attacheDataSourceList;
 
         public QuestionPostDto getQuestionPostDto() {
             return new QuestionPostDto(subject, null, questionText, 0L, receivers);
@@ -128,11 +137,21 @@ public class EmailParser {
             final List<AttachmentAllFieldsDto> attached = new ArrayList<>();
             for (DataSource datasource : attacheDataSourceList) {
                 final String fileName = datasource.getName();
+
+                if (notAllowedFile(fileName)) {
+                    continue;
+                }
+
                 final String fileType = datasource.getContentType();
                 final byte[] data = IOUtils.toByteArray(datasource.getInputStream());
                 attached.add(new AttachmentAllFieldsDto(new ObjectId().toString(), fileName, fileType, data));
-            }
+            }       
             return attached;
+        }
+
+        private boolean notAllowedFile(String fileName) {
+            return allowedExtensions.stream()
+                    .noneMatch(fileName::endsWith);
         }
     }
 }

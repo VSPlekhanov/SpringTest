@@ -1,14 +1,14 @@
 package com.epam.lstrsum.aggregators;
 
-import com.epam.lstrsum.InstantiateUtil;
 import com.epam.lstrsum.converter.QuestionDtoMapper;
 import com.epam.lstrsum.converter.UserDtoMapper;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
+import com.epam.lstrsum.testutils.InstantiateUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import static com.epam.lstrsum.InstantiateUtil.*;
+import static com.epam.lstrsum.testutils.InstantiateUtil.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;

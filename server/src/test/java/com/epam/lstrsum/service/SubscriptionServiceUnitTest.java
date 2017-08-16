@@ -3,6 +3,7 @@ package com.epam.lstrsum.service;
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionBaseDto;
 import com.epam.lstrsum.model.Question;
+import com.epam.lstrsum.service.impl.SubscriptionServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -38,8 +39,8 @@ public class SubscriptionServiceUnitTest {
         String incorrectEmail = "(incorrect";
         String correctEmail = "correct@mail.com";
 
-        SubscriptionService.AnswerEmailCollectionAdapter adapter =
-                subscriptionService.new AnswerEmailCollectionAdapter();
+        SubscriptionServiceImpl.AnswerEmailCollectionAdapter adapter =
+                new SubscriptionServiceImpl.AnswerEmailCollectionAdapter(subscriptionService);
 
         when(subscriptionService.getEmailsToNotificateAboutNewAnswer(any()))
                 .thenReturn(new HashSet<String>() {{
@@ -61,8 +62,8 @@ public class SubscriptionServiceUnitTest {
         String incorrectEmail = "(incorrect";
         String correctEmail = "correct@mail.com";
 
-        SubscriptionService.QuestionEmailCollectionAdapter adapter =
-                subscriptionService.new QuestionEmailCollectionAdapter();
+        SubscriptionServiceImpl.QuestionEmailCollectionAdapter adapter =
+                new SubscriptionServiceImpl.QuestionEmailCollectionAdapter(subscriptionService);
 
         when(subscriptionService.getEmailsToNotificateAboutNewQuestion(any()))
                 .thenReturn(new HashSet<String>() {{

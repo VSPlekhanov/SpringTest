@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.epam.lstrsum.InstantiateUtil.someUser;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
