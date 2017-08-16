@@ -150,11 +150,13 @@ public class QuestionServiceImpl implements QuestionService {
                 new Update().addToSet("attachmentIds").each(attachmentIds),
                 Question.class
         );
+        log.debug("Add new attachments to question with id {}", questionId);
     }
 
     @Override
     @CacheEvict(value = "tagsRating", allEntries = true)
     public void delete(String id) {
+        log.debug("Delete question with id {}", id);
         questionRepository.delete(id);
     }
 

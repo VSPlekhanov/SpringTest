@@ -42,7 +42,9 @@ public class AttachmentServiceImpl implements AttachmentService {
                 .type(file.getContentType())
                 .build();
 
-        return attachmentRepository.save(attachment).getId();
+        String attachmentId = attachmentRepository.save(attachment).getId();
+        log.debug("Save attachment with id {}", attachmentId);
+        return attachmentId;
     }
 
     @Override
