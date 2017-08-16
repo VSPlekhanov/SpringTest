@@ -43,6 +43,7 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public void deleteAllAnswersOnQuestion(String questionId) {
+        log.debug("Delete all answers on question with id {}", questionId);
         answerRepository.deleteAllByQuestionId_QuestionId(questionId);
     }
 
@@ -70,6 +71,7 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     public void save(Answer answer) {
+        log.debug("Saved answer with id {}", answer.getAnswerId());
         answerRepository.save(answer);
     }
 }
