@@ -1,6 +1,5 @@
 package com.epam.lstrsum.service;
 
-import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
 import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.User;
@@ -20,8 +19,6 @@ public interface UserService {
 
     User findUserById(String userId);
 
-    UserBaseDto modelToBaseDto(User authorId);
-
     long addIfNotExistAllWithRole(final List<String> userEmails, List<UserRoleType> roles);
 
     TelescopeEmployeeEntityDto[] getUserInfoByFullName(String fullName, Integer limit);
@@ -34,5 +31,5 @@ public interface UserService {
      * @param email     user email must ended on "@epam.com"
      * @param userRoles {@link UserRoleType} scope with user security roles
      */
-    void addNewUserByEmail(String email, List<UserRoleType> userRoles);
+    User addNewUserByEmail(String email, List<UserRoleType> userRoles);
 }

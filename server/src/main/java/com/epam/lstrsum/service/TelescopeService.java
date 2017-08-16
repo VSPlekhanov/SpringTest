@@ -16,11 +16,9 @@ public interface TelescopeService {
     String TELESCOPE_API_EMAIL_SEARCH_FILTERS = ")\"}],\"filters\":[{\"field\":\"employmentStatus\",\"values\":[\"Employee\",\"Contractor\",\"Intern\",\"Trainee\"]}]}";
     String TELESCOPE_API_FIELDS_FOR_ADD_NEW_USER = "firstName,lastName";
 
-    String EMAIL_EPAM_DOMAIN = "@epam.com";
-
-    TelescopeEmployeeEntityDto[] getUserInfoByFullName(String fullName, Integer limit);
+    TelescopeEmployeeEntityDto[] getUsersInfoByFullName(String fullName, int limit);
 
     String getUserPhotoByUri(String uri);
 
-    TelescopeEmployeeEntityDto[] getUserInfoByEmail(String email);
+    TelescopeEmployeeEntityDto getUserInfoByEmail(String email);
 }
