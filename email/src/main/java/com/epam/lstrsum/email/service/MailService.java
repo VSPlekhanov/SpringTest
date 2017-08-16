@@ -24,6 +24,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import static java.util.Objects.nonNull;
+
 @Component
 @ConfigurationProperties(prefix = "email")
 @Profile("email")
@@ -67,18 +69,27 @@ public class MailService {
 
         // save email to file
         if (!backupDir.isEmpty()) {
-            ZipOutputStream zipOutput = new ZipOutputStream(
-                    new FileOutputStream(backupDir + File.separator + fullFileName));
+            FileOutputStream fileOutputStream = null;
+            try {
+                fileOutputStream = new FileOutputStream(backupDir + File.separator + fullFileName);
 
-            ZipEntry zipEntry = new ZipEntry(baseFileName);
-            zipOutput.putNextEntry(zipEntry);
+                ZipOutputStream zipOutput = new ZipOutputStream(
+                        fileOutputStream);
 
-            ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-            mimeMessage.writeTo(byteStream);
+                ZipEntry zipEntry = new ZipEntry(baseFileName);
+                zipOutput.putNextEntry(zipEntry);
 
-            zipOutput.write(byteStream.toByteArray());
-            zipOutput.closeEntry();
-            zipOutput.close();
+                ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+                mimeMessage.writeTo(byteStream);
+
+                zipOutput.write(byteStream.toByteArray());
+                zipOutput.closeEntry();
+                zipOutput.close();
+            } finally {
+                if (nonNull(fileOutputStream)) {
+                    fileOutputStream.close();
+                }
+            }
         }
     }
 
