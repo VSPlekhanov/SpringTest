@@ -72,7 +72,7 @@ public class IntegrationMailReceiverTest {
                 .firstName("someName")
                 .lastName("someLastName")
                 .isActive(true)
-                .roles(Collections.singletonList(UserRoleType.ROLE_EXTENDED_USER));
+                .roles(Collections.singletonList(UserRoleType.EXTENDED_USER));
 
         for (String userEmail : userEmails) {
             userRepository.save(builder.email(userEmail).build());

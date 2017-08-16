@@ -170,7 +170,7 @@ public class TestDataGenerator {
                 .firstName("FirstName" + numberOfUser)
                 .lastName("LastName" + numberOfUser)
                 .email("UserId" + numberOfUser + "_" + "LastName" + numberOfUser + "@epam.com")
-                .roles(Arrays.asList(UserRoleType.ROLE_EXTENDED_USER, UserRoleType.ROLE_ADMIN))
+                .roles(Arrays.asList(UserRoleType.EXTENDED_USER, UserRoleType.ADMIN))
                 .createdAt(Instant.now())
                 .isActive(true)
                 .build();

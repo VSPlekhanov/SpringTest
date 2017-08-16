@@ -29,8 +29,7 @@ import static java.util.Objects.nonNull;
 public class UserSynchronizer {
     private final ExchangeServiceHelper exchangeServiceHelper;
     private final UserService userService;
-    private static final UserRoleType COMMON_USER_ROLE = UserRoleType.ROLE_EXTENDED_USER;
-    private static final List<UserRoleType> ONLY_COMMON_USER_ROLES = Collections.singletonList(COMMON_USER_ROLE);
+    private static final List<UserRoleType> ONLY_COMMON_USER_ROLES = Collections.singletonList(UserRoleType.EXTENDED_USER);
 
     @Setter
     private String distributionList;
@@ -39,7 +38,7 @@ public class UserSynchronizer {
     public void synchronizeUsers() {
         log.debug("Start synchronizing users");
 
-        final List<User> allWithRole = userService.findAllWithRole(COMMON_USER_ROLE);
+        final List<User> allWithRole = userService.findAllWithRole(UserRoleType.EXTENDED_USER);
         final Set<String> activeUsers = allWithRole.stream()
                 .filter(u -> nonNull(u.getIsActive()))
                 .filter(User::getIsActive)

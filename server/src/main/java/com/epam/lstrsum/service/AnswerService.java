@@ -13,4 +13,6 @@ public interface AnswerService {
     Answer getAnswerById(String answerId);
 
     void save(Answer answer);
+
+    void deleteAllAnswersOnQuestion(String questionId);
 }

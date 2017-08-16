@@ -53,9 +53,9 @@ public class EmailParseAndSaveTest extends SetUpDataBaseCollections {
     @Test
     public void testThatReceivedEmailCreateNewQuestionAndSaveItToMongo() throws Exception {
         final User authorOfEmail = new User(new ObjectId().toString(), "Eugen", "Sandrov",
-                "Eugen_Sandrov@epam.com", Arrays.asList(UserRoleType.ROLE_EXTENDED_USER, UserRoleType.ROLE_ADMIN), Instant.now(), true);
+                "Eugen_Sandrov@epam.com", Arrays.asList(UserRoleType.EXTENDED_USER, UserRoleType.ADMIN), Instant.now(), true);
         final User receiverOfEmail = new User(new ObjectId().toString(), "Stan", "Chivs",
-                "Stan_Chivs@epam.com", Collections.singletonList(UserRoleType.ROLE_SIMPLE_USER), Instant.now(), true);
+                "Stan_Chivs@epam.com", Collections.singletonList(UserRoleType.SIMPLE_USER), Instant.now(), true);
         mongoTemplate.save(authorOfEmail);
         mongoTemplate.save(receiverOfEmail);
         final MimeMessage simpleEmail = javaMailSender.createMimeMessage();

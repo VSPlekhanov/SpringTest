@@ -39,7 +39,7 @@ public class UserServiceTest extends SetUpDataBaseCollections {
     }
 
     public void findAllWithRole() {
-        assertEquals(userService.findAllWithRole(UserRoleType.ROLE_EXTENDED_USER).size(), 5);
+        assertEquals(userService.findAllWithRole(UserRoleType.EXTENDED_USER).size(), 5);
     }
 
     @Test
@@ -86,7 +86,7 @@ public class UserServiceTest extends SetUpDataBaseCollections {
                 .collect(Collectors.toList());
 
         final long actual = userService.addIfNotExistAllWithRole(
-                concat.stream().map(User::getEmail).collect(Collectors.toList()), Collections.singletonList(UserRoleType.ROLE_SIMPLE_USER)
+                concat.stream().map(User::getEmail).collect(Collectors.toList()), Collections.singletonList(UserRoleType.SIMPLE_USER)
         );
 
         assertEquals(actual, notInBaseUsers.length);

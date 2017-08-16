@@ -40,7 +40,8 @@ public interface QuestionDtoMapper {
             @Mapping(target = "authorId", source = "authorId"),
             @Mapping(target = "upVote", constant = "0"),
             @Mapping(target = "score", constant = "0"),
-            @Mapping(target = "questionId", ignore = true)
+            @Mapping(target = "questionId", ignore = true),
+            @Mapping(target = "attachmentIds", ignore = true)
     })
     Question questionPostDtoAndAuthorEmailToQuestion(QuestionPostDto questionPostDto, User authorId, List<User> allowedSubs);
 

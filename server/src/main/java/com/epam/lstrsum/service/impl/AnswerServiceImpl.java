@@ -41,6 +41,11 @@ public class AnswerServiceImpl implements AnswerService {
         return answerAggregator.modelToAllFieldsDto(saved);
     }
 
+    @Override
+    public void deleteAllAnswersOnQuestion(String questionId) {
+        answerRepository.deleteAllByQuestionId_QuestionId(questionId);
+    }
+
     private void validateAnswerData(AnswerPostDto answerPostDto, String email) {
         if (isNull(answerPostDto)) {
             throw new AnswerValidationException("Answer must be not null!");

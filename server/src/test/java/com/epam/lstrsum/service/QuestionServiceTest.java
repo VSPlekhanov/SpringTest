@@ -285,4 +285,23 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
                     assertThat(q.getTitle()).isEqualTo(title);
                 });
     }
+
+    @Test
+    public void deleteQuestion() {
+        final String validQuestionId = "1u_1r";
+        assertThat(questionRepository.findOne(validQuestionId)).isNotNull();
+
+        questionService.delete(validQuestionId);
+
+        assertThat(questionRepository.findOne(validQuestionId)).isNull();
+    }
+
+    @Test
+    public void deleteNotValidQuestion() {
+        final String notValidQuestionId = "bad_id";
+
+        questionService.delete(notValidQuestionId);
+
+        assertThat(questionRepository.findOne(notValidQuestionId)).isNull();
+    }
 }

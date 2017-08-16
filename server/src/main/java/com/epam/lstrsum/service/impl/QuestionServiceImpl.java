@@ -152,6 +152,12 @@ public class QuestionServiceImpl implements QuestionService {
         );
     }
 
+    @Override
+    @CacheEvict(value = "tagsRating", allEntries = true)
+    public void delete(String id) {
+        questionRepository.delete(id);
+    }
+
     private void validateQuestionData(QuestionPostDto questionPostDto, String email) {
         if (questionPostDto == null) {
             throw new QuestionValidationException("Post question should have json for QuestionPostDto");

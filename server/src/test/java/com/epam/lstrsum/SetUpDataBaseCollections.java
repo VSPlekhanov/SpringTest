@@ -1,10 +1,7 @@
 package com.epam.lstrsum;
 
-import com.epam.lstrsum.model.Answer;
-import com.epam.lstrsum.model.Question;
-import com.epam.lstrsum.model.Subscription;
-import com.epam.lstrsum.model.User;
-import com.epam.lstrsum.model.Vote;
+import com.epam.lstrsum.model.*;
+import com.epam.lstrsum.service.TelescopeService;
 import org.bson.Document;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -14,10 +11,10 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.FileReader;
@@ -29,8 +26,10 @@ import java.util.List;
 @ActiveProfiles("unsecured")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringRunner.class)
-@TestPropertySource("classpath:application-email.properties")
 public abstract class SetUpDataBaseCollections {
+
+    @MockBean
+    private TelescopeService telescopeService;
 
     @Autowired
     private MongoTemplate mongoTemplate;
