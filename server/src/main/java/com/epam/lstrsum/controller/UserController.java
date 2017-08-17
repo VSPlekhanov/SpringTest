@@ -29,13 +29,6 @@ public class UserController {
         return userService.findAll();
     }
 
-    /**
-     * Performs a request to telescope api to get users info.
-     *
-     * @param fullName               String name/part name for users elastic search into telescope
-     * @param maxUsersAmountInResult Integer value with max users amount in response
-     * @return json with users info
-     */
     @GetMapping("/telescope/info")
     public ResponseEntity<TelescopeEmployeeEntityDto[]> getUserInfoByFullName(
             @NotEmptyString @RequestParam String fullName,
@@ -44,12 +37,6 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserInfoByFullName(fullName, maxUsersAmountInResult));
     }
 
-    /**
-     * Create a link to telescope to request user photo.
-     *
-     * @param uri format example "attachment:///upsa_profilePhoto.4060741400007345041_1.GIF_cba0891d-a69f-47c9-96ib-c61a14e6e33d"
-     * @return string with link to telescope api to get user photo
-     */
     @GetMapping("/telescope/photo")
     public ResponseEntity<String> getUserPhotoByUri(@NotEmptyString @RequestParam String uri) {
         return ResponseEntity.ok(userService.getUserPhotoByUri(uri));

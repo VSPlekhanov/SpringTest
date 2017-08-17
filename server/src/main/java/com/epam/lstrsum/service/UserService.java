@@ -21,15 +21,9 @@ public interface UserService {
 
     long addIfNotExistAllWithRole(final List<String> userEmails, List<UserRoleType> roles);
 
-    TelescopeEmployeeEntityDto[] getUserInfoByFullName(String fullName, Integer limit);
+    TelescopeEmployeeEntityDto[] getUserInfoByFullName(String fullName, int limit);
 
     String getUserPhotoByUri(String uri);
 
-    /**
-     * Add a new user to a database only if a user information was received from telescope api.
-     *
-     * @param email     user email must ended on "@epam.com"
-     * @param userRoles {@link UserRoleType} scope with user security roles
-     */
     User addNewUserByEmail(String email, List<UserRoleType> userRoles);
 }
