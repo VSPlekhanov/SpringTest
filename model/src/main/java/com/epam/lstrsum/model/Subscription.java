@@ -21,6 +21,7 @@ public class Subscription {
     private String subscriptionId;
     @DBRef
     private User userId;
+
     @DBRef
     @Indexed
     private List<Question> questionIds;
