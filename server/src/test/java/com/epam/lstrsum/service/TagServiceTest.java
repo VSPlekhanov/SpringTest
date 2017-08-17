@@ -25,13 +25,11 @@ public class TagServiceTest extends SetUpDataBaseCollections {
     private static final int TAG_COUNT = 20;
     private static final String MOST_POPULAR_TAG = "javascript";
     @Autowired
+    CacheManager internalCacheManager;
+    @Autowired
     private QuestionService questionService;
-
     @SpyBean
     private TagService tagService;
-
-    @Autowired
-    CacheManager internalCacheManager;
 
     @Test
     public void cacheWorks() {

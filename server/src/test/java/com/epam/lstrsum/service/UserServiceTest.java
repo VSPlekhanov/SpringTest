@@ -15,7 +15,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.*;
+import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_USER_ID;
+import static com.epam.lstrsum.testutils.InstantiateUtil.NON_EXISTING_USER_ID;
+import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_NOT_USER_EMAIL;
+import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someInt;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someRoles;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeEmployeeEntityDto;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -24,7 +32,12 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 
 public class UserServiceTest extends SetUpDataBaseCollections {

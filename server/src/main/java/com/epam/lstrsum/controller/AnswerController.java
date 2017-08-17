@@ -51,7 +51,8 @@ public class AnswerController {
     }
 
     @GetMapping("/{answerId}/vote/list")
-    public ResponseEntity<List<VoteAllFieldsDto>> getAllAnswerVotes(@NotEmptyString @PathVariable(value = "answerId") final String answerId) {
+    public ResponseEntity<List<VoteAllFieldsDto>> getAllAnswerVotes(
+            @NotEmptyString @PathVariable(value = "answerId") final String answerId) {
         List<VoteAllFieldsDto> allVotesForAnswer = voteService.findAllVotesForAnswer(answerId);
         return ResponseEntity.ok(allVotesForAnswer);
     }

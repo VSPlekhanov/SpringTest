@@ -22,11 +22,6 @@ public class EpamEmployeePrincipal implements Principal, Serializable {
     private String email;
     private String displayName;
 
-    @Override
-    public String getName() {
-        return displayName;
-    }
-
     public static EpamEmployeePrincipal ofMap(Map<String, Object> map) throws IllegalArgumentException {
         try {
             EpamEmployeePrincipalBuilder principalBuilder = EpamEmployeePrincipal.builder();
@@ -45,6 +40,11 @@ public class EpamEmployeePrincipal implements Principal, Serializable {
             log.error("Wrong format with exception = {}", e.getMessage());
             throw new IllegalArgumentException("Wrong map format.", e);
         }
+    }
+
+    @Override
+    public String getName() {
+        return displayName;
     }
 
 }

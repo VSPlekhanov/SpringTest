@@ -2,7 +2,11 @@ package com.epam.lstrsum.dto.question;
 
 
 import com.epam.lstrsum.dto.user.UserBaseDto;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.Instant;
 import java.util.Arrays;

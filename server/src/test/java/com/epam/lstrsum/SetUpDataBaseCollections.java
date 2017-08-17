@@ -1,6 +1,10 @@
 package com.epam.lstrsum;
 
-import com.epam.lstrsum.model.*;
+import com.epam.lstrsum.model.Answer;
+import com.epam.lstrsum.model.Question;
+import com.epam.lstrsum.model.Subscription;
+import com.epam.lstrsum.model.User;
+import com.epam.lstrsum.model.Vote;
 import com.epam.lstrsum.service.TelescopeService;
 import org.bson.Document;
 import org.json.simple.JSONArray;
@@ -58,7 +62,8 @@ public abstract class SetUpDataBaseCollections {
         collections.forEach(c -> mongoTemplate.remove(new Query(), c.getSimpleName()));
     }
 
-    private void loadJsonResourcesAndFillDBCollectionWithThem(String resourcesPath, String collectionName) throws IOException, ParseException {
+    private void loadJsonResourcesAndFillDBCollectionWithThem(String resourcesPath, String collectionName) throws IOException,
+            ParseException {
         List<String> jsonResources = loadJsonResources(resourcesPath);
 
         fillDataBaseCollectionWith(jsonResources, collectionName);

@@ -16,11 +16,11 @@ public class AnswerAllFieldsDto extends AnswerBaseDto {
     private QuestionBaseDto questionId;
 
     public AnswerAllFieldsDto(String text,
-                              Instant createdAt,
-                              UserBaseDto authorId,
-                              int upVote,
-                              String answerId,
-                              QuestionBaseDto questionId) {
+            Instant createdAt,
+            UserBaseDto authorId,
+            int upVote,
+            String answerId,
+            QuestionBaseDto questionId) {
         super(text, createdAt, authorId, upVote);
         this.answerId = answerId;
         this.questionId = questionId;

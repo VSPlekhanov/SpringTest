@@ -11,23 +11,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswer;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class AnswerServiceTest extends SetUpDataBaseCollections {
+    private final String authorEmail = "Bob_Hoplins@epam.com";
     @Autowired
     private AnswerService answerService;
-
     @Autowired
     private AnswerAggregator answerAggregator;
-
     @Autowired
     private QuestionService questionService;
-
-    private final String authorEmail = "Bob_Hoplins@epam.com";
 
     @Test
     public void addNewAnswerWithExistingQuestionTest() throws Exception {

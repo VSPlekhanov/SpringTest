@@ -1,6 +1,10 @@
 package com.epam.lstrsum.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.TextIndexed;
@@ -21,22 +25,16 @@ import java.util.List;
 @Document(collection = Question.QUESTION_COLLECTION_NAME)
 public class Question {
     public final static String QUESTION_COLLECTION_NAME = "Question";
-
-    @Id
-    private String questionId;
-
-    private String title;
-    private String[] tags;
-
-    @TextIndexed
-    private String text;
-
-    private Instant createdAt;
-    private Instant deadLine;
-
     @TextScore
     float score;
-
+    @Id
+    private String questionId;
+    private String title;
+    private String[] tags;
+    @TextIndexed
+    private String text;
+    private Instant createdAt;
+    private Instant deadLine;
     @DBRef
     private User authorId;
     @DBRef

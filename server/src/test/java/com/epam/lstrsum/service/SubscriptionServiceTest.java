@@ -17,7 +17,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -112,7 +114,8 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void getEmailsForNotificationReturnsListOfEmailsWhereToSendNotificationAboutNewAnswerToThisQuestionIfItHasSubscribedUsers() throws Exception {
+    public void getEmailsForNotificationReturnsListOfEmailsWhereToSendNotificationAboutNewAnswerToThisQuestionIfItHasSubscribedUsers() throws
+            Exception {
         String questionId = "1u_1r";
 
         List<String> emails = subscriptionService.getEmailsOfSubscribersOfQuestion(questionId);

@@ -9,7 +9,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.*;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswer;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswerPostDto;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestion;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;

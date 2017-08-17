@@ -27,10 +27,9 @@ import static java.util.Objects.nonNull;
 @ConfigurationProperties(prefix = "email")
 @Slf4j
 public class UserSynchronizer {
+    private static final List<UserRoleType> ONLY_COMMON_USER_ROLES = Collections.singletonList(UserRoleType.EXTENDED_USER);
     private final ExchangeServiceHelper exchangeServiceHelper;
     private final UserService userService;
-    private static final List<UserRoleType> ONLY_COMMON_USER_ROLES = Collections.singletonList(UserRoleType.EXTENDED_USER);
-
     @Setter
     private String distributionList;
 

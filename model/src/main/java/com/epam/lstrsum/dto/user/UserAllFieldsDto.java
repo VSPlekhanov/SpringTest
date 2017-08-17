@@ -16,7 +16,7 @@ public class UserAllFieldsDto extends UserBaseDto {
     private Boolean isActive;
 
     public UserAllFieldsDto(String userId, String firstName, String lastName, String email, String[] roles,
-                            Instant createdAt, Boolean isActive) {
+            Instant createdAt, Boolean isActive) {
         super(userId, firstName, lastName, email);
         this.roles = roles;
         this.createdAt = createdAt;

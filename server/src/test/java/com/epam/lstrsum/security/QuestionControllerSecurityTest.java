@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
-@ActiveProfiles({"email","test"})
+@ActiveProfiles({"email", "test"})
 public class QuestionControllerSecurityTest {
     private static final String VALID_QUESTION_ID = "1u_1r";
     private static final String QUESTION_DELETE_URL = "/admin/question/" + VALID_QUESTION_ID;

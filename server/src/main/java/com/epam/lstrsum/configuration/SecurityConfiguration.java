@@ -28,13 +28,24 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 @Configuration
 @EnableOAuth2Client
 @ConfigurationProperties(prefix = "security")
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+    static {
+        new TrustAllCertificatesSSL();
+    }
+
+    @Autowired
+    @SuppressWarnings("all")
+    OAuth2ClientContext oAuth2ClientContext;
     @Setter
     private String authorizationId;
     @Setter
@@ -45,15 +56,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private String authorizationUserUri;
     @Setter
     private List<String> envsToDisableCsrf;
-
-    @Autowired
-    @SuppressWarnings("all")
-    OAuth2ClientContext oAuth2ClientContext;
-
-    static {
-        new TrustAllCertificatesSSL();
-    }
-
     @Autowired
     private Environment env;
 

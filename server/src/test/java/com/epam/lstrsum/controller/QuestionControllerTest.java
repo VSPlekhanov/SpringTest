@@ -1,8 +1,11 @@
 package com.epam.lstrsum.controller;
 
-import com.epam.lstrsum.dto.common.CounterDto;
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
-import com.epam.lstrsum.dto.question.*;
+import com.epam.lstrsum.dto.common.CounterDto;
+import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
+import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
+import com.epam.lstrsum.dto.question.QuestionPostDto;
+import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.service.QuestionService;
@@ -23,7 +26,11 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class QuestionControllerTest {

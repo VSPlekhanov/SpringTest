@@ -16,6 +16,6 @@ public class EmailParserUtil {
     }
 
     public static String getSender(MimeMessage mimeMessage) throws MessagingException {
-        return ((InternetAddress)mimeMessage.getFrom()[0]).getAddress();
+        return ((InternetAddress) mimeMessage.getFrom()[0]).getAddress();
     }
 }

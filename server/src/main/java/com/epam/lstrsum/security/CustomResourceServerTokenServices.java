@@ -40,7 +40,8 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
                     null, null, null, null);
 
             final UsernamePasswordAuthenticationToken finalToken =
-                    new UsernamePasswordAuthenticationToken(principle, "N/A", AuthorityUtils.createAuthorityList(roleService.getPrincipalRoles(principle)));
+                    new UsernamePasswordAuthenticationToken(principle, "N/A",
+                            AuthorityUtils.createAuthorityList(roleService.getPrincipalRoles(principle)));
 
             return new OAuth2Authentication(request, finalToken);
         } catch (Exception e) {

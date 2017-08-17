@@ -1,8 +1,8 @@
 package com.epam.lstrsum.aggregators;
 
-import com.epam.lstrsum.converter.contract.AllFieldModelDtoConverter;
 import com.epam.lstrsum.converter.SubscriptionDtoMapper;
 import com.epam.lstrsum.converter.UserDtoMapper;
+import com.epam.lstrsum.converter.contract.AllFieldModelDtoConverter;
 import com.epam.lstrsum.dto.subscription.SubscriptionAllFieldsDto;
 import com.epam.lstrsum.model.Subscription;
 import lombok.RequiredArgsConstructor;

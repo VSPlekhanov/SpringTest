@@ -1,6 +1,10 @@
 package com.epam.lstrsum.testutils.model;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.activation.DataSource;
 import javax.mail.internet.MimeMessage;

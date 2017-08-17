@@ -10,7 +10,12 @@ import com.epam.lstrsum.dto.user.telescope.TelescopeDataDto;
 import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
 import com.epam.lstrsum.dto.user.telescope.TelescopeProfileDto;
 import com.epam.lstrsum.enums.UserRoleType;
-import com.epam.lstrsum.model.*;
+import com.epam.lstrsum.model.Answer;
+import com.epam.lstrsum.model.Attachment;
+import com.epam.lstrsum.model.Question;
+import com.epam.lstrsum.model.Subscription;
+import com.epam.lstrsum.model.User;
+import com.epam.lstrsum.model.Vote;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -24,11 +29,11 @@ import java.util.stream.Stream;
 import static java.util.Collections.singletonList;
 
 public class InstantiateUtil {
-    private static SecureRandom SECURE_RANDOM = new SecureRandom();
     public static final String SOME_USER_EMAIL = "John_Doe@epam.com";
     public static final String SOME_NOT_USER_EMAIL = "email@test.com";
     public static final String NON_EXISTING_USER_ID = "1123";
     public static final String EXISTING_USER_ID = "1u";
+    private static SecureRandom SECURE_RANDOM = new SecureRandom();
 
     public static Subscription someSubscription() {
         return Subscription.builder()

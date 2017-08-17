@@ -15,12 +15,26 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.*;
+import static com.epam.lstrsum.testutils.InstantiateUtil.initList;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestion;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionPostDto;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someUserBaseDto;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
     @Autowired
     private QuestionDtoMapper questionDtoMapper;
+
+    public static void checkQuestionBaseDto(QuestionBaseDto questionBaseDto, Question question, UserBaseDto author) {
+        assertThat(questionBaseDto.getQuestionId()).isEqualTo(question.getQuestionId());
+        assertThat(questionBaseDto.getTitle()).isEqualTo(question.getTitle());
+        assertThat(questionBaseDto.getAuthor()).isEqualToComparingFieldByField(author);
+        assertThat(questionBaseDto.getCreatedAt()).isEqualTo(question.getCreatedAt());
+        assertThat(questionBaseDto.getDeadLine()).isEqualTo(question.getDeadLine());
+        assertThat(questionBaseDto.getTags()).isEqualTo(question.getTags());
+        assertThat(questionBaseDto.getUpVote()).isEqualTo(question.getUpVote());
+    }
 
     @Test
     public void modelToBaseDto() throws Exception {
@@ -93,15 +107,5 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
         assertThat(questionDtoMapper.subscriptionsToListOfQuestionBaseDto(subscriptions, author))
                 .hasSize(size)
                 .allMatch(Objects::nonNull);
-    }
-
-    public static void checkQuestionBaseDto(QuestionBaseDto questionBaseDto, Question question, UserBaseDto author) {
-        assertThat(questionBaseDto.getQuestionId()).isEqualTo(question.getQuestionId());
-        assertThat(questionBaseDto.getTitle()).isEqualTo(question.getTitle());
-        assertThat(questionBaseDto.getAuthor()).isEqualToComparingFieldByField(author);
-        assertThat(questionBaseDto.getCreatedAt()).isEqualTo(question.getCreatedAt());
-        assertThat(questionBaseDto.getDeadLine()).isEqualTo(question.getDeadLine());
-        assertThat(questionBaseDto.getTags()).isEqualTo(question.getTags());
-        assertThat(questionBaseDto.getUpVote()).isEqualTo(question.getUpVote());
     }
 }

@@ -7,7 +7,6 @@ import org.junit.Test;
 import javax.mail.Message;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
 import java.util.Arrays;
 import java.util.stream.Collectors;
 

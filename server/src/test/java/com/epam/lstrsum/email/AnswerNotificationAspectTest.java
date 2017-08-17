@@ -24,7 +24,10 @@ import static com.epam.lstrsum.testutils.InstantiateUtil.someLong;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ActiveProfiles("email")
 public class AnswerNotificationAspectTest extends SetUpDataBaseCollections {
@@ -122,7 +125,8 @@ public class AnswerNotificationAspectTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void whenNewAnswerWasAddedMailShouldNotBeDuplicatedToOneUserIfUserIsDuplicatedInAuthorOrSubscriptionOrCCFields() throws Exception {
+    public void whenNewAnswerWasAddedMailShouldNotBeDuplicatedToOneUserIfUserIsDuplicatedInAuthorOrSubscriptionOrCCFields() throws
+            Exception {
         QuestionPostDto questionWithDuplicates = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 "just some text", 11223344L,
                 Collections.nCopies(4, questionAuthorEmail));
@@ -140,7 +144,7 @@ public class AnswerNotificationAspectTest extends SetUpDataBaseCollections {
     }
 
     private MimeMessage addNewQuestionAndAnswerToItInDBAndGetExpectedMimeMessage(QuestionPostDto question, String questionAuthor,
-                                                                                 String answerAuthor) throws Exception {
+            String answerAuthor) throws Exception {
         Question savedQuestion = questionService.addNewQuestion(question, questionAuthor);
 
         AnswerPostDto answerPost = new AnswerPostDto(savedQuestion.getQuestionId(), "Text of Answer");

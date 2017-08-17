@@ -1,7 +1,10 @@
 package com.epam.lstrsum.service.impl;
 
 import com.epam.lstrsum.aggregators.QuestionAggregator;
-import com.epam.lstrsum.dto.question.*;
+import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
+import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
+import com.epam.lstrsum.dto.question.QuestionPostDto;
+import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
 import com.epam.lstrsum.email.EmailNotification;
 import com.epam.lstrsum.email.template.NewQuestionNotificationTemplate;
 import com.epam.lstrsum.exception.NoSuchRequestException;
@@ -43,17 +46,22 @@ public class QuestionServiceImpl implements QuestionService {
     private final static int QUESTION_TITLE_LENGTH = 5;
     private final static int QUESTION_TEXT_LENGTH = 5;
     private final static int MIN_PAGE_SIZE = 0;
-
-    @Setter
-    private int searchDefaultPageSize;
-
-    @Setter
-    private int searchMaxPageSize;
-
     private final TagService tagService;
     private final QuestionAggregator questionAggregator;
     private final QuestionRepository questionRepository;
     private final MongoTemplate mongoTemplate;
+    @Setter
+    private int searchDefaultPageSize;
+    @Setter
+    private int searchMaxPageSize;
+
+    private static <T1, T2> List<T2> mapList(List<T1> list, Function<T1, T2> mapper) {
+        List<T2> result = new ArrayList<>();
+        for (T1 value : list) {
+            result.add(mapper.apply(value));
+        }
+        return result;
+    }
 
     @Override
     public List<QuestionAllFieldsDto> findAll() {
@@ -176,13 +184,5 @@ public class QuestionServiceImpl implements QuestionService {
         if (questionPostDto.getText().length() < QUESTION_TEXT_LENGTH) {
             throw new QuestionValidationException("Text is too short " + questionPostDto.toJson());
         }
-    }
-
-    private static <T1, T2> List<T2> mapList(List<T1> list, Function<T1, T2> mapper) {
-        List<T2> result = new ArrayList<>();
-        for (T1 value : list) {
-            result.add(mapper.apply(value));
-        }
-        return result;
     }
 }

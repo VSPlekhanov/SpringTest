@@ -13,12 +13,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MimeMessageCreatorUtil {
-    private static Random RANDOM = new Random();
     private static final int MINIMUM_TEXT_SIZE = 200;
     private static final int MAXIMUM_TEXT_SIZE = 500;
     private static final int MINIMUM_TITLE_SIZE = 10;
     private static final int MAXIMUM_TITLE_SIZE = 100;
     private static final int MAXIMUM_CC_SIZE = 100;
+    private static Random RANDOM = new Random();
     private static char[] CHARSET_AZ_09 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray();
     private static int LENGTH = CHARSET_AZ_09.length;
     private static String FAKE_EMAIL_ADDRESS = "fake@email.com";

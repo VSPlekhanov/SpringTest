@@ -8,12 +8,14 @@ public interface TelescopeService {
     String TELESCOPE_API_META_TYPE_FIELD_VALUE = "meta:people-suite:people-api:com.epam.e3s.app.people.api.data.pluggable.EmployeeEntity";
 
     String TELESCOPE_API_SEARCH_QUERY_FULLNAME = "{\"statements\":[{\"query\":\"fullName:(";
-    String TELESCOPE_API_SEARCH_QUERY_FILTERS = ")\"}],\"filters\":[{\"field\":\"employmentStatus\",\"values\":[\"Employee\",\"Contractor\",\"Intern\",\"Trainee\"]}],\"limit\":";
+    String TELESCOPE_API_SEARCH_QUERY_FILTERS =
+            ")\"}],\"filters\":[{\"field\":\"employmentStatus\",\"values\":[\"Employee\",\"Contractor\",\"Intern\",\"Trainee\"]}],\"limit\":";
     String TELESCOPE_API_SEARCH_QUERY_SORTING = ",\"sorting\":[{\"fullName\":1}]}";
     String TELESCOPE_API_FIELDS_FOR_UI = "_e3sId,email,fullName,displayName,primarySkill,primaryTitle,manager,profile,photo,unitPath";
 
     String TELESCOPE_API_EMAIL_SEARCH_EMAIL = "{\"statements\":[{\"query\":\"email:(";
-    String TELESCOPE_API_EMAIL_SEARCH_FILTERS = ")\"}],\"filters\":[{\"field\":\"employmentStatus\",\"values\":[\"Employee\",\"Contractor\",\"Intern\",\"Trainee\"]}]}";
+    String TELESCOPE_API_EMAIL_SEARCH_FILTERS =
+            ")\"}],\"filters\":[{\"field\":\"employmentStatus\",\"values\":[\"Employee\",\"Contractor\",\"Intern\",\"Trainee\"]}]}";
     String TELESCOPE_API_FIELDS_FOR_ADD_NEW_USER = "firstName,lastName";
 
     TelescopeEmployeeEntityDto[] getUsersInfoByFullName(String fullName, int limit);
