@@ -24,7 +24,7 @@ import java.util.List;
 @CompoundIndex(unique = true, def = "{'title': 1, 'authorId': 1}")
 @Document(collection = Question.QUESTION_COLLECTION_NAME)
 public class Question {
-    public final static String QUESTION_COLLECTION_NAME = "Question";
+    public static final String QUESTION_COLLECTION_NAME = "Question";
     @TextScore
     float score;
     @Id
