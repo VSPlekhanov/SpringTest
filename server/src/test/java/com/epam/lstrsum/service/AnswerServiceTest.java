@@ -2,7 +2,6 @@ package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.aggregators.AnswerAggregator;
-import com.epam.lstrsum.converter.AnswerDtoMapper;
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.exception.AnswerValidationException;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswer;
 import static org.hamcrest.CoreMatchers.equalTo;

@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public TelescopeEmployeeEntityDto[] getUserInfoByFullName(String fullName, Integer limit) {
+    public TelescopeEmployeeEntityDto[] getUserInfoByFullName(String fullName, int limit) {
         return telescopeService.getUsersInfoByFullName(fullName, limit);
     }
 

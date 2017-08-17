@@ -7,7 +7,6 @@ import com.epam.lstrsum.email.service.ExchangeServiceHelper;
 import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
-import com.epam.lstrsum.service.AttachmentService;
 import com.epam.lstrsum.service.QuestionService;
 import org.bson.types.ObjectId;
 import org.junit.Before;

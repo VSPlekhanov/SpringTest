@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.springframework.http.HttpStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class AdminControllerTest extends SetUpDataBaseCollections{
