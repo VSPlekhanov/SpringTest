@@ -55,7 +55,7 @@ public class AnswerNotificationAspectTest extends SetUpDataBaseCollections {
         this.questionPostDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 someString(), someLong(),
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                        "Donald_Gardner@epam.com", answerAuthorEmail));
+                        "Donald_Gardner@epam.com", answerAuthorEmail), Collections.emptyList());
     }
 
     @Test
@@ -93,7 +93,7 @@ public class AnswerNotificationAspectTest extends SetUpDataBaseCollections {
     public void whenNewAnswerWasAddedMailShouldBeSendToAuthorOnlyIfQuestionHasNoSubscribersOrCC() throws Exception {
         QuestionPostDto questionWithNoCC = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 someString(), someLong(),
-                Collections.emptyList());
+                Collections.emptyList(), Collections.emptyList());
 
         MimeMessage expected = addNewQuestionAndAnswerToItInDBAndGetExpectedMimeMessage(
                 questionWithNoCC, questionAuthorEmail, answerAuthorEmail);
@@ -102,7 +102,9 @@ public class AnswerNotificationAspectTest extends SetUpDataBaseCollections {
 
         doAnswer(invocation -> {
             MimeMessage actual = (MimeMessage) invocation.getArguments()[0];
-            assertThat(actual.getRecipients(Message.RecipientType.TO), equalTo(expected.getRecipients(Message.RecipientType.TO)));
+            assertThat(actual.getRecipients(Message.RecipientType.TO),
+                    equalTo(expected.getRecipients(Message.RecipientType.TO))
+            );
             assertThat(actual.getRecipients(Message.RecipientType.TO).length, equalTo(1));
             return null;
         }).when(mailService).sendMessage(expected);
@@ -118,18 +120,20 @@ public class AnswerNotificationAspectTest extends SetUpDataBaseCollections {
 
         doAnswer(invocation -> {
             MimeMessage actual = (MimeMessage) invocation.getArguments()[0];
-            assertThat(actual.getRecipients(Message.RecipientType.TO), equalTo(expected.getRecipients(Message.RecipientType.TO)));
+            assertThat(actual.getRecipients(Message.RecipientType.TO),
+                    equalTo(expected.getRecipients(Message.RecipientType.TO))
+            );
             assertThat(actual.getRecipients(Message.RecipientType.TO).length, equalTo(5));
             return null;
         }).when(mailService).sendMessage(expected);
     }
 
     @Test
-    public void whenNewAnswerWasAddedMailShouldNotBeDuplicatedToOneUserIfUserIsDuplicatedInAuthorOrSubscriptionOrCCFields() throws
-            Exception {
+    public void whenNewAnswerWasAddedMailShouldNotBeDuplicatedToOneUserIfUserIsDuplicatedInAuthorOrSubscriptionOrCCFields()
+            throws Exception {
         QuestionPostDto questionWithDuplicates = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 "just some text", 11223344L,
-                Collections.nCopies(4, questionAuthorEmail));
+                Collections.nCopies(4, questionAuthorEmail), Collections.emptyList());
 
         MimeMessage expected = addNewQuestionAndAnswerToItInDBAndGetExpectedMimeMessage(
                 questionWithDuplicates, questionAuthorEmail, answerAuthorEmail);
@@ -143,8 +147,9 @@ public class AnswerNotificationAspectTest extends SetUpDataBaseCollections {
         }).when(mailService).sendMessage(expected);
     }
 
-    private MimeMessage addNewQuestionAndAnswerToItInDBAndGetExpectedMimeMessage(QuestionPostDto question, String questionAuthor,
-            String answerAuthor) throws Exception {
+    private MimeMessage addNewQuestionAndAnswerToItInDBAndGetExpectedMimeMessage(
+            QuestionPostDto question, String questionAuthor, String answerAuthor
+    ) throws Exception {
         Question savedQuestion = questionService.addNewQuestion(question, questionAuthor);
 
         AnswerPostDto answerPost = new AnswerPostDto(savedQuestion.getQuestionId(), "Text of Answer");

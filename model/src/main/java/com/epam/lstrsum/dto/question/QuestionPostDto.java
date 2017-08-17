@@ -28,6 +28,8 @@ public class QuestionPostDto implements Serializable {
 
     private List<String> allowedSubs;
 
+    private List<byte[]> inlineSources;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -35,21 +37,23 @@ public class QuestionPostDto implements Serializable {
 
         QuestionPostDto that = (QuestionPostDto) o;
 
-        if (title != null ? !title.equals(that.title) : that.title != null) return false;
+        if (!title.equals(that.title)) return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
         if (!Arrays.equals(tags, that.tags)) return false;
         if (text != null ? !text.equals(that.text) : that.text != null) return false;
         if (deadLine != null ? !deadLine.equals(that.deadLine) : that.deadLine != null) return false;
-        return allowedSubs != null ? allowedSubs.equals(that.allowedSubs) : that.allowedSubs == null;
+        if (!allowedSubs.equals(that.allowedSubs)) return false;
+        return inlineSources.equals(that.inlineSources);
     }
 
     @Override
     public int hashCode() {
-        int result = title != null ? title.hashCode() : 0;
+        int result = title.hashCode();
         result = 31 * result + Arrays.hashCode(tags);
         result = 31 * result + (text != null ? text.hashCode() : 0);
         result = 31 * result + (deadLine != null ? deadLine.hashCode() : 0);
-        result = 31 * result + (allowedSubs != null ? allowedSubs.hashCode() : 0);
+        result = 31 * result + allowedSubs.hashCode();
+        result = 31 * result + inlineSources.hashCode();
         return result;
     }
 

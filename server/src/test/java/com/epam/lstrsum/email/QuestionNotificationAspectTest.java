@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
+import static java.util.Collections.emptyList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.any;
@@ -59,7 +60,7 @@ public class QuestionNotificationAspectTest extends SetUpDataBaseCollections {
         QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 "just some text", 11223344L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
+                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
 
         Question savedDto = questionService.addNewQuestion(postDto, authorEmail);
 
@@ -80,7 +81,7 @@ public class QuestionNotificationAspectTest extends SetUpDataBaseCollections {
         QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 "just some text", 11223344L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
+                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
 
         Question savedDto = questionService.addNewQuestion(postDto, authorEmail);
 
@@ -95,7 +96,7 @@ public class QuestionNotificationAspectTest extends SetUpDataBaseCollections {
         QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 "just some text", 11223344L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
+                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
 
         Question savedDto = questionService.addNewQuestion(postDto, authorEmail);
 

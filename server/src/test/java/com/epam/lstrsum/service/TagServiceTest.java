@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
+import static java.util.Collections.emptyList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
@@ -64,7 +65,7 @@ public class TagServiceTest extends SetUpDataBaseCollections {
 
         final String newTag = "newUniqueTag";
         questionService.addNewQuestion(new QuestionPostDto("title", new String[]{newTag},
-                "textlong", 1L, Collections.singletonList("Bob_Hoplins@epam.com")), "Bob_Hoplins@epam.com");
+                "textlong", 1L, Collections.singletonList("Bob_Hoplins@epam.com"), emptyList()), "Bob_Hoplins@epam.com");
 
         log.debug("getAllTagsCacheWorksOkForJenkins; cache tagsRating.tags content: {}",
                 internalCacheManager.getCache("tagsRating").get("tags"));
@@ -87,7 +88,7 @@ public class TagServiceTest extends SetUpDataBaseCollections {
         final String newTag = "newUniqueTag";
         questionService.addNewQuestion(
                 new QuestionPostDto(someString(), new String[]{newTag},
-                        someString(), 1L, Collections.singletonList("Bob_Hoplins@epam.com")),
+                        someString(), 1L, Collections.singletonList("Bob_Hoplins@epam.com"), emptyList()),
                 "Bob_Hoplins@epam.com");
 
         final int afterAddTags = tagService.getTagsRating().size();

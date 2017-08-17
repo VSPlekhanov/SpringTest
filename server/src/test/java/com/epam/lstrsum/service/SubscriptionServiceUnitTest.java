@@ -37,7 +37,7 @@ public class SubscriptionServiceUnitTest {
     @Test
     public void questionEmailCollectionAdapterShouldNotTakeIncorrectEmails() throws Exception {
         String incorrectEmail = "(incorrect";
-        String correctEmail = "correct@mail.com";
+        String correctEmail = "correct@com.epam.lstrsum.email.service.mail.com";
 
         SubscriptionServiceImpl.AnswerEmailCollectionAdapter adapter =
                 new SubscriptionServiceImpl.AnswerEmailCollectionAdapter(subscriptionService);
@@ -60,7 +60,7 @@ public class SubscriptionServiceUnitTest {
     @Test
     public void answerEmailCollectionAdapterShouldNotTakeIncorrectEmails() throws Exception {
         String incorrectEmail = "(incorrect";
-        String correctEmail = "correct@mail.com";
+        String correctEmail = "correct@com.epam.lstrsum.email.service.mail.com";
 
         SubscriptionServiceImpl.QuestionEmailCollectionAdapter adapter =
                 new SubscriptionServiceImpl.QuestionEmailCollectionAdapter(subscriptionService);

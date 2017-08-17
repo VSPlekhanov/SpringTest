@@ -29,17 +29,20 @@ public class Question {
     float score;
     @Id
     private String questionId;
+
     private String title;
     private String[] tags;
+
     @TextIndexed
     private String text;
+
     private Instant createdAt;
     private Instant deadLine;
+    private List<byte[]> inlineSources;
     @DBRef
     private User authorId;
     @DBRef
     private List<User> allowedSubs;
-
     private List<String> attachmentIds;
 
     private Integer upVote;
