@@ -21,9 +21,14 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.singletonList;
+
 public class InstantiateUtil {
     private static SecureRandom SECURE_RANDOM = new SecureRandom();
     public static final String SOME_USER_EMAIL = "John_Doe@epam.com";
+    public static final String SOME_NOT_USER_EMAIL = "email@test.com";
+    public static final String NON_EXISTING_USER_ID = "1123";
+    public static final String EXISTING_USER_ID = "1u";
 
     public static Subscription someSubscription() {
         return Subscription.builder()
@@ -53,28 +58,28 @@ public class InstantiateUtil {
 
     public static TelescopeDataDto someTelescopeDataDto() {
         return TelescopeDataDto.builder()
-                ._e3sId("8841d390-36fa-4173-8430-6849da54881a")
-                .email(new String[]{"Ivan_Ivanov@epam.com"})
-                .fullName(new String[]{"Ivanov Ivan Ivanovich"})
-                .firstName("Ivan")
-                .lastName("Ivanov")
-                .displayName("Ivanov Ivan")
-                .primarySkill("DevOps/Automation")
-                .primaryTitle("Systems Engineer")
-                .manager("Olga Petrova")
-                .profile(Collections.singletonMap("UPSA", new TelescopeProfileDto[]{someTelescopeProfileDto()}))
-                .photo(new String[]{"attachment:///upsa_profilePhoto.4060641410043119281_1.GIF_b8f369df-8a70-4d79-8413-120b31e39016"})
-                .unitPath("Cloud & DevOps / NA / MX / DevOps")
+                ._e3sId(someString())
+                .email(someStrings())
+                .fullName(someStrings())
+                .firstName(someString())
+                .lastName(someString())
+                .displayName(someString())
+                .primarySkill(someString())
+                .primaryTitle(someString())
+                .manager(someString())
+                .profile(Collections.singletonMap(someString(), new TelescopeProfileDto[]{someTelescopeProfileDto()}))
+                .photo(someStrings())
+                .unitPath(someString())
                 .build();
     }
 
     private static TelescopeProfileDto someTelescopeProfileDto() {
         return TelescopeProfileDto.builder()
-                .origin("UPSA")
-                .id("40607414003048743")
-                .status("Active")
-                .url("https://upsa.epam.com/workload/employeeView.do?employeeId=406074147648379594")
-                .visibility("public")
+                .origin(someString())
+                .id(someString())
+                .status(someString())
+                .url(someString())
+                .visibility(someString())
                 .build();
     }
 
@@ -118,7 +123,7 @@ public class InstantiateUtil {
         return Question.builder()
                 .questionId(someString())
                 .title(someString())
-                .tags(new String[]{someString(), someString()})
+                .tags(someStrings())
                 .allowedSubs(Collections.emptyList())
                 .authorId(someUser())
                 .createdAt(Instant.now())
@@ -129,7 +134,7 @@ public class InstantiateUtil {
 
     public static QuestionAllFieldsDto someQuestionAllFieldsDto() {
         return new QuestionAllFieldsDto(
-                someString(), someString(), new String[]{someString(), someString(), someString()},
+                someString(), someString(), someStrings(),
                 Instant.now(), Instant.now(), someUserBaseDto(), SECURE_RANDOM.nextInt(),
                 initList(InstantiateUtil::someUserBaseDto), someString()
         );
@@ -139,7 +144,7 @@ public class InstantiateUtil {
         return QuestionPostDto.builder()
                 .allowedSubs(initList(InstantiateUtil::someString))
                 .deadLine(someLong())
-                .tags(initList(InstantiateUtil::someString).toArray(new String[0]))
+                .tags(someStrings())
                 .text(someString())
                 .title(someString())
                 .build();
@@ -151,7 +156,7 @@ public class InstantiateUtil {
                 .createdAt(Instant.now())
                 .deadLine(Instant.now())
                 .questionId(someString())
-                .tags(initList(InstantiateUtil::someString).toArray(new String[0]))
+                .tags(someStrings())
                 .title(someString())
                 .upVote(SECURE_RANDOM.nextInt())
                 .build();
@@ -182,6 +187,19 @@ public class InstantiateUtil {
                 .collect(Collectors.toList());
     }
 
+    public static TelescopeEmployeeEntityDto[] someTelescopeEmployeeEntityDtos() {
+        return initList(InstantiateUtil::someTelescopeEmployeeEntityDto).toArray(new TelescopeEmployeeEntityDto[0]);
+    }
+
+    public static List<UserRoleType> someRoles() {
+        return singletonList(someRole());
+    }
+
+    public static UserRoleType someRole() {
+        final UserRoleType[] values = UserRoleType.values();
+        return values[SECURE_RANDOM.nextInt(values.length)];
+    }
+
     public static <T> List<T> initList(Supplier<T> supplier) {
         return initList(supplier, SECURE_RANDOM.nextInt(10));
     }
@@ -190,7 +208,15 @@ public class InstantiateUtil {
         return new BigInteger(130, SECURE_RANDOM).toString(32);
     }
 
+    public static String[] someStrings() {
+        return initList(InstantiateUtil::someString).toArray(new String[0]);
+    }
+
     public static long someLong() {
         return SECURE_RANDOM.nextLong();
+    }
+
+    public static int someInt() {
+        return SECURE_RANDOM.nextInt();
     }
 }

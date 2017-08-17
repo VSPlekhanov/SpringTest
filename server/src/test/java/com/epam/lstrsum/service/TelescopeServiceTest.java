@@ -1,32 +1,28 @@
 package com.epam.lstrsum.service;
 
-import com.epam.lstrsum.dto.user.telescope.TelescopeDataDto;
 import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
+import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.service.http.HttpRequestService;
 import com.epam.lstrsum.service.impl.TelescopeServiceImpl;
-import com.epam.lstrsum.utils.HttpUtilEntity;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeEmployeeEntityDto;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static com.epam.lstrsum.testutils.InstantiateUtil.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class TelescopeServiceTest {
-
-    private TelescopeService telescopeService;
+    static private final int SOME_VALID_LIMIT = 10;
+    static private final int SOME_NOT_VALID_LIMIT = 10000;
+    static private final String SOME_URI = "some uri";
 
     @Mock
     private HttpRequestService httpRequestService;
+
+    private TelescopeService telescopeService;
 
     @Before
     public void setUp() {
@@ -34,69 +30,43 @@ public class TelescopeServiceTest {
 
         telescopeService = new TelescopeServiceImpl(httpRequestService);
     }
-
     @Test
     public void getUserInfoByFullName() {
         final TelescopeEmployeeEntityDto dto = someTelescopeEmployeeEntityDto();
+        doReturn(new TelescopeEmployeeEntityDto[]{dto}).when(httpRequestService).sendGETRequest(any(), any());
 
-        when(httpRequestService.sendGETRequest(any(HttpUtilEntity.class), eq(TelescopeEmployeeEntityDto[].class))).thenReturn(new TelescopeEmployeeEntityDto[]{dto});
+        TelescopeEmployeeEntityDto[] actualResponse = telescopeService.getUsersInfoByFullName("name", SOME_VALID_LIMIT);
 
-        TelescopeEmployeeEntityDto[] responseDto = telescopeService.getUserInfoByFullName("name", 10);
-        TelescopeDataDto dataDto = responseDto[0].getData();
-
-        assertNotNull(responseDto);
-        assertThat(responseDto.length, is(1));
-        assertThat(dataDto.getEmail()[0], is("Ivan_Ivanov@epam.com"));
-
-        verify(httpRequestService, times(1)).sendGETRequest(any(HttpUtilEntity.class), eq(TelescopeEmployeeEntityDto[].class));
+        assertThat(actualResponse)
+                .hasOnlyOneElementSatisfying(e -> assertThat(e).isEqualToComparingFieldByFieldRecursively(dto));
     }
 
     @Test
     public void getUserInfoByFullNameWithEmptyFullName() {
-        TelescopeEmployeeEntityDto[] employeeEntityDto = telescopeService.getUserInfoByFullName("    ", 10);
-        assertThat(employeeEntityDto.length, is(0));
+        assertThat(telescopeService.getUsersInfoByFullName("    ", SOME_VALID_LIMIT)).hasSize(0);
     }
 
     @Test
     public void getUserInfoByFullNameWithOverMaxLimitValue() {
-        TelescopeEmployeeEntityDto[] employeeEntityDto = telescopeService.getUserInfoByFullName("name", 5892);
-        assertThat(employeeEntityDto.length, is(0));
+        assertThat(telescopeService.getUsersInfoByFullName("    ", SOME_NOT_VALID_LIMIT)).hasSize(0);
     }
 
     @Test
     public void getUserPhotoByUri() {
-        String photoUrl = telescopeService.getUserPhotoByUri("some uri");
-        assertNotNull(photoUrl);
-        assertThat(photoUrl.length(), greaterThan(0));
+        assertThat(telescopeService.getUserPhotoByUri(SOME_URI)).isNotEmpty();
     }
 
-    @Test
+    @Test(expected = NoSuchUserException.class)
     public void getUserInfoByEmailWithIncorrectDomainEmail() {
-        TelescopeEmployeeEntityDto[] employeeEntityDto = telescopeService.getUserInfoByEmail("email@test.com");
-        assertThat(employeeEntityDto.length, is(0));
-    }
-
-    @Test
-    public void getUserInfoByEmailWithNullEmail() {
-        TelescopeEmployeeEntityDto[] employeeEntityDto = telescopeService.getUserInfoByEmail(null);
-        assertThat(employeeEntityDto.length, is(0));
+        telescopeService.getUserInfoByEmail(SOME_NOT_USER_EMAIL);
     }
 
     @Test
     public void getUserInfoByEmail() {
-        final String email = "Ivan_Ivanov@epam.com";
         final TelescopeEmployeeEntityDto dto = someTelescopeEmployeeEntityDto();
 
-        when(httpRequestService.sendGETRequest(any(HttpUtilEntity.class), eq(TelescopeEmployeeEntityDto[].class))).thenReturn(new TelescopeEmployeeEntityDto[]{dto});
+        doReturn(new TelescopeEmployeeEntityDto[]{dto}).when(httpRequestService).sendGETRequest(any(), any());
 
-        TelescopeEmployeeEntityDto[] employeeEntityDto = telescopeService.getUserInfoByEmail(email);
-        TelescopeDataDto dataDto = employeeEntityDto[0].getData();
-
-        assertNotNull(employeeEntityDto);
-        assertThat(employeeEntityDto.length, is(1));
-        assertThat(dataDto.getFirstName(), is("Ivan"));
-        assertThat(dataDto.getLastName(), is("Ivanov"));
-
-        verify(httpRequestService, times(1)).sendGETRequest(any(HttpUtilEntity.class), eq(TelescopeEmployeeEntityDto[].class));
+        assertThat(telescopeService.getUserInfoByEmail(SOME_USER_EMAIL)).isEqualToComparingFieldByFieldRecursively(dto);
     }
 }

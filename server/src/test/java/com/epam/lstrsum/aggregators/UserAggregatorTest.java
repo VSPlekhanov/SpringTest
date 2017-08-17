@@ -1,32 +1,38 @@
 package com.epam.lstrsum.aggregators;
 
 import com.epam.lstrsum.converter.UserDtoMapper;
+import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.persistence.UserRepository;
 import com.epam.lstrsum.testutils.InstantiateUtil;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.initList;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
+import java.util.Collections;
+import java.util.Optional;
+
+import static com.epam.lstrsum.testutils.InstantiateUtil.*;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class UserAggregatorTest {
-    private UserAggregator aggregator;
-
     @Mock
     private UserDtoMapper userMapper;
 
     @Mock
     private UserRepository userRepository;
 
+    @InjectMocks
+    private UserAggregator aggregator;
+
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         initMocks(this);
-        aggregator = new UserAggregator(userMapper, userRepository);
     }
 
     @Test
@@ -49,5 +55,28 @@ public class UserAggregatorTest {
         aggregator.allowedSubsToListOfUserBaseDtos(initList(InstantiateUtil::someUser, size));
 
         verify(userMapper, times(1)).allowedSubsToListOfUserBaseDtos(any());
+    }
+
+    @Test
+    public void userTelescopeInfoDtoToUser() throws Exception {
+        aggregator.userTelescopeInfoDtoToUser(someTelescopeDataDto(), someString(), Collections.emptyList());
+
+        verify(userMapper, times(1)).userTelescopeInfoDtoToUser(any(), anyString(), any());
+    }
+
+    @Test
+    public void findByEmail() {
+        doReturn(Optional.of(someUser())).when(userRepository).findByEmail(anyString());
+
+        aggregator.findByEmail(someString());
+
+        verify(userRepository).findByEmail(anyString());
+    }
+
+    @Test(expected = NoSuchUserException.class)
+    public void findByEmailWithEmpyOptional() {
+        doReturn(Optional.empty()).when(userRepository).findByEmail(anyString());
+
+        aggregator.findByEmail(someString());
     }
 }

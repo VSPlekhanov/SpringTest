@@ -1,8 +1,6 @@
 package com.epam.lstrsum.service.impl;
 
 import com.epam.lstrsum.aggregators.UserAggregator;
-import com.epam.lstrsum.dto.user.UserBaseDto;
-import com.epam.lstrsum.dto.user.telescope.TelescopeDataDto;
 import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
 import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.exception.NoSuchUserException;
@@ -23,13 +21,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Objects.isNull;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
     private final UserRepository userRepository;
     private final UserAggregator userAggregator;
     private final MongoTemplate mongoTemplate;
@@ -63,16 +58,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserBaseDto modelToBaseDto(User authorId) {
-        return userAggregator.modelToBaseDto(authorId);
-    }
-
-    @Override
     public long addIfNotExistAllWithRole(final List<String> userEmails, List<UserRoleType> roles) {
         // TODO: 8/9/2017 RETRIEVE INFORMATION ABOUT ALL USERS FROM TELESCOPE
         return userEmails.stream()
                 .filter(email -> addIfNotExist(email, roles))
                 .count();
+    }
+
+    @Override
+    public TelescopeEmployeeEntityDto[] getUserInfoByFullName(String fullName, Integer limit) {
+        return telescopeService.getUsersInfoByFullName(fullName, limit);
+    }
+
+    @Override
+    public String getUserPhotoByUri(String uri) {
+        return telescopeService.getUserPhotoByUri(uri);
+    }
+
+    @Override
+    public User addNewUserByEmail(String email, List<UserRoleType> userRoles) {
+        final User newUser = userAggregator.userTelescopeInfoDtoToUser(
+                telescopeService.getUserInfoByEmail(email).getData(),
+                email, userRoles
+        );
+
+        userRepository.save(newUser);
+        log.debug("Add user with email {}", email);
+        return newUser;
     }
 
     private boolean addIfNotExist(final String email, List<UserRoleType> roles) {
@@ -88,45 +100,4 @@ public class UserServiceImpl implements UserService {
         }
         return false;
     }
-
-    @Override
-    public TelescopeEmployeeEntityDto[] getUserInfoByFullName(String fullName, Integer limit) {
-        return telescopeService.getUserInfoByFullName(fullName, limit);
-    }
-
-    @Override
-    public String getUserPhotoByUri(String uri) {
-        return telescopeService.getUserPhotoByUri(uri);
-    }
-
-    @Override
-    public void addNewUserByEmail(String email, List<UserRoleType> userRoles) {
-
-        TelescopeEmployeeEntityDto[] telescopeUserDto = telescopeService.getUserInfoByEmail(email);
-        if (!isUserInfoWereReceivedFromTelescope(telescopeUserDto, email)) {
-            return;
-        }
-        User newUser = userAggregator.userTelescopeInfoDtoToUser(telescopeUserDto[0].getData(), email, userRoles);
-        userRepository.save(newUser);
-
-        log.debug("New user with email = {} was added", email);
-    }
-
-    private boolean isUserInfoWereReceivedFromTelescope(TelescopeEmployeeEntityDto[] telescopeEmployeeEntityDto, String email) {
-        if (isNull(telescopeEmployeeEntityDto) || telescopeEmployeeEntityDto.length == 0 || isNull(telescopeEmployeeEntityDto[0].getData())) {
-            log.warn("New user with email = {} wasn't added because of no data was received from telescope api", email);
-            return false;
-        }
-        TelescopeDataDto userDto = telescopeEmployeeEntityDto[0].getData();
-        if (isNullOrEmptyString(userDto.getFirstName()) || isNullOrEmptyString(userDto.getLastName())) {
-            log.warn("New user with email = {} wasn't added because of no firstName and/or lastName were received from telescope api", email);
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isNullOrEmptyString(String stringForCheck) {
-        return isNull(stringForCheck) || stringForCheck.trim().isEmpty();
-    }
 }
-
