@@ -8,7 +8,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.*;
+import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_NOT_USER_EMAIL;
+import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeEmployeeEntityDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -30,6 +32,7 @@ public class TelescopeServiceTest {
 
         telescopeService = new TelescopeServiceImpl(httpRequestService);
     }
+
     @Test
     public void getUserInfoByFullName() {
         final TelescopeEmployeeEntityDto dto = someTelescopeEmployeeEntityDto();

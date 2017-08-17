@@ -10,9 +10,12 @@ import org.springframework.http.HttpStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-public class AdminControllerTest extends SetUpDataBaseCollections{
+public class AdminControllerTest extends SetUpDataBaseCollections {
     @Mock
     private QuestionService questionService;
 

@@ -24,7 +24,13 @@ import java.util.stream.Stream;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ActiveProfiles("email")
 public class QuestionNotificationAspectTest extends SetUpDataBaseCollections {

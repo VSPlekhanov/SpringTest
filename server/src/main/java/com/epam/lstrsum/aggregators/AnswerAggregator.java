@@ -31,6 +31,7 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
     private final QuestionRepository questionRepository;
 
     private final UserAggregator userAggregator;
+
     @Override
     public AnswerAllFieldsDto modelToAllFieldsDto(Answer answer) {
         final UserBaseDto author = userMapper.modelToBaseDto(answer.getAuthorId());

@@ -4,7 +4,11 @@ package com.epam.lstrsum.email.service;
 import com.epam.lstrsum.dto.attachment.AttachmentAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.email.exception.EmailValidationException;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
@@ -145,7 +149,7 @@ public class EmailParser {
                 final String fileType = datasource.getContentType();
                 final byte[] data = IOUtils.toByteArray(datasource.getInputStream());
                 attached.add(new AttachmentAllFieldsDto(new ObjectId().toString(), fileName, fileType, data));
-            }       
+            }
             return attached;
         }
 

@@ -17,9 +17,8 @@ import javax.mail.internet.MimeMessage;
 @RequiredArgsConstructor
 public class NewQuestionNotificationTemplate implements MailTemplate<Question> {
 
-    private final EmailCollection<Question> emailCollection;
-
     private static final String MAIL_HEADER = "\nHello!\n\nA new question was added to EXP Portal!\n\n";
+    private final EmailCollection<Question> emailCollection;
 
     @Override
     public MimeMessage buildMailMessage(Question question) throws MessagingException {

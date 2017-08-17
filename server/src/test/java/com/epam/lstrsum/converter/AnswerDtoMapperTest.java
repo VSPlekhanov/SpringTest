@@ -15,13 +15,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.Instant;
 import java.util.List;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.*;
+import static com.epam.lstrsum.testutils.InstantiateUtil.initList;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswer;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswerPostDto;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestion;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionBaseDto;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someUserBaseDto;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class AnswerDtoMapperTest extends SetUpDataBaseCollections {
     @Autowired
     private AnswerDtoMapper answerMapper;
+
+    public static void checkAnswerBaseDto(AnswerBaseDto answerBaseDto, Answer answer, UserBaseDto userBaseDto) {
+        assertThat(answerBaseDto.getCreatedAt()).isEqualTo(answer.getCreatedAt());
+        assertThat(answerBaseDto.getText()).isEqualTo(answer.getText());
+        assertThat(answerBaseDto.getUpVote()).isEqualTo(answer.getUpVote());
+        assertThat(answerBaseDto.getAuthorId()).isEqualTo(userBaseDto);
+    }
 
     @Test
     public void modelToAllFieldsDto() throws Exception {
@@ -70,12 +83,5 @@ public class AnswerDtoMapperTest extends SetUpDataBaseCollections {
                     assertThat(a.getUpVote()).isEqualTo(0);
                     assertThat(a.getText()).isEqualTo(answerPostDto.getText());
                 });
-    }
-
-    public static void checkAnswerBaseDto(AnswerBaseDto answerBaseDto, Answer answer, UserBaseDto userBaseDto) {
-        assertThat(answerBaseDto.getCreatedAt()).isEqualTo(answer.getCreatedAt());
-        assertThat(answerBaseDto.getText()).isEqualTo(answer.getText());
-        assertThat(answerBaseDto.getUpVote()).isEqualTo(answer.getUpVote());
-        assertThat(answerBaseDto.getAuthorId()).isEqualTo(userBaseDto);
     }
 }

@@ -75,7 +75,7 @@ public class ExchangeServiceHelperImplTest {
     }
 
     @Test
-    public void resolveGroupThirdLevelDeep()  throws Exception {
+    public void resolveGroupThirdLevelDeep() throws Exception {
         doReturn(generateByStringList(Arrays.asList("1", "2", "3"))).when(exchangeService).expandGroup("1");
         doReturn(generateByStringList(Arrays.asList("4", "5"))).when(exchangeService).expandGroup("2");
         doReturn(generateByStringList(Arrays.asList("6", "7"))).when(exchangeService).expandGroup("3");

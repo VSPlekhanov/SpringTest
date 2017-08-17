@@ -20,7 +20,11 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +34,20 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final QuestionService questionService;
     private final MongoTemplate mongoTemplate;
+
+    private static Address[] getAddressesFromEmails(Collection<String> emails) {
+        return emails.stream()
+                .map((s) -> {
+                    try {
+                        return new InternetAddress(s);
+                    } catch (Exception e) {
+                        log.warn("Could not parse email address: " + s, e);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .toArray(Address[]::new);
+    }
 
     @Override
     public List<Subscription> findAll() {
@@ -108,19 +126,5 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                             answer.getQuestionId().getQuestionId()
                     )));
         }
-    }
-
-    private static Address[] getAddressesFromEmails(Collection<String> emails) {
-        return emails.stream()
-                .map((s) -> {
-                    try {
-                        return new InternetAddress(s);
-                    } catch (Exception e) {
-                        log.warn("Could not parse email address: " + s, e);
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .toArray(Address[]::new);
     }
 }

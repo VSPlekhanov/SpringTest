@@ -17,7 +17,6 @@ import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -87,7 +86,7 @@ public class MailReceiver {
                 .map(AttachmentAllFieldsDto::getId)
                 .collect(Collectors.toList());
 
-            questionService.addAttachmentsToQuestion(questionId, attachmentIds);
+        questionService.addAttachmentsToQuestion(questionId, attachmentIds);
     }
 
     private Optional<AttachmentAllFieldsDto> attachExceptionally(AttachmentAllFieldsDto attachmentAllFieldsDto) {

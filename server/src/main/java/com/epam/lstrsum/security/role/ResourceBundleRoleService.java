@@ -2,7 +2,12 @@ package com.epam.lstrsum.security.role;
 
 import com.epam.lstrsum.security.EpamEmployeePrincipal;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
 /**
  * This implementation of RoleService uses ResourceBundle for
@@ -24,9 +29,9 @@ import java.util.*;
  */
 
 public class ResourceBundleRoleService implements RoleService {
-    private String notAllowedRole = "NOT_ALLOWED_USER";
     private static final String NOT_ALLOWED_USER_PROPERTY_NAME = "not.allowed.role.name";
     private final ResourceBundle bundle;
+    private String notAllowedRole = "NOT_ALLOWED_USER";
 
     /**
      * New ResourceBundleRoleService

@@ -38,7 +38,7 @@ public class AnswerPostDto {
         return result;
     }
 
-    public String toJson(){
+    public String toJson() {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             return objectMapper.writeValueAsString(this);

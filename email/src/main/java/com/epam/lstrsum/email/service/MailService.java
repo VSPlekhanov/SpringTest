@@ -35,14 +35,11 @@ public class MailService {
     private final JavaMailSender mailSender;
 
     private final String backupDateFormat = "yyyy-MM-dd_HH-mm-ss";
-
+    private final EmailRepository emailRepository;
     @Setter
     private String fromAddress;
-
     @Setter
     private String backupDir = "";
-
-    private final EmailRepository emailRepository;
 
     public static String getAddressFrom(Address[] rawAddress) {
         InternetAddress internetAddress = (InternetAddress) rawAddress[0];

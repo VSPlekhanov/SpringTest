@@ -13,12 +13,23 @@ import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.*;
+import static com.epam.lstrsum.testutils.InstantiateUtil.initList;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someRoles;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeDataDto;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserDtoMapperTest extends SetUpDataBaseCollections {
     @Autowired
     private UserDtoMapper userMapper;
+
+    public static void checkUserBaseDto(UserBaseDto userBaseDto, User user) {
+        assertThat(userBaseDto.getEmail()).isEqualTo(user.getEmail());
+        assertThat(userBaseDto.getFirstName()).isEqualTo(user.getFirstName());
+        assertThat(userBaseDto.getLastName()).isEqualTo(user.getLastName());
+        assertThat(userBaseDto.getUserId()).isEqualTo(user.getUserId());
+    }
 
     @Test
     public void modelToAllFieldsDto() throws Exception {
@@ -55,7 +66,7 @@ public class UserDtoMapperTest extends SetUpDataBaseCollections {
         final TelescopeDataDto userDto = someTelescopeDataDto();
         final String email = someString();
         final List<UserRoleType> roles = someRoles();
-        
+
         assertThat(userMapper.userTelescopeInfoDtoToUser(userDto, email, roles))
                 .satisfies(e -> {
                     assertThat(e.getEmail()).isEqualTo(email);
@@ -65,12 +76,5 @@ public class UserDtoMapperTest extends SetUpDataBaseCollections {
                     assertThat(e.getCreatedAt()).isBeforeOrEqualTo(Instant.now());
                     assertThat(e.getIsActive()).isTrue();
                 });
-    }
-
-    public static void checkUserBaseDto(UserBaseDto userBaseDto, User user) {
-        assertThat(userBaseDto.getEmail()).isEqualTo(user.getEmail());
-        assertThat(userBaseDto.getFirstName()).isEqualTo(user.getFirstName());
-        assertThat(userBaseDto.getLastName()).isEqualTo(user.getLastName());
-        assertThat(userBaseDto.getUserId()).isEqualTo(user.getUserId());
     }
 }

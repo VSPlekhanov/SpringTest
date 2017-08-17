@@ -9,7 +9,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "spring")
-public interface VoteDtoMapper{
+public interface VoteDtoMapper {
     @Mappings({
             @Mapping(target = "createdAt", source = "vote.createdAt")
     })

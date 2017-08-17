@@ -36,14 +36,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @SpringBootTest
 public class TestDataGenerator {
     private static final int ALL_LISTS_INIT_CAPACITY = 1000;
-
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
     private static List<User> users = new ArrayList<>(ALL_LISTS_INIT_CAPACITY);
     private static List<Question> questions = new ArrayList<>(ALL_LISTS_INIT_CAPACITY);
     private static List<Answer> answers = new ArrayList<>(ALL_LISTS_INIT_CAPACITY);
     private static List<Subscription> subscriptions = new ArrayList<>(ALL_LISTS_INIT_CAPACITY);
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @BeforeClass
     public static void generateCollectionLists() {
@@ -65,51 +63,6 @@ public class TestDataGenerator {
             i++;
         }
     }
-
-    @Ignore
-    @Test
-    public void generateAnswerCollectionTest() throws IOException {
-        assertThat(answers.size(), is(ALL_LISTS_INIT_CAPACITY));
-        final DBObject dbObject = new BasicDBList();
-        mongoTemplate.getConverter().write(answers, dbObject);
-        final String dbAnswers = dbObject.toString().replace("_class\" : \"" + Answer.class.getCanonicalName() + "\" ,", "");
-        final String dbAnswers2 = dbAnswers.replace(", \"_class\" : \"" + Answer.class.getCanonicalName() + "\"", "");
-        Files.write(Paths.get("src/test/resources/data/generated/Answers.json"), dbAnswers2.getBytes());
-    }
-
-    @Ignore
-    @Test
-    public void generateQuestionCollectionTest() throws IOException {
-        assertThat(questions.size(), is(ALL_LISTS_INIT_CAPACITY));
-        final DBObject dbObject = new BasicDBList();
-        mongoTemplate.getConverter().write(questions, dbObject);
-        final String dbQuestions = dbObject.toString().replace("_class\" : \"" + Question.class.getCanonicalName() + "\" ,", "");
-        final String dbQuestion2 = dbQuestions.replace(", \"_class\" : \"" + Question.class.getCanonicalName() + "\"", "");
-        Files.write(Paths.get("src/test/resources/data/generated/Questions.json"), dbQuestion2.getBytes());
-    }
-
-    @Ignore
-    @Test
-    public void generateSubscriptionCollectionTest() throws IOException {
-        assertThat(subscriptions.size(), is(ALL_LISTS_INIT_CAPACITY));
-        final DBObject dbObject = new BasicDBList();
-        mongoTemplate.getConverter().write(subscriptions, dbObject);
-        final String dbSubscriptions = dbObject.toString().replace("_class\" : \"" + Subscription.class.getCanonicalName() + "\" ,", "");
-        final String dbSubscriptions2 = dbSubscriptions.replace(", \"_class\" : \"" + Subscription.class.getCanonicalName() + "\"", "");
-        Files.write(Paths.get("src/test/resources/data/generated/Subscriptions.json"), dbSubscriptions2.getBytes());
-    }
-
-    @Ignore
-    @Test
-    public void generateUserCollectionTest() throws IOException {
-        assertThat(users.size(), is(ALL_LISTS_INIT_CAPACITY));
-        final DBObject dbObject = new BasicDBList();
-        mongoTemplate.getConverter().write(users, dbObject);
-        final String dbUsers = dbObject.toString().replace("\"_class\" : " + User.class.getCanonicalName() + "\" ,", "");
-        final String dbUsers2 = dbUsers.replace(", \"_class\" : \"" + User.class.getCanonicalName() + "\"", "");
-        Files.write(Paths.get("src/test/resources/data/generated/Users.json"), dbUsers2.getBytes());
-    }
-
 
     private static Answer buildAnswer(int numberOfAnswer, Question question) {
         int rndId = ThreadLocalRandom.current().nextInt(question.getAllowedSubs().size());
@@ -174,5 +127,49 @@ public class TestDataGenerator {
                 .createdAt(Instant.now())
                 .isActive(true)
                 .build();
+    }
+
+    @Ignore
+    @Test
+    public void generateAnswerCollectionTest() throws IOException {
+        assertThat(answers.size(), is(ALL_LISTS_INIT_CAPACITY));
+        final DBObject dbObject = new BasicDBList();
+        mongoTemplate.getConverter().write(answers, dbObject);
+        final String dbAnswers = dbObject.toString().replace("_class\" : \"" + Answer.class.getCanonicalName() + "\" ,", "");
+        final String dbAnswers2 = dbAnswers.replace(", \"_class\" : \"" + Answer.class.getCanonicalName() + "\"", "");
+        Files.write(Paths.get("src/test/resources/data/generated/Answers.json"), dbAnswers2.getBytes());
+    }
+
+    @Ignore
+    @Test
+    public void generateQuestionCollectionTest() throws IOException {
+        assertThat(questions.size(), is(ALL_LISTS_INIT_CAPACITY));
+        final DBObject dbObject = new BasicDBList();
+        mongoTemplate.getConverter().write(questions, dbObject);
+        final String dbQuestions = dbObject.toString().replace("_class\" : \"" + Question.class.getCanonicalName() + "\" ,", "");
+        final String dbQuestion2 = dbQuestions.replace(", \"_class\" : \"" + Question.class.getCanonicalName() + "\"", "");
+        Files.write(Paths.get("src/test/resources/data/generated/Questions.json"), dbQuestion2.getBytes());
+    }
+
+    @Ignore
+    @Test
+    public void generateSubscriptionCollectionTest() throws IOException {
+        assertThat(subscriptions.size(), is(ALL_LISTS_INIT_CAPACITY));
+        final DBObject dbObject = new BasicDBList();
+        mongoTemplate.getConverter().write(subscriptions, dbObject);
+        final String dbSubscriptions = dbObject.toString().replace("_class\" : \"" + Subscription.class.getCanonicalName() + "\" ,", "");
+        final String dbSubscriptions2 = dbSubscriptions.replace(", \"_class\" : \"" + Subscription.class.getCanonicalName() + "\"", "");
+        Files.write(Paths.get("src/test/resources/data/generated/Subscriptions.json"), dbSubscriptions2.getBytes());
+    }
+
+    @Ignore
+    @Test
+    public void generateUserCollectionTest() throws IOException {
+        assertThat(users.size(), is(ALL_LISTS_INIT_CAPACITY));
+        final DBObject dbObject = new BasicDBList();
+        mongoTemplate.getConverter().write(users, dbObject);
+        final String dbUsers = dbObject.toString().replace("\"_class\" : " + User.class.getCanonicalName() + "\" ,", "");
+        final String dbUsers2 = dbUsers.replace(", \"_class\" : \"" + User.class.getCanonicalName() + "\"", "");
+        Files.write(Paths.get("src/test/resources/data/generated/Users.json"), dbUsers2.getBytes());
     }
 }

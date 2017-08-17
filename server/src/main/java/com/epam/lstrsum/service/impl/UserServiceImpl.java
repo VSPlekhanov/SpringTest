@@ -54,7 +54,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUserById(String userId) {
-        return Optional.ofNullable(userRepository.findOne(userId)).orElseThrow(() -> new NoSuchUserException("No such User in user Collection"));
+        return Optional.ofNullable(userRepository.findOne(userId))
+                .orElseThrow(() -> new NoSuchUserException("No such User in user Collection"));
     }
 
     @Override
@@ -66,7 +67,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public TelescopeEmployeeEntityDto[] getUserInfoByFullName(String fullName, Integer limit) {
+    public TelescopeEmployeeEntityDto[] getUserInfoByFullName(String fullName, int limit) {
         return telescopeService.getUsersInfoByFullName(fullName, limit);
     }
 

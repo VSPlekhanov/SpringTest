@@ -6,7 +6,12 @@ import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
 import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.*;
+import de.flapdoodle.embed.mongo.config.ExtractedArtifactStoreBuilder;
+import de.flapdoodle.embed.mongo.config.IMongodConfig;
+import de.flapdoodle.embed.mongo.config.MongoCmdOptionsBuilder;
+import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
+import de.flapdoodle.embed.mongo.config.Net;
+import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
 import de.flapdoodle.embed.process.extract.ITempNaming;
@@ -44,23 +49,19 @@ import static com.epam.lstrsum.configuration.TempNamingByFile.TEMP_FILE_NAME;
 @Slf4j
 public class DataBaseConfiguration extends AbstractMongoConfiguration {
     private final String DEFAULT_VALUE_FOR_MONGO_BIN = "0";
+    @Autowired
+    private MongoProperties properties;
+    @Autowired(required = false)
+    private MongoClientOptions options;
+    @Autowired
+    private Environment environment;
+    @Autowired
+    private ITempNaming tempNamingByFile;
 
     @Override
     protected String getDatabaseName() {
         return "ExperienceTestDataBase";
     }
-
-    @Autowired
-    private MongoProperties properties;
-
-    @Autowired(required = false)
-    private MongoClientOptions options;
-
-    @Autowired
-    private Environment environment;
-
-    @Autowired
-    private ITempNaming tempNamingByFile;
 
     @Bean(destroyMethod = "close")
     @Override

@@ -10,7 +10,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 public class EpamEmployeePrincipalTest {
@@ -18,6 +20,12 @@ public class EpamEmployeePrincipalTest {
     private static String SOME_UNIQUE_NAME = "unique_name";
     private static String SOME_USER_ID = "user_id";
 
+    public static void checkThatOfMapThrowException(Map<String, Object> epamEmployeePrincipalMap) {
+        assertThatThrownBy(() -> EpamEmployeePrincipal.ofMap(epamEmployeePrincipalMap))
+                .hasCause(new NullPointerException())
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageMatching(".*Wrong map format.*");
+    }
 
     @Test
     public void EpamEmployeePrincipalOfMapSuccessful() throws Exception {
@@ -62,14 +70,6 @@ public class EpamEmployeePrincipalTest {
         verify(epamEmployeePrincipalMap, times(1)).get(eq(EpamEmployeePrincipal.USER_ID));
         verify(epamEmployeePrincipalMap, times(1)).get(eq(EpamEmployeePrincipal.UNIQUE_NAME));
         verify(epamEmployeePrincipalMap, times(1)).get(eq(EpamEmployeePrincipal.EMAIL));
-    }
-
-
-    public static void checkThatOfMapThrowException(Map<String, Object> epamEmployeePrincipalMap) {
-        assertThatThrownBy(() -> EpamEmployeePrincipal.ofMap(epamEmployeePrincipalMap))
-                .hasCause(new NullPointerException())
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageMatching(".*Wrong map format.*");
     }
 
     @Test

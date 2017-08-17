@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.*;
+import static com.epam.lstrsum.testutils.InstantiateUtil.initList;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someSubscription;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someUserBaseDto;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SubscriptionDtoMapperTest extends SetUpDataBaseCollections {
@@ -28,7 +30,7 @@ public class SubscriptionDtoMapperTest extends SetUpDataBaseCollections {
                         subscriptionAllFieldsDto -> {
                             assertThat(subscriptionAllFieldsDto.getSubscriptionId()).isEqualTo(subscription.getSubscriptionId());
                             assertThat(subscriptionAllFieldsDto.getUserId()).isEqualTo(userId);
-                            assertThat(subscriptionAllFieldsDto.getQuestionIds()).containsExactly(questionIds.get(0),questionIds.get(1));
+                            assertThat(subscriptionAllFieldsDto.getQuestionIds()).containsExactly(questionIds.get(0), questionIds.get(1));
                         }
                 );
     }

@@ -8,7 +8,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 public class JavaMailConfiguration {
 
     @Bean
-    public JavaMailSenderImpl javaMailSender(){
+    public JavaMailSenderImpl javaMailSender() {
         return new JavaMailSenderImpl();
     }
 }

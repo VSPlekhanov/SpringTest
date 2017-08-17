@@ -2,7 +2,11 @@ package com.epam.lstrsum.converter;
 
 
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
-import com.epam.lstrsum.dto.question.*;
+import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
+import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
+import com.epam.lstrsum.dto.question.QuestionBaseDto;
+import com.epam.lstrsum.dto.question.QuestionPostDto;
+import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;

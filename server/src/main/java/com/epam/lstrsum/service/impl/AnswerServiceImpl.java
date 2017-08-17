@@ -67,7 +67,8 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     public Answer getAnswerById(String answerId) {
-        return Optional.ofNullable(answerRepository.findOne(answerId)).orElseThrow(() -> new NoSuchAnswerException("No such Answer in user Collection"));
+        return Optional.ofNullable(answerRepository.findOne(answerId))
+                .orElseThrow(() -> new NoSuchAnswerException("No such Answer in user Collection"));
     }
 
     public void save(Answer answer) {

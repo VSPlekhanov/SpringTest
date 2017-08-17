@@ -58,7 +58,8 @@ public class VoteServiceImpl implements VoteService {
     private void checkUserAbilityToAddVote(Optional<Vote> vote, String email) {
         if (vote.isPresent() && !vote.get().isRevoked()) {
             log.warn("User with email = {} already voted for answer id = {}", email, vote.get().getAnswerId().getAnswerId());
-            throw new BusinessLogicException("User with email = " + email + " already voted for answer id = " + vote.get().getAnswerId().getAnswerId());
+            throw new BusinessLogicException(
+                    "User with email = " + email + " already voted for answer id = " + vote.get().getAnswerId().getAnswerId());
         }
     }
 

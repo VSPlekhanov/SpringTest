@@ -26,7 +26,8 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
     private static final String alreadyVotedUserEmail = "John_Doe@epam.com";
     private static final String notVotedUserEmail = "Bob_Hoplins@epam.com";
     private static final String oneMoreNotVotedUserEmail = "Ernest_Hemingway@epam.com";
-    private static final List<String> notVotedUserEmailsList = Arrays.asList("Bob_Hoplins@epam.com", "Ernest_Hemingway@epam.com", "Steven_Tyler@epam.com");
+    private static final List<String> notVotedUserEmailsList =
+            Arrays.asList("Bob_Hoplins@epam.com", "Ernest_Hemingway@epam.com", "Steven_Tyler@epam.com");
     private static final String answerId = "1u_2r_1a";
     private static final String nonExistingAnswerId = "17635r929";
     private static final String answerIdWithNegativeVoteAmount = "4u_5r_3a";
@@ -120,6 +121,7 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
         Answer answerAfterMultipleVoteDeleting = answerService.getAnswerById(answerId);
         assertThat(answerAfterMultipleVoteDeleting.getUpVote(), is(4));
         assertEquals(answerAfterMultipleVoteDeleting.getAnswerId(), answerBeforeMultipleVoteAdding.getAnswerId());
-        assertEquals(answerAfterMultipleVoteDeleting.getQuestionId().getQuestionId(), answerBeforeMultipleVoteAdding.getQuestionId().getQuestionId());
+        assertEquals(answerAfterMultipleVoteDeleting.getQuestionId().getQuestionId(),
+                answerBeforeMultipleVoteAdding.getQuestionId().getQuestionId());
     }
 }

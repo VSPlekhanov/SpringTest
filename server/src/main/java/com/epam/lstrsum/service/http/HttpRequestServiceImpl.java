@@ -79,7 +79,8 @@ public class HttpRequestServiceImpl implements HttpRequestService {
                 }
                 return "?" + joiner;
             } else {
-                log.warn("Parameters won't be added to GET request URL because of different names and values size. Names size = {}, values size = {}",
+                log.warn(
+                        "Parameters won't be added to GET request URL because of different names and values size. Names size = {}, values size = {}",
                         parametersNames, parametersValues);
             }
         }
@@ -130,7 +131,8 @@ public class HttpRequestServiceImpl implements HttpRequestService {
             final ResponseEntity<T> out = restTemplate.exchange(uri, HttpMethod.GET, entity, type);
             if (!Objects.equals(out.getStatusCode(), HttpStatus.OK)) {
                 log.warn("Incorrect response status code = {} instead of code = 200", out.getStatusCode().toString());
-                throw new BusinessLogicException("Incorrect response status code = " + out.getStatusCode().toString() + " instead of code = 200");
+                throw new BusinessLogicException(
+                        "Incorrect response status code = " + out.getStatusCode().toString() + " instead of code = 200");
             }
             return out.getBody();
         } catch (final Exception e) {

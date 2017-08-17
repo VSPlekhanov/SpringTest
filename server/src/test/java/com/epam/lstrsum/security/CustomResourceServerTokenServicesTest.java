@@ -27,10 +27,12 @@ public class CustomResourceServerTokenServicesTest {
     private static final String SOME_USER_ID = "1";
 
 
-    private static final String VALID_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cG4iOiIxIiwidW5pcXVlX25hbWUiOiJKb2huIERvZSIsImVtYWlsIjoiZW1haWxAdGVzdC5jb20ifQ" +
-            ".VoZ16tq1IBirXoMaMPvSHSl7z_PVQjDOTAKiVkJTMsY";
+    private static final String VALID_ACCESS_TOKEN =
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cG4iOiIxIiwidW5pcXVlX25hbWUiOiJKb2huIERvZSIsImVtYWlsIjoiZW1haWxAdGVzdC5jb20ifQ" +
+                    ".VoZ16tq1IBirXoMaMPvSHSl7z_PVQjDOTAKiVkJTMsY";
 
-    private static final String ACCESS_TOKEN_WITH_NO_SIGNATURE = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cG4iOiIxIiwidW5pcXVlX25hbWUiOiJKb2huIERvZSIsImVtYWlsIjoiZW1haWxAdGVzdC5jb20ifQ";
+    private static final String ACCESS_TOKEN_WITH_NO_SIGNATURE =
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cG4iOiIxIiwidW5pcXVlX25hbWUiOiJKb2huIERvZSIsImVtYWlsIjoiZW1haWxAdGVzdC5jb20ifQ";
 
 
     @Mock
