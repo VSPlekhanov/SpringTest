@@ -53,6 +53,7 @@
         <jasypt.version>1.14</jasypt.version>
         <ews.version>2.0</ews.version>
         <spring-security.version>4.0.0.RELEASE</spring-security.version>
+        <elastic.version>5.5.1</elastic.version>
     </properties>
 
     <dependencyManagement>
@@ -147,6 +148,11 @@
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-test</artifactId>
                 <version>${spring-security.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>rest</artifactId>
+                <version>${elastic.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -11,7 +11,7 @@ import com.epam.lstrsum.model.User;
 
 import java.util.List;
 
-public interface QuestionService {
+public interface QuestionService extends ElasticSearchService {
     List<QuestionAllFieldsDto> findAll();
 
     /**

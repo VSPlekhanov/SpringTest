@@ -16,6 +16,8 @@ import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.model.Vote;
+import org.apache.http.HttpEntity;
+import org.apache.http.entity.ByteArrayEntity;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -203,6 +205,10 @@ public class InstantiateUtil {
     public static UserRoleType someRole() {
         final UserRoleType[] values = UserRoleType.values();
         return values[SECURE_RANDOM.nextInt(values.length)];
+    }
+
+    public static HttpEntity someEntity() {
+        return new ByteArrayEntity(someString().getBytes());
     }
 
     public static <T> List<T> initList(Supplier<T> supplier) {
