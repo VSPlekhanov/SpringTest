@@ -12,8 +12,10 @@ import com.epam.lstrsum.testutils.model.CompositeMimeMessage;
 import lombok.SneakyThrows;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -29,12 +31,15 @@ import java.util.stream.Collectors;
 import static com.epam.lstrsum.testutils.MimeMessageCreatorUtil.createFromFile;
 import static com.epam.lstrsum.testutils.MimeMessageCreatorUtil.createSimpleMimeMessage;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
 @ActiveProfiles(value = {"unsecured", "email"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringRunner.class)
 public class IntegrationMailReceiverTest {
+    private static final String FAKE_EMAIL = "fake@email.com";
 
     @Autowired
     private MailReceiver mailReceiver;
@@ -43,6 +48,7 @@ public class IntegrationMailReceiverTest {
     private UserRepository userRepository;
 
     @Autowired
+    @Spy
     private UserService userService;
 
     @Autowired
@@ -57,8 +63,21 @@ public class IntegrationMailReceiverTest {
     @MockBean
     private MailService mailService;
 
+    @Before
+    public void setUp() {
+        User newUser = User.builder().email(FAKE_EMAIL).build();
+        userRepository.save(newUser);
+        Question newQuestion = Question.builder()
+                .authorId(newUser)
+                .inlineSources(Collections.singletonList(new byte[]{0}))
+                .text("src=\"mail.message.index:0\"")
+                .build();
+        questionRepository.save(newQuestion);
+    }
+
     @After
     public void tearDown() {
+        userRepository.deleteAll();
         questionRepository.deleteAll();
         attachmentRepository.deleteAll();
     }
@@ -129,6 +148,8 @@ public class IntegrationMailReceiverTest {
     }
 
     private void addAllUsers(List<String> userEmails) {
+        doReturn(1L).when(userService).addIfNotExistAllWithRole(any(), any());
+
         for (String userEmail : userEmails) {
             userService.addIfNotExistAllWithRole(
                     Collections.singletonList(userEmail), Collections.singletonList(UserRoleType.ADMIN)

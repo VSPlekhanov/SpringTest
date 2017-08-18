@@ -1,6 +1,7 @@
 package com.epam.lstrsum.service.impl;
 
 import com.epam.lstrsum.aggregators.UserAggregator;
+import com.epam.lstrsum.dto.user.telescope.TelescopeDataDto;
 import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
 import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.exception.NoSuchUserException;
@@ -16,10 +17,18 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
 
 @Service
 @Slf4j
@@ -30,6 +39,19 @@ public class UserServiceImpl implements UserService {
     private final MongoTemplate mongoTemplate;
     private final TelescopeService telescopeService;
 
+    private static final BiFunction<List<String>, Set<String>, String> getEmailContainsInBothLists =
+            (emailsFromDto, emailsFromInputSet) -> {
+                List<String> helper = new ArrayList<>(emailsFromDto);
+                helper.retainAll(emailsFromInputSet);
+                return helper.get(0);
+            };
+
+    private static final BiFunction<TelescopeDataDto, Set<String>, Map.Entry> getMapWithEmailAndTelescopeData =
+            (data, emails) -> new AbstractMap.SimpleEntry<>(
+                    getEmailContainsInBothLists.apply(Arrays.asList(data.getEmail()), emails),
+                    data
+            );
+
     @Override
     public List<User> findAll() {
         return userRepository.findAll();
@@ -37,7 +59,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new NoSuchUserException("No such User in user Collection"));
+        return userRepository.findByEmailIgnoreCase(email).orElseThrow(() -> new NoSuchUserException("No such User in user Collection"));
     }
 
     @Override
@@ -59,14 +81,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public long addIfNotExistAllWithRole(final List<String> userEmails, List<UserRoleType> roles) {
-        // TODO: 8/9/2017 RETRIEVE INFORMATION ABOUT ALL USERS FROM TELESCOPE
-        return userEmails.stream()
-                .filter(email -> addIfNotExist(email, roles))
-                .count();
-    }
-
-    @Override
     public TelescopeEmployeeEntityDto[] getUserInfoByFullName(String fullName, int limit) {
         return telescopeService.getUsersInfoByFullName(fullName, limit);
     }
@@ -77,30 +91,41 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User addNewUserByEmail(String email, List<UserRoleType> userRoles) {
-        final User newUser = userAggregator.userTelescopeInfoDtoToUser(
-                telescopeService.getUserInfoByEmail(email).getData(),
-                email, userRoles
-        );
+    public long addIfNotExistAllWithRole(final List<String> userEmails, List<UserRoleType> roles) {
+        Set<String> lowerCaseUsersEmail = userEmails.stream().map(String::toLowerCase).collect(Collectors.toSet());
+        List<TelescopeEmployeeEntityDto> telescopeUsersDto = telescopeService.getUsersInfoByEmails(lowerCaseUsersEmail);
+        if (telescopeUsersDto.size() < 1) {
+            log.warn("No users from emails list size ={} were added", userEmails.size());
+            return 0;
+        }
 
-        userRepository.save(newUser);
-        log.debug("Add user with email {}", email);
-        return newUser;
+        return telescopeUsersDto.stream()
+                .map(TelescopeEmployeeEntityDto::getData)
+                .filter(data -> !isNullOrEmptyString(data.getFirstName()) && !isNullOrEmptyString(data.getLastName()))
+                .map(data -> getMapWithEmailAndTelescopeData.apply(data, lowerCaseUsersEmail))
+                .filter(entry -> addIfNotExist(entry, roles))
+                .count();
     }
 
-    private boolean addIfNotExist(final String email, List<UserRoleType> roles) {
-        final Optional<User> byEmail = userRepository.findByEmail(email);
+    private boolean addIfNotExist(Map.Entry<String, TelescopeDataDto> entry, List<UserRoleType> roles) {
+        final Optional<User> byEmail = userRepository.findByEmailIgnoreCase(entry.getKey());
         if (!byEmail.isPresent()) {
-            userRepository.save(User.builder()
-                    .email(email)
-                    .firstName("")
-                    .lastName("")
-                    .roles(roles)
-                    .createdAt(Instant.now())
-                    .isActive(true)
-                    .build());
+            addNewUserByTelescopeUserData(entry, roles);
             return true;
         }
         return false;
     }
+
+    private void addNewUserByTelescopeUserData(Map.Entry<String, TelescopeDataDto> emailTelescopeDataEntry, List<UserRoleType> userRoles) {
+        String userEmail = emailTelescopeDataEntry.getKey();
+        TelescopeDataDto userData = emailTelescopeDataEntry.getValue();
+        User newUser = userAggregator.userTelescopeInfoDtoToUser(userData, userEmail, userRoles);
+        userRepository.save(newUser);
+        log.debug("New user with email = {} was added", userEmail);
+    }
+
+    private boolean isNullOrEmptyString(String stringForCheck) {
+        return isNull(stringForCheck) || stringForCheck.trim().isEmpty();
+    }
 }
+

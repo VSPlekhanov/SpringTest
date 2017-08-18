@@ -39,7 +39,7 @@ public class UserAggregator implements BasicModelDtoConverter<User, UserBaseDto>
     }
 
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> {
+        return userRepository.findByEmailIgnoreCase(email).orElseThrow(() -> {
             log.debug("No user with such email = {}", email);
             return new NoSuchUserException("No user with such email = " + email);
         });
