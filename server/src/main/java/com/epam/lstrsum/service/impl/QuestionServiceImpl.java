@@ -12,6 +12,7 @@ import com.epam.lstrsum.exception.QuestionValidationException;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.QuestionRepository;
+import com.epam.lstrsum.service.ElasticSearchService;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.TagService;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +51,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final QuestionAggregator questionAggregator;
     private final QuestionRepository questionRepository;
     private final MongoTemplate mongoTemplate;
+    private final ElasticSearchService elasticSearchService;
     @Setter
     private int searchDefaultPageSize;
     @Setter
@@ -89,6 +91,11 @@ public class QuestionServiceImpl implements QuestionService {
                 .stream()
                 .map(questionAggregator::modelToAllFieldsDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public String smartSearch(String searchQuery, int page, int size) {
+        return elasticSearchService.smartSearch(searchQuery, page, size);
     }
 
     @Override

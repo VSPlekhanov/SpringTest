@@ -84,6 +84,14 @@ public class QuestionController {
         return ResponseEntity.ok(questionDtoList);
     }
 
+    @GetMapping("/smartSearch")
+    public ResponseEntity<String> smartSearch(
+            @RequestParam("query") String query,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "size", required = false) Integer size) {
+        return ResponseEntity.ok(questionService.smartSearch(query, page, size));
+    }
+
     @GetMapping("/getTextSearchResultsCount")
     public ResponseEntity<CounterDto> searchCount(@RequestParam("query") String query) {
         return ResponseEntity.ok()
