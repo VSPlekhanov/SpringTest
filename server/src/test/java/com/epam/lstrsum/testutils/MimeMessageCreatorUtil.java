@@ -2,12 +2,19 @@ package com.epam.lstrsum.testutils;
 
 import com.epam.lstrsum.testutils.model.CompositeMimeMessage;
 import org.apache.commons.mail.HtmlEmail;
+import org.apache.commons.mail.util.MimeMessageUtils;
 
 import javax.activation.FileDataSource;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
 import javax.mail.util.ByteArrayDataSource;
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,6 +31,22 @@ public class MimeMessageCreatorUtil {
     private static String FAKE_EMAIL_ADDRESS = "fake@email.com";
     private static String HOST_NAME = "smtp.office365.com";
 
+    public static MimeMessage createFromFile(String fileName) throws IOException, MessagingException {
+        Properties properties = new Properties();
+        properties.put("mail.smtp.host", "smtp.example.com");
+        properties.put("mail.smtp.port", "25");
+        Session session = Session.getDefaultInstance(properties, null);
+
+        MimeMessage mimeMessage = MimeMessageUtils.createMimeMessage(session, new File(fileName));
+
+        mimeMessage.setFrom(FAKE_EMAIL_ADDRESS);
+        mimeMessage.setSubject(generateTitle());
+
+        mimeMessage.addRecipients(Message.RecipientType.TO, generateEmail());
+
+        return mimeMessage;
+    }
+
     public static CompositeMimeMessage createSimpleMimeMessage() {
         try {
             CompositeMimeMessage.CompositeMimeMessageBuilder builder = CompositeMimeMessage.builder();
@@ -33,6 +56,7 @@ public class MimeMessageCreatorUtil {
             email.setFrom(FAKE_EMAIL_ADDRESS);
             addCc(email, builder);
             addTo(email, builder);
+
 
             String subject = generateTitle();
             email.setSubject(subject);

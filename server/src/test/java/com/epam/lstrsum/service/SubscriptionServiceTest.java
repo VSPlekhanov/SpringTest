@@ -11,12 +11,12 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
+import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
@@ -136,7 +136,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
     public void getEmailsForNotificationReturnsListWithOneEmailOfAuthorIfThereIsNoAllowedSubs() throws Exception {
         QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 "just some text", 1501144323239L,
-                Collections.emptyList());
+                emptyList(), emptyList());
         String authorEmail = "John_Doe@epam.com";
 
         String newQuestionId = questionService.addNewQuestion(postDto, authorEmail).getQuestionId();
@@ -152,7 +152,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
         QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 "just some text", 1501144323239L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
+                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
         String authorEmail = "John_Doe@epam.com";
 
         String newQuestionId = questionService.addNewQuestion(postDto, authorEmail).getQuestionId();
@@ -167,7 +167,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
     public void getEmailsToNotificateAboutNewQuestionReturnsEmptyListIfThereIsNoAllowedSubs() throws Exception {
         QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 "just some text", 1501144323239L,
-                Collections.emptyList());
+                emptyList(), emptyList());
         String authorEmail = "John_Doe@epam.com";
 
         Question question = questionService.addNewQuestion(postDto, authorEmail);
@@ -181,7 +181,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
         QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 "just some text", 1501144323239L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
+                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
         String authorEmail = "John_Doe@epam.com";
 
         Question question = questionService.addNewQuestion(postDto, authorEmail);

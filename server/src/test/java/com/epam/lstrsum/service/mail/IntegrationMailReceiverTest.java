@@ -2,10 +2,16 @@ package com.epam.lstrsum.service.mail;
 
 import com.epam.lstrsum.email.service.MailService;
 import com.epam.lstrsum.enums.UserRoleType;
+import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
+import com.epam.lstrsum.persistence.AttachmentRepository;
+import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.persistence.UserRepository;
+import com.epam.lstrsum.service.UserService;
 import com.epam.lstrsum.testutils.model.CompositeMimeMessage;
+import lombok.SneakyThrows;
 import microsoft.exchange.webservices.data.core.ExchangeService;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +20,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.Instant;
+import javax.mail.internet.MimeMessage;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.epam.lstrsum.testutils.MimeMessageCreatorUtil.createFromFile;
 import static com.epam.lstrsum.testutils.MimeMessageCreatorUtil.createSimpleMimeMessage;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
@@ -35,11 +42,26 @@ public class IntegrationMailReceiverTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private QuestionRepository questionRepository;
+
+    @Autowired
+    private AttachmentRepository attachmentRepository;
+
     @MockBean
     private ExchangeService exchangeService;
 
     @MockBean
     private MailService mailService;
+
+    @After
+    public void tearDown() {
+        questionRepository.deleteAll();
+        attachmentRepository.deleteAll();
+    }
 
     @Test
     public void correctParsingMimeMessage() throws Exception {
@@ -64,18 +86,53 @@ public class IntegrationMailReceiverTest {
 
         assertThat(userRepository.findAll())
                 .allMatch(user -> allowEmails.contains(user.getEmail()));
+        assertThat(questionRepository.findAll()).hasSize(1);
+    }
+
+    @Test
+    @SneakyThrows
+    public void receivedMessageWithOneInlineImageAndOneAttach() {
+        MimeMessage mimeMessage = createFromFile("src/test/resources/mail/rawMessageInput");
+        addAllUsers(Collections.singletonList(mimeMessage.getFrom()[0].toString()));
+
+        mailReceiver.showMessages(mimeMessage);
+
+        assertThat(mimeMessage).isNotNull();
+        List<Question> actual = questionRepository.findAll();
+        assertThat(actual).hasSize(1);
+
+        Question question = actual.get(0);
+
+        assertThat(question).isNotNull()
+                .satisfies(this::hasInlineSource)
+                .satisfies(this::hasNotAttachments)
+                .satisfies(this::hasSourceInText);
+
+        assertThat(attachmentRepository.findAll()).hasSize(0);
+    }
+
+    private void hasNotAttachments(Question question) {
+        assertThat(question.getAttachmentIds())
+                .isNull();
+    }
+
+    private void hasSourceInText(Question question) {
+        assertThat(question.getText())
+                .contains("src=\"mail.message.index:0\"");
+    }
+
+    private void hasInlineSource(Question question) {
+        assertThat(question.getInlineSources())
+                .hasSize(1)
+                .element(0)
+                .isNotNull();
     }
 
     private void addAllUsers(List<String> userEmails) {
-        User.UserBuilder builder = User.builder()
-                .createdAt(Instant.now())
-                .firstName("someName")
-                .lastName("someLastName")
-                .isActive(true)
-                .roles(Collections.singletonList(UserRoleType.EXTENDED_USER));
-
         for (String userEmail : userEmails) {
-            userRepository.save(builder.email(userEmail).build());
+            userService.addIfNotExistAllWithRole(
+                    Collections.singletonList(userEmail), Collections.singletonList(UserRoleType.ADMIN)
+            );
         }
     }
 }

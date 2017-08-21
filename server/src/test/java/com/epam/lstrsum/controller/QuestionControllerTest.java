@@ -60,7 +60,7 @@ public class QuestionControllerTest {
     public void addQuestionShouldSaveQuestionTest() throws IOException {
         String authorEmail = "John_Doe@epam.com";
         QuestionPostDto postDto = new QuestionPostDto("some title", new String[]{"1", "2", "3", "4"}, "some txet",
-                1501140060439L, Collections.singletonList("Bob_Hoplins@epam.com"));
+                1501140060439L, Collections.singletonList("Bob_Hoplins@epam.com"), Collections.emptyList());
         when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");
 
         String questionId = "Id11";
@@ -76,7 +76,7 @@ public class QuestionControllerTest {
     public void addQuestionReturnValidResponseEntityTest() throws IOException {
         String authorEmail = "John_Doe@epam.com";
         QuestionPostDto postDto = new QuestionPostDto("some title", new String[]{"1", "2", "3", "4"}, "some txet",
-                1501145960400L, Collections.singletonList("Bob_Hoplins@epam.com"));
+                1501145960400L, Collections.singletonList("Bob_Hoplins@epam.com"), Collections.emptyList());
 
         String questionId = "Id11";
         Question dtoWithId = Question.builder().questionId(questionId).build();

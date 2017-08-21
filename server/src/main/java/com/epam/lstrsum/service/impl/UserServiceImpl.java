@@ -93,6 +93,8 @@ public class UserServiceImpl implements UserService {
         if (!byEmail.isPresent()) {
             userRepository.save(User.builder()
                     .email(email)
+                    .firstName("")
+                    .lastName("")
                     .roles(roles)
                     .createdAt(Instant.now())
                     .isActive(true)

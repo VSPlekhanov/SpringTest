@@ -24,6 +24,7 @@ import java.util.List;
 import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someLong;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.isNull;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -158,7 +159,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
         QuestionPostDto postDto = new QuestionPostDto("this the end", new String[]{"1", "2", "3", "go"},
                 "just some text", 1501145960439L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
+                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
         String authorEmail = "John_Doe@epam.com";
         String newQuestionId = questionService.addNewQuestion(postDto, authorEmail).getQuestionId();
         assertThat(questionService.contains(newQuestionId), is(true));
@@ -202,7 +203,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
         QuestionPostDto postDto = new QuestionPostDto(null, new String[]{"1", "2", "3", "go"},
                 "just some text", 1501112360439L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
+                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
         String authorEmail = "John_Doe@epam.com";
         questionService.addNewQuestion(postDto, authorEmail);
     }
@@ -212,7 +213,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
         QuestionPostDto postDto = new QuestionPostDto("just some title", new String[]{"1", "2", "3", "go"},
                 null, 1501145111439L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
+                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
         String authorEmail = "John_Doe@epam.com";
         questionService.addNewQuestion(postDto, authorEmail);
     }
@@ -222,7 +223,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
         QuestionPostDto postDto = new QuestionPostDto("just some title", new String[]{"1", "2", "3", "go"},
                 "", 1501145922239L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
+                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
         String authorEmail = "John_Doe@epam.com";
         questionService.addNewQuestion(postDto, authorEmail);
     }
@@ -232,7 +233,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
         QuestionPostDto postDto = new QuestionPostDto("tle", new String[]{"1", "2", "3", "go"},
                 "just some text", 1501143330439L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
+                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
         String authorEmail = "John_Doe@epam.com";
         questionService.addNewQuestion(postDto, authorEmail);
     }
@@ -248,7 +249,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
         questionService.addNewQuestion(new QuestionPostDto("just some title", new String[]{"1", "2", "3", "go"},
                 "just some text", 1501144323239L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com")), null);
+                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList()), null);
     }
 
     @Test
@@ -264,7 +265,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
     public void addTwoQuestionWithSimilarTitleFromOneAuthorRefused() {
         final QuestionPostDto questionPostDto = new QuestionPostDto(
                 someString(), new String[]{}, someString(),
-                someLong(), singletonList(SOME_USER_EMAIL)
+                someLong(), singletonList(SOME_USER_EMAIL), emptyList()
         );
 
         questionService.addNewQuestion(questionPostDto, SOME_USER_EMAIL);
@@ -277,7 +278,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
         final User user = userRepository.findOne("1u");
         final QuestionPostDto questionPostDto = new QuestionPostDto(
                 title, new String[]{}, someString(),
-                someLong(), singletonList(SOME_USER_EMAIL)
+                someLong(), singletonList(SOME_USER_EMAIL), emptyList()
         );
 
         questionService.addNewQuestion(questionPostDto, SOME_USER_EMAIL);
