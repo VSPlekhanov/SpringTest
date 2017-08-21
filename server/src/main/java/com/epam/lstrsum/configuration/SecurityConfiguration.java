@@ -16,6 +16,8 @@ import org.springframework.security.authentication.TestingAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
@@ -25,14 +27,20 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+
+import static java.util.stream.Collectors.joining;
 
 @Configuration
 @EnableOAuth2Client
@@ -100,6 +108,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         af.setTokenServices(tokenService());
         af.restTemplate = new OAuth2RestTemplate(authorizationCodeResourceDetails(), oAuth2ClientContext);
         af.setAuthenticationSuccessHandler(new SavedRequestAwareAuthenticationSuccessHandler());
+        af.setRememberMeServices(rememberMeServices());
         return af;
     }
 
@@ -139,5 +148,27 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     public RoleService roleService() {
         return new ResourceBundleRoleService(ResourceBundle.getBundle("security-roles"));
+    }
+
+    @Bean
+    public RememberMeServices rememberMeServices() {
+        return new RememberMeServices() {
+            @Override
+            public Authentication autoLogin(HttpServletRequest request, HttpServletResponse response) {
+                return null;
+            }
+
+            @Override
+            public void loginFail(HttpServletRequest request, HttpServletResponse response) {
+            }
+
+            @Override
+            public void loginSuccess(HttpServletRequest request, HttpServletResponse response, Authentication auth) {
+                final String role = auth.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(joining(","));
+                response.addCookie(new Cookie("role", role));
+            }
+        };
     }
 }
