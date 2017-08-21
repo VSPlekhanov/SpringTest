@@ -38,7 +38,6 @@
 
         <!--Testing and tools-->
         <swagger.version>2.7.0</swagger.version>
-        <fongo.version>2.1.0</fongo.version>
         <assertj-core.version>3.8.0</assertj-core.version>
 
         <!--Others-->
@@ -54,6 +53,7 @@
         <ews.version>2.0</ews.version>
         <spring-security.version>4.0.0.RELEASE</spring-security.version>
         <elastic.version>5.5.1</elastic.version>
+        <git.plugin.version>2.2.2</git.plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -154,6 +154,10 @@
                 <artifactId>rest</artifactId>
                 <version>${elastic.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-actuator</artifactId>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -166,6 +170,20 @@
                     <version>${maven-compiler-plugin.version}</version>
                 </plugin>
                 <plugin>
+                    <groupId>pl.project13.maven</groupId>
+                    <artifactId>git-commit-id-plugin</artifactId>
+                    <version>${git.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>get-the-git-infos</id>
+                            <goals>
+                                <goal>revision</goal>
+                            </goals>
+                            <phase>process-resources</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>${spring-boot-maven-plugin.version}</version>
@@ -176,6 +194,13 @@
                             <profile>unsecured</profile>
                         </profiles>
                     </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>build-info</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
