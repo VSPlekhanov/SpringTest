@@ -1,5 +1,6 @@
-package com.epam.lstrsum.email.service;
+package com.epam.lstrsum.email.service.impl;
 
+import com.epam.lstrsum.email.service.ExchangeServiceHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.core.ExchangeService;
