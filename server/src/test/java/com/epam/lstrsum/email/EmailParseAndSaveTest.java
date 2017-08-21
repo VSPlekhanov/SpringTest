@@ -8,6 +8,7 @@ import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.service.QuestionService;
+import microsoft.exchange.webservices.data.core.ExchangeService;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,6 +41,9 @@ public class EmailParseAndSaveTest extends SetUpDataBaseCollections {
 
     @Autowired
     private QuestionService questionService;
+
+    @Autowired
+    private ExchangeService exchangeService;
 
     private ExchangeServiceHelper exchangeServiceHelper = mock(ExchangeServiceHelper.class);
     private EmailParser emailParser = new EmailParser(exchangeServiceHelper);

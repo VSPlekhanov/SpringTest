@@ -7,9 +7,8 @@ import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
 import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.model.User;
-import org.hamcrest.Matchers;
+import lombok.val;
 import org.junit.Test;
-import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
@@ -23,19 +22,15 @@ import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_USER_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.NON_EXISTING_USER_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_NOT_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someInt;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeEmployeeEntityDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
 import static java.util.Collections.singletonList;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -44,8 +39,8 @@ import static org.mockito.Mockito.when;
 
 
 public class UserServiceTest extends SetUpDataBaseCollections {
-    @Autowired
-    @Spy
+
+    @MockBean
     private TelescopeService telescopeService;
 
     @Autowired
@@ -70,9 +65,9 @@ public class UserServiceTest extends SetUpDataBaseCollections {
     public void findAll() {
         final List<User> allUsers = userService.findAll();
 
-        assertNotNull(allUsers);
-        assertThat(allUsers.size(), is(7));
-        assertThat(allUsers, hasItem(Matchers.<User>hasProperty("email", equalTo(SOME_USER_EMAIL))));
+        assertThat(allUsers)
+                .hasSize(7)
+                .anySatisfy(user -> assertThat(user.getEmail()).isEqualTo(SOME_USER_EMAIL));
     }
 
     @Test
@@ -105,47 +100,51 @@ public class UserServiceTest extends SetUpDataBaseCollections {
     public void addIfNotExistAllWithRole() {
         final List<String> alreadyInBaseEmails = userService.findAll().stream().map(User::getEmail).collect(Collectors.toList());
         List<TelescopeEmployeeEntityDto> dtos = Collections.singletonList(someTelescopeEmployeeEntityDto());
-        final List<String> notInBaseEmails = Collections.singletonList(dtos.get(0).getData().getEmail()[0]);
+        final List<String> notInBaseEmails = dtos.stream()
+                .map(TelescopeEmployeeEntityDto::getData)
+                .map(data -> data.getEmail().get(0))
+                .collect(Collectors.toList());
+
         final List<String> concat = Stream.concat(alreadyInBaseEmails.stream(), notInBaseEmails.stream()).collect(Collectors.toList());
 
-        doReturn(dtos).when(telescopeService).getUsersInfoByEmails(any());
+        doReturn(dtos).when(telescopeService).getUsersInfoByEmails(anySetOf(String.class));
         when(userAggregator.userTelescopeInfoDtoToUser(any(), anyString(), any())).thenReturn(someUser());
 
         final long actual = userService.addIfNotExistAllWithRole(concat, singletonList(UserRoleType.SIMPLE_USER));
 
         assertEquals(actual, notInBaseEmails.size());
 
-        verify(telescopeService, times(1)).getUsersInfoByEmails(any());
+        verify(telescopeService, times(1)).getUsersInfoByEmails(anySetOf(String.class));
         verify(userAggregator, times(1)).userTelescopeInfoDtoToUser(any(), anyString(), any());
     }
 
     @Test
     public void addIfNotExistAllWithRoleNoDataFromTelescope() {
         String someEmail = someString();
-        TelescopeDataDto dataDto = TelescopeDataDto.builder().email(new String[]{someEmail}).build();
+        TelescopeDataDto dataDto = TelescopeDataDto.builder().email(singletonList(someEmail)).build();
         TelescopeEmployeeEntityDto employeeEntityDto = TelescopeEmployeeEntityDto.builder().data(dataDto).build();
         List<TelescopeEmployeeEntityDto> dtoList = Collections.singletonList(employeeEntityDto);
 
-        doReturn(dtoList).when(telescopeService).getUsersInfoByEmails(any());
+        doReturn(dtoList).when(telescopeService).getUsersInfoByEmails(anySetOf(String.class));
 
         userService.addIfNotExistAllWithRole(Collections.singletonList(someEmail), singletonList(UserRoleType.SIMPLE_USER));
 
-        verify(telescopeService, times(1)).getUsersInfoByEmails(any());
+        verify(telescopeService, times(1)).getUsersInfoByEmails(anySetOf(String.class));
     }
 
     @Test
     public void addIfNotExistAllWithRoleAlreadyAddedUser() {
         String someEmail = SOME_USER_EMAIL.toLowerCase();
         TelescopeDataDto dataDto =
-                TelescopeDataDto.builder().email(new String[]{someEmail}).lastName(someString()).firstName(someString()).build();
+                TelescopeDataDto.builder().email(singletonList(someEmail)).lastName(someString()).firstName(someString()).build();
         TelescopeEmployeeEntityDto employeeEntityDto = TelescopeEmployeeEntityDto.builder().data(dataDto).build();
         List<TelescopeEmployeeEntityDto> dtoList = Collections.singletonList(employeeEntityDto);
 
-        doReturn(dtoList).when(telescopeService).getUsersInfoByEmails(any());
+        doReturn(dtoList).when(telescopeService).getUsersInfoByEmails(anySetOf(String.class));
 
         userService.addIfNotExistAllWithRole(Collections.singletonList(someEmail), singletonList(UserRoleType.SIMPLE_USER));
 
-        verify(telescopeService, times(1)).getUsersInfoByEmails(any());
+        verify(telescopeService, times(1)).getUsersInfoByEmails(anySetOf(String.class));
     }
 
     @Test(expected = NoSuchUserException.class)
@@ -159,16 +158,12 @@ public class UserServiceTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void getUserInfoByFullName() {
-        userService.getUserInfoByFullName(someString(), someInt());
+    public void findAllActive() {
+        val allowedEmails = Arrays.asList("Tyler_Derden@mylo.com", "Ernest_Hemingway@epam.com", "Donald_Gardner@epam.com",
+                "Bob_Hoplins@epam.com", "John_Doe@epam.com");
 
-        verify(telescopeService, times(1)).getUsersInfoByFullName(anyString(), anyInt());
-    }
-
-    @Test
-    public void getUserPhotoByUri() {
-        userService.getUserPhotoByUri(someString());
-
-        verify(telescopeService, times(1)).getUserPhotoByUri(anyString());
+        assertThat(userService.findAllActive())
+                .hasSize(5)
+                .allSatisfy(user -> assertThat(allowedEmails).contains(user.getEmail()));
     }
 }

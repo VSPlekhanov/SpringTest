@@ -4,6 +4,7 @@ import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.email.service.ExchangeServiceHelper;
 import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.User;
+import com.epam.lstrsum.service.TelescopeService;
 import com.epam.lstrsum.service.UserService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +12,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Arrays;
-import java.util.Collections;
 
+import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeEmployeeEntityDtosWithEmails;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 
@@ -27,6 +29,9 @@ public class UserSynchronizerTest extends SetUpDataBaseCollections {
     @MockBean
     private ExchangeServiceHelper exchangeServiceHelper;
 
+    @MockBean
+    private TelescopeService telescopeService;
+
     @Autowired
     private UserService userService;
 
@@ -38,7 +43,8 @@ public class UserSynchronizerTest extends SetUpDataBaseCollections {
         final String bobHoplins = "Bob_Hoplins@epam.com";
         final String johnDoe = "John_Doe@epam.com";
 
-        userService.setActiveForAllAs(Collections.singleton(johnDoe), false);
+        doReturn(someTelescopeEmployeeEntityDtosWithEmails(bobHoplins, johnDoe))
+                .when(telescopeService).getUsersInfoByEmails(anySetOf(String.class));
         doReturn(Arrays.asList(johnDoe, bobHoplins))
                 .when(exchangeServiceHelper).resolveGroup(anyString());
 

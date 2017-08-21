@@ -45,6 +45,9 @@ public class EmailParser {
     @Value("#{'${multipart.allowed-extensions}'.split(',')}")
     private List<String> allowedExtensions;
 
+    @Value("${email.distribution-list}")
+    private String distributionList;
+
     public EmailForExperienceApplication getParsedMessage(@NonNull MimeMessage message) throws Exception {
 
         String title = message.getSubject();
@@ -100,6 +103,7 @@ public class EmailParser {
         return Arrays.stream(message.getAllRecipients())
                 .map(i -> (InternetAddress) i)
                 .map(InternetAddress::getAddress)
+                .filter(e -> !e.equals(distributionList))
                 .flatMap(email -> exchangeServiceHelper.resolveGroup(email).stream())
                 .collect(Collectors.toList());
     }

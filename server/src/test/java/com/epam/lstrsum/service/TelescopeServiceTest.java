@@ -3,18 +3,22 @@ package com.epam.lstrsum.service;
 import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
 import com.epam.lstrsum.service.http.HttpRequestService;
 import com.epam.lstrsum.service.impl.TelescopeServiceImpl;
+import com.epam.lstrsum.testutils.InstantiateUtil;
+import com.epam.lstrsum.utils.HttpUtilEntity;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.springframework.core.ParameterizedTypeReference;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.someStrings;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeEmployeeEntityDto;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeEmployeeEntityDtos;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -36,11 +40,24 @@ public class TelescopeServiceTest {
     }
 
     @Test
+    public void getPhotoByUri() {
+        String expected = "someBase64code";
+        doReturn(expected).when(httpRequestService).sendGetRequest(any(HttpUtilEntity.class), eq(new ParameterizedTypeReference<String>() {
+        }));
+
+        String userPhotoByUri = telescopeService.getUserPhotoByUri(SOME_URI);
+
+        assertThat(userPhotoByUri).isEqualTo(expected);
+    }
+
+    @Test
     public void getUserInfoByFullName() {
         final TelescopeEmployeeEntityDto dto = someTelescopeEmployeeEntityDto();
-        doReturn(new TelescopeEmployeeEntityDto[]{dto}).when(httpRequestService).sendGETRequest(any(), any());
+        doReturn(Collections.singletonList(dto)).when(httpRequestService)
+                .sendGetRequest(any(), eq(new ParameterizedTypeReference<List<TelescopeEmployeeEntityDto>>() {
+                }));
 
-        TelescopeEmployeeEntityDto[] actualResponse = telescopeService.getUsersInfoByFullName("name", SOME_VALID_LIMIT);
+        List<TelescopeEmployeeEntityDto> actualResponse = telescopeService.getUsersInfoByFullName("name", SOME_VALID_LIMIT);
 
         assertThat(actualResponse)
                 .hasOnlyOneElementSatisfying(e -> assertThat(e).isEqualToComparingFieldByFieldRecursively(dto));
@@ -57,17 +74,14 @@ public class TelescopeServiceTest {
     }
 
     @Test
-    public void getUserPhotoByUri() {
-        assertThat(telescopeService.getUserPhotoByUri(SOME_URI)).isNotEmpty();
-    }
-
-    @Test
     public void getUsersInfoByEmails() {
-        final TelescopeEmployeeEntityDto[] dtos = someTelescopeEmployeeEntityDtos();
+        List<TelescopeEmployeeEntityDto> dtos = InstantiateUtil.someTelescopeEmployeeEntityDtos();
 
-        doReturn(dtos).when(httpRequestService).sendGETRequest(any(), any());
+        doReturn(dtos).when(httpRequestService)
+                .sendGetRequest(any(), eq(new ParameterizedTypeReference<List<TelescopeEmployeeEntityDto>>() {
+                }));
 
-        assertThat(telescopeService.getUsersInfoByEmails(Stream.of(someStrings()).collect(Collectors.toSet())))
-                .containsExactlyInAnyOrder(dtos);
+        assertThat(telescopeService.getUsersInfoByEmails(new HashSet<>(someStrings())))
+                .isEqualTo(dtos);
     }
 }

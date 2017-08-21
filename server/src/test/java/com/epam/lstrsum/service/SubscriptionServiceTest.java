@@ -6,7 +6,7 @@ import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.persistence.SubscriptionRepository;
-import org.hamcrest.MatcherAssert;
+import lombok.val;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,13 +17,9 @@ import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static java.util.Collections.emptyList;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
@@ -35,6 +31,8 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
     private SubscriptionRepository subscriptionRepository;
     @Autowired
     private QuestionRepository questionRepository;
+    @Autowired
+    private UserService userService;
 
     @Test
     public void addSubscriptionAlreadyAdded() {
@@ -57,13 +55,13 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
         subscriptionService.addOrUpdate(userWithSubscriptions, questionRepository.findOne("1u_1r").getQuestionId());
         int actual = findAllQuestionWhichSubscribedByUserId(userWithSubscriptions).size();
 
-        assertThat(previousSize + 1, is(actual));
+        assertEquals(previousSize + 1, actual);
     }
 
     @Test
     public void addWhenTryToUpdate() {
         String userWithoutSubscriptions = "7u";
-        assertThat(findAllQuestionWhichSubscribedByUserId(userWithoutSubscriptions).size(), is(0));
+        assertThat(findAllQuestionWhichSubscribedByUserId(userWithoutSubscriptions)).hasSize(0);
 
         List<Question> allQuestion = questionRepository.findAll();
         subscriptionService.addOrUpdate(
@@ -71,7 +69,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
                 allQuestion.stream().map(Question::getQuestionId).collect(Collectors.toList())
         );
 
-        assertThat(findAllQuestionWhichSubscribedByUserId(userWithoutSubscriptions).size(), is(allQuestion.size()));
+        assertThat(findAllQuestionWhichSubscribedByUserId(userWithoutSubscriptions)).hasSize(allQuestion.size());
     }
 
     private List<Question> findAllQuestionWhichSubscribedByUserId(String id) {
@@ -89,7 +87,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
         List<Subscription> subscriptions = subscriptionService.findAllSubscriptionsEntitiesToQuestionWithThisId(questionId);
         List<String> subscriptionIds = subscriptions.stream().map(Subscription::getSubscriptionId).collect(Collectors.toList());
 
-        assertThat(subscriptionIds, containsInAnyOrder("2u_1s", "3u_1s"));
+        assertThat(subscriptionIds).containsExactlyInAnyOrder("2u_1s", "3u_1s");
     }
 
     @Test
@@ -98,7 +96,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
         List<Subscription> emptyList = subscriptionService.findAllSubscriptionsEntitiesToQuestionWithThisId(questionId);
 
-        assertThat(emptyList.isEmpty(), is(true));
+        assertThat(emptyList).isEmpty();
     }
 
     @Test
@@ -107,10 +105,11 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
         List<Subscription> subscriptions = subscriptionService.findAllSubscriptionsEntitiesToQuestionWithThisId(questionId);
 
-        subscriptions.forEach(s -> assertThat(s.getSubscriptionId() == null, is(false)));
-        subscriptions.forEach(s -> assertThat(s.getUserId() == null, is(false)));
+        val subscriptionIds = Arrays.asList("3u_1s", "2u_1s");
+        val userIds = Arrays.asList("2u", "3u");
 
-        subscriptions.forEach(s -> assertThat(s.getQuestionIds() == null, is(true)));
+        subscriptions.forEach(s -> assertThat(subscriptionIds).contains(s.getSubscriptionId()));
+        subscriptions.forEach(s -> assertThat(userIds).contains(s.getUserId().getUserId()));
     }
 
     @Test
@@ -120,7 +119,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
         List<String> emails = subscriptionService.getEmailsOfSubscribersOfQuestion(questionId);
 
-        assertThat(emails, containsInAnyOrder("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com"));
+        assertThat(emails).containsExactlyInAnyOrder("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com");
     }
 
     @Test
@@ -129,7 +128,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
         List<String> emails = subscriptionService.getEmailsOfSubscribersOfQuestion(questionId);
 
-        assertThat(emails.isEmpty(), is(true));
+        assertThat(emails).isEmpty();
     }
 
     @Test
@@ -143,8 +142,9 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
         List<String> emails = subscriptionService.getEmailsOfAuthorAndAllowedSubsOfQuestion(newQuestionId);
 
-        MatcherAssert.assertThat(emails.size(), equalTo(1));
-        MatcherAssert.assertThat(emails.get(0), equalTo(authorEmail));
+        assertThat(emails)
+                .hasSize(6)
+                .contains(authorEmail);
     }
 
     @Test
@@ -159,8 +159,10 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
         List<String> emails = subscriptionService.getEmailsOfAuthorAndAllowedSubsOfQuestion(newQuestionId);
 
-        assertThat(emails, containsInAnyOrder("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com", "John_Doe@epam.com"));
+        assertThat(emails).containsExactlyInAnyOrder("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
+                "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com", "John_Doe@epam.com",
+                "Bob_Hoplins@epam.com", "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com", "Tyler_Derden@mylo.com",
+                "John_Doe@epam.com");
     }
 
     @Test
@@ -173,7 +175,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
         Question question = questionService.addNewQuestion(postDto, authorEmail);
         Set<String> emails = subscriptionService.getEmailsToNotificateAboutNewQuestion(question);
 
-        MatcherAssert.assertThat(emails.isEmpty(), is(true));
+        assertThat(emails).hasSize(userService.findAllActive().size());
     }
 
     @Test
@@ -187,8 +189,8 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
         Question question = questionService.addNewQuestion(postDto, authorEmail);
         Set<String> emails = subscriptionService.getEmailsToNotificateAboutNewQuestion(question);
 
-        assertThat(emails, containsInAnyOrder("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"));
+        assertThat(emails).containsExactlyInAnyOrder("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
+                "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com", "John_Doe@epam.com", "Tyler_Derden@mylo.com");
     }
 
     @Test
@@ -199,7 +201,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
         Set<String> emails = subscriptionService.getEmailsToNotificateAboutNewAnswer(questionId);
 
         assertNotNull(emails);
-        assertThat(emails.size(), is(5));
-        assertThat(emails, hasItem(user));
+        assertThat(emails).hasSize(7);
+        assertThat(emails).contains(user);
     }
 }

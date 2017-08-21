@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -44,15 +46,16 @@ public class HttpRequestServiceTest {
     public void setUp() {
         mockResponse = mock(ResponseEntity.class);
 
-        when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
-                .thenReturn(mockResponse);
+        doReturn(mockResponse).when(restTemplate)
+                .exchange(any(URI.class), eq(HttpMethod.GET), any(HttpEntity.class), any(new ParameterizedTypeReference<String>() {
+                }.getClass()));
     }
 
     @Test(expected = BusinessLogicException.class)
     public void sendGETRequestWithNullUrl() {
         final HttpUtilEntity httpUtilEntity = HttpUtilEntity.builder().url(null).build();
 
-        httpRequestService.sendGETRequest(httpUtilEntity, String.class);
+        httpRequestService.sendGetRequest(httpUtilEntity, String.class);
     }
 
     @Test
@@ -70,7 +73,7 @@ public class HttpRequestServiceTest {
         when(mockResponse.getStatusCode()).thenReturn(HttpStatus.OK);
         when(mockResponse.getBody()).thenReturn("body");
 
-        assertThat(httpRequestService.sendGETRequest(httpUtilEntity, String.class), is("body"));
+        assertThat(httpRequestService.sendGetRequest(httpUtilEntity, String.class), is("body"));
     }
 
     @Test
@@ -83,7 +86,7 @@ public class HttpRequestServiceTest {
         when(mockResponse.getStatusCode()).thenReturn(HttpStatus.FORBIDDEN);
 
         assertThatThrownBy(() ->
-                httpRequestService.sendGETRequest(httpUtilEntity, String.class)
+                httpRequestService.sendGetRequest(httpUtilEntity, String.class)
         ).isInstanceOf(BusinessLogicException.class);
     }
 }

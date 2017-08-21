@@ -17,55 +17,49 @@ import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.service.AnswerService;
 import com.epam.lstrsum.service.VoteService;
-import com.google.common.collect.ImmutableList;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 
 public class AnswerControllerTest extends SetUpDataBaseCollections {
-
-    @Mock
+    @MockBean
     private AnswerService answerService;
 
-    @Mock
+    @MockBean
     private AnswerAggregator answerAggregator;
 
-    @Mock
+    @MockBean
     private VoteService voteService;
 
-    @Mock
+    @MockBean
     private UserRuntimeRequestComponent userRuntimeRequestComponent;
+
     @Autowired
     private TestRestTemplate testRestTemplate;
 
+    @Autowired
     private AnswerController answerController;
 
     private String questionId = "1u_3r";
@@ -78,8 +72,6 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
 
     @Before
     public void setUp() {
-        initMocks(this);
-        answerController = new AnswerController(answerService, voteService, userRuntimeRequestComponent);
         answerAllFieldsDto = new AnswerAllFieldsDto(
                 "text", Instant.now(),
                 new UserBaseDto(
@@ -116,7 +108,7 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
                                 Collections.singletonList(UserRoleType.EXTENDED_USER),
                                 Instant.now(),
                                 true))
-                        .allowedSubs(Collections.EMPTY_LIST)
+                        .allowedSubs(Collections.emptyList())
                         .upVote(0)
                         .build(),
                 "text",
@@ -168,7 +160,7 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
     public void addNewAnswerNoQuestionTest() throws IOException {
         answerPostDto = new AnswerPostDto(null, "text");
         when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");
-        when(answerService.addNewAnswer(answerPostDto, authorEmail)).thenThrow(AnswerValidationException.class);
+        doThrow(AnswerValidationException.class).when(answerService).addNewAnswer(eq(answerPostDto), eq(authorEmail));
         responseEntity = answerController.addAnswer(answerPostDto);
     }
 
@@ -177,23 +169,8 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
     public void addNewAnswerWithNoTextTest() throws IOException {
         answerPostDto = new AnswerPostDto(questionId, null);
         when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");
-        when(answerService.addNewAnswer(answerPostDto, authorEmail)).thenThrow(AnswerValidationException.class);
+        doThrow(AnswerValidationException.class).when(answerService).addNewAnswer(eq(answerPostDto), eq(authorEmail));
         responseEntity = answerController.addAnswer(answerPostDto);
-    }
-
-    @Ignore
-    @Test
-    public void getListOfAnswers() throws Exception {
-
-        final ResponseEntity<List<Answer>> responseEntity = testRestTemplate.exchange("/api/answer",
-                HttpMethod.GET, null, new ParameterizedTypeReference<List<Answer>>() {
-                });
-        List<Answer> actualList = responseEntity.getBody();
-        //validate
-        assertThat(actualList.size(), is(12));
-        List<String> actualIds = actualList.stream().map(Answer::getAnswerId).collect(collectingAndThen(toList(), ImmutableList::copyOf));
-        assertThat(actualIds, containsInAnyOrder("1u_1r_1a", "1u_1r_2a", "1u_1r_3a", "1u_2r_1a", "1u_2r_2a",
-                "2u_3r_1a", "2u_3r_2a", "3u_4r_1a", "3u_4r_2a", "4u_5r_1a", "4u_5r_2a", "4u_5r_3a"));
     }
 
     @Test
@@ -224,7 +201,7 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
         final String emptyAnswerId = "        ";
 
         when(userRuntimeRequestComponent.getEmail()).thenReturn(someEmail);
-        when(voteService.addVoteToAnswer(someEmail, emptyAnswerId)).thenThrow(ConstraintViolationException.class);
+        doThrow(ConstraintViolationException.class).when(voteService).addVoteToAnswer(eq(someEmail), eq(emptyAnswerId));
         answerController.addVote(emptyAnswerId);
 
         verify(userRuntimeRequestComponent, times(1)).getEmail();
@@ -237,7 +214,7 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
         final String someEmail = "John_Doe@epam.com";
 
         when(userRuntimeRequestComponent.getEmail()).thenReturn(someEmail);
-        when(voteService.addVoteToAnswer(someEmail, incorrectAnswerId)).thenThrow(NoSuchAnswerException.class);
+        doThrow(NoSuchAnswerException.class).when(voteService).addVoteToAnswer(eq(someEmail), eq(incorrectAnswerId));
 
         answerController.addVote(incorrectAnswerId);
 
@@ -251,7 +228,7 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
         final String nonExistingEmail = "test@test.com";
 
         when(userRuntimeRequestComponent.getEmail()).thenReturn(nonExistingEmail);
-        when(voteService.addVoteToAnswer(nonExistingEmail, someAnswerId)).thenThrow(NoSuchUserException.class);
+        doThrow(NoSuchUserException.class).when(voteService).addVoteToAnswer(eq(nonExistingEmail), eq(someAnswerId));
 
         answerController.addVote(someAnswerId);
 
@@ -279,7 +256,7 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
     public void getAllAnswerVotes() {
         final String someAnswerId = "answerId1";
 
-        when(voteService.findAllVotesForAnswer(someAnswerId)).thenReturn(Arrays.asList(voteAllFieldsDto));
+        when(voteService.findAllVotesForAnswer(someAnswerId)).thenReturn(Collections.singletonList(voteAllFieldsDto));
 
         ResponseEntity<List<VoteAllFieldsDto>> responseEntity = answerController.getAllAnswerVotes(someAnswerId);
         List<VoteAllFieldsDto> answerVotesList = responseEntity.getBody();

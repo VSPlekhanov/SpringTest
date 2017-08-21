@@ -4,6 +4,7 @@ import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.email.EmailCollection;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -13,9 +14,11 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import java.util.Arrays;
 
 @Component
 @Profile("email")
@@ -25,13 +28,17 @@ public class NewAnswerNotificationTemplate implements MailTemplate<AnswerAllFiel
 
     @Setter
     private static String defaultQuestionLink;
-
     private final EmailCollection<AnswerAllFieldsDto> emailCollection;
+
+    @Setter
+    @Value("${spring.mail.username}")
+    private String fromAddress;
 
     @Override
     public MimeMessage buildMailMessage(AnswerAllFieldsDto source) throws MessagingException {
         MimeMessage mimeMessage = new MimeMessage((Session) null);
 
+        mimeMessage.setFrom(new InternetAddress(fromAddress));
         mimeMessage.setSubject(getSubject(source));
         mimeMessage.setContent(getContentOfMessage(source));
         mimeMessage.setRecipients(Message.RecipientType.TO, getAddresses(source));
@@ -42,7 +49,8 @@ public class NewAnswerNotificationTemplate implements MailTemplate<AnswerAllFiel
     }
 
     private Address[] getAddresses(AnswerAllFieldsDto source) {
-        return emailCollection.getEmailAddresses(source);
+        return Arrays.stream(emailCollection.getEmailAddresses(source))
+                .toArray(Address[]::new);
     }
 
     private String getSubject(AnswerAllFieldsDto source) {
