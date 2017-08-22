@@ -166,7 +166,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             public void loginSuccess(HttpServletRequest request, HttpServletResponse response, Authentication auth) {
                 final String role = auth.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
-                        .collect(joining(","));
+                        .collect(joining("|"));
                 response.addCookie(new Cookie("role", role));
             }
         };
