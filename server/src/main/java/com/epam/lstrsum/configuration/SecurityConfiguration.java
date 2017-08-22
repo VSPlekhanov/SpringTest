@@ -1,5 +1,6 @@
 package com.epam.lstrsum.configuration;
 
+import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.security.CustomResourceServerTokenServices;
 import com.epam.lstrsum.security.cert.TrustAllCertificatesSSL;
 import com.epam.lstrsum.security.role.ResourceBundleRoleService;
@@ -17,7 +18,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
@@ -39,8 +39,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-
-import static java.util.stream.Collectors.joining;
 
 @Configuration
 @EnableOAuth2Client
@@ -164,10 +162,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
             @Override
             public void loginSuccess(HttpServletRequest request, HttpServletResponse response, Authentication auth) {
-                final String role = auth.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .collect(joining("|"));
-                response.addCookie(new Cookie("role", role));
+                final boolean isAdmin = auth.getAuthorities().stream()
+                        .anyMatch(a -> a.getAuthority().equals(UserRoleType.ADMIN.name()));
+                response.addCookie(new Cookie("role", (isAdmin) ? UserRoleType.ADMIN.name() : UserRoleType.EXTENDED_USER.name()));
             }
         };
     }
