@@ -39,16 +39,16 @@ public class UserServiceImpl implements UserService {
     private final MongoTemplate mongoTemplate;
     private final TelescopeService telescopeService;
 
-    private static final BiFunction<List<String>, Set<String>, String> getEmailContainsInBothLists =
+    private static final BiFunction<List<String>, Set<String>, String> GET_EMAIL_CONTAINS_IN_BOTH_LISTS =
             (emailsFromDto, emailsFromInputSet) -> {
                 List<String> helper = new ArrayList<>(emailsFromDto);
                 helper.retainAll(emailsFromInputSet);
                 return helper.get(0);
             };
 
-    private static final BiFunction<TelescopeDataDto, Set<String>, Map.Entry> getMapWithEmailAndTelescopeData =
+    private static final BiFunction<TelescopeDataDto, Set<String>, Map.Entry> GET_MAP_WITH_EMAIL_AND_TELESCOPE_DATA =
             (data, emails) -> new AbstractMap.SimpleEntry<>(
-                    getEmailContainsInBothLists.apply(Arrays.asList(data.getEmail()), emails),
+                    GET_EMAIL_CONTAINS_IN_BOTH_LISTS.apply(Arrays.asList(data.getEmail()), emails),
                     data
             );
 
@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
         return telescopeUsersDto.stream()
                 .map(TelescopeEmployeeEntityDto::getData)
                 .filter(data -> !isNullOrEmptyString(data.getFirstName()) && !isNullOrEmptyString(data.getLastName()))
-                .map(data -> getMapWithEmailAndTelescopeData.apply(data, lowerCaseUsersEmail))
+                .map(data -> GET_MAP_WITH_EMAIL_AND_TELESCOPE_DATA.apply(data, lowerCaseUsersEmail))
                 .filter(entry -> addIfNotExist(entry, roles))
                 .count();
     }
