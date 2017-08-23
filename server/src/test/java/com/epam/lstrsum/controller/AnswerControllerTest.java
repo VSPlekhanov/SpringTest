@@ -294,4 +294,5 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
 
         verify(voteService, times(1)).findAllVotesForAnswer(someAnswerId);
     }
+
 }

@@ -42,7 +42,7 @@ public class QuestionControllerSecurityTest {
 
     @Test
     @WithMockUser(roles = "USER")
-    public void deleteAnswerByUser() throws Exception {
+    public void deleteQuestionByUser() throws Exception {
         mvc
                 .perform(delete(QUESTION_DELETE_URL))
                 .andExpect(authenticated().withRoles("USER"))
@@ -50,8 +50,8 @@ public class QuestionControllerSecurityTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    public void deleteAnswerByAdmin() throws Exception {
+    @WithMockUser(roles = {"ADMIN"})
+    public void deleteQuestionByAdmin() throws Exception {
         mvc
                 .perform(delete(QUESTION_DELETE_URL))
                 .andExpect(authenticated().withRoles("ADMIN"))

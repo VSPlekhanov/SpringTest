@@ -4,6 +4,7 @@ import com.epam.lstrsum.email.service.BackupHelper;
 import com.epam.lstrsum.service.mail.MailReceiver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +35,6 @@ public class EmailAdminController {
         MimeMessage messageByFilename = backupHelper.getMessageByFilename(fileName);
         mailReceiver.handleMessageWithoutBackup(messageByFilename);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

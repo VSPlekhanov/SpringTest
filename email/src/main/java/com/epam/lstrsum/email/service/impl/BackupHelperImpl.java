@@ -5,6 +5,7 @@ import com.epam.lstrsum.email.service.BackupHelper;
 import com.epam.lstrsum.model.Email;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.mail.util.MimeMessageUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -30,7 +31,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -55,19 +55,18 @@ public class BackupHelperImpl implements BackupHelper {
     public void setBackupDir(String backupDir) {
         this.backupDir = backupDir;
         backupDirPath = Paths.get(backupDir);
-
     }
 
     @Override
     public void backupEmail(MimeMessage mimeMessage) throws IOException, MessagingException {
-        LocalDateTime now = LocalDateTime.now();
+        val now = LocalDateTime.now();
 
-        String baseFileName = DATE_TIME_FORMATTER.format(now) + ".eml";
-        String fullFileName = baseFileName + ".zip";
+        val baseFileName = DATE_TIME_FORMATTER.format(now) + ".eml";
+        val fullFileName = baseFileName + ".zip";
 
-        String addressFrom = getAddressFrom(mimeMessage.getFrom());
+        val addressFrom = getAddressFrom(mimeMessage.getFrom());
 
-        Email email = Email.builder()
+        val email = Email.builder()
                 .fileName(fullFileName)
                 .from(addressFrom)
                 .subject(mimeMessage.getSubject())
@@ -79,10 +78,9 @@ public class BackupHelperImpl implements BackupHelper {
             try {
                 fileOutputStream = new FileOutputStream(backupDir + File.separator + fullFileName);
 
-                ZipOutputStream zipOutput = new ZipOutputStream(
-                        fileOutputStream);
+                ZipOutputStream zipOutput = new ZipOutputStream(fileOutputStream);
 
-                ZipEntry zipEntry = new ZipEntry(baseFileName);
+                val zipEntry = new ZipEntry(baseFileName);
                 zipOutput.putNextEntry(zipEntry);
 
                 mimeMessage.writeTo(zipOutput);
@@ -99,7 +97,7 @@ public class BackupHelperImpl implements BackupHelper {
 
     @Override
     public List<String> findAllBackup() {
-        try (Stream<Path> paths = Files.walk(backupDirPath)) {
+        try (val paths = Files.walk(backupDirPath)) {
             Comparator<Pair<Path, FileTime>> fileTimeComparator = Comparator.comparing(Pair::getRight);
             return paths
                     .filter(Files::isRegularFile)
@@ -126,17 +124,17 @@ public class BackupHelperImpl implements BackupHelper {
 
     @Override
     public MimeMessage getMessageByFilename(String filename) throws IOException, MessagingException {
-        ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(getSafePath(filename).toFile()));
+        val zipInputStream = new ZipInputStream(new FileInputStream(getSafePath(filename).toFile()));
         zipInputStream.getNextEntry();
 
-        Properties properties = new Properties();
-        Session session = Session.getDefaultInstance(properties, null);
+        val properties = new Properties();
+        val session = Session.getDefaultInstance(properties, null);
 
         return MimeMessageUtils.createMimeMessage(session, zipInputStream);
     }
 
     public Path getSafePath(String filename) {
-        Path normalized = Paths.get(filename).normalize();
+        val normalized = Paths.get(filename).normalize();
         return Paths.get(backupDir, normalized.toString());
     }
 }

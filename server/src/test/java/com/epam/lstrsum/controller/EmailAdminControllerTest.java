@@ -21,7 +21,9 @@ public class EmailAdminControllerTest {
     private BackupHelper backupHelper = mock(BackupHelper.class);
     private MailReceiver mailReceiver = mock(MailReceiver.class);
 
-    private EmailAdminController emailAdminController = new EmailAdminController(backupHelper, mailReceiver);
+    private EmailAdminController emailAdminController = new EmailAdminController(
+            backupHelper, mailReceiver
+    );
 
     @Test
     public void getAllEmailBackupFileNames() throws Exception {
@@ -41,7 +43,7 @@ public class EmailAdminControllerTest {
         doReturn(mock).when(backupHelper).getMessageByFilename(eq(someFileName));
 
         assertThat(emailAdminController.reprocess(someFileName).getStatusCode())
-                .isEqualTo(HttpStatus.OK);
+                .isEqualTo(HttpStatus.NO_CONTENT);
 
         verify(backupHelper, times(1)).getMessageByFilename(eq(someFileName));
         verify(mailReceiver, times(1)).handleMessageWithoutBackup(eq(mock));

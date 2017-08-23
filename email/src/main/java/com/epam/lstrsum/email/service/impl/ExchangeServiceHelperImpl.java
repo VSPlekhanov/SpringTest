@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.property.complex.EmailAddress;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
  * Created on 10.08.17.
  */
 
-@Profile("email")
 @Service
 @RequiredArgsConstructor
 @Slf4j

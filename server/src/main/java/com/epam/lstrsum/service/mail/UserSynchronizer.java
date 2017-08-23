@@ -8,8 +8,6 @@ import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -23,13 +21,12 @@ import static java.util.Objects.nonNull;
 
 @Service
 @RequiredArgsConstructor
-@Profile("email")
-@ConfigurationProperties(prefix = "email")
 @Slf4j
 public class UserSynchronizer {
     private static final List<UserRoleType> ONLY_COMMON_USER_ROLES = Collections.singletonList(UserRoleType.EXTENDED_USER);
     private final ExchangeServiceHelper exchangeServiceHelper;
     private final UserService userService;
+
     @Setter
     private String distributionList;
 
