@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
@@ -47,7 +48,7 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
 
     @Test(expected = NoSuchUserException.class)
     public void addVoteToAnswerWithNullEmail() {
-        voteService.addVoteToAnswer(null, answerId);
+        voteService.addVoteToAnswer(someString(), answerId);
     }
 
     @Test(expected = NoSuchAnswerException.class)

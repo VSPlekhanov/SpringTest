@@ -53,7 +53,7 @@ public class AnswerServiceImpl implements AnswerService {
         }
         if (isNull(email) || email.trim().isEmpty()) {
             throw new AnswerValidationException("Author must be not null or empty!");
-        } else if (!userRepository.findByEmail(email).isPresent()) {
+        } else if (!userRepository.findByEmailIgnoreCase(email).isPresent()) {
             throw new AnswerValidationException("No such user!");
         }
         if (isNull(answerPostDto.getText()) || answerPostDto.getText().trim().isEmpty()) {

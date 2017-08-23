@@ -69,16 +69,16 @@ public class UserAggregatorTest {
 
     @Test
     public void findByEmail() {
-        doReturn(Optional.of(someUser())).when(userRepository).findByEmail(anyString());
+        doReturn(Optional.of(someUser())).when(userRepository).findByEmailIgnoreCase(anyString());
 
         aggregator.findByEmail(someString());
 
-        verify(userRepository).findByEmail(anyString());
+        verify(userRepository).findByEmailIgnoreCase(anyString());
     }
 
     @Test(expected = NoSuchUserException.class)
     public void findByEmailWithEmpyOptional() {
-        doReturn(Optional.empty()).when(userRepository).findByEmail(anyString());
+        doReturn(Optional.empty()).when(userRepository).findByEmailIgnoreCase(anyString());
 
         aggregator.findByEmail(someString());
     }

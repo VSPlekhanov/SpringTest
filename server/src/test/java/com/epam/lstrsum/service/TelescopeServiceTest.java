@@ -1,16 +1,18 @@
 package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
-import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.service.http.HttpRequestService;
 import com.epam.lstrsum.service.impl.TelescopeServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_NOT_USER_EMAIL;
-import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static com.epam.lstrsum.testutils.InstantiateUtil.someStrings;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeEmployeeEntityDto;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeEmployeeEntityDtos;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -59,17 +61,13 @@ public class TelescopeServiceTest {
         assertThat(telescopeService.getUserPhotoByUri(SOME_URI)).isNotEmpty();
     }
 
-    @Test(expected = NoSuchUserException.class)
-    public void getUserInfoByEmailWithIncorrectDomainEmail() {
-        telescopeService.getUserInfoByEmail(SOME_NOT_USER_EMAIL);
-    }
-
     @Test
-    public void getUserInfoByEmail() {
-        final TelescopeEmployeeEntityDto dto = someTelescopeEmployeeEntityDto();
+    public void getUsersInfoByEmails() {
+        final TelescopeEmployeeEntityDto[] dtos = someTelescopeEmployeeEntityDtos();
 
-        doReturn(new TelescopeEmployeeEntityDto[]{dto}).when(httpRequestService).sendGETRequest(any(), any());
+        doReturn(dtos).when(httpRequestService).sendGETRequest(any(), any());
 
-        assertThat(telescopeService.getUserInfoByEmail(SOME_USER_EMAIL)).isEqualToComparingFieldByFieldRecursively(dto);
+        assertThat(telescopeService.getUsersInfoByEmails(Stream.of(someStrings()).collect(Collectors.toSet())))
+                .containsExactlyInAnyOrder(dtos);
     }
 }
