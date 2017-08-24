@@ -10,7 +10,7 @@ import javax.mail.internet.MimeMessage;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import static com.epam.lstrsum.testutils.MimeMessageCreatorUtil.createSimpleMimeMessage;
+import static com.epam.lstrsum.testutils.MimeMessageCreatorUtil.createCompositeMimeMessage;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MimeMessageCreatorUtilTest {
@@ -18,7 +18,7 @@ public class MimeMessageCreatorUtilTest {
     @Test
     @SneakyThrows
     public void testCorrectCreation() {
-        CompositeMimeMessage simpleMimeMessage = createSimpleMimeMessage();
+        CompositeMimeMessage simpleMimeMessage = createCompositeMimeMessage();
         MimeMessage mimeMessage = simpleMimeMessage.getMimeMessage();
 
         assertThat(

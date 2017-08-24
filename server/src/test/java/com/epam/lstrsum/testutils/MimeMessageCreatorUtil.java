@@ -1,6 +1,7 @@
 package com.epam.lstrsum.testutils;
 
 import com.epam.lstrsum.testutils.model.CompositeMimeMessage;
+import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.util.MimeMessageUtils;
 
@@ -47,7 +48,26 @@ public class MimeMessageCreatorUtil {
         return mimeMessage;
     }
 
-    public static CompositeMimeMessage createSimpleMimeMessage() {
+    public static MimeMessage createSimpleMimeMessage() throws EmailException {
+        HtmlEmail email = new HtmlEmail();
+
+        email.setHostName(HOST_NAME);
+        email.setFrom(FAKE_EMAIL_ADDRESS);
+        addCc(email);
+        addTo(email);
+
+        String subject = generateTitle();
+        email.setSubject(subject);
+
+        String text = generateText();
+        email.setMsg(text);
+
+        email.buildMimeMessage();
+
+        return email.getMimeMessage();
+    }
+
+    public static CompositeMimeMessage createCompositeMimeMessage() {
         try {
             CompositeMimeMessage.CompositeMimeMessageBuilder builder = CompositeMimeMessage.builder();
             HtmlEmail email = new HtmlEmail();
@@ -98,6 +118,14 @@ public class MimeMessageCreatorUtil {
         }
     }
 
+    private static void addTo(HtmlEmail email) {
+        List<String> collect = Stream.generate(MimeMessageCreatorUtil::generateEmail)
+                .limit(RANDOM.nextInt(MAXIMUM_CC_SIZE))
+                .collect(Collectors.toList());
+
+        collect.forEach(to -> addAddress(email, to));
+    }
+
     private static void addTo(HtmlEmail email, CompositeMimeMessage.CompositeMimeMessageBuilder builder) {
         List<String> collect = Stream.generate(MimeMessageCreatorUtil::generateEmail)
                 .limit(RANDOM.nextInt(MAXIMUM_CC_SIZE))
@@ -113,6 +141,14 @@ public class MimeMessageCreatorUtil {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static void addCc(HtmlEmail email) {
+        List<String> collect = Stream.generate(MimeMessageCreatorUtil::generateEmail)
+                .limit(RANDOM.nextInt(MAXIMUM_CC_SIZE))
+                .collect(Collectors.toList());
+
+        collect.forEach(cc -> addCcThrowable(email, cc));
     }
 
     private static void addCc(HtmlEmail email, CompositeMimeMessage.CompositeMimeMessageBuilder builder) {

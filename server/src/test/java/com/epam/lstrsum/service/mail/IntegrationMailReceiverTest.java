@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.epam.lstrsum.testutils.MimeMessageCreatorUtil.createCompositeMimeMessage;
 import static com.epam.lstrsum.testutils.MimeMessageCreatorUtil.createFromFile;
-import static com.epam.lstrsum.testutils.MimeMessageCreatorUtil.createSimpleMimeMessage;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -86,7 +86,7 @@ public class IntegrationMailReceiverTest {
     public void correctParsingMimeMessage() throws Exception {
         final Set<String> allowEmails = userRepository.findAll().stream().map(User::getEmail).collect(Collectors.toSet());
 
-        final CompositeMimeMessage simpleMimeMessage = createSimpleMimeMessage();
+        final CompositeMimeMessage simpleMimeMessage = createCompositeMimeMessage();
         for (final String email : simpleMimeMessage.getCc()) {
             doThrow(Exception.class).when(exchangeService).expandGroup(email);
         }
@@ -97,7 +97,7 @@ public class IntegrationMailReceiverTest {
         addAllUsers(simpleMimeMessage.getTo());
         addAllUsers(Collections.singletonList(simpleMimeMessage.getMimeMessage().getFrom()[0].toString()));
 
-        mailReceiver.showMessages(simpleMimeMessage.getMimeMessage());
+        mailReceiver.receiveMessageAndHandleIt(simpleMimeMessage.getMimeMessage());
 
         allowEmails.addAll(simpleMimeMessage.getCc());
         allowEmails.addAll(simpleMimeMessage.getTo());
@@ -114,7 +114,7 @@ public class IntegrationMailReceiverTest {
         MimeMessage mimeMessage = createFromFile("src/test/resources/mail/rawMessageInput");
         addAllUsers(Collections.singletonList(mimeMessage.getFrom()[0].toString()));
 
-        mailReceiver.showMessages(mimeMessage);
+        mailReceiver.receiveMessageAndHandleIt(mimeMessage);
 
         assertThat(mimeMessage).isNotNull();
         List<Question> actual = questionRepository.findAll();

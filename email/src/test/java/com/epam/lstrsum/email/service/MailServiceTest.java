@@ -1,6 +1,6 @@
 package com.epam.lstrsum.email.service;
 
-import com.epam.lstrsum.email.persistence.EmailRepository;
+import com.epam.lstrsum.email.service.impl.MailServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -26,14 +26,10 @@ public class MailServiceTest {
 
     private MailService mailService;
 
-    @Mock
-    private EmailRepository emailRepository;
-
     @Before
     public void setUp() {
         initMocks(this);
-
-        mailService = new MailService(mailSender, emailRepository);
+        mailService = new MailServiceImpl(mailSender);
     }
 
     @Test
@@ -47,7 +43,7 @@ public class MailServiceTest {
         MimeMessage mimeMessageMock = mock(MimeMessage.class);
         when(mailSender.createMimeMessage()).thenReturn(mimeMessageMock);
 
-        mailService.setFromAddress("fromAddress");
+        ((MailServiceImpl) mailService).setFromAddress("fromAddress");
         String text = "text";
         String subject = "subject";
         mailService.sendMessage(subject, text, "to1", "to2");

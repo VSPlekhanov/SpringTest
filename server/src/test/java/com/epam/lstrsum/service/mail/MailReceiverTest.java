@@ -2,9 +2,9 @@ package com.epam.lstrsum.service.mail;
 
 import com.epam.lstrsum.aggregators.QuestionAggregator;
 import com.epam.lstrsum.email.persistence.EmailRepository;
+import com.epam.lstrsum.email.service.BackupHelper;
 import com.epam.lstrsum.email.service.EmailParser;
 import com.epam.lstrsum.email.service.ExchangeServiceHelper;
-import com.epam.lstrsum.email.service.MailService;
 import com.epam.lstrsum.service.AttachmentService;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.SubscriptionService;
@@ -33,8 +33,6 @@ public class MailReceiverTest {
     @Mock
     private JavaMailSender mailSender;
 
-    private MailService mailService;
-
     @Mock
     private EmailRepository emailRepository;
 
@@ -59,6 +57,9 @@ public class MailReceiverTest {
     @Mock
     private QuestionAggregator questionAggregator;
 
+    @Mock
+    private BackupHelper backupHelper;
+
     private static MimeMultipart createMultipartContent() throws MessagingException {
         final MimeMultipart multipartContent = new MimeMultipart("multipartContent");
         multipartContent.addBodyPart(new MimeBodyPart(new ByteArrayInputStream(new byte[]{0, 0, 0})));
@@ -69,10 +70,10 @@ public class MailReceiverTest {
     public void setUp() {
         initMocks(this);
 
-        mailService = new MailService(mailSender, emailRepository);
         mailReceiver = new MailReceiver(
-                mailService, userService,
-                questionService, attachmentService, emailParser
+                userService, questionService,
+                attachmentService, emailParser,
+                backupHelper
         );
     }
 
@@ -84,10 +85,10 @@ public class MailReceiverTest {
         doReturn(createMultipartContent()).when(mimeMessageMock).getContent();
         doReturn(new InternetAddress[]{new InternetAddress("fromAddress")}).when(mimeMessageMock).getFrom();
 
-        mailReceiver.showMessages(mimeMessageMock);
+        mailReceiver.receiveMessageAndHandleIt(mimeMessageMock);
 
         verify(mimeMessageMock, times(1)).getContentType();
-        verify(mimeMessageMock, times(2)).getSubject();
+        verify(mimeMessageMock, times(1)).getSubject();
     }
 
     @Test
@@ -98,9 +99,9 @@ public class MailReceiverTest {
         doReturn("content").when(mimeMessageMock).getContent();
         doReturn(new InternetAddress[]{new InternetAddress("fromAddress")}).when(mimeMessageMock).getFrom();
 
-        mailReceiver.showMessages(mimeMessageMock);
+        mailReceiver.receiveMessageAndHandleIt(mimeMessageMock);
 
         verify(mimeMessageMock, times(1)).getContentType();
-        verify(mimeMessageMock, times(2)).getSubject();
+        verify(mimeMessageMock, times(1)).getSubject();
     }
 }

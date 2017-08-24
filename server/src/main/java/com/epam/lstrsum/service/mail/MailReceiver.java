@@ -2,8 +2,8 @@ package com.epam.lstrsum.service.mail;
 
 import com.epam.lstrsum.dto.attachment.AttachmentAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
+import com.epam.lstrsum.email.service.BackupHelper;
 import com.epam.lstrsum.email.service.EmailParser;
-import com.epam.lstrsum.email.service.MailService;
 import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.service.AttachmentService;
@@ -29,17 +29,21 @@ import static com.epam.lstrsum.email.service.MailService.getAddressFrom;
 @RequiredArgsConstructor
 @Slf4j
 public class MailReceiver {
-    private final MailService mailService;
     private final UserService userService;
     private final QuestionService questionService;
     private final AttachmentService attachmentService;
     private final EmailParser emailParser;
+    private final BackupHelper backupHelper;
 
     @ServiceActivator(inputChannel = "receiveChannel", poller = @Poller(fixedRate = "200"))
-    public void showMessages(final MimeMessage message) throws Exception {
-        log.debug("showMessages; Message received: {}", message);
+    public void receiveMessageAndHandleIt(final MimeMessage message) throws Exception {
+        backupHelper.backupEmail(message);
 
-        mailService.backupEmail(message);
+        handleMessageWithoutBackup(message);
+    }
+
+    public void handleMessageWithoutBackup(final MimeMessage message) throws Exception {
+        log.debug("receiveMessageAndHandleIt; Message received: {}", message);
 
         String contentType = message.getContentType();
         String content = "";

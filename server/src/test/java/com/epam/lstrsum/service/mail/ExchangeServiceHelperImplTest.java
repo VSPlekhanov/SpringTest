@@ -1,7 +1,7 @@
 package com.epam.lstrsum.service.mail;
 
 import com.epam.lstrsum.email.service.ExchangeServiceHelper;
-import com.epam.lstrsum.email.service.ExchangeServiceHelperImpl;
+import com.epam.lstrsum.email.service.impl.ExchangeServiceHelperImpl;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.misc.ExpandGroupResults;
 import microsoft.exchange.webservices.data.property.complex.EmailAddress;
