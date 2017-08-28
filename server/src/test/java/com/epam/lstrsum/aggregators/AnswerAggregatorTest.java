@@ -73,7 +73,7 @@ public class AnswerAggregatorTest {
     public void answersToQuestionInAnswerBaseDto() throws Exception {
         aggregator.answersToQuestionInAnswerBaseDto(someQuestion());
 
-        verify(userMapper, times(1)).allowedSubsToListOfUserBaseDtos(any());
+        verify(userMapper, times(1)).usersToListOfUserBaseDtos(any());
         verify(answerRepository, times(1)).findAnswersByQuestionIdOrderByCreatedAtAsc(any());
         verify(answerMapper, times(1)).answersToQuestionInAnswerBaseDto(any(), any());
     }

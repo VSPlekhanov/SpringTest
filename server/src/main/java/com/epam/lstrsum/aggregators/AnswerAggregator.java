@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -51,9 +52,10 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
     }
 
     public List<AnswerBaseDto> answersToQuestionInAnswerBaseDto(Question question) {
+        List<Answer> answers = answerRepository.findAnswersByQuestionIdOrderByCreatedAtAsc(question);
         return answerMapper.answersToQuestionInAnswerBaseDto(
-                answerRepository.findAnswersByQuestionIdOrderByCreatedAtAsc(question),
-                userMapper.allowedSubsToListOfUserBaseDtos(question.getAllowedSubs())
+                answers,
+                userMapper.usersToListOfUserBaseDtos(answers.stream().map(Answer::getAuthorId).collect(Collectors.toList()))
         );
     }
 

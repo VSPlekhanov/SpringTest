@@ -35,7 +35,7 @@ public class UserAggregator implements BasicModelDtoConverter<User, UserBaseDto>
     }
 
     public List<UserBaseDto> allowedSubsToListOfUserBaseDtos(List<User> allowedSubs) {
-        return userMapper.allowedSubsToListOfUserBaseDtos(allowedSubs);
+        return userMapper.usersToListOfUserBaseDtos(allowedSubs);
     }
 
     public User findByEmail(String email) {
