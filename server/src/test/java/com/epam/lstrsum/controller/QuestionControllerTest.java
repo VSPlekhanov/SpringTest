@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -119,7 +118,7 @@ public class QuestionControllerTest {
         int questionAmount = -5;
         int questionPage = -4;
         controller.setMaxQuestionAmount(maxQuestionAmount);
-        List list = new ArrayList();
+        List<QuestionWithAnswersCountDto> list = Collections.emptyList();
         when(questionService.findAllQuestionsBaseDto(minQuestionPage, maxQuestionAmount)).thenReturn(list);
 
         ResponseEntity<List<QuestionWithAnswersCountDto>> actualEntity = controller.getQuestions(questionPage, questionAmount);

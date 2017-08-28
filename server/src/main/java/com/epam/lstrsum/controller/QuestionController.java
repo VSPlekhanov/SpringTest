@@ -87,8 +87,8 @@ public class QuestionController {
     @GetMapping("/smartSearch")
     public ResponseEntity<String> smartSearch(
             @RequestParam("query") String query,
-            @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "size", required = false) Integer size) {
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(value = "size", required = false, defaultValue = "0") Integer size) {
         return ResponseEntity.ok(questionService.smartSearch(query, page, size));
     }
 

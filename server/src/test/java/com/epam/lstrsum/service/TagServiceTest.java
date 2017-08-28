@@ -4,7 +4,6 @@ import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.ehcache.CacheManager;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -25,10 +24,13 @@ import static org.mockito.Mockito.verify;
 public class TagServiceTest extends SetUpDataBaseCollections {
     private static final int TAG_COUNT = 20;
     private static final String MOST_POPULAR_TAG = "javascript";
+
     @Autowired
-    CacheManager internalCacheManager;
+    private CacheManager internalCacheManager;
+
     @Autowired
     private QuestionService questionService;
+
     @SpyBean
     private TagService tagService;
 
@@ -49,38 +51,6 @@ public class TagServiceTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void getAllTagsCacheWorksOkForJenkins() {
-        log.debug("getAllTagsCacheWorksOkForJenkins; cache names: {}, cache tagsRating.tags content: {}",
-                internalCacheManager.getCacheNames(), internalCacheManager.getCache("tagsRating").get("tags"));
-
-        final int beforeAddTags = tagService.getTagsRating().size();
-
-        log.debug("getAllTagsCacheWorksOkForJenkins; beforeAddTags: {}, cache tagsRating.tags content: {}",
-                beforeAddTags, internalCacheManager.getCache("tagsRating").get("tags"));
-
-        internalCacheManager.clearAll();
-
-        log.debug("getAllTagsCacheWorksOkForJenkins; cache tagsRating.tags content: {}",
-                internalCacheManager.getCache("tagsRating").get("tags"));
-
-        final String newTag = "newUniqueTag";
-        questionService.addNewQuestion(new QuestionPostDto("title", new String[]{newTag},
-                "textlong", 1L, Collections.singletonList("Bob_Hoplins@epam.com"), emptyList()), "Bob_Hoplins@epam.com");
-
-        log.debug("getAllTagsCacheWorksOkForJenkins; cache tagsRating.tags content: {}",
-                internalCacheManager.getCache("tagsRating").get("tags"));
-
-        final int afterAddTags = tagService.getTagsRating().size();
-
-        log.debug("getAllTagsCacheWorksOkForJenkins; afterAddTags: {}, cache tagsRating.tags content: {}",
-                afterAddTags, internalCacheManager.getCache("tagsRating").get("tags"));
-
-        assertThat(1, is(1));
-//        assertThat(afterAddTags, greaterThan(beforeAddTags));
-    }
-
-    @Test
-    @Ignore
     public void getAllTagsCacheWorksOk() {
         internalCacheManager.clearAll();
         final int beforeAddTags = tagService.getTagsRating().size();

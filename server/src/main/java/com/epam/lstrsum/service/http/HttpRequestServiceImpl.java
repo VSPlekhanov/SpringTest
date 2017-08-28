@@ -5,6 +5,7 @@ import com.epam.lstrsum.utils.HttpUtilEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -31,7 +32,7 @@ public class HttpRequestServiceImpl implements HttpRequestService {
 
     private final RestTemplate restTemplate;
 
-    public <T> T sendGETRequest(HttpUtilEntity httpUtilEntity, Class<T> type) {
+    public <T> T sendGetRequest(HttpUtilEntity httpUtilEntity, ParameterizedTypeReference<T> type) {
         HttpHeaders httpHeaders = new HttpHeaders();
         if (!isCredentialsNull(httpUtilEntity.getUsername(), httpUtilEntity.getPassword())) {
             httpHeaders = addIfPresentBasicAuthorizationHeader(httpHeaders, httpUtilEntity.getUsername(), httpUtilEntity.getPassword());
@@ -125,7 +126,7 @@ public class HttpRequestServiceImpl implements HttpRequestService {
         return headers;
     }
 
-    private <T> T executeGETRequest(final String url, final HttpEntity entity, final Class<T> type) {
+    private <T> T executeGETRequest(final String url, final HttpEntity entity, final ParameterizedTypeReference<T> type) {
         try {
             final URI uri = UriComponentsBuilder.fromUriString(url).build().encode().toUri();
             final ResponseEntity<T> out = restTemplate.exchange(uri, HttpMethod.GET, entity, type);

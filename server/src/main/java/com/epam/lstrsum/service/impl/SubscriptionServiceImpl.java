@@ -8,9 +8,11 @@ import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.SubscriptionRepository;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.SubscriptionService;
+import com.epam.lstrsum.service.UserService;
 import com.mongodb.DBRef;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +36,11 @@ import java.util.stream.Collectors;
 public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final QuestionService questionService;
+    private final UserService userService;
     private final MongoTemplate mongoTemplate;
+
+    @Value("${spring.mail.username}")
+    private String fromAddress;
 
     private static Address[] getAddressesFromEmails(Collection<String> emails) {
         return emails.stream()
@@ -61,7 +68,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public Set<String> getEmailsToNotificateAboutNewQuestion(Question question) {
-        return question.getAllowedSubs().stream().map(User::getEmail).collect(Collectors.toSet());
+        return Stream.concat(question.getAllowedSubs().stream(), userService.findAllActive().stream())
+                .map(User::getEmail)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -83,7 +92,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public List<String> getEmailsOfAuthorAndAllowedSubsOfQuestion(String questionId) {
         Question question = questionService.getQuestionById(questionId);
 
-        List<String> emails = question.getAllowedSubs().stream().map(User::getEmail).collect(Collectors.toList());
+        List<String> emails =
+                Stream.concat(question.getAllowedSubs().stream(), userService.findAllActive().stream())
+                        .map(User::getEmail)
+                        .collect(Collectors.toList());
         emails.add(question.getAuthorId().getEmail());
 
         return emails;

@@ -11,15 +11,14 @@ import com.epam.lstrsum.service.TelescopeService;
 import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -34,27 +33,32 @@ import static java.util.Objects.isNull;
 @Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    //List<String> -> Set<String> -> String
+    private static final BiFunction<List<String>, Set<String>, String> GET_EMAIL_CONTAINS_IN_BOTH_LISTS =
+            (emailsFromDto, emailsFromInputSet) -> emailsFromDto.stream()
+                    .filter(emailsFromInputSet::contains)
+                    .findFirst()
+                    .orElseThrow(RuntimeException::new);
+    //TelescopeDataDto -> Set<String> -> Pair<String, TelescopeDataDto>
+    private static final BiFunction<TelescopeDataDto, Set<String>, Pair<String, TelescopeDataDto>>
+            GET_PAIR_FROM_EMAIL_TO_TELESCOPE_DATA = (data, emails) ->
+            Pair.of(
+                    GET_EMAIL_CONTAINS_IN_BOTH_LISTS.apply(data.getEmail(), emails),
+                    data
+            );
     private final UserRepository userRepository;
     private final UserAggregator userAggregator;
     private final MongoTemplate mongoTemplate;
     private final TelescopeService telescopeService;
 
-    private static final BiFunction<List<String>, Set<String>, String> GET_EMAIL_CONTAINS_IN_BOTH_LISTS =
-            (emailsFromDto, emailsFromInputSet) -> {
-                List<String> helper = new ArrayList<>(emailsFromDto);
-                helper.retainAll(emailsFromInputSet);
-                return helper.get(0);
-            };
-
-    private static final BiFunction<TelescopeDataDto, Set<String>, Map.Entry> GET_MAP_WITH_EMAIL_AND_TELESCOPE_DATA =
-            (data, emails) -> new AbstractMap.SimpleEntry<>(
-                    GET_EMAIL_CONTAINS_IN_BOTH_LISTS.apply(Arrays.asList(data.getEmail()), emails),
-                    data
-            );
-
     @Override
     public List<User> findAll() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public List<User> findAllActive() {
+        return userRepository.findAllByIsActive(true);
     }
 
     @Override
@@ -64,13 +68,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public long setActiveForAllAs(Collection<? super String> emails, boolean active) {
-        final Criteria inEmails = Criteria.where("email").in(emails);
+        val inEmails = Criteria.where("email").in(emails);
         return mongoTemplate.updateMulti(new Query(inEmails), Update.update("isActive", active), User.class).getN();
     }
 
     @Override
     public List<User> findAllWithRole(final UserRoleType role) {
-        final Criteria roles = Criteria.where("roles").elemMatch(new Criteria().in(role));
+        val roles = Criteria.where("roles").elemMatch(new Criteria().in(role));
         return mongoTemplate.find(new Query(roles), User.class);
     }
 
@@ -81,19 +85,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public TelescopeEmployeeEntityDto[] getUserInfoByFullName(String fullName, int limit) {
-        return telescopeService.getUsersInfoByFullName(fullName, limit);
-    }
-
-    @Override
-    public String getUserPhotoByUri(String uri) {
-        return telescopeService.getUserPhotoByUri(uri);
-    }
-
-    @Override
     public long addIfNotExistAllWithRole(final List<String> userEmails, List<UserRoleType> roles) {
-        Set<String> lowerCaseUsersEmail = userEmails.stream().map(String::toLowerCase).collect(Collectors.toSet());
-        List<TelescopeEmployeeEntityDto> telescopeUsersDto = telescopeService.getUsersInfoByEmails(lowerCaseUsersEmail);
+        if (userEmails.size() < 1) {
+            return 0;
+        }
+
+        val lowerCaseUsersEmail = userEmails.stream().map(String::toLowerCase).collect(Collectors.toSet());
+        val telescopeUsersDto = telescopeService.getUsersInfoByEmails(lowerCaseUsersEmail);
         if (telescopeUsersDto.size() < 1) {
             log.warn("No users from emails list size ={} were added", userEmails.size());
             return 0;
@@ -102,13 +100,13 @@ public class UserServiceImpl implements UserService {
         return telescopeUsersDto.stream()
                 .map(TelescopeEmployeeEntityDto::getData)
                 .filter(data -> !isNullOrEmptyString(data.getFirstName()) && !isNullOrEmptyString(data.getLastName()))
-                .map(data -> GET_MAP_WITH_EMAIL_AND_TELESCOPE_DATA.apply(data, lowerCaseUsersEmail))
+                .map(data -> GET_PAIR_FROM_EMAIL_TO_TELESCOPE_DATA.apply(data, lowerCaseUsersEmail))
                 .filter(entry -> addIfNotExist(entry, roles))
                 .count();
     }
 
     private boolean addIfNotExist(Map.Entry<String, TelescopeDataDto> entry, List<UserRoleType> roles) {
-        final Optional<User> byEmail = userRepository.findByEmailIgnoreCase(entry.getKey());
+        val byEmail = userRepository.findByEmailIgnoreCase(entry.getKey());
         if (!byEmail.isPresent()) {
             addNewUserByTelescopeUserData(entry, roles);
             return true;
@@ -117,9 +115,9 @@ public class UserServiceImpl implements UserService {
     }
 
     private void addNewUserByTelescopeUserData(Map.Entry<String, TelescopeDataDto> emailTelescopeDataEntry, List<UserRoleType> userRoles) {
-        String userEmail = emailTelescopeDataEntry.getKey();
-        TelescopeDataDto userData = emailTelescopeDataEntry.getValue();
-        User newUser = userAggregator.userTelescopeInfoDtoToUser(userData, userEmail, userRoles);
+        val userEmail = emailTelescopeDataEntry.getKey();
+        val userData = emailTelescopeDataEntry.getValue();
+        val newUser = userAggregator.userTelescopeInfoDtoToUser(userData, userEmail, userRoles);
         userRepository.save(newUser);
         log.debug("New user with email = {} was added", userEmail);
     }

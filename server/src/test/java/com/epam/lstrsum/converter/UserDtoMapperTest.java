@@ -74,7 +74,7 @@ public class UserDtoMapperTest extends SetUpDataBaseCollections {
                     assertThat(e.getLastName()).isEqualTo(userDto.getLastName());
                     assertThat(e.getRoles()).isEqualTo(roles);
                     assertThat(e.getCreatedAt()).isBeforeOrEqualTo(Instant.now());
-                    assertThat(e.getIsActive()).isTrue();
+                    assertThat(e.getIsActive()).isFalse();
                 });
     }
 }

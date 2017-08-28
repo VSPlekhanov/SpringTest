@@ -57,7 +57,7 @@ public class IntegrationMailReceiverTest {
     @Autowired
     private AttachmentRepository attachmentRepository;
 
-    @MockBean
+    @Autowired
     private ExchangeService exchangeService;
 
     @MockBean

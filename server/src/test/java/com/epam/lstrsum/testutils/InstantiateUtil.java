@@ -22,6 +22,7 @@ import org.apache.http.entity.ByteArrayEntity;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
@@ -74,7 +75,7 @@ public class InstantiateUtil {
                 .primarySkill(someString())
                 .primaryTitle(someString())
                 .manager(someString())
-                .profile(Collections.singletonMap(someString(), new TelescopeProfileDto[]{someTelescopeProfileDto()}))
+                .profile(Collections.singletonMap(someString(), singletonList(someTelescopeProfileDto())))
                 .photo(someStrings())
                 .unitPath(someString())
                 .build();
@@ -130,7 +131,7 @@ public class InstantiateUtil {
         return Question.builder()
                 .questionId(someString())
                 .title(someString())
-                .tags(someStrings())
+                .tags(someArrayString())
                 .allowedSubs(Collections.emptyList())
                 .authorId(someUser())
                 .createdAt(Instant.now())
@@ -141,7 +142,7 @@ public class InstantiateUtil {
 
     public static QuestionAllFieldsDto someQuestionAllFieldsDto() {
         return new QuestionAllFieldsDto(
-                someString(), someString(), someStrings(),
+                someString(), someString(), someArrayString(),
                 Instant.now(), Instant.now(), someUserBaseDto(), SECURE_RANDOM.nextInt(),
                 initList(InstantiateUtil::someUserBaseDto), someString()
         );
@@ -151,7 +152,7 @@ public class InstantiateUtil {
         return QuestionPostDto.builder()
                 .allowedSubs(initList(InstantiateUtil::someString))
                 .deadLine(someLong())
-                .tags(someStrings())
+                .tags(someArrayString())
                 .text(someString())
                 .title(someString())
                 .build();
@@ -163,7 +164,7 @@ public class InstantiateUtil {
                 .createdAt(Instant.now())
                 .deadLine(Instant.now())
                 .questionId(someString())
-                .tags(someStrings())
+                .tags(someArrayString())
                 .title(someString())
                 .upVote(SECURE_RANDOM.nextInt())
                 .build();
@@ -194,8 +195,27 @@ public class InstantiateUtil {
                 .collect(Collectors.toList());
     }
 
-    public static TelescopeEmployeeEntityDto[] someTelescopeEmployeeEntityDtos() {
-        return initList(InstantiateUtil::someTelescopeEmployeeEntityDto).toArray(new TelescopeEmployeeEntityDto[0]);
+    public static List<TelescopeEmployeeEntityDto> someTelescopeEmployeeEntityDtosWithEmails(String... emails) {
+        return Arrays.stream(emails)
+                .map(email -> TelescopeDataDto.builder()
+                        ._e3sId(someString())
+                        .displayName(someString())
+                        .email(singletonList(email.toLowerCase()))
+                        .firstName(someString())
+                        .lastName(someString())
+                        .fullName(someStrings())
+                        .manager(someString())
+                        .photo(someStrings())
+                        .primarySkill(someString())
+                        .primaryTitle(someString())
+                        .build()
+                )
+                .map(data -> new TelescopeEmployeeEntityDto(data, someStrings()))
+                .collect(Collectors.toList());
+    }
+
+    public static List<TelescopeEmployeeEntityDto> someTelescopeEmployeeEntityDtos() {
+        return initList(InstantiateUtil::someTelescopeEmployeeEntityDto);
     }
 
     public static List<UserRoleType> someRoles() {
@@ -219,7 +239,11 @@ public class InstantiateUtil {
         return new BigInteger(130, SECURE_RANDOM).toString(32);
     }
 
-    public static String[] someStrings() {
+    public static List<String> someStrings() {
+        return initList(InstantiateUtil::someString);
+    }
+
+    public static String[] someArrayString() {
         return initList(InstantiateUtil::someString).toArray(new String[0]);
     }
 

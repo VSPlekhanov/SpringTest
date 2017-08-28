@@ -4,7 +4,6 @@ import com.epam.lstrsum.service.AnswerService;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.mail.UserSynchronizer;
 import org.junit.Test;
-import org.mockito.InjectMocks;
 import org.springframework.http.HttpStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,7 +19,6 @@ public class AdminControllerTest {
     private AnswerService answerService = mock(AnswerService.class);
     private UserSynchronizer userSynchronizer = mock(UserSynchronizer.class);
 
-    @InjectMocks
     private AdminController adminController = new AdminController(
             questionService, answerService, userSynchronizer
     );

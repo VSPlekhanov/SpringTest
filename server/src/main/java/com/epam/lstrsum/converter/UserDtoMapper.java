@@ -32,7 +32,8 @@ public interface UserDtoMapper {
 
     @Mappings({
             @Mapping(target = "createdAt", expression = "java(java.time.Instant.now())"),
-            @Mapping(target = "isActive", constant = "true"),
+            @Mapping(target = "isActive",
+                    expression = "java(roles.contains(com.epam.lstrsum.enums.UserRoleType.EXTENDED_USER) ? true : false)"),
             @Mapping(target = "email", source = "email"),
             @Mapping(target = "roles", source = "roles"),
             @Mapping(target = "userId", ignore = true)

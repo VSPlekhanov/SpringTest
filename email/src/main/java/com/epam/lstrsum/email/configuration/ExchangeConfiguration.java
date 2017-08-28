@@ -6,6 +6,7 @@ import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.enumeration.misc.ExchangeVersion;
 import microsoft.exchange.webservices.data.credential.ExchangeCredentials;
 import microsoft.exchange.webservices.data.credential.WebCredentials;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,12 +17,15 @@ import static java.util.Objects.isNull;
 @Configuration
 public class ExchangeConfiguration {
     @Setter
+    @Value("${email.exchangeServer}")
     private String exchangeServer;
 
     @Setter
+    @Value("${spring.mail.username}")
     private String userName;
 
     @Setter
+    @Value("${spring.mail.password}")
     private String password;
 
     @Bean(destroyMethod = "close")
@@ -31,7 +35,7 @@ public class ExchangeConfiguration {
             return service;
         }
 
-        final ExchangeCredentials credentials = new WebCredentials(userName.replace("%40", "@"), password);
+        final ExchangeCredentials credentials = new WebCredentials(userName, password);
         service.setCredentials(credentials);
 
         try {

@@ -8,6 +8,7 @@ import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,7 @@ public class UserSynchronizer {
     private final UserService userService;
 
     @Setter
+    @Value("${email.distribution-list}")
     private String distributionList;
 
     @Scheduled(cron = "0 0 9 * * *")

@@ -7,9 +7,11 @@ import com.epam.lstrsum.utils.HttpUtilEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,20 +24,24 @@ import static java.util.Objects.isNull;
 public class TelescopeServiceImpl implements TelescopeService {
     private final HttpRequestService httpRequestService;
 
-    @Value("${email.from-address}")
+    @Value("${spring.mail.username}")
     private String telescopeUsername;
 
-    @Value("${email.password}")
+    @Value("${spring.mail.password}")
     private String telescopePassword;
 
+    private ParameterizedTypeReference<List<TelescopeEmployeeEntityDto>> LIST_TELESCOPE_EMPLOYEE_ENTITIES =
+            new ParameterizedTypeReference<List<TelescopeEmployeeEntityDto>>() {
+            };
+
     @Override
-    public TelescopeEmployeeEntityDto[] getUsersInfoByFullName(String fullName, int limit) {
+    public List<TelescopeEmployeeEntityDto> getUsersInfoByFullName(String fullName, int limit) {
         if (!isDataForUserSearchValid(fullName, limit)) {
             log.warn("No request was sent to telescope api because of invalid parameters");
-            return new TelescopeEmployeeEntityDto[]{};
+            return Collections.emptyList();
         }
 
-        return httpRequestService.sendGETRequest(
+        return httpRequestService.sendGetRequest(
                 getEntityTemplate()
                         .parametersValues(
                                 Arrays.asList(TELESCOPE_API_META_TYPE_FIELD_VALUE,
@@ -43,20 +49,26 @@ public class TelescopeServiceImpl implements TelescopeService {
                                                 limit + TELESCOPE_API_SEARCH_QUERY_SORTING,
                                         TELESCOPE_API_FIELDS_FOR_UI)
                         ).build(),
-                TelescopeEmployeeEntityDto[].class
+                LIST_TELESCOPE_EMPLOYEE_ENTITIES
         );
     }
 
     @Override
     public String getUserPhotoByUri(String uri) {
-        return String.format("%s?uri=%s", TELESCOPE_API_PHOTO_URL, uri);
+        return httpRequestService.sendGetRequest(
+                getEntityTemplate()
+                        .url(String.format(TELESCOPE_API_PHOTO_URL, uri))
+                        .build(),
+                new ParameterizedTypeReference<String>() {
+                }
+        );
     }
 
     @Override
     public List<TelescopeEmployeeEntityDto> getUsersInfoByEmails(Set<String> emails) {
         log.debug("getUsersInfoByEmails.enter; emails size for search into telescope: {}", isNull(emails) ? "null list" : emails.size());
         String emailsForSearch = prepareEmailsForSearch(emails);
-        return Arrays.asList(httpRequestService.sendGETRequest(
+        return httpRequestService.sendGetRequest(
                 getEntityTemplate()
                         .parametersValues(
                                 Arrays.asList(TELESCOPE_API_META_TYPE_FIELD_VALUE,
@@ -64,7 +76,7 @@ public class TelescopeServiceImpl implements TelescopeService {
                                                 TELESCOPE_API_EMAIL_SEARCH_FILTER_EMPLOYMENT_STATUS,
                                         TELESCOPE_API_FIELDS_FOR_ADD_NEW_USER))
                         .build(),
-                TelescopeEmployeeEntityDto[].class));
+                LIST_TELESCOPE_EMPLOYEE_ENTITIES);
     }
 
     private String prepareEmailsForSearch(Set<String> emails) {

@@ -8,7 +8,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class TelescopeProfileDto {
-
     private String origin;
     private String id;
     private String status;
