@@ -3,17 +3,34 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <property name="LOG_FILE" value="experience-server"/>
+    <property name="ERROR_LOG_FILE" value="experience-server-error"/>
 
-    <appender name="ROLLING-FILE"
-              class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="ROLLING-FILE-ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <file>${LOG_PATH}/${ERROR_LOG_FILE}.log</file>
         <encoder>
             <pattern>${FILE_LOG_PATTERN}</pattern>
         </encoder>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>100MB</maxFileSize>
+        </triggeringPolicy>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/archive/${ERROR_LOG_FILE}.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="ROLLING-FILE-ALL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+        <file>${LOG_PATH}/${LOG_FILE}.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>${LOG_PATH}/archive/${LOG_FILE}.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>10MB</maxFileSize>
+                <maxFileSize>100MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
     </appender>
@@ -29,22 +46,31 @@
     </appender>
 
     <springProfile name="local">
+        <root level="ERROR">
+            <appender-ref ref="ROLLING-FILE-ERROR"/>
+        </root>
         <root level="DEBUG">
-            <appender-ref ref="ROLLING-FILE"/>
+            <appender-ref ref="ROLLING-FILE-ALL"/>
             <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
 
     <springProfile name="dev">
+        <root level="ERROR">
+            <appender-ref ref="ROLLING-FILE-ERROR"/>
+        </root>
         <root level="DEBUG">
-            <appender-ref ref="ROLLING-FILE"/>
+            <appender-ref ref="ROLLING-FILE-ALL"/>
             <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
 
     <springProfile name="stage">
+        <root level="ERROR">
+            <appender-ref ref="ROLLING-FILE-ERROR"/>
+        </root>
         <root level="INFO">
-            <appender-ref ref="ROLLING-FILE"/>
+            <appender-ref ref="ROLLING-FILE-ALL"/>
             <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
