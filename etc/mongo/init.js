@@ -154,7 +154,7 @@ for (let i = 0; i < N; ++i) {
     newSubscription = {}
     newSubscription._class = "com.epam.lstrsum.model.Subscription";
     newSubscription.userId = DBRef(USER_COLLECTION_NAME, allUsers[randomInt(0, allUsers.length)]._id)
-    newSubscription.subscriptions = []
+    newSubscription.questionIds = []
 
     db.getCollection(SUBSCRIPTION_COLLECTION_NAME).insert(newSubscription)
 }
