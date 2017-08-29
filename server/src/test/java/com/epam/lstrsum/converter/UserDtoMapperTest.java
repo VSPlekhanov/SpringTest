@@ -57,7 +57,7 @@ public class UserDtoMapperTest extends SetUpDataBaseCollections {
     public void allowedSubsToListOfUserBaseDtos() throws Exception {
         final List<User> users = initList(InstantiateUtil::someUser);
 
-        assertThat(userMapper.allowedSubsToListOfUserBaseDtos(users))
+        assertThat(userMapper.usersToListOfUserBaseDtos(users))
                 .hasSize(users.size());
     }
 

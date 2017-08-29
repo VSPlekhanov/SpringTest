@@ -57,7 +57,7 @@ public class UserAggregatorTest {
         final int size = 2;
         aggregator.allowedSubsToListOfUserBaseDtos(initList(InstantiateUtil::someUser, size));
 
-        verify(userMapper, times(1)).allowedSubsToListOfUserBaseDtos(any());
+        verify(userMapper, times(1)).usersToListOfUserBaseDtos(any());
     }
 
     @Test

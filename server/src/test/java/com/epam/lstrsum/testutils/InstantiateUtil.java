@@ -232,7 +232,7 @@ public class InstantiateUtil {
     }
 
     public static <T> List<T> initList(Supplier<T> supplier) {
-        return initList(supplier, SECURE_RANDOM.nextInt(10));
+        return initList(supplier, (SECURE_RANDOM.nextInt(10) + 1));
     }
 
     public static String someString() {

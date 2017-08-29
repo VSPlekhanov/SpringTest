@@ -24,8 +24,8 @@ public interface UserDtoMapper {
     })
     UserBaseDto modelToBaseDto(User user);
 
-    default List<UserBaseDto> allowedSubsToListOfUserBaseDtos(List<User> allowedSubs) {
-        return allowedSubs.stream()
+    default List<UserBaseDto> usersToListOfUserBaseDtos(List<User> users) {
+        return users.stream()
                 .map(this::modelToBaseDto)
                 .collect(Collectors.toList());
     }
