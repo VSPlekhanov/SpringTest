@@ -1,128 +1,78 @@
 package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
-import com.epam.lstrsum.dto.user.UserBaseDto;
-import com.epam.lstrsum.dto.vote.VoteAllFieldsDto;
-import com.epam.lstrsum.exception.BusinessLogicException;
-import com.epam.lstrsum.exception.NoSuchAnswerException;
-import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.model.Answer;
+import com.epam.lstrsum.persistence.AnswerRepository;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class VoteServiceTest extends SetUpDataBaseCollections {
-    private static final String alreadyVotedUserEmail = "John_Doe@epam.com";
-    private static final String notVotedUserEmail = "Bob_Hoplins@epam.com";
-    private static final String oneMoreNotVotedUserEmail = "Ernest_Hemingway@epam.com";
-    private static final List<String> notVotedUserEmailsList =
-            Arrays.asList("Bob_Hoplins@epam.com", "Ernest_Hemingway@epam.com", "Steven_Tyler@epam.com");
-    private static final String answerId = "1u_2r_1a";
-    private static final String nonExistingAnswerId = "17635r929";
-    private static final String answerIdWithNegativeVoteAmount = "4u_5r_3a";
-
-    @Autowired
-    private AnswerService answerService;
     @Autowired
     private VoteService voteService;
+
     @Autowired
-    private UserService userService;
+    private AnswerRepository answerRepository;
 
+    @Test
+    public void voteForAnswerTest() {
+        String answerIdWithoutVotes = "1u_2r_1a";
+        String someUserEmail = "Tyler_Derden@mylo.com";
 
-    @Test(expected = BusinessLogicException.class)
-    public void addVoteToAnswerWithAlreadyVotedUser() {
-        voteService.addVoteToAnswer(alreadyVotedUserEmail, answerId);
-    }
+        int beforeVote = answerRepository.findOne(answerIdWithoutVotes).getVotes().size();
 
-    @Test(expected = NoSuchUserException.class)
-    public void addVoteToAnswerWithNullEmail() {
-        voteService.addVoteToAnswer(someString(), answerId);
-    }
+        assertThat(voteService.voteForAnswerByUser(answerIdWithoutVotes, someUserEmail))
+                .isTrue();
 
-    @Test(expected = NoSuchAnswerException.class)
-    public void addVoteToAnswerWithEmptyAnswerId() {
-        voteService.addVoteToAnswer(alreadyVotedUserEmail, "       ");
+        assertThat(answerRepository.findOne(answerIdWithoutVotes).getVotes())
+                .hasSize(beforeVote + 1);
     }
 
     @Test
-    public void addVoteToAnswer() {
-        VoteAllFieldsDto voteDto = voteService.addVoteToAnswer(notVotedUserEmail, answerId);
-        assertNotNull(voteDto);
-        assertThat(voteDto.isRevoked(), is(false));
-        assertTrue(voteDto.getCreatedAt().isBefore(Instant.now().plusMillis(1)));
+    public void voteForAnswerTwice() {
+        String answerIdAlreadyVoted = "1u_1r_3a";
+        String userWhoVoteAnswer = "John_Doe@epam.com";
 
-        UserBaseDto userDto = voteDto.getUserBaseDto();
-        assertThat(userDto.getUserId(), is("2u"));
-        assertThat(userDto.getEmail(), is(notVotedUserEmail));
-        assertThat(userDto.getFirstName(), is("Bob"));
-        assertThat(userDto.getLastName(), is("Hoplins"));
-    }
+        int beforeVote = answerRepository.findOne(answerIdAlreadyVoted).getVotes().size();
 
-    @Test(expected = BusinessLogicException.class)
-    public void addVoteToAnswerWithNegativeVotesAmount() {
-        voteService.addVoteToAnswer(notVotedUserEmail, answerIdWithNegativeVoteAmount);
-    }
+        assertThat(voteService.voteForAnswerByUser(answerIdAlreadyVoted, userWhoVoteAnswer))
+                .isTrue();
 
-    @Test(expected = NoSuchAnswerException.class)
-    public void deleteVoteWithNonExistingAnswerId() {
-        voteService.deleteVoteToAnswer(alreadyVotedUserEmail, nonExistingAnswerId);
-    }
-
-    @Test(expected = BusinessLogicException.class)
-    public void deleteVoteWithNonVotedUser() {
-        voteService.deleteVoteToAnswer(oneMoreNotVotedUserEmail, answerId);
+        assertThat(answerRepository.findOne(answerIdAlreadyVoted).getVotes())
+                .hasSize(beforeVote);
     }
 
     @Test
-    public void deleteVote() {
-        voteService.deleteVoteToAnswer(alreadyVotedUserEmail, answerId);
-        VoteAllFieldsDto revokedVote = voteService.findAllVotesForAnswer(answerId)
-                .stream()
-                .filter(v -> userService.findUserById(v.getUserBaseDto().getUserId()).getEmail().equals(alreadyVotedUserEmail))
-                .collect(Collectors.toList()).get(0);
+    public void voteAnswerNotExists() {
+        String someNotExistingAnswerId = "someNotExistingAnswerId";
 
-        assertThat(revokedVote.isRevoked(), is(true));
+        assertThat(voteService.voteForAnswerByUser(someNotExistingAnswerId, "someUser"))
+                .isFalse();
     }
 
     @Test
-    public void findAllVotesForAnswer() {
-        List<VoteAllFieldsDto> listWithVotes = voteService.findAllVotesForAnswer(answerId);
+    public void unVoteAnswer() {
+        String answerIdAlreadyVoted = "1u_1r_3a";
+        String userWhoVoteAnswer = "John_Doe@epam.com";
 
-        List<String> votesIds = listWithVotes.stream().map(VoteAllFieldsDto::getVoteId).collect(Collectors.toList());
+        Answer beforeUnvoting = answerRepository.findOne(answerIdAlreadyVoted);
 
-        assertThat(votesIds, hasItems("1u_2r_1a_1v", "1u_2r_1a_2v", "1u_2r_1a_3v"));
+        assertThat(voteService.unvoteForAnswerByUser(answerIdAlreadyVoted, userWhoVoteAnswer))
+                .isTrue();
+
+        Answer afterUnvoting = answerRepository.findOne(answerIdAlreadyVoted);
+
+        assertThat(afterUnvoting.getVotes())
+                .hasSize(beforeUnvoting.getVotes().size() - 1);
     }
 
     @Test
-    public void addVotesThenDeleteVotes() {
-        Answer answerBeforeMultipleVoteAdding = answerService.getAnswerById(answerId);
-        assertThat(answerBeforeMultipleVoteAdding.getUpVote(), is(3));
-        assertThat(answerBeforeMultipleVoteAdding.getAnswerId(), is("1u_2r_1a"));
-        assertThat(answerBeforeMultipleVoteAdding.getQuestionId().getQuestionId(), is("1u_2r"));
+    public void unVoteAnswerNotExists() {
+        String someNotExistingAnswerId = "someNotExistingAnswerId";
 
-        notVotedUserEmailsList.forEach(e -> voteService.addVoteToAnswer(e, answerId));
-
-        Answer answerAfterMultipleVoteAdding = answerService.getAnswerById(answerId);
-        assertThat(answerAfterMultipleVoteAdding.getUpVote(), is(6));
-
-        notVotedUserEmailsList.subList(0, 2).forEach(e -> voteService.deleteVoteToAnswer(e, answerId));
-
-        Answer answerAfterMultipleVoteDeleting = answerService.getAnswerById(answerId);
-        assertThat(answerAfterMultipleVoteDeleting.getUpVote(), is(4));
-        assertEquals(answerAfterMultipleVoteDeleting.getAnswerId(), answerBeforeMultipleVoteAdding.getAnswerId());
-        assertEquals(answerAfterMultipleVoteDeleting.getQuestionId().getQuestionId(),
-                answerBeforeMultipleVoteAdding.getQuestionId().getQuestionId());
+        assertThat(voteService.unvoteForAnswerByUser(someNotExistingAnswerId, "someUser"))
+                .isFalse();
     }
+
 }

@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.initList;
@@ -32,7 +33,7 @@ public class AnswerDtoMapperTest extends SetUpDataBaseCollections {
     public static void checkAnswerBaseDto(AnswerBaseDto answerBaseDto, Answer answer, UserBaseDto userBaseDto) {
         assertThat(answerBaseDto.getCreatedAt()).isEqualTo(answer.getCreatedAt());
         assertThat(answerBaseDto.getText()).isEqualTo(answer.getText());
-        assertThat(answerBaseDto.getUpVote()).isEqualTo(answer.getUpVote());
+        assertThat(answerBaseDto.getUpVote()).isEqualTo(answer.getVotes().size());
         assertThat(answerBaseDto.getAuthorId()).isEqualTo(userBaseDto);
     }
 
@@ -80,7 +81,7 @@ public class AnswerDtoMapperTest extends SetUpDataBaseCollections {
                     assertThat(a.getAuthorId()).isEqualTo(user);
                     assertThat(a.getQuestionId()).isEqualTo(question);
                     assertThat(a.getCreatedAt()).isBeforeOrEqualTo(Instant.now());
-                    assertThat(a.getUpVote()).isEqualTo(0);
+                    assertThat(a.getVotes()).isEqualTo(Collections.emptyList());
                     assertThat(a.getText()).isEqualTo(answerPostDto.getText());
                 });
     }

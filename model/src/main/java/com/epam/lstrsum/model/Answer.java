@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,8 +33,7 @@ public class Answer {
     @DBRef
     private User authorId;
 
-    @Setter
-    private Integer upVote;
+    private List<Vote> votes;
 
     @Override
     public boolean equals(Object o) {
@@ -44,20 +44,20 @@ public class Answer {
 
         if (answerId != null ? !answerId.equals(answer.answerId) : answer.answerId != null) return false;
         if (questionId != null ? !questionId.equals(answer.questionId) : answer.questionId != null) return false;
-        if (!text.equals(answer.text)) return false;
+        if (text != null ? !text.equals(answer.text) : answer.text != null) return false;
         if (createdAt != null ? !createdAt.equals(answer.createdAt) : answer.createdAt != null) return false;
         if (authorId != null ? !authorId.equals(answer.authorId) : answer.authorId != null) return false;
-        return upVote != null ? upVote.equals(answer.upVote) : answer.upVote == null;
+        return votes != null ? votes.equals(answer.votes) : answer.votes == null;
     }
 
     @Override
     public int hashCode() {
         int result = answerId != null ? answerId.hashCode() : 0;
         result = 31 * result + (questionId != null ? questionId.hashCode() : 0);
-        result = 31 * result + text.hashCode();
+        result = 31 * result + (text != null ? text.hashCode() : 0);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
         result = 31 * result + (authorId != null ? authorId.hashCode() : 0);
-        result = 31 * result + (upVote != null ? upVote.hashCode() : 0);
+        result = 31 * result + (votes != null ? votes.hashCode() : 0);
         return result;
     }
 }

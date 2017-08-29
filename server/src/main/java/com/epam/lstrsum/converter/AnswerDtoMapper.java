@@ -21,14 +21,15 @@ public interface AnswerDtoMapper {
     @Mappings({
             @Mapping(target = "questionId", source = "questionId"),
             @Mapping(target = "createdAt", source = "answer.createdAt"),
-            @Mapping(target = "upVote", source = "answer.upVote"),
+            @Mapping(target = "upVote", expression = "java(answer.getVotes().size())"),
             @Mapping(target = "authorId", source = "authorId")
 
     })
     AnswerAllFieldsDto modelToAllFieldsDto(Answer answer, UserBaseDto authorId, QuestionBaseDto questionId);
 
     @Mappings({
-            @Mapping(target = "authorId", source = "authorId")
+            @Mapping(target = "authorId", source = "authorId"),
+            @Mapping(target = "upVote", expression = "java(answer.getVotes().size())")
     })
     AnswerBaseDto modelToBaseDto(Answer answer, UserBaseDto authorId);
 
@@ -42,11 +43,10 @@ public interface AnswerDtoMapper {
     @Mappings({
             @Mapping(target = "text", source = "answer.text"),
             @Mapping(target = "createdAt", expression = "java(java.time.Instant.now())"),
-            @Mapping(target = "upVote", constant = "0"),
             @Mapping(target = "questionId", source = "questionId"),
             @Mapping(target = "authorId", source = "authorId"),
-            @Mapping(target = "answerId", ignore = true)
-
+            @Mapping(target = "answerId", ignore = true),
+            @Mapping(target = "votes", expression = "java(java.util.Collections.emptyList())")
     })
     Answer answerPostDtoAndAuthorEmailToAnswer(AnswerPostDto answer, User authorId, Question questionId);
 }

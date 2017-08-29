@@ -3,21 +3,19 @@ package com.epam.lstrsum.controller;
 import com.epam.lstrsum.annotation.NotEmptyString;
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
-import com.epam.lstrsum.dto.vote.VoteAllFieldsDto;
 import com.epam.lstrsum.service.AnswerService;
 import com.epam.lstrsum.service.VoteService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/answer")
@@ -25,8 +23,8 @@ import java.util.List;
 public class AnswerController {
 
     private final AnswerService answerService;
-    private final VoteService voteService;
     private final UserRuntimeRequestComponent userRuntimeRequestComponent;
+    private final VoteService voteService;
 
     @PostMapping
     public ResponseEntity<AnswerAllFieldsDto> addAnswer(@RequestBody AnswerPostDto dtoObject)
@@ -36,24 +34,25 @@ public class AnswerController {
         return ResponseEntity.ok(answerAllFieldsDto);
     }
 
-    @PostMapping("/{answerId}/vote")
-    public ResponseEntity<VoteAllFieldsDto> addVote(@NotEmptyString @PathVariable(value = "answerId") final String answerId) {
+    @PutMapping("/vote")
+    public ResponseEntity voteFor(@NotEmptyString @RequestParam String answerId) {
         String email = userRuntimeRequestComponent.getEmail();
-        VoteAllFieldsDto voteAllFieldsDto = voteService.addVoteToAnswer(email, answerId);
-        return ResponseEntity.ok(voteAllFieldsDto);
+
+        if (voteService.voteForAnswerByUser(answerId, email)) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
-    @PutMapping("/{answerId}/vote")
-    public ResponseEntity<Boolean> revokeVote(@NotEmptyString @PathVariable(value = "answerId") final String answerId) {
+    @PutMapping("/unvote")
+    public ResponseEntity unvoteFor(@NotEmptyString @RequestParam String answerId) {
         String email = userRuntimeRequestComponent.getEmail();
-        voteService.deleteVoteToAnswer(email, answerId);
-        return ResponseEntity.ok(true);
-    }
 
-    @GetMapping("/{answerId}/vote/list")
-    public ResponseEntity<List<VoteAllFieldsDto>> getAllAnswerVotes(
-            @NotEmptyString @PathVariable(value = "answerId") final String answerId) {
-        List<VoteAllFieldsDto> allVotesForAnswer = voteService.findAllVotesForAnswer(answerId);
-        return ResponseEntity.ok(allVotesForAnswer);
+        if (voteService.unvoteForAnswerByUser(answerId, email)) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }

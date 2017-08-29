@@ -46,9 +46,6 @@ public abstract class SetUpDataBaseCollections {
 
         loadJsonResourcesAndFillDBCollectionWithThem("src/test/resources/data/subscriptionLoad.json",
                 Subscription.SUBSCRIPTION_COLLECTION_NAME);
-
-        loadJsonResourcesAndFillDBCollectionWithThem("src/test/resources/data/voteLoad.json",
-                Vote.VOTE_COLLECTION_NAME);
     }
 
     @After
