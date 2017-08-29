@@ -16,13 +16,13 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.initList;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswer;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswerPostDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestion;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionBaseDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someUserBaseDto;
+import static com.epam.lstrsum.utils.FunctionalUtil.getListWithSize;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -63,8 +63,8 @@ public class AnswerDtoMapperTest extends SetUpDataBaseCollections {
     @Test
     public void answersToQuestionInAnswerBaseDto() throws Exception {
         final int size = 2;
-        List<Answer> answers = initList(InstantiateUtil::someAnswer, size);
-        List<UserBaseDto> authors = initList(InstantiateUtil::someUserBaseDto, size);
+        List<Answer> answers = getListWithSize(InstantiateUtil::someAnswer, size);
+        List<UserBaseDto> authors = getListWithSize(InstantiateUtil::someUserBaseDto, size);
 
         assertThat(answerMapper.answersToQuestionInAnswerBaseDto(answers, authors))
                 .hasSize(size);

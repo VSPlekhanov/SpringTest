@@ -48,6 +48,9 @@ public class EmailParser {
     @Value("${email.distribution-list}")
     private String distributionList;
 
+    @Value("${spring.mail.username}")
+    private String fromAddress;
+
     public EmailForExperienceApplication getParsedMessage(@NonNull MimeMessage message) throws Exception {
 
         String title = message.getSubject();
@@ -103,8 +106,9 @@ public class EmailParser {
         return Arrays.stream(message.getAllRecipients())
                 .map(i -> (InternetAddress) i)
                 .map(InternetAddress::getAddress)
-                .filter(e -> !e.equals(distributionList))
+                .filter(e -> !e.equalsIgnoreCase(distributionList))
                 .flatMap(email -> exchangeServiceHelper.resolveGroup(email).stream())
+                .filter(e -> !e.equalsIgnoreCase(fromAddress))
                 .collect(Collectors.toList());
     }
 

@@ -27,7 +27,6 @@ public class QuestionPostDto implements Serializable {
     private Long deadLine;
 
     private List<String> allowedSubs;
-
     private List<byte[]> inlineSources;
 
     @Override

@@ -13,11 +13,11 @@ import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.initList;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someRoles;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeDataDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
+import static com.epam.lstrsum.utils.FunctionalUtil.getList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserDtoMapperTest extends SetUpDataBaseCollections {
@@ -55,7 +55,7 @@ public class UserDtoMapperTest extends SetUpDataBaseCollections {
 
     @Test
     public void allowedSubsToListOfUserBaseDtos() throws Exception {
-        final List<User> users = initList(InstantiateUtil::someUser);
+        final List<User> users = getList(InstantiateUtil::someUser);
 
         assertThat(userMapper.usersToListOfUserBaseDtos(users))
                 .hasSize(users.size());

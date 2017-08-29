@@ -10,9 +10,11 @@ import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.SubscriptionService;
 import com.epam.lstrsum.service.TelescopeService;
 import com.epam.lstrsum.service.UserService;
+import com.epam.lstrsum.service.impl.MailReceiverImpl;
 import com.epam.lstrsum.testutils.InstantiateUtil;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.mail.javamail.JavaMailSender;
 
@@ -33,8 +35,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 public class MailReceiverTest {
-    private MailReceiver mailReceiver;
-
     @Mock
     private JavaMailSender mailSender;
 
@@ -68,6 +68,9 @@ public class MailReceiverTest {
     @Mock
     private TelescopeService telescopeService;
 
+    @InjectMocks
+    private MailReceiverImpl mailReceiver;
+
     private static MimeMultipart createMultipartContent() throws MessagingException {
         final MimeMultipart multipartContent = new MimeMultipart("multipartContent");
         multipartContent.addBodyPart(new MimeBodyPart(new ByteArrayInputStream(new byte[]{0, 0, 0})));
@@ -77,12 +80,6 @@ public class MailReceiverTest {
     @Before
     public void setUp() {
         initMocks(this);
-
-        mailReceiver = new MailReceiver(
-                userService, questionService,
-                attachmentService, emailParser,
-                backupHelper, telescopeService
-        );
     }
 
     @Test

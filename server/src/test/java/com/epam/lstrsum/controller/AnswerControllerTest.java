@@ -64,6 +64,15 @@ public class AnswerControllerTest {
         assertEntityWithStatus(responseEntity, HttpStatus.NOT_FOUND);
     }
 
+    private static <T> void hasStatusNoContent(ResponseEntity<T> responseEntity) {
+        assertEntityWithStatus(responseEntity, HttpStatus.NO_CONTENT);
+    }
+
+    private static <T> void assertEntityWithStatus(ResponseEntity<T> responseEntity, HttpStatus httpStatus) {
+        assertThat(responseEntity.getStatusCode())
+                .isEqualTo(httpStatus);
+    }
+
     @Test(expected = AnswerValidationException.class)
     //TODO Test purposes only
     public void addNewAnswerNoQuestionTest() throws IOException {
@@ -80,15 +89,6 @@ public class AnswerControllerTest {
         when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");
         doThrow(AnswerValidationException.class).when(answerService).addNewAnswer(eq(answerPostDto), eq(authorEmail));
         responseEntity = answerController.addAnswer(answerPostDto);
-    }
-
-    private static <T> void hasStatusNoContent(ResponseEntity<T> responseEntity) {
-        assertEntityWithStatus(responseEntity, HttpStatus.NO_CONTENT);
-    }
-
-    private static <T> void assertEntityWithStatus(ResponseEntity<T> responseEntity, HttpStatus httpStatus) {
-        assertThat(responseEntity.getStatusCode())
-                .isEqualTo(httpStatus);
     }
 
     @Before

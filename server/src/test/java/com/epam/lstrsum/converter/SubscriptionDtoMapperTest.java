@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.initList;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someSubscription;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someUserBaseDto;
+import static com.epam.lstrsum.utils.FunctionalUtil.getListWithSize;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SubscriptionDtoMapperTest extends SetUpDataBaseCollections {
@@ -23,7 +23,7 @@ public class SubscriptionDtoMapperTest extends SetUpDataBaseCollections {
     public void modelToAllFieldsDto() throws Exception {
         Subscription subscription = someSubscription();
         UserBaseDto userId = someUserBaseDto();
-        List<QuestionBaseDto> questionIds = initList(InstantiateUtil::someQuestionBaseDto, 2);
+        List<QuestionBaseDto> questionIds = getListWithSize(InstantiateUtil::someQuestionBaseDto, 2);
 
         assertThat(subscriptionDtoMapper.modelToAllFieldsDto(subscription, userId, questionIds))
                 .satisfies(

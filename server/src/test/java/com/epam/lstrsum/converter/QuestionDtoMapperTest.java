@@ -15,11 +15,11 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.initList;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestion;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionPostDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someUserBaseDto;
+import static com.epam.lstrsum.utils.FunctionalUtil.getListWithSize;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
@@ -49,7 +49,7 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
     public void modelToAllFieldsDto() throws Exception {
         Question question = someQuestion();
         UserBaseDto author = someUserBaseDto();
-        List<UserBaseDto> allowedSubs = initList(InstantiateUtil::someUserBaseDto, 2);
+        List<UserBaseDto> allowedSubs = getListWithSize(InstantiateUtil::someUserBaseDto, 2);
         assertThat(questionDtoMapper.modelToAllFieldsDto(question, author, allowedSubs))
                 .satisfies(
                         questionAllFieldsDto -> {
@@ -64,7 +64,7 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
     public void modelToQuestionAppearanceDto() {
         Question question = someQuestion();
         UserBaseDto authorId = someUserBaseDto();
-        List<AnswerBaseDto> answers = initList(InstantiateUtil::someAnswerBaseDto, 2);
+        List<AnswerBaseDto> answers = getListWithSize(InstantiateUtil::someAnswerBaseDto, 2);
 
 
         assertThat(questionDtoMapper.modelToQuestionAppearanceDto(question, authorId, answers))
@@ -80,7 +80,7 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
     @Test
     public void questionPostDtoAndAuthorEmailToQuestion() {
         QuestionPostDto questionPostDto = someQuestionPostDto();
-        List<User> allowedSubs = initList(InstantiateUtil::someUser, 2);
+        List<User> allowedSubs = getListWithSize(InstantiateUtil::someUser, 2);
         User user = someUser();
 
         assertThat(questionDtoMapper.questionPostDtoAndAuthorEmailToQuestion(questionPostDto, user, allowedSubs))
@@ -101,8 +101,8 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
     @Test
     public void subscriptionsToListOfQuestionBaseDto() {
         final int size = 2;
-        List<Question> subscriptions = initList(InstantiateUtil::someQuestion, size);
-        List<UserBaseDto> author = initList(InstantiateUtil::someUserBaseDto, size);
+        List<Question> subscriptions = getListWithSize(InstantiateUtil::someQuestion, size);
+        List<UserBaseDto> author = getListWithSize(InstantiateUtil::someUserBaseDto, size);
 
         assertThat(questionDtoMapper.subscriptionsToListOfQuestionBaseDto(subscriptions, author))
                 .hasSize(size)

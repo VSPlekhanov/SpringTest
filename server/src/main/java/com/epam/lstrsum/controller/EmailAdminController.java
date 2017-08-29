@@ -1,7 +1,7 @@
 package com.epam.lstrsum.controller;
 
 import com.epam.lstrsum.email.service.BackupHelper;
-import com.epam.lstrsum.service.mail.MailReceiver;
+import com.epam.lstrsum.service.MailReceiver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
