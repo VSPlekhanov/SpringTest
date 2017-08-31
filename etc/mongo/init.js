@@ -140,7 +140,7 @@ allQuestions.forEach(function (question, i, arr) {
         newAnswer.createdAt = randomISODate()
 
         newAnswer.authorId = DBRef(USER_COLLECTION_NAME, allUsers[randomInt(0, allUsers.length)]._id)
-        newAnswer.upVote = randomInt(0, N)
+        newAnswer.votes = []
 
         db.getCollection(ANSWER_COLLECTION_NAME).insert(newAnswer)
     }
