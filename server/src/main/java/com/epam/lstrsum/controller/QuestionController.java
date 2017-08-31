@@ -5,7 +5,9 @@ import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
+import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.service.QuestionService;
+import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -31,6 +34,7 @@ import java.util.List;
 public class QuestionController {
 
     private final QuestionService questionService;
+    private final UserService userService;
     private final UserRuntimeRequestComponent userRuntimeRequestComponent;
     @Setter
     private int maxQuestionAmount;
@@ -40,6 +44,10 @@ public class QuestionController {
             throws IOException {
         log.debug("addQuestion.enter; dtoObject: {}", dtoObject);
         String email = userRuntimeRequestComponent.getEmail();
+        final long usersAdded = userService.addIfNotExistAllWithRole(
+                dtoObject.getAllowedSubs(), Collections.singletonList(UserRoleType.SIMPLE_USER)
+        );
+        log.debug("{} users added", usersAdded);
         log.debug("addQuestion; email: {}", email);
         String questionId = questionService.addNewQuestion(dtoObject, email).getQuestionId();
         log.debug("addQuestion; questionId: {}", questionId);
