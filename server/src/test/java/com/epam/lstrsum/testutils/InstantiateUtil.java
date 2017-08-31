@@ -58,9 +58,32 @@ public class InstantiateUtil {
                 .build();
     }
 
+    public static TelescopeEmployeeEntityDto someTelescopeEmployeeEntityDtoWithEmail(String email) {
+        return TelescopeEmployeeEntityDto.builder()
+                .data(someTelescopeDataDtoWithEmail(email))
+                .build();
+    }
+
     public static TelescopeEmployeeEntityDto someTelescopeEmployeeEntityDto() {
         return TelescopeEmployeeEntityDto.builder()
                 .data(someTelescopeDataDto())
+                .build();
+    }
+
+    private static TelescopeDataDto someTelescopeDataDtoWithEmail(String email) {
+        return TelescopeDataDto.builder()
+                ._e3sId(someString())
+                .email(singletonList(email))
+                .fullName(someStrings())
+                .firstName(someString())
+                .lastName(someString())
+                .displayName(someString())
+                .primarySkill(someString())
+                .primaryTitle(someString())
+                .manager(someString())
+                .profile(Collections.singletonMap(someString(), singletonList(someTelescopeProfileDto())))
+                .photo(someStrings())
+                .unitPath(someString())
                 .build();
     }
 
@@ -222,7 +245,7 @@ public class InstantiateUtil {
         return singletonList(someRole());
     }
 
-    public static UserRoleType someRole() {
+    private static UserRoleType someRole() {
         final UserRoleType[] values = UserRoleType.values();
         return values[SECURE_RANDOM.nextInt(values.length)];
     }
@@ -243,7 +266,7 @@ public class InstantiateUtil {
         return initList(InstantiateUtil::someString);
     }
 
-    public static String[] someArrayString() {
+    private static String[] someArrayString() {
         return initList(InstantiateUtil::someString).toArray(new String[0]);
     }
 

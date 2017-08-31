@@ -8,6 +8,7 @@ import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.service.AttachmentService;
 import com.epam.lstrsum.service.QuestionService;
+import com.epam.lstrsum.service.TelescopeService;
 import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,10 +17,14 @@ import org.springframework.integration.annotation.Poller;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.email.service.MailService.getAddressFrom;
@@ -34,12 +39,39 @@ public class MailReceiver {
     private final AttachmentService attachmentService;
     private final EmailParser emailParser;
     private final BackupHelper backupHelper;
+    private final TelescopeService telescopeService;
 
     @ServiceActivator(inputChannel = "receiveChannel", poller = @Poller(fixedRate = "200"))
     public void receiveMessageAndHandleIt(final MimeMessage message) throws Exception {
-        backupHelper.backupEmail(message);
+        Set<String> fromAddresses = getFromAddresses(message);
+        if (messageNeedToHandle(fromAddresses)) {
+            backupHelper.backupEmail(message);
 
-        handleMessageWithoutBackup(message);
+            handleMessageWithoutBackup(message);
+        } else {
+            log.warn("Received email({}) from not service account", fromAddresses);
+        }
+    }
+
+    private boolean messageNeedToHandle(Set<String> fromAddresses) {
+        try {
+            return !telescopeService.getUsersInfoByEmails(fromAddresses).isEmpty();
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
+
+    private Set<String> getFromAddresses(MimeMessage message) {
+        try {
+            return Arrays.stream(message.getFrom())
+                    .filter(a -> a instanceof InternetAddress)
+                    .map(a -> (InternetAddress) a)
+                    .map(InternetAddress::getAddress)
+                    .collect(Collectors.toSet());
+        } catch (MessagingException e) {
+            return Collections.emptySet();
+        }
+
     }
 
     public void handleMessageWithoutBackup(final MimeMessage message) throws Exception {

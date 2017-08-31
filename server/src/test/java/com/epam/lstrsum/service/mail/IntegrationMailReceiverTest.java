@@ -1,5 +1,6 @@
 package com.epam.lstrsum.service.mail;
 
+import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
 import com.epam.lstrsum.email.service.MailService;
 import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.Question;
@@ -7,31 +8,34 @@ import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.AttachmentRepository;
 import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.persistence.UserRepository;
+import com.epam.lstrsum.service.TelescopeService;
 import com.epam.lstrsum.service.UserService;
+import com.epam.lstrsum.testutils.InstantiateUtil;
 import com.epam.lstrsum.testutils.model.CompositeMimeMessage;
 import lombok.SneakyThrows;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.mail.Address;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.testutils.MimeMessageCreatorUtil.createCompositeMimeMessage;
 import static com.epam.lstrsum.testutils.MimeMessageCreatorUtil.createFromFile;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
@@ -39,8 +43,6 @@ import static org.mockito.Mockito.doThrow;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringRunner.class)
 public class IntegrationMailReceiverTest {
-    private static final String FAKE_EMAIL = "fake@email.com";
-
     @Autowired
     private MailReceiver mailReceiver;
 
@@ -48,7 +50,6 @@ public class IntegrationMailReceiverTest {
     private UserRepository userRepository;
 
     @Autowired
-    @Spy
     private UserService userService;
 
     @Autowired
@@ -63,23 +64,28 @@ public class IntegrationMailReceiverTest {
     @MockBean
     private MailService mailService;
 
-    @Before
-    public void setUp() {
-        User newUser = User.builder().email(FAKE_EMAIL).build();
-        userRepository.save(newUser);
-        Question newQuestion = Question.builder()
-                .authorId(newUser)
-                .inlineSources(Collections.singletonList(new byte[]{0}))
-                .text("src=\"mail.message.index:0\"")
-                .build();
-        questionRepository.save(newQuestion);
-    }
+    @MockBean
+    private TelescopeService telescopeService;
 
     @After
     public void tearDown() {
-        userRepository.deleteAll();
         questionRepository.deleteAll();
         attachmentRepository.deleteAll();
+        userRepository.deleteAll();
+    }
+
+    private void prepareTelescopeServiceForCorrectAnswer(Address[] allRecipients) {
+        List<TelescopeEmployeeEntityDto> toBeReturned = Arrays.stream(allRecipients)
+                .filter(a -> a instanceof InternetAddress)
+                .map(a -> (InternetAddress) a)
+                .map(InternetAddress::getAddress)
+                .map(String::toLowerCase)
+                .map(InstantiateUtil::someTelescopeEmployeeEntityDtoWithEmail)
+                .collect(Collectors.toList());
+
+        doReturn(toBeReturned)
+                .when(telescopeService)
+                .getUsersInfoByEmails(anySetOf(String.class));
     }
 
     @Test
@@ -95,7 +101,8 @@ public class IntegrationMailReceiverTest {
         }
 
         addAllUsers(simpleMimeMessage.getTo());
-        addAllUsers(Collections.singletonList(simpleMimeMessage.getMimeMessage().getFrom()[0].toString()));
+        addAllUsers(singletonList(simpleMimeMessage.getMimeMessage().getFrom()[0].toString()));
+        prepareTelescopeServiceForCorrectAnswer(simpleMimeMessage.getMimeMessage().getAllRecipients());
 
         mailReceiver.receiveMessageAndHandleIt(simpleMimeMessage.getMimeMessage());
 
@@ -103,8 +110,12 @@ public class IntegrationMailReceiverTest {
         allowEmails.addAll(simpleMimeMessage.getTo());
         allowEmails.add(simpleMimeMessage.getMimeMessage().getFrom()[0].toString());
 
+        Set<String> allowEmailsInLowerCase = allowEmails.stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
+
         assertThat(userRepository.findAll())
-                .allMatch(user -> allowEmails.contains(user.getEmail()));
+                .allMatch(user -> allowEmailsInLowerCase.contains(user.getEmail()));
         assertThat(questionRepository.findAll()).hasSize(1);
     }
 
@@ -112,7 +123,9 @@ public class IntegrationMailReceiverTest {
     @SneakyThrows
     public void receivedMessageWithOneInlineImageAndOneAttach() {
         MimeMessage mimeMessage = createFromFile("src/test/resources/mail/rawMessageInput");
-        addAllUsers(Collections.singletonList(mimeMessage.getFrom()[0].toString()));
+        addAllUsers(singletonList(mimeMessage.getFrom()[0].toString()));
+
+        prepareTelescopeServiceForCorrectAnswer(mimeMessage.getAllRecipients());
 
         mailReceiver.receiveMessageAndHandleIt(mimeMessage);
 
@@ -148,12 +161,14 @@ public class IntegrationMailReceiverTest {
     }
 
     private void addAllUsers(List<String> userEmails) {
-        doReturn(1L).when(userService).addIfNotExistAllWithRole(any(), any());
+        List<TelescopeEmployeeEntityDto> dtos = userEmails.stream()
+                .map(String::toLowerCase)
+                .map(InstantiateUtil::someTelescopeEmployeeEntityDtoWithEmail)
+                .collect(Collectors.toList());
 
-        for (String userEmail : userEmails) {
-            userService.addIfNotExistAllWithRole(
-                    Collections.singletonList(userEmail), Collections.singletonList(UserRoleType.ADMIN)
-            );
-        }
+        doReturn(dtos).when(telescopeService)
+                .getUsersInfoByEmails(anySetOf(String.class));
+
+        userService.addIfNotExistAllWithRole(userEmails, singletonList(UserRoleType.ADMIN));
     }
 }

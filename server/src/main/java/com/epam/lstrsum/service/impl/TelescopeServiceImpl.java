@@ -80,7 +80,10 @@ public class TelescopeServiceImpl implements TelescopeService {
     }
 
     private String prepareEmailsForSearch(Set<String> emails) {
-        return emails.stream().map(e -> "\"" + e + "\"").collect(Collectors.joining(","));
+        return emails.stream()
+                .map(e -> "\"" + e + "\"")
+                .map(String::toLowerCase)
+                .collect(Collectors.joining(","));
     }
 
     private HttpUtilEntity.HttpUtilEntityBuilder getEntityTemplate() {
