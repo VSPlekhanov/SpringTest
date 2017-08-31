@@ -1,17 +1,12 @@
 package com.epam.lstrsum.controller;
 
-import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.aggregators.AnswerAggregator;
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
-import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.dto.question.QuestionBaseDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
-import com.epam.lstrsum.dto.vote.VoteAllFieldsDto;
 import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.exception.AnswerValidationException;
-import com.epam.lstrsum.exception.NoSuchAnswerException;
-import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
@@ -19,56 +14,82 @@ import com.epam.lstrsum.service.AnswerService;
 import com.epam.lstrsum.service.VoteService;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.mockito.Mock;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Collections;
-import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
-public class AnswerControllerTest extends SetUpDataBaseCollections {
-    @MockBean
-    private AnswerService answerService;
+public class AnswerControllerTest {
+    @Mock
+    private AnswerService answerService = mock(AnswerService.class);
 
-    @MockBean
-    private AnswerAggregator answerAggregator;
+    @Mock
+    private AnswerAggregator answerAggregator = mock(AnswerAggregator.class);
 
-    @MockBean
-    private VoteService voteService;
+    @Mock
+    private VoteService voteService = mock(VoteService.class);
 
-    @MockBean
-    private UserRuntimeRequestComponent userRuntimeRequestComponent;
+    @Mock
+    private UserRuntimeRequestComponent userRuntimeRequestComponent = mock(UserRuntimeRequestComponent.class);
 
-    @Autowired
-    private TestRestTemplate testRestTemplate;
-
-    @Autowired
-    private AnswerController answerController;
+    private AnswerController answerController = new AnswerController(
+            answerService, userRuntimeRequestComponent, voteService
+    );
 
     private String questionId = "1u_3r";
     private AnswerPostDto answerPostDto;
     private AnswerAllFieldsDto answerAllFieldsDto;
-    private VoteAllFieldsDto voteAllFieldsDto;
     private Answer answer;
     private ResponseEntity<AnswerAllFieldsDto> responseEntity;
     private String authorEmail = "John_Doe@epam.com";
+
+    private static <T> void hasStatusOk(ResponseEntity<T> responseEntity) {
+        assertEntityWithStatus(responseEntity, HttpStatus.OK);
+    }
+
+    private static <T> void hasStatusNotFound(ResponseEntity<T> responseEntity) {
+        assertEntityWithStatus(responseEntity, HttpStatus.NOT_FOUND);
+    }
+
+    @Test(expected = AnswerValidationException.class)
+    //TODO Test purposes only
+    public void addNewAnswerNoQuestionTest() throws IOException {
+        answerPostDto = new AnswerPostDto(null, "text");
+        when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");
+        doThrow(AnswerValidationException.class).when(answerService).addNewAnswer(eq(answerPostDto), eq(authorEmail));
+        responseEntity = answerController.addAnswer(answerPostDto);
+    }
+
+    @Test(expected = AnswerValidationException.class)
+    //TODO Test purposes only
+    public void addNewAnswerWithNoTextTest() throws IOException {
+        answerPostDto = new AnswerPostDto(questionId, null);
+        when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");
+        doThrow(AnswerValidationException.class).when(answerService).addNewAnswer(eq(answerPostDto), eq(authorEmail));
+        responseEntity = answerController.addAnswer(answerPostDto);
+    }
+
+    private static <T> void hasStatusNoContent(ResponseEntity<T> responseEntity) {
+        assertEntityWithStatus(responseEntity, HttpStatus.NO_CONTENT);
+    }
+
+    private static <T> void assertEntityWithStatus(ResponseEntity<T> responseEntity, HttpStatus httpStatus) {
+        assertThat(responseEntity.getStatusCode())
+                .isEqualTo(httpStatus);
+    }
 
     @Before
     public void setUp() {
@@ -121,21 +142,7 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
                         Collections.singletonList(UserRoleType.EXTENDED_USER),
                         Instant.now(),
                         true),
-                0);
-        voteAllFieldsDto = new VoteAllFieldsDto("voteId1",
-                Instant.now(),
-                false,
-                new AnswerBaseDto("some text",
-                        Instant.now(),
-                        new UserBaseDto("userId1",
-                                "Bob",
-                                "Hoplins",
-                                "Bob_Hoplins@epam.com"),
-                        0),
-                new UserBaseDto("userId2",
-                        "Tyler",
-                        "Greeds",
-                        "Tyler_Greeds@epam.com"));
+                Collections.emptyList());
     }
 
     @Test
@@ -146,130 +153,58 @@ public class AnswerControllerTest extends SetUpDataBaseCollections {
         when(answerAggregator.modelToAllFieldsDto(answer)).thenReturn(answerAllFieldsDto);
         responseEntity = answerController.addAnswer(answerPostDto);
         verify(answerService).addNewAnswer(answerPostDto, authorEmail);
-        assertThat(responseEntity, notNullValue());
-        assertThat(responseEntity.getBody(), notNullValue());
-        assertThat(responseEntity.getBody().getAuthorId(), notNullValue());
-        assertThat(responseEntity.getBody().getQuestionId(), notNullValue());
-        assertThat(responseEntity.getBody().getCreatedAt(), notNullValue());
-        assertThat(responseEntity.getBody().getText(), is("text"));
-        assertThat(responseEntity.getBody().getUpVote(), is(0));
-    }
 
-    @Test(expected = AnswerValidationException.class)
-    //TODO Test purposes only
-    public void addNewAnswerNoQuestionTest() throws IOException {
-        answerPostDto = new AnswerPostDto(null, "text");
-        when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");
-        doThrow(AnswerValidationException.class).when(answerService).addNewAnswer(eq(answerPostDto), eq(authorEmail));
-        responseEntity = answerController.addAnswer(answerPostDto);
-    }
-
-    @Test(expected = AnswerValidationException.class)
-    //TODO Test purposes only
-    public void addNewAnswerWithNoTextTest() throws IOException {
-        answerPostDto = new AnswerPostDto(questionId, null);
-        when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");
-        doThrow(AnswerValidationException.class).when(answerService).addNewAnswer(eq(answerPostDto), eq(authorEmail));
-        responseEntity = answerController.addAnswer(answerPostDto);
+        assertThat(responseEntity.getBody())
+                .satisfies(
+                        entity -> {
+                            assertThat(entity.getAuthorId()).isNotNull();
+                            assertThat(entity.getQuestionId()).isNotNull();
+                            assertThat(entity.getCreatedAt()).isNotNull();
+                            assertThat(entity.getText()).isEqualTo("text");
+                            assertThat(entity.getUpVote()).isEqualTo(0);
+                        }
+                );
+        assertThat(responseEntity)
+                .satisfies(AnswerControllerTest::hasStatusOk);
     }
 
     @Test
-    public void addVote() {
-        final String voterEmail = "Tyler_Greeds@epam.com";
-        final String someAnswerId = "answerId1";
+    public void voteForAnswerExists() {
+        doReturn(true).when(voteService)
+                .voteForAnswerByUser(anyString(), anyString());
 
-        when(userRuntimeRequestComponent.getEmail()).thenReturn(voterEmail);
-        when(voteService.addVoteToAnswer(voterEmail, someAnswerId)).thenReturn(voteAllFieldsDto);
-
-        ResponseEntity<VoteAllFieldsDto> responseEntity = answerController.addVote(someAnswerId);
-        VoteAllFieldsDto responseDto = responseEntity.getBody();
-
-        assertNotNull(responseDto);
-        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-        assertThat(responseDto.getVoteId(), is(voteAllFieldsDto.getVoteId()));
-        assertThat(responseDto.isRevoked(), is(voteAllFieldsDto.isRevoked()));
-        assertThat(responseDto.getAnswerBaseDto(), is(voteAllFieldsDto.getAnswerBaseDto()));
-        assertThat(responseDto.getUserBaseDto(), is(voteAllFieldsDto.getUserBaseDto()));
-
-        verify(userRuntimeRequestComponent, times(1)).getEmail();
-        verify(voteService, times(1)).addVoteToAnswer(voterEmail, someAnswerId);
-    }
-
-    @Test(expected = ConstraintViolationException.class)
-    public void addVoteWithEmptyAnswerId() {
-        final String someEmail = "John_Doe@epam.com";
-        final String emptyAnswerId = "        ";
-
-        when(userRuntimeRequestComponent.getEmail()).thenReturn(someEmail);
-        doThrow(ConstraintViolationException.class).when(voteService).addVoteToAnswer(eq(someEmail), eq(emptyAnswerId));
-        answerController.addVote(emptyAnswerId);
-
-        verify(userRuntimeRequestComponent, times(1)).getEmail();
-        verify(voteService, times(1)).addVoteToAnswer(someEmail, emptyAnswerId);
-    }
-
-    @Test(expected = NoSuchAnswerException.class)
-    public void deleteVoteWithNonExistingAnswerId() {
-        final String incorrectAnswerId = "incorrectAnswerId";
-        final String someEmail = "John_Doe@epam.com";
-
-        when(userRuntimeRequestComponent.getEmail()).thenReturn(someEmail);
-        doThrow(NoSuchAnswerException.class).when(voteService).addVoteToAnswer(eq(someEmail), eq(incorrectAnswerId));
-
-        answerController.addVote(incorrectAnswerId);
-
-        verify(userRuntimeRequestComponent, times(1)).getEmail();
-        verify(voteService, times(1)).addVoteToAnswer(someEmail, incorrectAnswerId);
-    }
-
-    @Test(expected = NoSuchUserException.class)
-    public void deleteVoteWithNonExistingEmail() {
-        final String someAnswerId = "answerId1";
-        final String nonExistingEmail = "test@test.com";
-
-        when(userRuntimeRequestComponent.getEmail()).thenReturn(nonExistingEmail);
-        doThrow(NoSuchUserException.class).when(voteService).addVoteToAnswer(eq(nonExistingEmail), eq(someAnswerId));
-
-        answerController.addVote(someAnswerId);
-
-        verify(userRuntimeRequestComponent, times(1)).getEmail();
-        verify(voteService, times(1)).addVoteToAnswer(nonExistingEmail, someAnswerId);
+        String someAnswerId = "someAnswerId";
+        assertThat(answerController.voteFor(someAnswerId))
+                .satisfies(AnswerControllerTest::hasStatusNoContent);
     }
 
     @Test
-    public void deleteVote() {
-        final String voterEmail = "Tyler_Greeds@epam.com";
-        final String someAnswerId = "answerId1";
+    public void voteForAnswerDoNotExists() {
+        doReturn(false).when(voteService)
+                .voteForAnswerByUser(anyString(), anyString());
 
-        when(userRuntimeRequestComponent.getEmail()).thenReturn(voterEmail);
-        doNothing().when(voteService).deleteVoteToAnswer(voterEmail, someAnswerId);
-
-        ResponseEntity<Boolean> responseEntity = answerController.revokeVote(someAnswerId);
-        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-        assertThat(responseEntity.getBody(), is(true));
-
-        verify(userRuntimeRequestComponent, times(1)).getEmail();
-        verify(voteService, times(1)).deleteVoteToAnswer(voterEmail, someAnswerId);
+        String someAnswerId = "someAnswerId";
+        assertThat(answerController.voteFor(someAnswerId))
+                .satisfies(AnswerControllerTest::hasStatusNotFound);
     }
 
     @Test
-    public void getAllAnswerVotes() {
-        final String someAnswerId = "answerId1";
+    public void unvoteForAnswerExists() {
+        doReturn(true).when(voteService)
+                .unvoteForAnswerByUser(anyString(), anyString());
 
-        when(voteService.findAllVotesForAnswer(someAnswerId)).thenReturn(Collections.singletonList(voteAllFieldsDto));
-
-        ResponseEntity<List<VoteAllFieldsDto>> responseEntity = answerController.getAllAnswerVotes(someAnswerId);
-        List<VoteAllFieldsDto> answerVotesList = responseEntity.getBody();
-        VoteAllFieldsDto voteDto = answerVotesList.get(0);
-
-        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-        assertThat(answerVotesList.size(), is(1));
-        assertThat(voteDto.getVoteId(), is(voteAllFieldsDto.getVoteId()));
-        assertThat(voteDto.isRevoked(), is(voteAllFieldsDto.isRevoked()));
-        assertThat(voteDto.getAnswerBaseDto(), is(voteAllFieldsDto.getAnswerBaseDto()));
-        assertThat(voteDto.getUserBaseDto(), is(voteAllFieldsDto.getUserBaseDto()));
-
-        verify(voteService, times(1)).findAllVotesForAnswer(someAnswerId);
+        String someAnswerId = "someAnswerId";
+        assertThat(answerController.unvoteFor(someAnswerId))
+                .satisfies(AnswerControllerTest::hasStatusNoContent);
     }
 
+    @Test
+    public void unvoteForAnswerDoNotExists() {
+        doReturn(false).when(voteService)
+                .unvoteForAnswerByUser(anyString(), anyString());
+
+        String someAnswerId = "someAnswerId";
+        assertThat(answerController.unvoteFor(someAnswerId))
+                .satisfies(AnswerControllerTest::hasStatusNotFound);
+    }
 }

@@ -66,6 +66,7 @@ public class UserDtoMapperTest extends SetUpDataBaseCollections {
         final TelescopeDataDto userDto = someTelescopeDataDto();
         final String email = someString();
         final List<UserRoleType> roles = someRoles();
+        final boolean hasExtendedRole = roles.contains(UserRoleType.EXTENDED_USER);
 
         assertThat(userMapper.userTelescopeInfoDtoToUser(userDto, email, roles))
                 .satisfies(e -> {
@@ -74,7 +75,7 @@ public class UserDtoMapperTest extends SetUpDataBaseCollections {
                     assertThat(e.getLastName()).isEqualTo(userDto.getLastName());
                     assertThat(e.getRoles()).isEqualTo(roles);
                     assertThat(e.getCreatedAt()).isBeforeOrEqualTo(Instant.now());
-                    assertThat(e.getIsActive()).isFalse();
+                    assertThat(e.getIsActive()).isEqualTo(hasExtendedRole);
                 });
     }
 }

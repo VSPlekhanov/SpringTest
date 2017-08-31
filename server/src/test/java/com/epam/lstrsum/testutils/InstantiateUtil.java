@@ -130,8 +130,12 @@ public class InstantiateUtil {
                 .questionId(someQuestion())
                 .createdAt(Instant.now())
                 .text(someString())
-                .upVote(SECURE_RANDOM.nextInt())
+                .votes(someVotes())
                 .build();
+    }
+
+    public static List<Vote> someVotes() {
+        return initList(InstantiateUtil::someVote);
     }
 
     public static AnswerPostDto someAnswerPostDto() {
@@ -204,11 +208,7 @@ public class InstantiateUtil {
 
     public static Vote someVote() {
         return Vote.builder()
-                .answerId(someAnswer())
-                .userId(someUser())
-                .voteId(someString())
-                .isRevoked(true)
-                .createdAt(Instant.now())
+                .authorEmail(someString())
                 .build();
     }
 
