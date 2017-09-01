@@ -140,9 +140,9 @@ public class QuestionControllerTest {
                 Instant.now(), Instant.now(),
                 new UserBaseDto("userId", "userName", "userSurname", "user@epam.com"),
                 2, "question body",
-                Arrays.asList(new AnswerBaseDto("answer1Text", Instant.now(),
+                Arrays.asList(new AnswerBaseDto("answerId","answer1Text", Instant.now(),
                                 new UserBaseDto("user1Id", "user1Name", "user1Surname", "user1@epam.com"), 6),
-                        new AnswerBaseDto("answer2Text", Instant.now(),
+                        new AnswerBaseDto("answer2Id","answer2Text", Instant.now(),
                                 new UserBaseDto("user2Id", "user2Name", "user2Surname", "user2@epam.com"), 3)));
 
         when(questionService.contains(questionId)).thenReturn(true);

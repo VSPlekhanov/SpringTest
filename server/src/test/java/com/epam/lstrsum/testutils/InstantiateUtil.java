@@ -147,6 +147,7 @@ public class InstantiateUtil {
 
     public static AnswerBaseDto someAnswerBaseDto() {
         return AnswerBaseDto.builder()
+                .answerId(someString())
                 .authorId(someUserBaseDto())
                 .createdAt(Instant.now())
                 .text(someString())

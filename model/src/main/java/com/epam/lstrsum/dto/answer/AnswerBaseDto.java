@@ -15,6 +15,7 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 public class AnswerBaseDto {
+    private String answerId;
     private String text;
     private Instant createdAt;
     private UserBaseDto authorId;
@@ -27,6 +28,7 @@ public class AnswerBaseDto {
 
         AnswerBaseDto that = (AnswerBaseDto) o;
 
+        if (answerId != null ? !answerId.equals(that.answerId) : that.answerId != null) return false;
         if (text != null ? !text.equals(that.text) : that.text != null) return false;
         if (createdAt != null ? !createdAt.equals(that.createdAt) : that.createdAt != null) return false;
         if (authorId != null ? !authorId.equals(that.authorId) : that.authorId != null) return false;
@@ -36,6 +38,7 @@ public class AnswerBaseDto {
     @Override
     public int hashCode() {
         int result = text != null ? text.hashCode() : 0;
+        result = 31 * result + (answerId != null ? answerId.hashCode() : 0);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
         result = 31 * result + (authorId != null ? authorId.hashCode() : 0);
         result = 31 * result + (upVote != null ? upVote.hashCode() : 0);
