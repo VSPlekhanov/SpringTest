@@ -25,10 +25,9 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import static com.epam.lstrsum.utils.FunctionalUtil.getList;
 import static java.util.Collections.singletonList;
 
 public class InstantiateUtil {
@@ -40,7 +39,7 @@ public class InstantiateUtil {
 
     public static Subscription someSubscription() {
         return Subscription.builder()
-                .questionIds(initList(InstantiateUtil::someQuestion))
+                .questionIds(getList(InstantiateUtil::someQuestion))
                 .userId(someUser())
                 .subscriptionId(someString())
                 .build();
@@ -135,7 +134,7 @@ public class InstantiateUtil {
     }
 
     public static List<Vote> someVotes() {
-        return initList(InstantiateUtil::someVote);
+        return getList(InstantiateUtil::someVote);
     }
 
     public static AnswerPostDto someAnswerPostDto() {
@@ -172,13 +171,13 @@ public class InstantiateUtil {
         return new QuestionAllFieldsDto(
                 someString(), someString(), someArrayString(),
                 Instant.now(), Instant.now(), someUserBaseDto(), SECURE_RANDOM.nextInt(),
-                initList(InstantiateUtil::someUserBaseDto), someString()
+                getList(InstantiateUtil::someUserBaseDto), someString()
         );
     }
 
     public static QuestionPostDto someQuestionPostDto() {
         return QuestionPostDto.builder()
-                .allowedSubs(initList(InstantiateUtil::someString))
+                .allowedSubs(getList(InstantiateUtil::someString))
                 .deadLine(someLong())
                 .tags(someArrayString())
                 .text(someString())
@@ -213,12 +212,6 @@ public class InstantiateUtil {
                 .build();
     }
 
-    public static <T> List<T> initList(Supplier<T> supplier, int limit) {
-        return Stream.generate(supplier)
-                .limit(limit)
-                .collect(Collectors.toList());
-    }
-
     public static List<TelescopeEmployeeEntityDto> someTelescopeEmployeeEntityDtosWithEmails(String... emails) {
         return Arrays.stream(emails)
                 .map(email -> TelescopeDataDto.builder()
@@ -239,7 +232,7 @@ public class InstantiateUtil {
     }
 
     public static List<TelescopeEmployeeEntityDto> someTelescopeEmployeeEntityDtos() {
-        return initList(InstantiateUtil::someTelescopeEmployeeEntityDto);
+        return getList(InstantiateUtil::someTelescopeEmployeeEntityDto);
     }
 
     public static List<UserRoleType> someRoles() {
@@ -255,20 +248,16 @@ public class InstantiateUtil {
         return new ByteArrayEntity(someString().getBytes());
     }
 
-    public static <T> List<T> initList(Supplier<T> supplier) {
-        return initList(supplier, (SECURE_RANDOM.nextInt(10) + 1));
-    }
-
     public static String someString() {
         return new BigInteger(130, SECURE_RANDOM).toString(32);
     }
 
     public static List<String> someStrings() {
-        return initList(InstantiateUtil::someString);
+        return getList(InstantiateUtil::someString);
     }
 
     private static String[] someArrayString() {
-        return initList(InstantiateUtil::someString).toArray(new String[0]);
+        return getList(InstantiateUtil::someString).toArray(new String[0]);
     }
 
     public static long someLong() {

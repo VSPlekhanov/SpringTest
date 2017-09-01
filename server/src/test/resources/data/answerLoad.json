@@ -13,7 +13,6 @@
     "createdAt": {
       "$date": "2016-04-19T12:15:23Z"
     },
-    "upVote": 6,
     "votes": [
       {
         "authorEmail": "John_Doe@epam.com"
@@ -37,7 +36,6 @@
     "createdAt": {
       "$date": "2016-04-19T14:23:02Z"
     },
-    "upVote": 1,
     "votes": [
       {
         "authorEmail": "Tyler_Greeds@epam.com"
@@ -61,7 +59,6 @@
     "createdAt": {
       "$date": "2016-04-20T18:15:46Z"
     },
-    "upVote": 0,
     "votes": [
       {
         "authorEmail": "John_Doe@epam.com"
@@ -91,7 +88,6 @@
     "createdAt": {
       "$date": "2017-08-14T12:11:05Z"
     },
-    "upVote": 3,
     "votes": []
   },
   {
@@ -108,7 +104,6 @@
     "createdAt": {
       "$date": "2017-08-14T17:07:34Z"
     },
-    "upVote": 1,
     "votes": []
   },
   {
@@ -125,7 +120,6 @@
     "createdAt": {
       "$date": "2017-09-04T09:02:13Z"
     },
-    "upVote": 4,
     "votes": [
       {
         "authorEmail": "Ernest_Hemingway@epam.com"
@@ -149,7 +143,6 @@
     "createdAt": {
       "$date": "2017-09-11T15:23:18Z"
     },
-    "upVote": 1,
     "votes": [
       {
         "authorEmail": "Tyler_Greeds@epam.com"
@@ -173,7 +166,6 @@
     "createdAt": {
       "$date": "2016-04-12T18:32:26Z"
     },
-    "upVote": 4,
     "votes": [
       {
         "authorEmail": "Tyler_Greeds@epam.com"
@@ -197,7 +189,6 @@
     "createdAt": {
       "$date": "2016-04-12T20:00:02Z"
     },
-    "upVote": 0,
     "votes": [
       {
         "authorEmail": "Tyler_Greeds@epam.com"
@@ -221,7 +212,6 @@
     "createdAt": {
       "$date": "2017-06-25T10:59:06Z"
     },
-    "upVote": 2,
     "votes": [
       {
         "authorEmail": "Tyler_Greeds@epam.com"
@@ -245,7 +235,6 @@
     "createdAt": {
       "$date": "2017-06-30T18:23:15Z"
     },
-    "upVote": 1,
     "votes": [
       {
         "authorEmail": "Tyler_Greeds@epam.com"
@@ -269,7 +258,6 @@
     "createdAt": {
       "$date": "2017-07-24T12:12:12Z"
     },
-    "upVote": -3,
     "votes": [
       {
         "authorEmail": "Tyler_Greeds@epam.com"

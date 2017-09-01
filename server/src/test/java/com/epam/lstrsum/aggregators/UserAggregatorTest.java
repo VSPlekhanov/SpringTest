@@ -12,10 +12,10 @@ import org.mockito.Mock;
 import java.util.Collections;
 import java.util.Optional;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.initList;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeDataDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
+import static com.epam.lstrsum.utils.FunctionalUtil.getListWithSize;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -55,7 +55,7 @@ public class UserAggregatorTest {
     @Test
     public void allowedSubsToListOfUserBaseDtos() throws Exception {
         final int size = 2;
-        aggregator.allowedSubsToListOfUserBaseDtos(initList(InstantiateUtil::someUser, size));
+        aggregator.allowedSubsToListOfUserBaseDtos(getListWithSize(InstantiateUtil::someUser, size));
 
         verify(userMapper, times(1)).usersToListOfUserBaseDtos(any());
     }

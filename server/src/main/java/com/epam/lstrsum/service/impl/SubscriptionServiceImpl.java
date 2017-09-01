@@ -70,6 +70,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public Set<String> getEmailsToNotificateAboutNewQuestion(Question question) {
         return Stream.concat(question.getAllowedSubs().stream(), userService.findAllActive().stream())
                 .map(User::getEmail)
+                .filter(e -> !e.equalsIgnoreCase(fromAddress))
                 .collect(Collectors.toSet());
     }
 
@@ -85,7 +86,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public List<String> getEmailsOfSubscribersOfQuestion(String questionId) {
         return findAllSubscriptionsEntitiesToQuestionWithThisId(questionId).stream()
-                .map(s -> s.getUserId().getEmail()).collect(Collectors.toList());
+                .map(s -> s.getUserId().getEmail())
+                .filter(e -> !e.equalsIgnoreCase(fromAddress))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -95,6 +98,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         List<String> emails =
                 Stream.concat(question.getAllowedSubs().stream(), userService.findAllActive().stream())
                         .map(User::getEmail)
+                        .filter(e -> !e.equalsIgnoreCase(fromAddress))
                         .collect(Collectors.toList());
         emails.add(question.getAuthorId().getEmail());
 

@@ -1,4 +1,4 @@
-package com.epam.lstrsum.service.mail;
+package com.epam.lstrsum.service.impl;
 
 import com.epam.lstrsum.dto.attachment.AttachmentAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
@@ -7,6 +7,7 @@ import com.epam.lstrsum.email.service.EmailParser;
 import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.service.AttachmentService;
+import com.epam.lstrsum.service.MailReceiver;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.TelescopeService;
 import com.epam.lstrsum.service.UserService;
@@ -33,7 +34,7 @@ import static com.epam.lstrsum.email.service.MailService.getAddressFrom;
 @Profile("email")
 @RequiredArgsConstructor
 @Slf4j
-public class MailReceiver {
+public class MailReceiverImpl implements MailReceiver {
     private final UserService userService;
     private final QuestionService questionService;
     private final AttachmentService attachmentService;
@@ -41,6 +42,7 @@ public class MailReceiver {
     private final BackupHelper backupHelper;
     private final TelescopeService telescopeService;
 
+    @Override
     @ServiceActivator(inputChannel = "receiveChannel", poller = @Poller(fixedRate = "200"))
     public void receiveMessageAndHandleIt(final MimeMessage message) throws Exception {
         Set<String> fromAddresses = getFromAddresses(message);
@@ -51,6 +53,20 @@ public class MailReceiver {
         } else {
             log.warn("Received email({}) from not service account", fromAddresses);
         }
+    }
+
+    @Override
+    public void handleMessageWithoutBackup(final MimeMessage message) throws Exception {
+        log.debug("receiveMessageAndHandleIt; Message received: {}", message);
+
+        String contentType = message.getContentType();
+        String content = "";
+
+        String address = getAddressFrom(message.getFrom());
+
+        log.debug("From: {}\nSubject: {}\nContentType : {}\nContent: {}", address, message.getSubject(), contentType, content);
+
+        handleMessage(message);
     }
 
     private boolean messageNeedToHandle(Set<String> fromAddresses) {
@@ -72,19 +88,6 @@ public class MailReceiver {
             return Collections.emptySet();
         }
 
-    }
-
-    public void handleMessageWithoutBackup(final MimeMessage message) throws Exception {
-        log.debug("receiveMessageAndHandleIt; Message received: {}", message);
-
-        String contentType = message.getContentType();
-        String content = "";
-
-        String address = getAddressFrom(message.getFrom());
-
-        log.debug("From: {}\nSubject: {}\nContentType : {}\nContent: {}", address, message.getSubject(), contentType, content);
-
-        handleMessage(message);
     }
 
     private void handleMessage(final MimeMessage message) {

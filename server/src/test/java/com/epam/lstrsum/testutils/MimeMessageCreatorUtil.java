@@ -120,7 +120,7 @@ public class MimeMessageCreatorUtil {
 
     private static void addTo(HtmlEmail email) {
         List<String> collect = Stream.generate(MimeMessageCreatorUtil::generateEmail)
-                .limit(RANDOM.nextInt(MAXIMUM_CC_SIZE))
+                .limit(1 + RANDOM.nextInt(MAXIMUM_CC_SIZE))
                 .collect(Collectors.toList());
 
         collect.forEach(to -> addAddress(email, to));
@@ -128,7 +128,7 @@ public class MimeMessageCreatorUtil {
 
     private static void addTo(HtmlEmail email, CompositeMimeMessage.CompositeMimeMessageBuilder builder) {
         List<String> collect = Stream.generate(MimeMessageCreatorUtil::generateEmail)
-                .limit(RANDOM.nextInt(MAXIMUM_CC_SIZE))
+                .limit(1 + RANDOM.nextInt(MAXIMUM_CC_SIZE))
                 .collect(Collectors.toList());
         builder.to(collect);
 
@@ -145,7 +145,7 @@ public class MimeMessageCreatorUtil {
 
     private static void addCc(HtmlEmail email) {
         List<String> collect = Stream.generate(MimeMessageCreatorUtil::generateEmail)
-                .limit(RANDOM.nextInt(MAXIMUM_CC_SIZE))
+                .limit(1 + RANDOM.nextInt(MAXIMUM_CC_SIZE))
                 .collect(Collectors.toList());
 
         collect.forEach(cc -> addCcThrowable(email, cc));
@@ -153,7 +153,7 @@ public class MimeMessageCreatorUtil {
 
     private static void addCc(HtmlEmail email, CompositeMimeMessage.CompositeMimeMessageBuilder builder) {
         List<String> collect = Stream.generate(MimeMessageCreatorUtil::generateEmail)
-                .limit(RANDOM.nextInt(MAXIMUM_CC_SIZE))
+                .limit(1 + RANDOM.nextInt(MAXIMUM_CC_SIZE))
                 .collect(Collectors.toList());
         builder.cc(collect);
 

@@ -8,6 +8,7 @@ import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.AttachmentRepository;
 import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.persistence.UserRepository;
+import com.epam.lstrsum.service.MailReceiver;
 import com.epam.lstrsum.service.TelescopeService;
 import com.epam.lstrsum.service.UserService;
 import com.epam.lstrsum.testutils.InstantiateUtil;

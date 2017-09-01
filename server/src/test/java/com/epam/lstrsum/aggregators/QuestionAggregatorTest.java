@@ -8,10 +8,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.initList;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestion;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionPostDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
+import static com.epam.lstrsum.utils.FunctionalUtil.getListWithSize;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
@@ -82,7 +82,7 @@ public class QuestionAggregatorTest {
     @Test
     public void subscriptionsToListOfQuestionBaseDto() throws Exception {
         final int size = 2;
-        aggregator.subscriptionsToListOfQuestionBaseDto(initList(InstantiateUtil::someQuestion, size));
+        aggregator.subscriptionsToListOfQuestionBaseDto(getListWithSize(InstantiateUtil::someQuestion, size));
 
         verify(userMapper, times(size)).modelToBaseDto(any());
         verify(questionMapper, times(1)).subscriptionsToListOfQuestionBaseDto(any(), any());
