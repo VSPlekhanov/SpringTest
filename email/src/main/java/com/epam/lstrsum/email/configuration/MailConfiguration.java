@@ -9,11 +9,13 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.mail.ImapIdleChannelAdapter;
 import org.springframework.integration.mail.ImapMailReceiver;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 @Configuration
+@EnableAsync
 @ConfigurationProperties(prefix = "email")
 @Profile("email")
 public class MailConfiguration {

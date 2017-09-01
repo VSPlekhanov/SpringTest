@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public long addIfNotExistAllWithRole(final List<String> userEmails, List<UserRoleType> roles) {
-        if (userEmails.size() < 1) {
+        if (isNull(userEmails) || userEmails.isEmpty()) {
             return 0;
         }
 

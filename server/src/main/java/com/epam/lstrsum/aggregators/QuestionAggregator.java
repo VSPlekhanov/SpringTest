@@ -10,11 +10,15 @@ import com.epam.lstrsum.dto.question.QuestionBaseDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
 import com.epam.lstrsum.model.Question;
+import com.epam.lstrsum.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
 
 @Service
 @RequiredArgsConstructor
@@ -64,9 +68,7 @@ public class QuestionAggregator implements BasicModelDtoConverter<Question, Ques
         return questionMapper.questionPostDtoAndAuthorEmailToQuestion(
                 questionPostDto,
                 userAggregator.findByEmail(email),
-                questionPostDto.getAllowedSubs().stream()
-                        .map(userAggregator::findByEmail)
-                        .collect(Collectors.toList())
+                getEmptyListIfNull(questionPostDto.getAllowedSubs())
         );
     }
 
@@ -78,5 +80,12 @@ public class QuestionAggregator implements BasicModelDtoConverter<Question, Ques
                         .map(userMapper::modelToBaseDto)
                         .collect(Collectors.toList())
         );
+    }
+
+    private List<User> getEmptyListIfNull(List<String> emails) {
+        return isNull(emails) ? Collections.emptyList() :
+                emails.stream()
+                        .map(userAggregator::findByEmail)
+                        .collect(Collectors.toList());
     }
 }
