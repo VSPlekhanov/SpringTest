@@ -9,6 +9,7 @@ import com.epam.lstrsum.persistence.SubscriptionRepository;
 import lombok.val;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,6 +34,8 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
     private QuestionRepository questionRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @Test
     public void addSubscriptionAlreadyAdded() {
@@ -204,4 +207,5 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
         assertThat(emails).hasSize(7);
         assertThat(emails).contains(user);
     }
+
 }

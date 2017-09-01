@@ -37,6 +37,8 @@ public interface QuestionService extends ElasticSearchService {
 
     void delete(String id);
 
+    void deleteSubscriptionsByQuestionId(String questionId);
+
     QuestionAppearanceDto getQuestionAppearanceDotByQuestionId(String questionId);
 
     Question getQuestionById(String questionId);

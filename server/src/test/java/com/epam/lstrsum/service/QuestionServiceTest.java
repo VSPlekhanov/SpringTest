@@ -9,6 +9,7 @@ import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
 import com.epam.lstrsum.exception.QuestionValidationException;
 import com.epam.lstrsum.model.Question;
+import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.persistence.UserRepository;
@@ -16,6 +17,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,6 +55,9 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @Test
     public void countQuestionCorrect() {
@@ -298,6 +303,44 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
         questionService.delete(validQuestionId);
 
         assertThat(questionRepository.findOne(validQuestionId)).isNull();
+
+        assertThat(mongoTemplate.findAll(Subscription.class))
+                .allSatisfy(
+                        subscription -> assertThat(subscription.getQuestionIds().stream().map(Question::getQuestionId))
+                                .doesNotContain(validQuestionId)
+                );
+    }
+
+    @Test
+    public void checkDeleting() {
+        final String someQuestionWhoSubscribed = "6u_6r";
+
+        assertThat(mongoTemplate.findAll(Subscription.class))
+                .anySatisfy(
+                        subscription -> assertThat(subscription.getQuestionIds().stream().map(Question::getQuestionId))
+                                .contains(someQuestionWhoSubscribed)
+                );
+
+        questionService.deleteSubscriptionsByQuestionId(someQuestionWhoSubscribed);
+
+        assertThat(mongoTemplate.findAll(Subscription.class))
+                .allSatisfy(
+                        subscription -> assertThat(subscription.getQuestionIds().stream().map(Question::getQuestionId))
+                                .doesNotContain(someQuestionWhoSubscribed)
+                );
+    }
+
+    @Test
+    public void notUpdateAnything() {
+        final String notExistingQuestionId = "notExistingQuestionId";
+
+        assertThat(mongoTemplate.findAll(Subscription.class))
+                .allSatisfy(
+                        subscription -> assertThat(subscription.getQuestionIds().stream().map(Question::getQuestionId))
+                                .doesNotContain(notExistingQuestionId)
+                );
+
+        questionService.deleteSubscriptionsByQuestionId(notExistingQuestionId);
     }
 
     @Test
