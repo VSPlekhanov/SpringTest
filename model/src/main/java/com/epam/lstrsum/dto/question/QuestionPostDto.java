@@ -52,8 +52,8 @@ public class QuestionPostDto implements Serializable {
         result = 31 * result + Arrays.hashCode(tags);
         result = 31 * result + (text != null ? text.hashCode() : 0);
         result = 31 * result + (deadLine != null ? deadLine.hashCode() : 0);
-        result = 31 * result + allowedSubs.hashCode();
-        result = 31 * result + inlineSources.hashCode();
+        result = 31 * result + (allowedSubs != null ? allowedSubs.hashCode() : 0);
+        result = 31 * result + (inlineSources != null ? inlineSources.hashCode() : 0);
         return result;
     }
 

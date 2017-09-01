@@ -21,7 +21,7 @@ public class AnswerAllFieldsDto extends AnswerBaseDto {
             int upVote,
             String answerId,
             QuestionBaseDto questionId) {
-        super(text, createdAt, authorId, upVote);
+        super(answerId, text, createdAt, authorId, upVote);
         this.answerId = answerId;
         this.questionId = questionId;
     }
