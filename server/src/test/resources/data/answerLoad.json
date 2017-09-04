@@ -110,7 +110,7 @@
     "_id": "2u_3r_1a",
     "questionId": {
       "$ref": "Question",
-      "$id": "1u_3r"
+      "$id": "2u_3r"
     },
     "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
     "authorId": {
@@ -133,7 +133,7 @@
     "_id": "2u_3r_2a",
     "questionId": {
       "$ref": "Question",
-      "$id": "1u_3r"
+      "$id": "2u_3r"
     },
     "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
     "authorId": {

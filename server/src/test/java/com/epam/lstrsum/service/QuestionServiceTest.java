@@ -22,6 +22,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someLong;
@@ -55,6 +56,9 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AnswerService answerService;
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -151,10 +155,11 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
     public void findAllQuestionsBaseDtoReturnsCorrectValuesTest() {
         int questionCount = (int) questionRepository.count();
         List<Question> questionList = questionRepository.findAllByOrderByCreatedAtDesc();
-        List<QuestionWithAnswersCountDto> expectedDtoList = new ArrayList<>();
-        for (Question question : questionList) {
-            expectedDtoList.add(questionAggregator.modelToAnswersCountDto(question));
-        }
+
+        final List<QuestionWithAnswersCountDto> expectedDtoList = answerService.aggregateToCount(questionList).stream()
+                .map(questionAggregator::modelToAnswersCountDto)
+                .collect(Collectors.toList());
+
         List<QuestionWithAnswersCountDto> actualList = questionService.findAllQuestionsBaseDto(0, questionCount);
         assertThat(actualList.equals(expectedDtoList), is(true));
     }

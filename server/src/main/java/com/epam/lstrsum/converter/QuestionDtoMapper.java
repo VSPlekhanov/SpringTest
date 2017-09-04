@@ -9,6 +9,7 @@ import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.model.Question;
+import com.epam.lstrsum.model.QuestionWithAnswersCount;
 import com.epam.lstrsum.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -24,9 +25,10 @@ public interface QuestionDtoMapper {
     QuestionBaseDto modelToBaseDto(Question question, UserBaseDto author);
 
     @Mappings({
-            @Mapping(target = "answersCount", expression = "java( answerBaseDtos.size())")
+            @Mapping(target = "answersCount", source = "answersCount.count"),
+            @Mapping(target = "questionId", source = "question.questionId")
     })
-    QuestionWithAnswersCountDto modelToAnswersCount(Question question, UserBaseDto author, List<AnswerBaseDto> answerBaseDtos);
+    QuestionWithAnswersCountDto modelToAnswersCount(Question question, UserBaseDto author, QuestionWithAnswersCount answersCount);
 
     @Mappings({
             @Mapping(target = "allowedSubs", source = "allowedSubs")

@@ -47,6 +47,7 @@ public class ExchangeServiceHelperImpl implements ExchangeServiceHelper {
         try {
             return exchangeService.expandGroup(groupName).getMembers().stream()
                     .map(EmailAddress::getAddress)
+                    .map(String::toLowerCase)
                     .collect(Collectors.toList());
         } catch (final Exception e) {
             return Collections.singletonList(groupName);
