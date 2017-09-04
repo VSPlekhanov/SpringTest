@@ -10,11 +10,13 @@ import com.epam.lstrsum.email.template.NewQuestionNotificationTemplate;
 import com.epam.lstrsum.exception.NoSuchRequestException;
 import com.epam.lstrsum.exception.QuestionValidationException;
 import com.epam.lstrsum.model.Question;
+import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.service.ElasticSearchService;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.TagService;
+import com.mongodb.DBRef;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +54,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
     private final MongoTemplate mongoTemplate;
     private final ElasticSearchService elasticSearchService;
+
     @Setter
     private int searchDefaultPageSize;
     @Setter
@@ -173,6 +176,19 @@ public class QuestionServiceImpl implements QuestionService {
     public void delete(String id) {
         log.debug("Delete question with id {}", id);
         questionRepository.delete(id);
+        deleteSubscriptionsByQuestionId(id);
+    }
+
+    @Override
+    public void deleteSubscriptionsByQuestionId(String questionId) {
+        log.debug("Delete all subscriptions with questionId {}", questionId);
+
+        final Query findAll = new Query();
+        final Update pullQuestion = new Update().pull(
+                "questionIds", new DBRef(Question.QUESTION_COLLECTION_NAME, questionId)
+        );
+
+        mongoTemplate.updateMulti(findAll, pullQuestion, Subscription.class);
     }
 
     private void validateQuestionData(QuestionPostDto questionPostDto, String email) {
