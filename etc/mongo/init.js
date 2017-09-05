@@ -71,6 +71,18 @@ for (let i = 0; i < N; ++i) {
     db.getCollection(USER_COLLECTION_NAME).insert(newUser)
 }
 
+db.User.insert({
+    "_class": "com.epam.lstrsum.model.User",
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john_doe@epam.com",
+    "roles": [
+        "EXTENDED_USER"
+    ],
+    "createdAt": ISODate("2017-09-04T10:49:52.265Z"),
+    "isActive": true
+})
+
 db.getCollection(USER_COLLECTION_NAME).createIndex({"email": 1}, {"unique": true});
 allUsers = db.getCollection(USER_COLLECTION_NAME).find().toArray()
 
