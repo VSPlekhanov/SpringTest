@@ -6,17 +6,15 @@ import com.epam.lstrsum.dto.user.telescope.TelescopeProfileDto;
 import com.epam.lstrsum.service.TelescopeService;
 import com.epam.lstrsum.utils.FunctionalUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -39,8 +37,8 @@ public class TelescopeServiceMockImpl implements TelescopeService {
 
     @PostConstruct
     public void init() throws IOException {
-        File rawBase64File = new ClassPathResource("data/base64").getFile();
-        base64 = IOUtils.toString(FileUtils.openInputStream(rawBase64File), "UTF-8");
+        final InputStream base64Resource = getClass().getResourceAsStream("/data/base64");
+        base64 = IOUtils.toString(base64Resource, "UTF-8");
     }
 
     @Override
