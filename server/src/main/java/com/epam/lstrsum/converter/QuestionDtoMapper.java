@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static java.util.Objects.isNull;
+
 @Mapper(componentModel = "spring")
 public interface QuestionDtoMapper {
 
@@ -42,6 +44,7 @@ public interface QuestionDtoMapper {
 
     @Mappings({
             @Mapping(target = "allowedSubs", source = "allowedSubs"),
+            @Mapping(target = "tags", expression = "java(emptyStringArrayIfNull(questionPostDto.getTags()))"),
             @Mapping(target = "deadLine", expression = "java( java.time.Instant.ofEpochMilli(questionPostDto.getDeadLine()))"),
             @Mapping(target = "authorId", source = "authorId"),
             @Mapping(target = "upVote", constant = "0"),
@@ -57,4 +60,7 @@ public interface QuestionDtoMapper {
                 .collect(Collectors.toList());
     }
 
+    default String[] emptyStringArrayIfNull(String[] arrayToCheck) {
+        return isNull(arrayToCheck) ? new String[]{} : arrayToCheck;
+    }
 }
