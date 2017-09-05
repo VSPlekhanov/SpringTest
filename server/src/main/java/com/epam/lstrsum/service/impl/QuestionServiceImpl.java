@@ -10,9 +10,11 @@ import com.epam.lstrsum.email.template.NewQuestionNotificationTemplate;
 import com.epam.lstrsum.exception.NoSuchRequestException;
 import com.epam.lstrsum.exception.QuestionValidationException;
 import com.epam.lstrsum.model.Question;
+import com.epam.lstrsum.model.QuestionWithAnswersCount;
 import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.QuestionRepository;
+import com.epam.lstrsum.service.AnswerService;
 import com.epam.lstrsum.service.ElasticSearchService;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.TagService;
@@ -54,6 +56,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
     private final MongoTemplate mongoTemplate;
     private final ElasticSearchService elasticSearchService;
+    private final AnswerService answerService;
 
     @Setter
     private int searchDefaultPageSize;
@@ -110,7 +113,9 @@ public class QuestionServiceImpl implements QuestionService {
     public List<QuestionWithAnswersCountDto> findAllQuestionsBaseDto(int questionPage, int questionAmount) {
         Pageable pageable = new PageRequest(questionPage, questionAmount);
         List<Question> questionList = questionRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return mapList(questionList, questionAggregator::modelToAnswersCountDto);
+        final List<QuestionWithAnswersCount> questionWithAnswersCounts = answerService.aggregateToCount(questionList);
+
+        return mapList(questionWithAnswersCounts, questionAggregator::modelToAnswersCountDto);
     }
 
     @Override

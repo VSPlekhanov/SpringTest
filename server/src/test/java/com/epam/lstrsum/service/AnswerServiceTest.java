@@ -6,8 +6,11 @@ import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.exception.AnswerValidationException;
 import com.epam.lstrsum.model.Answer;
+import com.epam.lstrsum.model.Question;
+import com.epam.lstrsum.model.QuestionWithAnswersCount;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.io.IOException;
 
@@ -25,6 +28,8 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     private AnswerAggregator answerAggregator;
     @Autowired
     private QuestionService questionService;
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @Test
     public void addNewAnswerWithExistingQuestionTest() throws Exception {
@@ -86,5 +91,23 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
         answerService.deleteAllAnswersOnQuestion(validQuestionId);
 
         assertThat(questionService.getQuestionAppearanceDotByQuestionId(validQuestionId).getAnswers()).hasSize(0);
+    }
+
+    @Test
+    public void aggregationFunctionTestingShouldReturnQuestionToAnswersCount() {
+        assertThat(answerService.aggregateToCount(mongoTemplate.findAll(Question.class)))
+                .anySatisfy(q -> hasQuestionWithAnswersCount(q, "1u_1r", 3))
+                .anySatisfy(q -> hasQuestionWithAnswersCount(q, "1u_2r", 2))
+                .anySatisfy(q -> hasQuestionWithAnswersCount(q, "2u_3r", 2))
+                .anySatisfy(q -> hasQuestionWithAnswersCount(q, "3u_4r", 2))
+                .anySatisfy(q -> hasQuestionWithAnswersCount(q, "4u_5r", 3))
+                .anySatisfy(q -> hasQuestionWithAnswersCount(q, "6u_6r", 0));
+    }
+
+    private void hasQuestionWithAnswersCount(
+            QuestionWithAnswersCount source, String questionId, int answersCount
+    ) {
+        assertThat(source.getQuestionId().getQuestionId()).isEqualTo(questionId);
+        assertThat(source.getCount()).isEqualTo(answersCount);
     }
 }
