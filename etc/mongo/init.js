@@ -3,12 +3,6 @@
 *  mongo <host>:<port> mongo.init/init.js
 */
 
-conn = new Mongo()
-/*
-Here is database name to init
-*/
-db = conn.getDB("ExperienceDataBase")
-
 function randomString(length) {
     const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ      '
     result = ''
@@ -29,7 +23,7 @@ function randomISODate() {
 /*ATTENTION!!!!
 * This number response for how many documents will in db after script
 */
-const N = 50
+const N = 100
 /**/
 
 const USER_COLLECTION_NAME = "User"
