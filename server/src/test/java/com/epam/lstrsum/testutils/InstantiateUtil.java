@@ -163,14 +163,13 @@ public class InstantiateUtil {
                 .authorId(someUser())
                 .createdAt(Instant.now())
                 .deadLine(Instant.now())
-                .upVote(SECURE_RANDOM.nextInt())
                 .build();
     }
 
     public static QuestionAllFieldsDto someQuestionAllFieldsDto() {
         return new QuestionAllFieldsDto(
                 someString(), someString(), someArrayString(),
-                Instant.now(), Instant.now(), someUserBaseDto(), SECURE_RANDOM.nextInt(),
+                Instant.now(), Instant.now(), someUserBaseDto(),
                 getList(InstantiateUtil::someUserBaseDto), someString()
         );
     }
@@ -193,7 +192,6 @@ public class InstantiateUtil {
                 .questionId(someString())
                 .tags(someArrayString())
                 .title(someString())
-                .upVote(SECURE_RANDOM.nextInt())
                 .build();
     }
 

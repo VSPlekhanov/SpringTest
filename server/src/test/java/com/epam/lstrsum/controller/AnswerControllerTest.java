@@ -111,8 +111,7 @@ public class AnswerControllerTest {
                                 "userId2",
                                 "user2firstName",
                                 "lastName",
-                                "user2firstName_lastName@epam.com"),
-                        0));
+                                "user2firstName_lastName@epam.com")));
         answer = new Answer(
                 "answerId1",
                 Question.builder()
@@ -130,7 +129,6 @@ public class AnswerControllerTest {
                                 Instant.now(),
                                 true))
                         .allowedSubs(Collections.emptyList())
-                        .upVote(0)
                         .build(),
                 "text",
                 Instant.now(),

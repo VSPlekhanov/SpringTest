@@ -19,9 +19,9 @@ public class QuestionAppearanceDto extends QuestionBaseDto {
 
     public QuestionAppearanceDto(
             String questionId, String title, String[] tags, Instant createdAt, Instant deadLine,
-            UserBaseDto authorId, Integer upVote, String text, List<AnswerBaseDto> answers
+            UserBaseDto authorId, String text, List<AnswerBaseDto> answers
     ) {
-        super(questionId, title, tags, createdAt, deadLine, authorId, upVote);
+        super(questionId, title, tags, createdAt, deadLine, authorId);
         this.text = text;
         this.answers = answers;
     }

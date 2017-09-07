@@ -102,11 +102,11 @@ public class QuestionControllerTest {
                 new QuestionWithAnswersCountDto("u1", "some title 2", null,
                         Instant.now(), Instant.now(),
                         new UserBaseDto("some user id 2", "first name", "last name", "some@email.com"),
-                        1, 7),
+                        7),
                 new QuestionWithAnswersCountDto("u2", "some title 2", null,
                         Instant.now(), Instant.now(),
                         new UserBaseDto("some user id 2", "first name", "last name", "some@email.com"),
-                        1, 8)
+                        8)
         );
         when(questionService.findAllQuestionsBaseDto(questionPage, questionAmount)).thenReturn(list);
         ResponseEntity<List<QuestionWithAnswersCountDto>> actualEntity = controller.getQuestions(questionPage, questionAmount);
@@ -139,7 +139,7 @@ public class QuestionControllerTest {
                 questionId, "questionTitle", new String[]{"tag1", "tag2", "tag3"},
                 Instant.now(), Instant.now(),
                 new UserBaseDto("userId", "userName", "userSurname", "user@epam.com"),
-                2, "question body",
+                "question body",
                 Arrays.asList(new AnswerBaseDto("answerId", "answer1Text", Instant.now(),
                                 new UserBaseDto("user1Id", "user1Name", "user1Surname", "user1@epam.com"), 6),
                         new AnswerBaseDto("answer2Id", "answer2Text", Instant.now(),
@@ -175,7 +175,7 @@ public class QuestionControllerTest {
         List<QuestionAllFieldsDto> questionAllFieldsDtos = Collections.singletonList(
                 new QuestionAllFieldsDto(questionId, questionTitle, new String[]{"tag1", "tag2", "tag3"}, Instant.now(), Instant.now(),
                         new UserBaseDto("userId", "userName", "userSurname", "user@epam.com"),
-                        2, Collections.emptyList(), "text")
+                        Collections.emptyList(), "text")
         );
         when(questionService.search(searchString, 0, 20)).thenReturn(questionAllFieldsDtos);
 

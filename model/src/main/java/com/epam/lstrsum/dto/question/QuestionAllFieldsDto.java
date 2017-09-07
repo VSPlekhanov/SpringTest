@@ -18,9 +18,9 @@ public class QuestionAllFieldsDto extends QuestionBaseDto {
 
     public QuestionAllFieldsDto(
             String questionId, String title, String[] tags, Instant createdAt, Instant deadLine,
-            UserBaseDto author, Integer upVote, List<UserBaseDto> allowedSubs, String text
+            UserBaseDto author, List<UserBaseDto> allowedSubs, String text
     ) {
-        super(questionId, title, tags, createdAt, deadLine, author, upVote);
+        super(questionId, title, tags, createdAt, deadLine, author);
         this.allowedSubs = allowedSubs;
         this.text = text;
     }

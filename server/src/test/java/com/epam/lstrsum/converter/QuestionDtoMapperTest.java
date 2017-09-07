@@ -33,7 +33,6 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
         assertThat(questionBaseDto.getCreatedAt()).isEqualTo(question.getCreatedAt());
         assertThat(questionBaseDto.getDeadLine()).isEqualTo(question.getDeadLine());
         assertThat(questionBaseDto.getTags()).isEqualTo(question.getTags());
-        assertThat(questionBaseDto.getUpVote()).isEqualTo(question.getUpVote());
     }
 
     @Test
@@ -91,7 +90,6 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
                             assertThat(question.getTags()).isEqualTo(questionPostDto.getTags());
                             assertThat(question.getDeadLine()).isEqualTo(Instant.ofEpochMilli(questionPostDto.getDeadLine()));
                             assertThat(question.getAllowedSubs()).containsExactly(allowedSubs.get(0), allowedSubs.get(1));
-                            assertThat(question.getUpVote()).isEqualTo(0);
                             assertThat(question.getAuthorId()).isEqualTo(user);
                             assertThat(question.getCreatedAt()).isBeforeOrEqualTo(Instant.now());
                         }
