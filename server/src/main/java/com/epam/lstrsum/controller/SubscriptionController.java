@@ -1,7 +1,7 @@
 package com.epam.lstrsum.controller;
 
 import com.epam.lstrsum.annotation.NotEmptyString;
-import com.epam.lstrsum.model.Subscription;
+import com.epam.lstrsum.dto.subscription.SubscriptionAllFieldsDto;
 import com.epam.lstrsum.service.SubscriptionService;
 import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +26,8 @@ public class SubscriptionController {
 
 
     @GetMapping
-    public List<Subscription> getListOfSubscriptions() {
-        return subscriptionService.findAll();
+    public ResponseEntity<List<SubscriptionAllFieldsDto>> getListOfSubscriptions() {
+        return ResponseEntity.ok(subscriptionService.findAllSubscriptionsAllFieldsDto());
     }
 
     @PutMapping("/{questionId}")

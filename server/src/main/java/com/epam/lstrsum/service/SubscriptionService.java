@@ -1,5 +1,6 @@
 package com.epam.lstrsum.service;
 
+import com.epam.lstrsum.dto.subscription.SubscriptionAllFieldsDto;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
 
@@ -25,4 +26,6 @@ public interface SubscriptionService {
     default void addOrUpdate(String userId, String questionId) {
         addOrUpdate(userId, Collections.singletonList(questionId));
     }
+
+    List<SubscriptionAllFieldsDto> findAllSubscriptionsAllFieldsDto();
 }
