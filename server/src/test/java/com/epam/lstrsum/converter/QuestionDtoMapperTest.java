@@ -71,7 +71,6 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
                 .satisfies(
                         questionAppearanceDto -> {
                             checkQuestionBaseDto(questionAppearanceDto, question, authorId);
-                            assertThat(questionAppearanceDto.getAnswers()).containsExactly(answers.get(0), answers.get(1));
                             assertThat(questionAppearanceDto.getText()).isEqualTo(question.getText());
                         }
                 );
@@ -93,7 +92,7 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
                             assertThat(question.getAllowedSubs()).containsExactly(allowedSubs.get(0), allowedSubs.get(1));
                             assertThat(question.getUpVote()).isEqualTo(0);
                             assertThat(question.getAuthorId()).isEqualTo(user);
-                            assertThat(question.getCreatedAt()).isBeforeOrEqualTo(Instant.now());
+                            assertThat(question.getCreatedAt()).isNotNull();
                         }
                 );
     }

@@ -37,9 +37,6 @@ public interface QuestionDtoMapper {
     })
     QuestionAllFieldsDto modelToAllFieldsDto(Question question, UserBaseDto author, List<UserBaseDto> allowedSubs);
 
-    @Mappings({
-            @Mapping(target = "answers", source = "answers")
-    })
     QuestionAppearanceDto modelToQuestionAppearanceDto(Question question, UserBaseDto author, List<AnswerBaseDto> answers);
 
     @Mappings({

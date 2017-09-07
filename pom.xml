@@ -39,6 +39,7 @@
         <!--Testing and tools-->
         <swagger.version>2.7.0</swagger.version>
         <assertj-core.version>3.8.0</assertj-core.version>
+        <random-beans>3.7.0</random-beans>
 
         <!--Others-->
         <jsoup.version>1.10.3</jsoup.version>
@@ -91,6 +92,11 @@
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
                 <version>${assertj-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.benas</groupId>
+                <artifactId>random-beans</artifactId>
+                <version>${random-beans}</version>
             </dependency>
 
             <!--Others-->
