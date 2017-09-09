@@ -92,7 +92,7 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
                             assertThat(question.getAllowedSubs()).containsExactly(allowedSubs.get(0), allowedSubs.get(1));
                             assertThat(question.getUpVote()).isEqualTo(0);
                             assertThat(question.getAuthorId()).isEqualTo(user);
-                            assertThat(question.getCreatedAt()).isNotNull();
+                            assertThat(question.getCreatedAt()).isBeforeOrEqualTo(Instant.now());
                         }
                 );
     }

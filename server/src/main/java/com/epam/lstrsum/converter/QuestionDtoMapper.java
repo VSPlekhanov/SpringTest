@@ -43,6 +43,7 @@ public interface QuestionDtoMapper {
             @Mapping(target = "allowedSubs", source = "allowedSubs"),
             @Mapping(target = "tags", expression = "java(emptyStringArrayIfNull(questionPostDto.getTags()))"),
             @Mapping(target = "deadLine", expression = "java( java.time.Instant.ofEpochMilli(questionPostDto.getDeadLine()))"),
+            @Mapping(target = "createdAt", expression = "java( java.time.Instant.now())"),
             @Mapping(target = "authorId", source = "authorId"),
             @Mapping(target = "upVote", constant = "0"),
             @Mapping(target = "score", constant = "0"),

@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswer;
@@ -22,7 +23,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
 
 public class AnswerServiceTest extends SetUpDataBaseCollections {
     private final String authorEmail = "Bob_Hoplins@epam.com";
@@ -91,7 +91,7 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void deleteAllAnswersToQuestion() {
-        final String validQuestionId =  EXISTING_QUESTION_ID;
+        final String validQuestionId = EXISTING_QUESTION_ID;
 
         assertThat(answerService.getAnswersByQuestionId(validQuestionId).size()).isGreaterThan(0);
 
@@ -119,14 +119,14 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void findAnswersByQuestionIdNegativePageSize(){
+    public void findAnswersByQuestionIdNegativePageSize() {
         final int negativePageSize = Integer.MIN_VALUE;
 
         assertThat(answerService.getAnswersByQuestionId(EXISTING_QUESTION_ID, 0, negativePageSize)).hasSize(ANSWERS_COUNT);
     }
 
     @Test
-    public void findAnswersByQuestionIdZeroPageSize(){
+    public void findAnswersByQuestionIdZeroPageSize() {
         final int zeroPageSize = 0;
 
         assertThat(answerService.getAnswersByQuestionId(EXISTING_QUESTION_ID, 0, zeroPageSize)).hasSize(ANSWERS_COUNT);
@@ -134,12 +134,13 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void findAnswersByQuestionIdInCorrectAscOrder() {
-        List<AnswerBaseDto> answers = answerService.getAnswersByQuestionId(EXISTING_QUESTION_ID);
+        final List<AnswerBaseDto> answers = answerService.getAnswersByQuestionId(EXISTING_QUESTION_ID);
 
-        for (int i = 1; i < answers.size(); i++) {
-            assertThat(answers.get(i - 1).getCreatedAt().
-                    isBefore(answers.get(i).getCreatedAt()), is(true));
-        }
+        assertThat(
+                answers.stream()
+                        .map(AnswerBaseDto::getCreatedAt)
+                        .collect(Collectors.toList())
+        ).isSorted();
     }
 
     @Test
