@@ -3,9 +3,11 @@ package com.epam.lstrsum.controller;
 import com.epam.lstrsum.service.AnswerService;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.mail.UserSynchronizer;
+import com.epam.lstrsum.testutils.AssertionUtils;
 import org.junit.Test;
-import org.springframework.http.HttpStatus;
 
+import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID;
+import static com.epam.lstrsum.testutils.InstantiateUtil.NON_EXISTING_QUESTION_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -25,20 +27,20 @@ public class AdminControllerTest {
 
     @Test
     public void deleteValidQuestionWithAnswers() {
-        final String validQuestionId = "1u_1r";
+        final String validQuestionId = EXISTING_QUESTION_ID;
         doReturn(true).when(questionService).contains(validQuestionId);
 
-        assertThat(adminController.deleteQuestionWithAnswers(validQuestionId).getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(adminController.deleteQuestionWithAnswers(validQuestionId)).satisfies(AssertionUtils::hasStatusNoContent);
         verify(questionService, times(1)).delete(anyString());
         verify(answerService, times(1)).deleteAllAnswersOnQuestion(anyString());
     }
 
     @Test
     public void deleteNotValidQuestionWithAnswers() {
-        final String validQuestionId = "not_valid";
-        doReturn(false).when(questionService).contains(validQuestionId);
+        final String not_valid = NON_EXISTING_QUESTION_ID;
+        doReturn(false).when(questionService).contains(not_valid);
 
-        assertThat(adminController.deleteQuestionWithAnswers(validQuestionId).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(adminController.deleteQuestionWithAnswers(not_valid)).satisfies(AssertionUtils::hasStatusNotFound);
         verify(questionService, never()).delete(anyString());
         verify(answerService, never()).deleteAllAnswersOnQuestion(anyString());
     }
@@ -46,8 +48,7 @@ public class AdminControllerTest {
 
     @Test
     public void forceSynchronize() {
-        assertThat(adminController.forceUserSynchronization().getStatusCode())
-                .isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(adminController.forceUserSynchronization()).satisfies(AssertionUtils::hasStatusNoContent);
 
         verify(userSynchronizer, times(1)).synchronizeUsers();
     }

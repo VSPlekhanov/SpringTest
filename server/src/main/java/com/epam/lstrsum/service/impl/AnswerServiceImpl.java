@@ -2,6 +2,7 @@ package com.epam.lstrsum.service.impl;
 
 import com.epam.lstrsum.aggregators.AnswerAggregator;
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
+import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.email.EmailNotification;
 import com.epam.lstrsum.email.template.NewAnswerNotificationTemplate;
@@ -15,7 +16,10 @@ import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.persistence.UserRepository;
 import com.epam.lstrsum.service.AnswerService;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -36,14 +40,21 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.proj
 
 @Service
 @RequiredArgsConstructor
+@ConfigurationProperties(prefix = "answer")
 @Slf4j
 public class AnswerServiceImpl implements AnswerService {
-
     private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final MongoTemplate mongoTemplate;
     private final AnswerAggregator answerAggregator;
+
+    private static final int MIN_PAGE_SIZE = 0;
+
+    @Setter
+    private int searchDefaultPageSize;
+    @Setter
+    private int searchMaxPageSize;
 
     @Override
     @EmailNotification(template = NewAnswerNotificationTemplate.class)
@@ -75,6 +86,28 @@ public class AnswerServiceImpl implements AnswerService {
         ).getMappedResults();
 
         return completeNotFound(mappedResults, questions);
+    }
+
+    @Override
+    public List<AnswerBaseDto> getAnswersByQuestionId(String questionId, int page, int size) {
+        if (size <= 0) {
+            size = searchDefaultPageSize;
+        } else if (size > searchMaxPageSize) {
+            size = searchMaxPageSize;
+        }
+
+        if (page < MIN_PAGE_SIZE) {
+            page = MIN_PAGE_SIZE;
+        }
+
+        return answerRepository.findAnswerByQuestionId_QuestionIdOrderByCreatedAt(questionId, new PageRequest(page, size)).stream()
+                .map(answerAggregator::modelToBaseDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<AnswerBaseDto> getAnswersByQuestionId(String questionId) {
+        return getAnswersByQuestionId(questionId, 0, searchMaxPageSize);
     }
 
     private List<QuestionWithAnswersCount> completeNotFound(

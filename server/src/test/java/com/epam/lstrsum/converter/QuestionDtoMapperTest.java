@@ -71,7 +71,6 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
                 .satisfies(
                         questionAppearanceDto -> {
                             checkQuestionBaseDto(questionAppearanceDto, question, authorId);
-                            assertThat(questionAppearanceDto.getAnswers()).containsExactly(answers.get(0), answers.get(1));
                             assertThat(questionAppearanceDto.getText()).isEqualTo(question.getText());
                         }
                 );

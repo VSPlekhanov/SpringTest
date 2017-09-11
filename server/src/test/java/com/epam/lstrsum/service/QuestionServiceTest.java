@@ -2,7 +2,6 @@ package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.aggregators.QuestionAggregator;
-import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
@@ -24,8 +23,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID;
+import static com.epam.lstrsum.testutils.InstantiateUtil.NON_EXISTING_QUESTION_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someLong;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionPostDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -125,8 +127,8 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void getTextSearchResultsCountCorrect() {
-        long expected = questionRepository.getTextSearchResultsCount("android");
-        Long actual = questionService.getTextSearchResultsCount("android");
+        long expected = questionRepository.getTextSearchResultsCount(SEARCH_PHRASE);
+        Long actual = questionService.getTextSearchResultsCount(SEARCH_PHRASE);
 
         assertThat(actual, is(expected));
     }
@@ -145,9 +147,9 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void getQuestionReturnsCorrectDtoObject() {
-        Question question = questionRepository.findOne("1u_1r");
+        Question question = questionRepository.findOne(EXISTING_QUESTION_ID);
         QuestionAllFieldsDto dtoQuestionFromRepo = questionAggregator.modelToAllFieldsDto(question);
-        QuestionAllFieldsDto dtoQuestionFromService = questionService.getQuestionAllFieldDtoByQuestionId("1u_1r");
+        QuestionAllFieldsDto dtoQuestionFromService = questionService.getQuestionAllFieldDtoByQuestionId(EXISTING_QUESTION_ID);
         assertThat(dtoQuestionFromRepo, is(equalTo(dtoQuestionFromService)));
     }
 
@@ -182,32 +184,6 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
         assertThat(isNull(dtoQuestionDto), is(false));
     }
 
-    @Test
-    public void questionServiceIsAbleToGetQuestionWithAnswersFromDBIfQuestionHasThem() {
-        QuestionAppearanceDto dtoQuestionDtoWithAnswers = questionService.getQuestionAppearanceDotByQuestionId("1u_1r");
-
-        assertThat(dtoQuestionDtoWithAnswers.getAnswers().isEmpty(), is(false));
-    }
-
-    @Test
-    public void questionServiceIsAbleToGetQuestionWithoutAnswersFromDB() {
-        QuestionAppearanceDto dtoQuestionDtoWithoutAnswers = questionService.getQuestionAppearanceDotByQuestionId("6u_6r");
-
-        assertThat(dtoQuestionDtoWithoutAnswers.getAnswers().isEmpty(), is(true));
-        assertThat(isNull(dtoQuestionDtoWithoutAnswers.getAnswers()), is(false));
-    }
-
-    @Test
-    public void questionServiceReturnsListOfQuestionAnswersInCorrectAscOrder() {
-        QuestionAppearanceDto dtoQuestionDtoWithAnswers = questionService.getQuestionAppearanceDotByQuestionId("1u_1r");
-        List<AnswerBaseDto> questionAnswers = dtoQuestionDtoWithAnswers.getAnswers();
-
-        for (int i = 1; i < questionAnswers.size(); i++) {
-            assertThat(questionAnswers.get(i - 1).getCreatedAt().
-                    isBefore(questionAnswers.get(i).getCreatedAt()), is(true));
-        }
-    }
-
     @Test(expected = QuestionValidationException.class)
     public void questionServiceThrowsQuestionValidationExceptionForNullTitleInPostDto() {
         QuestionPostDto postDto = new QuestionPostDto(null, new String[]{"1", "2", "3", "go"},
@@ -220,7 +196,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Test(expected = QuestionValidationException.class)
     public void questionServiceThrowsQuestionValidationExceptionForNullTextInPostDtoTest() {
-        QuestionPostDto postDto = new QuestionPostDto("just some title", new String[]{"1", "2", "3", "go"},
+        QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 null, 1501145111439L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
@@ -230,7 +206,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Test(expected = QuestionValidationException.class)
     public void questionServiceThrowsQuestionValidationExceptionIfTextIsTooShortInPostDtoTest() {
-        QuestionPostDto postDto = new QuestionPostDto("just some title", new String[]{"1", "2", "3", "go"},
+        QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 "", 1501145922239L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
@@ -250,16 +226,13 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Test(expected = QuestionValidationException.class)
     public void addNewQuestionThrowsQuestionValidationExceptionIfQuestionPostDtoIsNullTest() {
-        String authorEmail = "John_Doe@epam.com";
+        String authorEmail = someString();
         questionService.addNewQuestion(null, authorEmail);
     }
 
     @Test(expected = QuestionValidationException.class)
     public void addNewQuestionThrowsQuestionValidationExceptionIfQuestionAuthorEmailIsNullTest() {
-        questionService.addNewQuestion(new QuestionPostDto("just some title", new String[]{"1", "2", "3", "go"},
-                "just some text", 1501144323239L,
-                Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList()), null);
+        questionService.addNewQuestion(someQuestionPostDto(), null);
     }
 
     @Test
@@ -302,7 +275,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void deleteQuestion() {
-        final String validQuestionId = "1u_1r";
+        final String validQuestionId = EXISTING_QUESTION_ID;
         assertThat(questionRepository.findOne(validQuestionId)).isNotNull();
 
         questionService.delete(validQuestionId);
@@ -337,7 +310,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void notUpdateAnything() {
-        final String notExistingQuestionId = "notExistingQuestionId";
+        final String notExistingQuestionId = NON_EXISTING_QUESTION_ID;
 
         assertThat(mongoTemplate.findAll(Subscription.class))
                 .allSatisfy(
@@ -350,7 +323,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void deleteNotValidQuestion() {
-        final String notValidQuestionId = "bad_id";
+        final String notValidQuestionId = NON_EXISTING_QUESTION_ID;
 
         questionService.delete(notValidQuestionId);
 
