@@ -1,13 +1,11 @@
 package com.epam.lstrsum.dto.question;
 
-import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.util.List;
 
 
 @Getter
@@ -15,15 +13,13 @@ import java.util.List;
 @Setter
 public class QuestionAppearanceDto extends QuestionBaseDto {
     private String text;
-    private List<AnswerBaseDto> answers;
 
     public QuestionAppearanceDto(
             String questionId, String title, String[] tags, Instant createdAt, Instant deadLine,
-            UserBaseDto authorId, String text, List<AnswerBaseDto> answers
+            UserBaseDto authorId, Integer upVote, String text
     ) {
-        super(questionId, title, tags, createdAt, deadLine, authorId);
+        super(questionId, title, tags, createdAt, deadLine, authorId, upVote);
         this.text = text;
-        this.answers = answers;
     }
 
     @Override
@@ -33,16 +29,13 @@ public class QuestionAppearanceDto extends QuestionBaseDto {
         if (!super.equals(o)) return false;
 
         QuestionAppearanceDto that = (QuestionAppearanceDto) o;
-
-        if (text != null ? !text.equals(that.text) : that.text != null) return false;
-        return answers != null ? answers.equals(that.answers) : that.answers == null;
+        return text != null ? text.equals(that.text) : that.text == null;
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
         result = 31 * result + (text != null ? text.hashCode() : 0);
-        result = 31 * result + (answers != null ? answers.hashCode() : 0);
         return result;
     }
 }

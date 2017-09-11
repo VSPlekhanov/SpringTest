@@ -37,15 +37,13 @@ public interface QuestionDtoMapper {
     })
     QuestionAllFieldsDto modelToAllFieldsDto(Question question, UserBaseDto author, List<UserBaseDto> allowedSubs);
 
-    @Mappings({
-            @Mapping(target = "answers", source = "answers")
-    })
     QuestionAppearanceDto modelToQuestionAppearanceDto(Question question, UserBaseDto author, List<AnswerBaseDto> answers);
 
     @Mappings({
             @Mapping(target = "allowedSubs", source = "allowedSubs"),
             @Mapping(target = "tags", expression = "java(emptyStringArrayIfNull(questionPostDto.getTags()))"),
             @Mapping(target = "deadLine", expression = "java( java.time.Instant.ofEpochMilli(questionPostDto.getDeadLine()))"),
+            @Mapping(target = "createdAt", expression = "java( java.time.Instant.now())"),
             @Mapping(target = "authorId", source = "authorId"),
             @Mapping(target = "score", constant = "0"),
             @Mapping(target = "questionId", ignore = true),

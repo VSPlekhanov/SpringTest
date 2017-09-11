@@ -3,8 +3,10 @@ package com.epam.lstrsum.testutils;
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
+import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
 import com.epam.lstrsum.dto.question.QuestionBaseDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
+import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.dto.user.telescope.TelescopeDataDto;
 import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
@@ -16,12 +18,13 @@ import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.model.Vote;
+import io.github.benas.randombeans.EnhancedRandomBuilder;
+import io.github.benas.randombeans.api.EnhancedRandom;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -35,26 +38,19 @@ public class InstantiateUtil {
     public static final String SOME_NOT_USER_EMAIL = "email@test.com";
     public static final String NON_EXISTING_USER_ID = "1123";
     public static final String EXISTING_USER_ID = "1u";
+    public static final String EXISTING_QUESTION_ID = "1u_1r";
+    public static final String NON_EXISTING_QUESTION_ID = "notExist";
     private static SecureRandom SECURE_RANDOM = new SecureRandom();
+    private static final EnhancedRandom random = EnhancedRandomBuilder.aNewEnhancedRandomBuilder()
+            .stringLengthRange(5, 50)
+            .build();
 
     public static Subscription someSubscription() {
-        return Subscription.builder()
-                .questionIds(getList(InstantiateUtil::someQuestion))
-                .userId(someUser())
-                .subscriptionId(someString())
-                .build();
+        return random.nextObject(Subscription.class);
     }
 
     public static User someUser() {
-        return User.builder()
-                .userId(someString())
-                .firstName(someString())
-                .lastName(someString())
-                .isActive(true)
-                .createdAt(Instant.now())
-                .roles(Collections.singletonList(UserRoleType.EXTENDED_USER))
-                .email(someString())
-                .build();
+        return random.nextObject(User.class);
     }
 
     public static TelescopeEmployeeEntityDto someTelescopeEmployeeEntityDtoWithEmail(String email) {
@@ -89,7 +85,7 @@ public class InstantiateUtil {
     public static TelescopeDataDto someTelescopeDataDto() {
         return TelescopeDataDto.builder()
                 ._e3sId(someString())
-                .email(someStrings())
+                .email(getList(InstantiateUtil::someStringLowerCase))
                 .fullName(someStrings())
                 .firstName(someString())
                 .lastName(someString())
@@ -104,33 +100,15 @@ public class InstantiateUtil {
     }
 
     private static TelescopeProfileDto someTelescopeProfileDto() {
-        return TelescopeProfileDto.builder()
-                .origin(someString())
-                .id(someString())
-                .status(someString())
-                .url(someString())
-                .visibility(someString())
-                .build();
+        return random.nextObject(TelescopeProfileDto.class);
     }
 
     public static UserBaseDto someUserBaseDto() {
-        return UserBaseDto.builder()
-                .email(someString())
-                .firstName(someString())
-                .lastName(someString())
-                .userId(someString())
-                .build();
+        return random.nextObject(UserBaseDto.class);
     }
 
     public static Answer someAnswer() {
-        return Answer.builder()
-                .answerId(someString())
-                .authorId(someUser())
-                .questionId(someQuestion())
-                .createdAt(Instant.now())
-                .text(someString())
-                .votes(someVotes())
-                .build();
+        return random.nextObject(Answer.class);
     }
 
     public static List<Vote> someVotes() {
@@ -138,76 +116,43 @@ public class InstantiateUtil {
     }
 
     public static AnswerPostDto someAnswerPostDto() {
-        return AnswerPostDto.builder()
-                .questionId(someString())
-                .text(someString())
-                .build();
+        return random.nextObject(AnswerPostDto.class);
     }
 
     public static AnswerBaseDto someAnswerBaseDto() {
-        return AnswerBaseDto.builder()
-                .answerId(someString())
-                .authorId(someUserBaseDto())
-                .createdAt(Instant.now())
-                .text(someString())
-                .upVote(SECURE_RANDOM.nextInt())
-                .build();
+        return random.nextObject(AnswerBaseDto.class);
     }
 
     public static Question someQuestion() {
-        return Question.builder()
-                .questionId(someString())
-                .title(someString())
-                .tags(someArrayString())
-                .allowedSubs(Collections.emptyList())
-                .authorId(someUser())
-                .createdAt(Instant.now())
-                .deadLine(Instant.now())
-                .build();
+        return random.nextObject(Question.class);
     }
 
     public static QuestionAllFieldsDto someQuestionAllFieldsDto() {
-        return new QuestionAllFieldsDto(
-                someString(), someString(), someArrayString(),
-                Instant.now(), Instant.now(), someUserBaseDto(),
-                getList(InstantiateUtil::someUserBaseDto), someString()
-        );
+        return random.nextObject(QuestionAllFieldsDto.class);
     }
 
     public static QuestionPostDto someQuestionPostDto() {
-        return QuestionPostDto.builder()
-                .allowedSubs(getList(InstantiateUtil::someString))
-                .deadLine(someLong())
-                .tags(someArrayString())
-                .text(someString())
-                .title(someString())
-                .build();
+        return random.nextObject(QuestionPostDto.class);
     }
 
     public static QuestionBaseDto someQuestionBaseDto() {
-        return QuestionBaseDto.builder()
-                .author(someUserBaseDto())
-                .createdAt(Instant.now())
-                .deadLine(Instant.now())
-                .questionId(someString())
-                .tags(someArrayString())
-                .title(someString())
-                .build();
+        return random.nextObject(QuestionBaseDto.class);
+    }
+
+    public static QuestionAppearanceDto someQuestionAppearanceDto() {
+        return random.nextObject(QuestionAppearanceDto.class);
+    }
+
+    public static QuestionWithAnswersCountDto someQuestionWithAnswersCountDto() {
+        return random.nextObject(QuestionWithAnswersCountDto.class);
     }
 
     public static Attachment someAttachment() {
-        return Attachment.builder()
-                .id(someString())
-                .name(someString())
-                .data(someString().getBytes())
-                .type(someString())
-                .build();
+        return random.nextObject(Attachment.class);
     }
 
     public static Vote someVote() {
-        return Vote.builder()
-                .authorEmail(someString())
-                .build();
+        return random.nextObject(Vote.class);
     }
 
     public static List<TelescopeEmployeeEntityDto> someTelescopeEmployeeEntityDtosWithEmails(String... emails) {
@@ -247,6 +192,10 @@ public class InstantiateUtil {
     }
 
     public static String someString() {
+        return random.nextObject(String.class);
+    }
+
+    public static String someStringLowerCase() {
         return new BigInteger(130, SECURE_RANDOM).toString(32);
     }
 
@@ -254,7 +203,7 @@ public class InstantiateUtil {
         return getList(InstantiateUtil::someString);
     }
 
-    private static String[] someArrayString() {
+    public static String[] someArrayStrings() {
         return getList(InstantiateUtil::someString).toArray(new String[0]);
     }
 

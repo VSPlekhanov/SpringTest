@@ -50,19 +50,20 @@ public class QuestionServiceImpl implements QuestionService {
 
     private final static int QUESTION_TITLE_LENGTH = 5;
     private final static int QUESTION_TEXT_LENGTH = 5;
+
     private final static int MIN_PAGE_SIZE = 0;
+
     private final TagService tagService;
     private final QuestionAggregator questionAggregator;
     private final QuestionRepository questionRepository;
     private final MongoTemplate mongoTemplate;
     private final ElasticSearchService elasticSearchService;
     private final AnswerService answerService;
-
     @Setter
     private int searchDefaultPageSize;
+
     @Setter
     private int searchMaxPageSize;
-
     private static <T1, T2> List<T2> mapList(List<T1> list, Function<T1, T2> mapper) {
         List<T2> result = new ArrayList<>();
         for (T1 value : list) {
