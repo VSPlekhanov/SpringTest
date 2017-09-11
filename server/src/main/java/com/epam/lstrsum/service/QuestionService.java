@@ -39,7 +39,7 @@ public interface QuestionService extends ElasticSearchService {
 
     void deleteSubscriptionsByQuestionId(String questionId);
 
-    QuestionAppearanceDto getQuestionAppearanceDotByQuestionId(String questionId);
+    QuestionAppearanceDto getQuestionAppearanceDtoByQuestionId(String questionId);
 
     Question getQuestionById(String questionId);
 
