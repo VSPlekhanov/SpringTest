@@ -45,8 +45,6 @@ public class Question {
     private List<User> allowedSubs;
     private List<String> attachmentIds;
 
-    private Integer upVote;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -65,9 +63,7 @@ public class Question {
         if (authorId != null ? !authorId.equals(question.authorId) : question.authorId != null) return false;
         if (allowedSubs != null ? !allowedSubs.equals(question.allowedSubs) : question.allowedSubs != null)
             return false;
-        if (attachmentIds != null ? !attachmentIds.equals(question.attachmentIds) : question.attachmentIds != null)
-            return false;
-        return upVote != null ? upVote.equals(question.upVote) : question.upVote == null;
+        return attachmentIds != null ? attachmentIds.equals(question.attachmentIds) : question.attachmentIds == null;
     }
 
     @Override
@@ -82,7 +78,6 @@ public class Question {
         result = 31 * result + (authorId != null ? authorId.hashCode() : 0);
         result = 31 * result + (allowedSubs != null ? allowedSubs.hashCode() : 0);
         result = 31 * result + (attachmentIds != null ? attachmentIds.hashCode() : 0);
-        result = 31 * result + (upVote != null ? upVote.hashCode() : 0);
         return result;
     }
 }

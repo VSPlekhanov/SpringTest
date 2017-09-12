@@ -179,7 +179,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void questionServiceIsAbleToGetQuestionAppearanceDTOFromDBIfIdIsValid() {
-        QuestionAppearanceDto dtoQuestionDto = questionService.getQuestionAppearanceDotByQuestionId("1u_1r");
+        QuestionAppearanceDto dtoQuestionDto = questionService.getQuestionAppearanceDtoByQuestionId("1u_1r");
 
         assertThat(isNull(dtoQuestionDto), is(false));
     }

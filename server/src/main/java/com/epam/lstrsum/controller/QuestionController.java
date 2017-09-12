@@ -58,7 +58,7 @@ public class QuestionController {
     @GetMapping(value = "/{questionId}")
     public ResponseEntity<QuestionAppearanceDto> getQuestionWithText(@PathVariable String questionId) {
         if (questionService.contains(questionId)) {
-            return ResponseEntity.ok(questionService.getQuestionAppearanceDotByQuestionId(questionId));
+            return ResponseEntity.ok(questionService.getQuestionAppearanceDtoByQuestionId(questionId));
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

@@ -23,7 +23,7 @@ function randomISODate() {
 /*ATTENTION!!!!
 * This number response for how many documents will in db after script
 */
-const N = 100
+const N = 50
 /**/
 
 const USER_COLLECTION_NAME = "User"

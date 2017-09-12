@@ -45,7 +45,6 @@ public interface QuestionDtoMapper {
             @Mapping(target = "deadLine", expression = "java( java.time.Instant.ofEpochMilli(questionPostDto.getDeadLine()))"),
             @Mapping(target = "createdAt", expression = "java( java.time.Instant.now())"),
             @Mapping(target = "authorId", source = "authorId"),
-            @Mapping(target = "upVote", constant = "0"),
             @Mapping(target = "score", constant = "0"),
             @Mapping(target = "questionId", ignore = true),
             @Mapping(target = "attachmentIds", ignore = true)

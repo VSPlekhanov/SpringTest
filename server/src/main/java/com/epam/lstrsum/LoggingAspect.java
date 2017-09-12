@@ -24,7 +24,7 @@ public class LoggingAspect {
         try {
             result = joinPoint.proceed(args);
         } catch (Throwable t) {
-            log.error("{} method thorwn exception {}", methodName, t.getMessage());
+            log.error("{} method thrown exception {}", methodName, t.getMessage());
             throw t;
         }
 
