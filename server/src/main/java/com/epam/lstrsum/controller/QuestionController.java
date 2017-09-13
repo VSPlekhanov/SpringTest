@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/question")
@@ -57,11 +57,8 @@ public class QuestionController {
 
     @GetMapping(value = "/{questionId}")
     public ResponseEntity<QuestionAppearanceDto> getQuestionWithText(@PathVariable String questionId) {
-        if (questionService.contains(questionId)) {
-            return ResponseEntity.ok(questionService.getQuestionAppearanceDtoByQuestionId(questionId));
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        Optional<QuestionAppearanceDto> questionDto = questionService.getQuestionAppearanceDtoByQuestionId(questionId);
+        return questionDto.map(dto -> ResponseEntity.ok(dto)).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/list")

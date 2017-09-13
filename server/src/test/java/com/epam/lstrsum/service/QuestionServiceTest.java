@@ -12,6 +12,7 @@ import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.persistence.UserRepository;
+import com.epam.lstrsum.testutils.InstantiateUtil;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID;
@@ -31,7 +33,6 @@ import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionPostDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static java.util.Objects.isNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -179,9 +180,18 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void questionServiceIsAbleToGetQuestionAppearanceDTOFromDBIfIdIsValid() {
-        QuestionAppearanceDto dtoQuestionDto = questionService.getQuestionAppearanceDtoByQuestionId("1u_1r");
+        Optional<QuestionAppearanceDto> dtoQuestionDto =
+                questionService.getQuestionAppearanceDtoByQuestionId(InstantiateUtil.EXISTING_QUESTION_ID);
 
-        assertThat(isNull(dtoQuestionDto), is(false));
+        assertThat(dtoQuestionDto.isPresent(), is(true));
+    }
+
+    @Test
+    public void getQuestionAppearanceDtoByQuestionIdIfIdIsNotExists() {
+        Optional<QuestionAppearanceDto> dtoQuestionDto =
+                questionService.getQuestionAppearanceDtoByQuestionId(InstantiateUtil.NON_EXISTING_QUESTION_ID);
+
+        assertThat(dtoQuestionDto.isPresent(), is(false));
     }
 
     @Test(expected = QuestionValidationException.class)

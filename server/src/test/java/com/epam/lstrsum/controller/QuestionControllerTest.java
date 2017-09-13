@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.NON_EXISTING_QUESTION_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someInt;
@@ -112,7 +113,7 @@ public class QuestionControllerTest {
         final QuestionAppearanceDto dto = someQuestionAppearanceDto();
 
         when(questionService.contains(anyString())).thenReturn(true);
-        when(questionService.getQuestionAppearanceDtoByQuestionId(anyString())).thenReturn(dto);
+        when(questionService.getQuestionAppearanceDtoByQuestionId(anyString())).thenReturn(Optional.of(dto));
 
         assertThat(controller.getQuestionWithText(someString())).isEqualTo(ResponseEntity.ok(dto));
     }
@@ -121,7 +122,7 @@ public class QuestionControllerTest {
     public void getQuestionWithAnswersShouldReturnNotFoundResponseEntityWhenSuchQuestionDoesNotExist() throws Exception {
         final String questionId = NON_EXISTING_QUESTION_ID;
 
-        when(questionService.contains(questionId)).thenReturn(false);
+        when(questionService.getQuestionAppearanceDtoByQuestionId(questionId)).thenReturn(Optional.empty());
 
         assertThat(controller.getQuestionWithText(questionId)).isEqualTo(ResponseEntity.notFound().build());
     }
