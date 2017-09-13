@@ -64,6 +64,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Setter
     private int searchMaxPageSize;
+
     private static <T1, T2> List<T2> mapList(List<T1> list, Function<T1, T2> mapper) {
         List<T2> result = new ArrayList<>();
         for (T1 value : list) {

@@ -2,7 +2,6 @@ package com.epam.lstrsum.service.impl;
 
 import com.epam.lstrsum.aggregators.SubscriptionAggregator;
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
-import com.epam.lstrsum.dto.subscription.SubscriptionAllFieldsDto;
 import com.epam.lstrsum.email.EmailCollection;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
@@ -145,10 +144,5 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                             answer.getQuestionId().getQuestionId()
                     )));
         }
-    }
-
-    @Override
-    public List<SubscriptionAllFieldsDto> findAllSubscriptionsAllFieldsDto() {
-        return findAll().stream().map(subscriptionAggregator::modelToAllFieldsDto).collect(Collectors.toList());
     }
 }
