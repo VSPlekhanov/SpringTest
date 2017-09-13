@@ -15,9 +15,9 @@ public class QuestionWithAnswersCountDto extends QuestionBaseDto {
 
     public QuestionWithAnswersCountDto(
             String questionId, String title, String[] tags, Instant createdAt, Instant deadLine,
-            UserBaseDto authorId, Integer upVote, Integer answersCount
+            UserBaseDto authorId, Integer answersCount
     ) {
-        super(questionId, title, tags, createdAt, deadLine, authorId, upVote);
+        super(questionId, title, tags, createdAt, deadLine, authorId);
         this.answersCount = answersCount;
     }
 

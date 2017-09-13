@@ -142,7 +142,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public QuestionAppearanceDto getQuestionAppearanceDotByQuestionId(String questionId) {
+    public QuestionAppearanceDto getQuestionAppearanceDtoByQuestionId(String questionId) {
         Question question = questionRepository.findOne(questionId);
         return questionAggregator.modelToQuestionAppearanceDto(question);
     }

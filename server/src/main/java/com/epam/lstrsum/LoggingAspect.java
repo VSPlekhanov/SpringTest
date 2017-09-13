@@ -33,7 +33,7 @@ public class LoggingAspect {
                 log.debug("{} method was completed", methodName);
             }
         } catch (Throwable t) {
-            log.error("{} method thorwn exception {}", methodName, t.getMessage());
+            log.error("{} method thrown exception {}", methodName, t.getMessage());
             throw t;
         }
 

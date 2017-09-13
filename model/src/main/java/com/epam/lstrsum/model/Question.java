@@ -43,6 +43,4 @@ public class Question {
     @DBRef(lazy = true)
     private List<User> allowedSubs;
     private List<String> attachmentIds;
-
-    private Integer upVote;
 }
