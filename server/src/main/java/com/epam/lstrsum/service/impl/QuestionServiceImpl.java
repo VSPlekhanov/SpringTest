@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -141,9 +142,9 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public QuestionAppearanceDto getQuestionAppearanceDtoByQuestionId(String questionId) {
+    public Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestionId(String questionId) {
         Question question = questionRepository.findOne(questionId);
-        return questionAggregator.modelToQuestionAppearanceDto(question);
+        return isNull(question) ? Optional.empty() : Optional.of(questionAggregator.modelToQuestionAppearanceDto(question));
     }
 
     @Override

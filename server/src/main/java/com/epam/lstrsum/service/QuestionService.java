@@ -10,6 +10,7 @@ import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface QuestionService extends ElasticSearchService {
     List<QuestionAllFieldsDto> findAll();
@@ -39,7 +40,7 @@ public interface QuestionService extends ElasticSearchService {
 
     void deleteSubscriptionsByQuestionId(String questionId);
 
-    QuestionAppearanceDto getQuestionAppearanceDtoByQuestionId(String questionId);
+    Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestionId(String questionId);
 
     Question getQuestionById(String questionId);
 
