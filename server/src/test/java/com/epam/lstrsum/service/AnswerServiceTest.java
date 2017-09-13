@@ -25,6 +25,8 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class AnswerServiceTest extends SetUpDataBaseCollections {
+    private static final int ANSWERS_COUNT = 3;
+    private static final int PAGE_SIZE = 2;
     private final String authorEmail = "Bob_Hoplins@epam.com";
     @Autowired
     private AnswerService answerService;
@@ -34,9 +36,6 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     private QuestionService questionService;
     @Autowired
     private MongoTemplate mongoTemplate;
-
-    private static final int ANSWERS_COUNT = 3;
-    private static final int PAGE_SIZE = 2;
 
     @Test
     public void addNewAnswerWithExistingQuestionTest() throws Exception {

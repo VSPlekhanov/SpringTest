@@ -5,6 +5,7 @@ import com.epam.lstrsum.dto.attachment.AttachmentAllFieldsDto;
 import com.epam.lstrsum.model.Attachment;
 import com.epam.lstrsum.persistence.AttachmentRepository;
 import com.epam.lstrsum.service.impl.AttachmentServiceImpl;
+import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -12,6 +13,8 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import java.util.Optional;
 
+import static com.epam.lstrsum.testutils.InstantiateUtil.someAttachmentAllFieldsDto;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
@@ -37,33 +40,39 @@ public class AttachmentServiceTest {
 
     @Test
     public void newAttachmentShouldBeSaved() throws Exception {
-        AttachmentAllFieldsDto newAttachment = new AttachmentAllFieldsDto(null, "testFile", "image/jpeg", new byte[]{1, 2, 3});
-        Attachment attachment = new Attachment(null, newAttachment.getName(), newAttachment.getType(), newAttachment.getData());
+        val newAttachment = new AttachmentAllFieldsDto(null, "testFile", "image/jpeg", new byte[]{1, 2, 3});
+        val attachment = new Attachment("id", newAttachment.getName(), newAttachment.getType(), newAttachment.getData());
+        val expected = someAttachmentAllFieldsDto();
 
-        when(attachmentRepository.save(attachment)).thenReturn(attachment);
-        attachmentService.save(newAttachment);
+        when(attachmentRepository.save(any(Attachment.class))).thenReturn(attachment);
+        when(aggregator.modelToAllFieldsDto(any(Attachment.class))).thenReturn(expected);
 
-        verify(attachmentRepository).save(attachment);
+        assertThat(attachmentService.save(newAttachment))
+                .isEqualToComparingFieldByFieldRecursively(expected);
+
+        verify(attachmentRepository, times(1)).save(any(Attachment.class));
     }
 
     @Test
     public void newMultipartFileShouldBeSaved() throws Exception {
-        String originalFileName = "originalFileName";
-        String contentType = "contentType";
+        val originalFileName = "originalFileName";
+        val contentType = "contentType";
         byte[] content = {1, 2, 3};
 
         MockMultipartFile file = new MockMultipartFile("TEMP_FILE_NAME", originalFileName, contentType, content);
-        Attachment expected = Attachment.builder().name(originalFileName).type(contentType).data(content).build();
+        Attachment expected = Attachment.builder().id("id").name(originalFileName).type(contentType).data(content).build();
 
-        when(attachmentRepository.save(expected)).thenReturn(expected);
-        attachmentService.saveMultipartFile(file);
-        verify(attachmentRepository).save(expected);
+        when(attachmentRepository.save(any(Attachment.class))).thenReturn(expected);
+
+        assertThat(attachmentService.saveMultipartFile(file)).isEqualTo("id");
+
+        verify(attachmentRepository, times(1)).save(any(Attachment.class));
     }
 
     @Test
     public void findOneShouldFindExistingObject() throws Exception {
-        String existingId = "someId";
-        Attachment att = new Attachment(existingId, "name", "type", new byte[]{1, 2, 3});
+        val existingId = "someId";
+        val att = new Attachment(existingId, "name", "type", new byte[]{1, 2, 3});
         when(attachmentRepository.findOne(existingId)).thenReturn(att);
 
         attachmentService.findOne(existingId);
@@ -73,7 +82,7 @@ public class AttachmentServiceTest {
 
     @Test
     public void fineOneShouldReturnEmptyOptionalIfNotFound() throws Exception {
-        String notExistingId = "someId";
+        val notExistingId = "someId";
         when(attachmentRepository.findOne(notExistingId)).thenReturn(null);
 
         Optional<AttachmentAllFieldsDto> one = attachmentService.findOne(notExistingId);
@@ -83,7 +92,7 @@ public class AttachmentServiceTest {
 
     @Test
     public void deleteShouldRemoveAttachment() throws Exception {
-        String id = "id";
+        val id = "id";
 
         attachmentService.delete(id);
         verify(attachmentRepository).delete(id);

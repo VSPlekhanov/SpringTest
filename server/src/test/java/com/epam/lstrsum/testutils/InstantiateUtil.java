@@ -2,6 +2,7 @@ package com.epam.lstrsum.testutils;
 
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
+import com.epam.lstrsum.dto.attachment.AttachmentAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
 import com.epam.lstrsum.dto.question.QuestionBaseDto;
@@ -40,10 +41,10 @@ public class InstantiateUtil {
     public static final String EXISTING_USER_ID = "1u";
     public static final String EXISTING_QUESTION_ID = "1u_1r";
     public static final String NON_EXISTING_QUESTION_ID = "notExist";
-    private static SecureRandom SECURE_RANDOM = new SecureRandom();
     private static final EnhancedRandom random = EnhancedRandomBuilder.aNewEnhancedRandomBuilder()
             .stringLengthRange(5, 50)
             .build();
+    private static SecureRandom SECURE_RANDOM = new SecureRandom();
 
     public static Subscription someSubscription() {
         return random.nextObject(Subscription.class);
@@ -51,6 +52,10 @@ public class InstantiateUtil {
 
     public static User someUser() {
         return random.nextObject(User.class);
+    }
+
+    public static AttachmentAllFieldsDto someAttachmentAllFieldsDto() {
+        return random.nextObject(AttachmentAllFieldsDto.class);
     }
 
     public static TelescopeEmployeeEntityDto someTelescopeEmployeeEntityDtoWithEmail(String email) {

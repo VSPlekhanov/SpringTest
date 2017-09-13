@@ -2,9 +2,11 @@ package com.epam.lstrsum;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 @Aspect
@@ -23,12 +25,17 @@ public class LoggingAspect {
         Object result;
         try {
             result = joinPoint.proceed(args);
+
+            if (result instanceof ResponseEntity) {
+                val response = (ResponseEntity) result;
+                log.debug("{} method status code = {}", methodName, response.getStatusCode());
+            } else {
+                log.debug("{} method was completed", methodName);
+            }
         } catch (Throwable t) {
             log.error("{} method thorwn exception {}", methodName, t.getMessage());
             throw t;
         }
-
-        log.debug("{} method result = {}", methodName, result);
 
         return result;
     }

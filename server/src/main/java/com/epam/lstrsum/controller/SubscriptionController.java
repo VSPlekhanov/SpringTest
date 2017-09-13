@@ -1,19 +1,15 @@
 package com.epam.lstrsum.controller;
 
 import com.epam.lstrsum.annotation.NotEmptyString;
-import com.epam.lstrsum.dto.subscription.SubscriptionAllFieldsDto;
 import com.epam.lstrsum.service.SubscriptionService;
 import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/subscription")
@@ -23,12 +19,6 @@ public class SubscriptionController {
     private final SubscriptionService subscriptionService;
     private final UserRuntimeRequestComponent userRuntimeRequestComponent;
     private final UserService userService;
-
-
-    @GetMapping
-    public ResponseEntity<List<SubscriptionAllFieldsDto>> getListOfSubscriptions() {
-        return ResponseEntity.ok(subscriptionService.findAllSubscriptionsAllFieldsDto());
-    }
 
     @PutMapping("/{questionId}")
     public ResponseEntity subscribe(@PathVariable @NotEmptyString String questionId) {

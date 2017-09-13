@@ -10,8 +10,8 @@ import com.epam.lstrsum.dto.question.QuestionBaseDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
 import com.epam.lstrsum.model.Question;
-import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.model.QuestionWithAnswersCount;
+import com.epam.lstrsum.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

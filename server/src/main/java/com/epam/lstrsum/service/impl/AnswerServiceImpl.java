@@ -43,14 +43,12 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.proj
 @ConfigurationProperties(prefix = "answer")
 @Slf4j
 public class AnswerServiceImpl implements AnswerService {
+    private static final int MIN_PAGE_SIZE = 0;
     private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final MongoTemplate mongoTemplate;
     private final AnswerAggregator answerAggregator;
-
-    private static final int MIN_PAGE_SIZE = 0;
-
     @Setter
     private int searchDefaultPageSize;
     @Setter
@@ -79,7 +77,6 @@ public class AnswerServiceImpl implements AnswerService {
                 group("questionId").count().as("count"),
                 project("count").and("questionId").previousOperation()
         );
-
 
         final List<QuestionWithAnswersCount> mappedResults = mongoTemplate.aggregate(
                 aggregation, Answer.class, QuestionWithAnswersCount.class
