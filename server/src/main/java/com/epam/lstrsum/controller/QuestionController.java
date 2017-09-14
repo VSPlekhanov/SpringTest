@@ -97,7 +97,7 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.smartSearch(query, page, size));
     }
 
-    @GetMapping("/getTextSearchResultsCount")
+    @GetMapping("/search/count")
     public ResponseEntity<CounterDto> searchCount(@RequestParam("query") String query) {
         return ResponseEntity.ok()
                 .body(new CounterDto(questionService.getTextSearchResultsCount(query)));
