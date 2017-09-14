@@ -1,5 +1,7 @@
 package com.epam.lstrsum.security.role;
 
+import com.epam.lstrsum.enums.UserRoleType;
+import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.security.EpamEmployeePrincipal;
 
 import java.util.Arrays;
@@ -25,13 +27,13 @@ import java.util.ResourceBundle;
  * allowFor(/admin/**)=ROLE_ADMIN
  * <p>
  * #NotAllowedRole
- * not.allowed.role.name=NOT_ALLOWED_USER
+ * not.allowed.role.name=ROLE_NOT_ALLOWED_USER
  */
 
 public class ResourceBundleRoleService implements RoleService {
     private static final String NOT_ALLOWED_USER_PROPERTY_NAME = "not.allowed.role.name";
     private final ResourceBundle bundle;
-    private String notAllowedRole = "NOT_ALLOWED_USER";
+    private String notAllowedRole = "ROLE_NOT_ALLOWED_USER";
 
     /**
      * New ResourceBundleRoleService
@@ -77,6 +79,11 @@ public class ResourceBundleRoleService implements RoleService {
             notAllowedRole = bundle.getString(NOT_ALLOWED_USER_PROPERTY_NAME);
         }
         return notAllowedRole;
+    }
+
+    @Override
+    public String[] getPrincipalRoles(User user) {
+        return user.getRoles().stream().map(UserRoleType::name).toArray(String[]::new);
     }
 
     private String[] getMappedRoles(String key) {

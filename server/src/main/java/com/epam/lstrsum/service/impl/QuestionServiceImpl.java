@@ -145,7 +145,8 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestionId(String questionId) {
         Question question = questionRepository.findOne(questionId);
-        return isNull(question) ? Optional.empty() : Optional.of(questionAggregator.modelToQuestionAppearanceDto(question));
+        return Optional.ofNullable(question)
+                .map(questionAggregator::modelToQuestionAppearanceDto);
     }
 
     @Override

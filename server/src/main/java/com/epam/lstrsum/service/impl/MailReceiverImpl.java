@@ -99,7 +99,7 @@ public class MailReceiverImpl implements MailReceiver {
             final QuestionPostDto questionPostDto = parsedMessage.getQuestionPostDto();
 
             final long users = userService.addIfNotExistAllWithRole(
-                    questionPostDto.getAllowedSubs(), Collections.singletonList(UserRoleType.SIMPLE_USER)
+                    questionPostDto.getAllowedSubs(), Collections.singletonList(UserRoleType.ROLE_SIMPLE_USER)
             );
             if (users > 0) {
                 log.debug("Detected {} users not in base and added as another user", users);

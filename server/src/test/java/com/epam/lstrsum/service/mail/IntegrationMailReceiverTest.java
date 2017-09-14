@@ -170,6 +170,6 @@ public class IntegrationMailReceiverTest {
         doReturn(dtos).when(telescopeService)
                 .getUsersInfoByEmails(anySetOf(String.class));
 
-        userService.addIfNotExistAllWithRole(userEmails, singletonList(UserRoleType.ADMIN));
+        userService.addIfNotExistAllWithRole(userEmails, singletonList(UserRoleType.ROLE_ADMIN));
     }
 }

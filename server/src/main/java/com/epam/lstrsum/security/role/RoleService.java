@@ -1,5 +1,6 @@
 package com.epam.lstrsum.security.role;
 
+import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.security.EpamEmployeePrincipal;
 
 import java.util.Map;
@@ -18,7 +19,7 @@ public interface RoleService {
      * Get roles of specified principal.
      * <p>
      * If principal have no roles this method should return
-     * one role like "NOT_ALLOWED_USER".
+     * one role like "ROLE_NOT_ALLOWED_USER".
      * <p>
      * Kepp in mind, if this method is calling, it means that
      * principal already have passed the authentication system.
@@ -40,10 +41,12 @@ public interface RoleService {
     Map<String, String[]> getRolesRequestsMapping();
 
     /**
-     * Should return name of "NOT_ALLOWED_USER" role.
+     * Should return name of "ROLE_NOT_ALLOWED_USER" role.
      *
      * @return name of not allowed user role.
      */
     String getNotAllowedPrincipalRole();
+
+    String[] getPrincipalRoles(User user);
 }
 

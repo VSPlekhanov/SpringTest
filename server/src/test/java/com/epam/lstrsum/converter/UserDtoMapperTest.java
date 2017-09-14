@@ -66,7 +66,7 @@ public class UserDtoMapperTest extends SetUpDataBaseCollections {
         final TelescopeDataDto userDto = someTelescopeDataDto();
         final String email = someString();
         final List<UserRoleType> roles = someRoles();
-        final boolean hasExtendedRole = roles.contains(UserRoleType.EXTENDED_USER);
+        final boolean hasExtendedRole = roles.contains(UserRoleType.ROLE_EXTENDED_USER);
 
         assertThat(userMapper.userTelescopeInfoDtoToUser(userDto, email, roles))
                 .satisfies(e -> {

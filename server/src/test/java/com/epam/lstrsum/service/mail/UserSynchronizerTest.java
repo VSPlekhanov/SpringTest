@@ -55,9 +55,9 @@ public class UserSynchronizerTest extends SetUpDataBaseCollections {
         assertThat(userService.findUserByEmail(bobHoplins).getIsActive())
                 .isTrue();
 
-        assertThat(userService.findAllWithRole(UserRoleType.EXTENDED_USER).stream().filter(User::getIsActive))
+        assertThat(userService.findAllWithRole(UserRoleType.ROLE_EXTENDED_USER).stream().filter(User::getIsActive))
                 .hasSize(2);
-        assertThat(userService.findAllWithRole(UserRoleType.EXTENDED_USER).stream().filter(u -> !u.getIsActive()))
+        assertThat(userService.findAllWithRole(UserRoleType.ROLE_EXTENDED_USER).stream().filter(u -> !u.getIsActive()))
                 .hasSize(3);
 
     }
