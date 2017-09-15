@@ -24,7 +24,7 @@ import static java.util.Objects.nonNull;
 @RequiredArgsConstructor
 @Slf4j
 public class UserSynchronizer {
-    private static final List<UserRoleType> ONLY_COMMON_USER_ROLES = Collections.singletonList(UserRoleType.EXTENDED_USER);
+    private static final List<UserRoleType> ONLY_COMMON_USER_ROLES = Collections.singletonList(UserRoleType.ROLE_EXTENDED_USER);
     private final ExchangeServiceHelper exchangeServiceHelper;
     private final UserService userService;
 
@@ -36,7 +36,7 @@ public class UserSynchronizer {
     public void synchronizeUsers() {
         log.debug("Start synchronizing users");
 
-        final List<User> allWithRole = userService.findAllWithRole(UserRoleType.EXTENDED_USER);
+        final List<User> allWithRole = userService.findAllWithRole(UserRoleType.ROLE_EXTENDED_USER);
         final Set<String> activeUsers = allWithRole.stream()
                 .filter(u -> nonNull(u.getIsActive()))
                 .filter(User::getIsActive)

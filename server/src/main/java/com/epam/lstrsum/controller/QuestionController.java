@@ -45,7 +45,7 @@ public class QuestionController {
         log.debug("addQuestion.enter; dtoObject: {}", dtoObject);
         String email = userRuntimeRequestComponent.getEmail();
         final long usersAdded = userService.addIfNotExistAllWithRole(
-                dtoObject.getAllowedSubs(), Collections.singletonList(UserRoleType.SIMPLE_USER)
+                dtoObject.getAllowedSubs(), Collections.singletonList(UserRoleType.ROLE_SIMPLE_USER)
         );
         log.debug("{} users added", usersAdded);
         log.debug("addQuestion; email: {}", email);

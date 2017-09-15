@@ -31,5 +31,4 @@ public class User {
     private List<UserRoleType> roles;
     private Instant createdAt;
     private Boolean isActive;
-
 }

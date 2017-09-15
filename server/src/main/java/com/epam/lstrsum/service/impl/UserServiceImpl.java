@@ -12,6 +12,7 @@ import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService {
     //TelescopeDataDto -> Set<String> -> Pair<String, TelescopeDataDto>
     private static final BiFunction<TelescopeDataDto, Set<String>, Pair<String, TelescopeDataDto>>
             GET_PAIR_FROM_EMAIL_TO_TELESCOPE_DATA = (data, emails) ->
-            Pair.of(
+            ImmutablePair.of(
                     GET_EMAIL_CONTAINS_IN_BOTH_LISTS.apply(data.getEmail(), emails),
                     data
             );

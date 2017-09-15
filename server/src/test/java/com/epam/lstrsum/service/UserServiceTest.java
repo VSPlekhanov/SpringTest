@@ -58,7 +58,7 @@ public class UserServiceTest extends SetUpDataBaseCollections {
     }
 
     public void findAllWithRole() {
-        assertEquals(userService.findAllWithRole(UserRoleType.EXTENDED_USER).size(), 5);
+        assertEquals(userService.findAllWithRole(UserRoleType.ROLE_EXTENDED_USER).size(), 5);
     }
 
     @Test
@@ -110,7 +110,7 @@ public class UserServiceTest extends SetUpDataBaseCollections {
         doReturn(dtos).when(telescopeService).getUsersInfoByEmails(anySetOf(String.class));
         when(userAggregator.userTelescopeInfoDtoToUser(any(), anyString(), any())).thenReturn(someUser());
 
-        final long actual = userService.addIfNotExistAllWithRole(concat, singletonList(UserRoleType.SIMPLE_USER));
+        final long actual = userService.addIfNotExistAllWithRole(concat, singletonList(UserRoleType.ROLE_SIMPLE_USER));
 
         assertEquals(actual, notInBaseEmails.size());
 
@@ -127,7 +127,7 @@ public class UserServiceTest extends SetUpDataBaseCollections {
 
         doReturn(dtoList).when(telescopeService).getUsersInfoByEmails(anySetOf(String.class));
 
-        userService.addIfNotExistAllWithRole(Collections.singletonList(someEmail), singletonList(UserRoleType.SIMPLE_USER));
+        userService.addIfNotExistAllWithRole(Collections.singletonList(someEmail), singletonList(UserRoleType.ROLE_SIMPLE_USER));
 
         verify(telescopeService, times(1)).getUsersInfoByEmails(anySetOf(String.class));
     }
@@ -142,7 +142,7 @@ public class UserServiceTest extends SetUpDataBaseCollections {
 
         doReturn(dtoList).when(telescopeService).getUsersInfoByEmails(anySetOf(String.class));
 
-        userService.addIfNotExistAllWithRole(Collections.singletonList(someEmail), singletonList(UserRoleType.SIMPLE_USER));
+        userService.addIfNotExistAllWithRole(Collections.singletonList(someEmail), singletonList(UserRoleType.ROLE_SIMPLE_USER));
 
         verify(telescopeService, times(1)).getUsersInfoByEmails(anySetOf(String.class));
     }

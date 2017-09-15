@@ -1,6 +1,10 @@
 package com.epam.lstrsum.security;
 
+import com.epam.lstrsum.exception.NoSuchUserException;
+import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.security.role.RoleService;
+import com.epam.lstrsum.service.UserService;
+import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -9,6 +13,9 @@ import org.springframework.security.oauth2.client.token.grant.code.Authorization
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 
+import static com.epam.lstrsum.testutils.InstantiateUtil.someActiveUser;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someNotActiveUser;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -41,19 +48,26 @@ public class CustomResourceServerTokenServicesTest {
     @Mock
     private AuthorizationCodeResourceDetails authorizationCodeResourceDetails;
 
+    @Mock
+    private UserService userService;
+
     private ResourceServerTokenServices tokenServices;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
 
-        tokenServices = new CustomResourceServerTokenServices(roleService, authorizationCodeResourceDetails);
+        tokenServices = new CustomResourceServerTokenServices(
+                roleService, authorizationCodeResourceDetails, userService
+        );
     }
 
     @Test
-    public void successLoadAuthentication() {
+    public void successLoadAuthenticationReturningActiveUser() {
         when(authorizationCodeResourceDetails.getClientId()).thenReturn(SOME_CLIENT_ID);
-        when(roleService.getPrincipalRoles(any(EpamEmployeePrincipal.class))).thenReturn(new String[]{ROLE_USER});
+        when(roleService.getPrincipalRoles(any(User.class))).thenReturn(new String[]{ROLE_USER});
+        val someActiveUser = someActiveUser();
+        when(userService.findUserByEmail(any(String.class))).thenReturn(someActiveUser);
 
         OAuth2Authentication auth = tokenServices.loadAuthentication(VALID_ACCESS_TOKEN);
         EpamEmployeePrincipal employeePrincipal = (EpamEmployeePrincipal) auth.getPrincipal();
@@ -67,7 +81,36 @@ public class CustomResourceServerTokenServicesTest {
         assertThat(employeePrincipal.getEmail(), is(SOME_EMAIL));
 
         verify(authorizationCodeResourceDetails, times(1)).getClientId();
-        verify(roleService, times(1)).getPrincipalRoles(any(EpamEmployeePrincipal.class));
+        verify(roleService, times(1)).getPrincipalRoles(any(User.class));
+        verify(userService, times(1)).findUserByEmail(any(String.class));
+    }
+
+    @Test
+    public void successLoadAuthenticationReturningNotActiveUser() {
+        when(authorizationCodeResourceDetails.getClientId()).thenReturn(SOME_CLIENT_ID);
+        val someNotActiveUser = someNotActiveUser();
+        when(userService.findUserByEmail(any(String.class))).thenReturn(someNotActiveUser);
+
+        assertThatThrownBy(() -> tokenServices.loadAuthentication(VALID_ACCESS_TOKEN))
+                .hasMessage("User is not in DL")
+                .isInstanceOf(AuthenticationServiceException.class);
+
+        verify(authorizationCodeResourceDetails, times(1)).getClientId();
+        verify(userService, times(1)).findUserByEmail(any(String.class));
+    }
+
+    @Test
+    public void successLoadAuthenticationThrowingException() {
+        when(authorizationCodeResourceDetails.getClientId()).thenReturn(SOME_CLIENT_ID);
+        final NoSuchUserException cause = new NoSuchUserException("No such User in user Collection");
+        when(userService.findUserByEmail(any(String.class))).thenThrow(cause);
+
+        assertThatThrownBy(() -> tokenServices.loadAuthentication(VALID_ACCESS_TOKEN))
+                .hasMessage("No such User in user Collection")
+                .isInstanceOf(AuthenticationServiceException.class);
+
+        verify(authorizationCodeResourceDetails, times(1)).getClientId();
+        verify(userService, times(1)).findUserByEmail(any(String.class));
     }
 
     @Test(expected = AuthenticationServiceException.class)

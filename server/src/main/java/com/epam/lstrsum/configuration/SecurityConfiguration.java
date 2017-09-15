@@ -5,6 +5,7 @@ import com.epam.lstrsum.security.CustomResourceServerTokenServices;
 import com.epam.lstrsum.security.cert.TrustAllCertificatesSSL;
 import com.epam.lstrsum.security.role.ResourceBundleRoleService;
 import com.epam.lstrsum.security.role.RoleService;
+import com.epam.lstrsum.service.UserService;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -64,6 +65,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private List<String> envsToDisableCsrf;
     @Autowired
     private Environment env;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -140,7 +144,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     public ResourceServerTokenServices tokenService() {
-        return new CustomResourceServerTokenServices(roleService(), authorizationCodeResourceDetails());
+        return new CustomResourceServerTokenServices(roleService(), authorizationCodeResourceDetails(), userService);
     }
 
     @Bean
@@ -163,8 +167,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             @Override
             public void loginSuccess(HttpServletRequest request, HttpServletResponse response, Authentication auth) {
                 final boolean isAdmin = auth.getAuthorities().stream()
-                        .anyMatch(a -> a.getAuthority().equals(UserRoleType.ADMIN.name()));
-                response.addCookie(new Cookie("role", (isAdmin) ? UserRoleType.ADMIN.name() : UserRoleType.EXTENDED_USER.name()));
+                        .anyMatch(a -> a.getAuthority().equals(UserRoleType.ROLE_ADMIN.name()));
+                response.addCookie(new Cookie("role", (isAdmin) ? UserRoleType.ROLE_ADMIN.name() : UserRoleType.ROLE_EXTENDED_USER.name()));
             }
         };
     }

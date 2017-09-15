@@ -21,6 +21,7 @@ import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.model.Vote;
 import io.github.benas.randombeans.EnhancedRandomBuilder;
 import io.github.benas.randombeans.api.EnhancedRandom;
+import lombok.val;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 
@@ -52,6 +53,20 @@ public class InstantiateUtil {
 
     public static User someUser() {
         return random.nextObject(User.class);
+    }
+
+    public static User someActiveUser() {
+        return someUserWithActive(true);
+    }
+
+    public static User someNotActiveUser() {
+        return someUserWithActive(false);
+    }
+
+    public static User someUserWithActive(boolean active) {
+        val someUser = someUser();
+        someUser.setIsActive(active);
+        return someUser;
     }
 
     public static AttachmentAllFieldsDto someAttachmentAllFieldsDto() {

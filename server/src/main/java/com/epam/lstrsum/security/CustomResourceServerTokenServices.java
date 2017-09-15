@@ -1,10 +1,14 @@
 package com.epam.lstrsum.security;
 
+import com.epam.lstrsum.exception.NoSuchUserException;
+import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.security.role.RoleService;
+import com.epam.lstrsum.service.UserService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -20,11 +24,14 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 
 import java.util.Map;
 
+import static java.util.Objects.isNull;
+
 @Slf4j
 @RequiredArgsConstructor
 public class CustomResourceServerTokenServices implements ResourceServerTokenServices {
     private final RoleService roleService;
     private final AuthorizationCodeResourceDetails authorizationCodeResourceDetails;
+    private final UserService userService;
 
     public OAuth2Authentication loadAuthentication(String accessToken) throws AuthenticationException, InvalidTokenException {
 
@@ -39,13 +46,31 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
                     null, true, null,
                     null, null, null, null);
 
+            val user = handleUserFromToken(principle.getEmail());
+
             final UsernamePasswordAuthenticationToken finalToken =
                     new UsernamePasswordAuthenticationToken(principle, "N/A",
-                            AuthorityUtils.createAuthorityList(roleService.getPrincipalRoles(principle)));
+                            AuthorityUtils.createAuthorityList(roleService.getPrincipalRoles(user)));
 
             return new OAuth2Authentication(request, finalToken);
         } catch (Exception e) {
-            log.error("Token process exception!", e);
+            log.error("Token process exception!");
+            throw new AuthenticationServiceException(e.getMessage(), e);
+        }
+    }
+
+    private User handleUserFromToken(String email) {
+        try {
+            val user = userService.findUserByEmail(email);
+
+            if (isNull(user.getIsActive()) || !user.getIsActive()) {
+                log.error("User is not in DL");
+                throw new AuthenticationServiceException("User is not in DL");
+            }
+
+            return user;
+        } catch (NoSuchUserException e) {
+            log.error("User is not in DL");
             throw new AuthenticationServiceException(e.getMessage(), e);
         }
     }
