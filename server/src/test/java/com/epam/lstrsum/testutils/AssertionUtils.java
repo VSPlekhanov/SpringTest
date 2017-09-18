@@ -18,6 +18,14 @@ public class AssertionUtils {
         assertEntityWithStatus(responseEntity, HttpStatus.NO_CONTENT);
     }
 
+    public static <T> void hasStatusBadRequest(ResponseEntity<T> responseEntity) {
+        assertEntityWithStatus(responseEntity, HttpStatus.BAD_REQUEST);
+    }
+
+    public static <T> void hasStatusInternalServerError(ResponseEntity<T> responseEntity) {
+        assertEntityWithStatus(responseEntity, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     private static <T> void assertEntityWithStatus(ResponseEntity<T> responseEntity, HttpStatus httpStatus) {
         assertThat(responseEntity.getStatusCode())
                 .isEqualTo(httpStatus);
