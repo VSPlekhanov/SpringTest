@@ -1,10 +1,11 @@
 package com.epam.lstrsum.configuration;
 
 import etm.contrib.aop.aopalliance.EtmMethodCallInterceptor;
-import etm.contrib.console.HttpConsoleServer;
+import etm.contrib.integration.spring.web.SpringHttpConsoleServlet;
 import etm.core.monitor.EtmMonitor;
 import etm.core.monitor.NestedMonitor;
 import org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -14,8 +15,9 @@ import org.springframework.context.annotation.Profile;
  * <p/>
  * JETM (Java™ Execution Time Measurement Library) is a small and free library, that helps locating performance problems in Java™ applications.
  * </p>
- *
- *  http://{server name or address}:40000 to see aggregated performance statistics.
+ * <p>
+ * http://{server name or address}:{server.port}/{server.contextPath}/performance/ - to see aggregated performance statistics.
+ * For example http://localhost:8080/experience/performance/
  **/
 @Configuration
 @Profile("profiling")
@@ -26,9 +28,12 @@ public class JETMConfiguration {
         return new NestedMonitor();
     }
 
-    @Bean(initMethod = "start", destroyMethod = "stop")
-    public HttpConsoleServer httpConsoleServer(EtmMonitor etmMonitor) {
-        return new HttpConsoleServer(etmMonitor);
+    @Bean
+    public ServletRegistrationBean exampleServletBean() {
+        ServletRegistrationBean bean = new ServletRegistrationBean(
+                new SpringHttpConsoleServlet(), "/performance/*");
+        bean.setLoadOnStartup(1);
+        return bean;
     }
 
     @Bean
