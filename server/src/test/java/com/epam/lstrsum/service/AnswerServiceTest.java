@@ -6,6 +6,7 @@ import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.exception.AnswerValidationException;
+import com.epam.lstrsum.exception.NoSuchAnswerException;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.QuestionWithAnswersCount;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_ANSWER_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswer;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -144,6 +146,7 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void findAnswersByQuestionIdPaginationWorks() {
+        assertThat(answerService.getAnswersByQuestionId(EXISTING_QUESTION_ID, -1, PAGE_SIZE)).hasSize(2);
         assertThat(answerService.getAnswersByQuestionId(EXISTING_QUESTION_ID, 0, PAGE_SIZE)).hasSize(2);
         assertThat(answerService.getAnswersByQuestionId(EXISTING_QUESTION_ID, 1, PAGE_SIZE)).hasSize(1);
         assertThat(answerService.getAnswersByQuestionId(EXISTING_QUESTION_ID, 2, PAGE_SIZE)).isEmpty();
@@ -154,5 +157,26 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     ) {
         assertThat(source.getQuestionId().getQuestionId()).isEqualTo(questionId);
         assertThat(source.getCount()).isEqualTo(answersCount);
+    }
+
+    @Test
+    public void findAnswerByAnswerIdIsNotNull() {
+        final Answer answer = answerService.getAnswerById(EXISTING_ANSWER_ID);
+        assertThat(answer).isNotNull();
+    }
+
+    @Test(expected = NoSuchAnswerException.class)
+    public void findAnswerByAnswerIdForNotExistingAnswerId() {
+        final Answer answer = answerService.getAnswerById(someAnswer().getAnswerId());
+    }
+
+    @Test
+    public void saveAnswer() {
+        String newAnswerText = "new answer text";
+        Answer answerSaved = answerService.getAnswerById(EXISTING_ANSWER_ID);
+        answerSaved.setText(newAnswerText);
+        answerService.save(answerSaved);
+        Answer answerLoaded = answerService.getAnswerById(EXISTING_ANSWER_ID);
+        assertThat(answerLoaded.getText()).isEqualTo(newAnswerText);
     }
 }

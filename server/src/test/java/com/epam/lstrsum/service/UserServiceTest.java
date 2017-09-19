@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +24,7 @@ import static com.epam.lstrsum.testutils.InstantiateUtil.NON_EXISTING_USER_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_NOT_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someStrings;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeEmployeeEntityDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
 import static java.util.Collections.singletonList;
@@ -116,6 +118,24 @@ public class UserServiceTest extends SetUpDataBaseCollections {
 
         verify(telescopeService, times(1)).getUsersInfoByEmails(anySetOf(String.class));
         verify(userAggregator, times(1)).userTelescopeInfoDtoToUser(any(), anyString(), any());
+    }
+
+
+    @Test
+    public void addIfNotExistAllWithRoleWrongArgs() {
+        assertEquals(userService.addIfNotExistAllWithRole(null, singletonList(UserRoleType.ROLE_SIMPLE_USER)), 0);
+
+        List<String> userEmails = new ArrayList<>();
+        assertEquals(userService.addIfNotExistAllWithRole(userEmails, singletonList(UserRoleType.ROLE_SIMPLE_USER)), 0);
+
+        List<TelescopeEmployeeEntityDto> dtos = Collections.emptyList();
+        userEmails = someStrings();
+        val lowerCaseUsersEmail = userEmails.stream().map(String::toLowerCase).collect(Collectors.toSet());
+
+        doReturn(dtos).when(telescopeService).getUsersInfoByEmails(lowerCaseUsersEmail);
+        assertEquals(userService.addIfNotExistAllWithRole(userEmails, singletonList(UserRoleType.ROLE_SIMPLE_USER)), 0);
+
+        verify(telescopeService, times(1)).getUsersInfoByEmails(anySetOf(String.class));
     }
 
     @Test

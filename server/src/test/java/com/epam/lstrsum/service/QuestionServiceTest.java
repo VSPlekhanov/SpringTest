@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.NON_EXISTING_QUESTION_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someInt;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someLong;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionPostDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
@@ -124,6 +125,11 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
         List<QuestionAllFieldsDto> actualList = questionService.search(SEARCH_PHRASE, -1, PAGE_SIZE);
 
         assertThatListHasRightSizeAndContainsCorrectValue(actualList, 1, SEARCH_PHRASE);
+    }
+
+    @Test
+    public void smartSearch() {
+        assertThat(questionService.smartSearch("one", someInt(), someInt())).isNotNull();
     }
 
     @Test
