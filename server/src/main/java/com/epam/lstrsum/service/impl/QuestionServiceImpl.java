@@ -18,6 +18,7 @@ import com.epam.lstrsum.service.AnswerService;
 import com.epam.lstrsum.service.ElasticSearchService;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.TagService;
+import com.epam.lstrsum.service.UserService;
 import com.mongodb.DBRef;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -60,6 +61,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final MongoTemplate mongoTemplate;
     private final ElasticSearchService elasticSearchService;
     private final AnswerService answerService;
+    private final UserService userService;
     @Setter
     private int searchDefaultPageSize;
 
@@ -116,6 +118,17 @@ public class QuestionServiceImpl implements QuestionService {
     public List<QuestionWithAnswersCountDto> findAllQuestionsBaseDto(int questionPage, int questionAmount) {
         Pageable pageable = new PageRequest(questionPage, questionAmount);
         List<Question> questionList = questionRepository.findAllByOrderByCreatedAtDesc(pageable);
+        final List<QuestionWithAnswersCount> questionWithAnswersCounts = answerService.aggregateToCount(questionList);
+
+        return mapList(questionWithAnswersCounts, questionAggregator::modelToAnswersCountDto);
+    }
+
+    @Override
+    public List<QuestionWithAnswersCountDto> findAllQuestionBaseDtoWithAllowedSub(int questionPage, int questionAmount, String userEmail) {
+        Pageable pageable = new PageRequest(questionPage, questionAmount);
+        List<Question> questionList = questionRepository.findAllByAllowedSubsContainsOrderByCreatedAtDesc(
+                userService.findUserByEmail(userEmail), pageable
+        );
         final List<QuestionWithAnswersCount> questionWithAnswersCounts = answerService.aggregateToCount(questionList);
 
         return mapList(questionWithAnswersCounts, questionAggregator::modelToAnswersCountDto);

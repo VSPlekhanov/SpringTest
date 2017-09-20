@@ -39,6 +39,17 @@ public class UserSynchronizerTest extends SetUpDataBaseCollections {
     private UserSynchronizer userSynchronizer;
 
     @Test
+    public void isInDistributionList() {
+        assertThat(userSynchronizer.isInDistributionList("John_Doe@epam.com")).isTrue();
+        assertThat(userSynchronizer.isInDistributionList("Bob_Hoplins@epam.com")).isTrue();
+        assertThat(userSynchronizer.isInDistributionList("Tyler_Greeds@epam.com")).isFalse();
+        assertThat(userSynchronizer.isInDistributionList("Donald_Gardner@epam.com")).isFalse();
+        assertThat(userSynchronizer.isInDistributionList("Ernest_Hemingway@epam.com")).isFalse();
+        assertThat(userSynchronizer.isInDistributionList("Steven_Tyler@epam.com")).isFalse();
+        assertThat(userSynchronizer.isInDistributionList("no_such_email@epam.com")).isFalse();
+    }
+
+    @Test
     public void synchronizeUsers() throws Exception {
         final String bobHoplins = "Bob_Hoplins@epam.com";
         final String johnDoe = "John_Doe@epam.com";

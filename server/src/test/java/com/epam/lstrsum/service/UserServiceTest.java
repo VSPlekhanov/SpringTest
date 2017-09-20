@@ -186,4 +186,45 @@ public class UserServiceTest extends SetUpDataBaseCollections {
                 .hasSize(5)
                 .allSatisfy(user -> assertThat(allowedEmails).contains(user.getEmail()));
     }
+
+    @Test
+    public void existsActiveUserWithExtendedUserRoleAndEmail() {
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_EXTENDED_USER, "John_Doe@epam.com")).isTrue();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_EXTENDED_USER, "john_doe@epam.com")).isTrue();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_EXTENDED_USER, "bob_hoplins@epam.com")).isTrue();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_EXTENDED_USER, "tyler_greeds@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_EXTENDED_USER, "Steven_Tyler@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_EXTENDED_USER, "Donald_Gardner@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_EXTENDED_USER, "no_such_email@epam.com")).isFalse();
+    }
+
+    @Test
+    public void existsActiveUserWithAdminRoleAndEmail() {
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_ADMIN, "John_Doe@epam.com")).isTrue();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_ADMIN, "john_doe@epam.com")).isTrue();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_ADMIN, "ernest_hemingway@epam.com")).isTrue();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_ADMIN, "Tyler_Greeds@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_ADMIN, "Donald_Gardner@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_ADMIN, "no_such_email@epam.com")).isFalse();
+    }
+
+    @Test
+    public void existsActiveUserWithSimpleUserRoleAndEmail() {
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_SIMPLE_USER, "ernest_hemingway@epam.com")).isTrue();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_SIMPLE_USER, "Ernest_Hemingway@epam.com")).isTrue();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_SIMPLE_USER, "John_Doe@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_SIMPLE_USER, "Tyler_Greeds@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_SIMPLE_USER, "Donald_Gardner@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_SIMPLE_USER, "no_such_email@epam.com")).isFalse();
+    }
+
+    @Test
+    public void existsActiveUserWithNotAllowedUserRoleAndEmail() {
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_NOT_ALLOWED_USER, "Donald_Gardner@epam.com")).isTrue();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_NOT_ALLOWED_USER, "donald_gardner@epam.com")).isTrue();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_NOT_ALLOWED_USER, "Ernest_Hemingway@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_NOT_ALLOWED_USER, "John_Doe@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_NOT_ALLOWED_USER, "Tyler_Greeds@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_NOT_ALLOWED_USER, "no_such_email@epam.com")).isFalse();
+    }
 }

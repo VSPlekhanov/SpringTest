@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID;
+import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.NON_EXISTING_QUESTION_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someInt;
@@ -344,5 +345,11 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
         questionService.delete(notValidQuestionId);
 
         assertThat(questionRepository.findOne(notValidQuestionId)).isNull();
+    }
+
+    @Test
+    public void findAllQuestionBaseDtoWithAllowedSub() {
+        assertThat(questionService.findAllQuestionBaseDtoWithAllowedSub(0, 100, EXISTING_USER_EMAIL))
+                .hasSize(6);
     }
 }

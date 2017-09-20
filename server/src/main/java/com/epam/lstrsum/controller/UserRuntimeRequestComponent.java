@@ -21,6 +21,10 @@ public class UserRuntimeRequestComponent {
         return getPrincipal().getEmail();
     }
 
+    public boolean isInDistributionList() {
+        return getPrincipal().isUserInDistributionList();
+    }
+
     private EpamEmployeePrincipal getPrincipal() {
         log.debug("getPrincipal.enter; request {}", request);
         return Optional.ofNullable(request.getUserPrincipal())

@@ -29,6 +29,8 @@ public interface QuestionService extends ElasticSearchService {
 
     List<QuestionWithAnswersCountDto> findAllQuestionsBaseDto(int questionPage, int questionAmount);
 
+    List<QuestionWithAnswersCountDto> findAllQuestionBaseDtoWithAllowedSub(int questionPage, int questionAmount, String userEmail);
+
     List<String> getRelevantTags(String key);
 
     @EmailNotification(template = NewQuestionNotificationTemplate.class)
