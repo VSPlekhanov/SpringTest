@@ -1,5 +1,6 @@
 package com.epam.lstrsum.service;
 
+import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.User;
 
@@ -21,4 +22,6 @@ public interface UserService {
     User findUserById(String userId);
 
     long addIfNotExistAllWithRole(final List<String> userEmails, List<UserRoleType> roles);
+
+    List<UserBaseDto> findAllUserBaseDtos();
 }

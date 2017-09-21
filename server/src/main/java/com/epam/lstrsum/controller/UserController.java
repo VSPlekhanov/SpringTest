@@ -2,9 +2,7 @@ package com.epam.lstrsum.controller;
 
 import com.epam.lstrsum.annotation.NotEmptyString;
 import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
-import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.service.TelescopeService;
-import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -22,13 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 public class UserController {
-    final private UserService userService;
     final private TelescopeService telescopeService;
-
-    @RequestMapping
-    public List<User> getListOfUsers() {
-        return userService.findAll();
-    }
 
     @GetMapping("/telescope/info")
     public ResponseEntity<List<TelescopeEmployeeEntityDto>> getUserInfoByFullName(
