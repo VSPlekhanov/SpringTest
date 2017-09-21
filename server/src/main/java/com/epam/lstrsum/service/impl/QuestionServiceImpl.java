@@ -123,7 +123,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<String> getRelevantTags(String key) {
-        return tagService.getTagsRating().stream().filter(e -> e.startsWith(key)).collect(Collectors.toList());
+        return tagService.getFilteredTagsRating(key);
     }
 
     @Override
