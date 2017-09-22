@@ -66,7 +66,7 @@ public class TelescopeServiceImpl implements TelescopeService {
 
     @Override
     public List<TelescopeEmployeeEntityDto> getUsersInfoByEmails(Set<String> emails) {
-        log.debug("getUsersInfoByEmails.enter; emails size for search into telescope: {}", isNull(emails) ? "null list" : emails.size());
+        log.debug("getUsersInfoByEmails.enter; emails size for search into telescope: {}", emails.size());
         String emailsForSearch = prepareEmailsForSearch(emails);
         return httpRequestService.sendGetRequest(
                 getEntityTemplate()
