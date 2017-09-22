@@ -1,6 +1,7 @@
 package com.epam.lstrsum.service.impl;
 
 import com.epam.lstrsum.aggregators.UserAggregator;
+import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.dto.user.telescope.TelescopeDataDto;
 import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
 import com.epam.lstrsum.enums.UserRoleType;
@@ -104,6 +105,12 @@ public class UserServiceImpl implements UserService {
                 .map(data -> GET_PAIR_FROM_EMAIL_TO_TELESCOPE_DATA.apply(data, lowerCaseUsersEmail))
                 .filter(entry -> addIfNotExist(entry, roles))
                 .count();
+    }
+
+    @Override
+    public List<UserBaseDto> findAllUserBaseDtos() {
+        List<User> userList = this.findAll();
+        return userAggregator.allowedSubsToListOfUserBaseDtos(userList);
     }
 
     private boolean addIfNotExist(Map.Entry<String, TelescopeDataDto> entry, List<UserRoleType> roles) {
