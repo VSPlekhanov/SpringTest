@@ -75,10 +75,11 @@ public class BackupHelperImpl implements BackupHelper {
 
         if (!backupDir.isEmpty()) {
             FileOutputStream fileOutputStream = null;
+            ZipOutputStream zipOutput = null;
             try {
                 fileOutputStream = new FileOutputStream(backupDir + File.separator + fullFileName);
 
-                ZipOutputStream zipOutput = new ZipOutputStream(fileOutputStream);
+                zipOutput = new ZipOutputStream(fileOutputStream);
 
                 val zipEntry = new ZipEntry(baseFileName);
                 zipOutput.putNextEntry(zipEntry);
@@ -86,8 +87,11 @@ public class BackupHelperImpl implements BackupHelper {
                 mimeMessage.writeTo(zipOutput);
 
                 zipOutput.closeEntry();
-                zipOutput.close();
             } finally {
+                if (nonNull(zipOutput)) {
+                    zipOutput.close();
+                }
+
                 if (nonNull(fileOutputStream)) {
                     fileOutputStream.close();
                 }
