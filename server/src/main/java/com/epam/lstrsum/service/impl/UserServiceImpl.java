@@ -109,8 +109,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserBaseDto> findAllUserBaseDtos() {
-        List<User> userList = this.findAll();
-        return userAggregator.allowedSubsToListOfUserBaseDtos(userList);
+        return userAggregator.allowedSubsToListOfUserBaseDtos(findAll());
     }
 
     private boolean addIfNotExist(Map.Entry<String, TelescopeDataDto> entry, List<UserRoleType> roles) {
