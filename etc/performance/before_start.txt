@@ -1,0 +1,7 @@
+Before starting test plan execution:
+1) Insert path to mongo db bin directory and init.js file into init_mongo remote and localhost files ('.cmd' or 'sh').
+2) Insert path to init_mongo... file ('.cmd' or 'sh') in 4 places into 'load_test_plan.jmx' file (see setUp_thread_Group and tearDown_Thread_Group - preprocessor_mongo_init_remote and preprocessor_mongo_init_localhost).
+
+All paths are localhost paths.
+
+For more information see KB page https://kb.epam.com/display/EPMLSTR/How+to
