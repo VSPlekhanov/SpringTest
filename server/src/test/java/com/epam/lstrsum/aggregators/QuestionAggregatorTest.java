@@ -8,6 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import java.util.List;
+
 import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestion;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionPostDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
@@ -77,6 +79,18 @@ public class QuestionAggregatorTest {
                 .findByEmail(anyString());
         verify(questionMapper, times(1))
                 .questionPostDtoAndAuthorEmailToQuestion(any(), any(), any());
+    }
+
+    @Test
+    public void questionPostDtoAndAuthorEmailAndAttachmentsToQuestion() throws Exception {
+        final QuestionPostDto questionPostDto = someQuestionPostDto();
+        List<String> attachmentIds = getListWithSize(InstantiateUtil::someString, 2);
+        aggregator.questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(questionPostDto, someString(), attachmentIds);
+
+        verify(userAggregator, times(questionPostDto.getAllowedSubs().size() + 1))
+                .findByEmail(anyString());
+        verify(questionMapper, times(1))
+                .questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(any(), any(), any(), any());
     }
 
     @Test

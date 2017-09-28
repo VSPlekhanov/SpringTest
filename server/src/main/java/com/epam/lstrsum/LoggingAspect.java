@@ -8,6 +8,9 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
 
 @Aspect
 @Component
@@ -20,7 +23,7 @@ public class LoggingAspect {
         Object[] args = joinPoint.getArgs();
         String methodName = joinPoint.getSignature().getName();
 
-        log.debug("{} method called with args {}", methodName, OBJECT_MAPPER.writeValueAsString(args));
+        log.debug("{} method called with args {}", methodName, OBJECT_MAPPER.writeValueAsString(modifyArgsForLogging(args, methodName)));
 
         Object result;
         try {
@@ -38,6 +41,33 @@ public class LoggingAspect {
         }
 
         return result;
+    }
+
+    private Object[] modifyArgsForLogging(Object[] args, String methodName) {
+        if ("addQuestion".equals(methodName)){
+            val argsModified = new ArrayList<Object>();
+
+            // replace attachments with their filenames
+            for(Object arg: args){
+                if(arg instanceof MultipartFile[]){
+                    StringBuilder fileNames = new StringBuilder("MultipartFile[]: ");
+                    for(MultipartFile file: (MultipartFile[]) arg){
+                        fileNames.append(file.getOriginalFilename() + ", ");
+                    }
+                    argsModified.add(fileNames.substring(0, fileNames.length()-2));
+                }
+                else if(arg instanceof MultipartFile){
+                    argsModified.add(((MultipartFile) arg).getOriginalFilename());
+                }
+                else{
+                    argsModified.add(arg);
+                }
+            }
+            return argsModified.toArray();
+        }
+        else {
+            return args;
+        }
     }
 
 }

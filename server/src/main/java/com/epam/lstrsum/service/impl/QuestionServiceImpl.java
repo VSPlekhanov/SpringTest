@@ -15,6 +15,7 @@ import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.service.AnswerService;
+import com.epam.lstrsum.service.AttachmentService;
 import com.epam.lstrsum.service.ElasticSearchService;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.TagService;
@@ -22,6 +23,7 @@ import com.epam.lstrsum.service.UserService;
 import com.mongodb.DBRef;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.annotation.CacheEvict;
@@ -34,6 +36,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +45,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 
 @Service
@@ -62,6 +66,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final ElasticSearchService elasticSearchService;
     private final AnswerService answerService;
     private final UserService userService;
+    private final AttachmentService attachmentService;
     @Setter
     private int searchDefaultPageSize;
 
@@ -146,6 +151,25 @@ public class QuestionServiceImpl implements QuestionService {
         log.debug("Add new Question with email {}", email);
         validateQuestionData(questionPostDto, email);
         Question newQuestion = questionAggregator.questionPostDtoAndAuthorEmailToQuestion(questionPostDto, email);
+        return questionRepository.save(newQuestion);
+    }
+
+    @SneakyThrows
+    @Override
+    @CacheEvict(value = "tagsRating", allEntries = true)
+    @EmailNotification(template = NewQuestionNotificationTemplate.class)
+    public Question addNewQuestion(QuestionPostDto questionPostDto, String email, MultipartFile[] files) {
+        log.debug("Add new Question with email {}", email);
+        validateQuestionData(questionPostDto, email);
+
+        List<String> attachmentIds = new ArrayList<>();
+        if(nonNull(files)){
+            for (MultipartFile file : files) {
+                attachmentIds.add(attachmentService.saveMultipartFile(file));
+            }
+        }
+
+        Question newQuestion = questionAggregator.questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(questionPostDto, email, attachmentIds);
         return questionRepository.save(newQuestion);
     }
 

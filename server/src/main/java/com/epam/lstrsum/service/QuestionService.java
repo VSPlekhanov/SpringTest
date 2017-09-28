@@ -8,6 +8,7 @@ import com.epam.lstrsum.email.EmailNotification;
 import com.epam.lstrsum.email.template.NewQuestionNotificationTemplate;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +36,8 @@ public interface QuestionService extends ElasticSearchService {
 
     @EmailNotification(template = NewQuestionNotificationTemplate.class)
     Question addNewQuestion(QuestionPostDto questionPostDto, String email);
+
+    Question addNewQuestion(QuestionPostDto questionPostDto, String email, MultipartFile[] files);
 
     QuestionAllFieldsDto getQuestionAllFieldDtoByQuestionId(String questionId);
 

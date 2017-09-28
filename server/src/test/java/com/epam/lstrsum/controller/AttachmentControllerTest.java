@@ -10,12 +10,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockMultipartFile;
 
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -30,40 +28,6 @@ public class AttachmentControllerTest {
     public void setUp() throws Exception {
         initMocks(this);
         controller = new AttachmentController(attachmentService);
-    }
-
-    @Test
-    public void uploadAttachmentShouldSaveFile() throws Exception {
-        MockMultipartFile file = new MockMultipartFile("name", "originalName", "contentType", new byte[5]);
-        controller.uploadAttachment(file);
-
-        verify(attachmentService).saveMultipartFile(file);
-    }
-
-    @Test
-    public void uploadAttachmentShouldReturnValidResponseEntity() throws Exception {
-        String savedId = "id";
-        MockMultipartFile file = new MockMultipartFile("name", "originalName", "contentType", new byte[5]);
-        when(attachmentService.saveMultipartFile(file)).thenReturn(savedId);
-
-        ResponseEntity actual = controller.uploadAttachment(file);
-
-        ResponseEntity expected =
-                ResponseEntity
-                        .ok()
-                        .contentType(MediaType.TEXT_HTML)
-                        .header("savedAttachmentId", savedId)
-                        .body("redirect:/api/attachment");
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void deleteAttachmentShouldDelete() throws Exception {
-        String id = "id";
-        controller.deleteAttachment(id);
-
-        verify(attachmentService).delete(id);
     }
 
     @Test

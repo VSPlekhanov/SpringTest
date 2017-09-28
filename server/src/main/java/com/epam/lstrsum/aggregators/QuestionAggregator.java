@@ -75,6 +75,15 @@ public class QuestionAggregator implements BasicModelDtoConverter<Question, Ques
         );
     }
 
+    public Question questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(QuestionPostDto questionPostDto, String email, List<String> attachmentIds) {
+        return questionMapper.questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(
+                questionPostDto,
+                userAggregator.findByEmail(email),
+                getEmptyListIfNull(questionPostDto.getAllowedSubs()),
+                attachmentIds
+        );
+    }
+
     public List<QuestionBaseDto> subscriptionsToListOfQuestionBaseDto(List<Question> subscriptions) {
         return questionMapper.subscriptionsToListOfQuestionBaseDto(
                 subscriptions,

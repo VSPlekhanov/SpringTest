@@ -9,16 +9,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.Optional;
 
 @RestController
@@ -26,22 +21,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AttachmentController {
     private final AttachmentService attachmentService;
-
-    @PostMapping
-    public ResponseEntity<String> uploadAttachment(@RequestParam("file") MultipartFile file) throws IOException {
-        String savedId = attachmentService.saveMultipartFile(file);
-
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.TEXT_HTML)
-                .header("savedAttachmentId", savedId)
-                .body("redirect:/api/attachment");
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteAttachment(@PathVariable("id") String id) {
-        attachmentService.delete(id);
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Resource> downloadFile(@PathVariable("id") String id) {

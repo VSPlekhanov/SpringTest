@@ -17,8 +17,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -74,10 +76,12 @@ public class QuestionControllerTest {
         final String authorEmail = someString();
         when(userRuntimeRequestComponent.getEmail()).thenReturn(authorEmail);
         final QuestionPostDto postDto = someQuestionPostDto();
-        when(questionService.addNewQuestion(any(), any())).thenReturn(someQuestion());
+        when(questionService.addNewQuestion(any(), any(), any())).thenReturn(someQuestion());
 
-        controller.addQuestion(postDto);
-        verify(questionService, times(1)).addNewQuestion(postDto, authorEmail);
+        MultipartFile[] files = new MultipartFile[]{};
+
+        controller.addQuestion(postDto, files);
+        verify(questionService, times(1)).addNewQuestion(postDto, authorEmail, files);
     }
 
     @Test
@@ -85,10 +89,10 @@ public class QuestionControllerTest {
         final String questionId = someString();
         final Question question = Question.builder().questionId(questionId).build();
 
-        when(questionService.addNewQuestion(any(), any())).thenReturn(question);
+        when(questionService.addNewQuestion(any(), any(), any())).thenReturn(question);
         when(userRuntimeRequestComponent.getEmail()).thenReturn(someString());
 
-        assertThat(controller.addQuestion(someQuestionPostDto())).isEqualTo(ResponseEntity.ok(questionId));
+        assertThat(controller.addQuestion(someQuestionPostDto(), new MultipartFile[]{})).isEqualTo(ResponseEntity.ok(questionId));
     }
 
     @Test
