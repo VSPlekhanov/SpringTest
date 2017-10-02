@@ -90,13 +90,13 @@ public class CustomResourceServerTokenServicesTest {
         when(authorizationCodeResourceDetails.getClientId()).thenReturn(SOME_CLIENT_ID);
         val someNotActiveUser = someNotActiveUser();
         when(userService.findUserByEmail(any(String.class))).thenReturn(someNotActiveUser);
+        when(roleService.getPrincipalRoles(any(User.class))).thenReturn(new String[]{ROLE_USER});
 
-        assertThatThrownBy(() -> tokenServices.loadAuthentication(VALID_ACCESS_TOKEN))
-                .hasMessage("User is not in DL")
-                .isInstanceOf(AuthenticationServiceException.class);
+        tokenServices.loadAuthentication(VALID_ACCESS_TOKEN);
 
         verify(authorizationCodeResourceDetails, times(1)).getClientId();
         verify(userService, times(1)).findUserByEmail(any(String.class));
+        verify(roleService, times(1)).getPrincipalRoles(any(User.class));
     }
 
     @Test

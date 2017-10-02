@@ -81,6 +81,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean existsActiveUserWithRoleAndEmail(UserRoleType role, String email) {
+        val query = Criteria.where("roles").elemMatch(new Criteria().in(role))
+                .andOperator(Criteria.where("isActive").is(true)
+                .andOperator(Criteria.where("email").regex(email, "i")));
+        return mongoTemplate.exists(new Query(query), User.class);
+    }
+
+    @Override
     public User findUserById(String userId) {
         return Optional.ofNullable(userRepository.findOne(userId))
                 .orElseThrow(() -> new NoSuchUserException("No such User in user Collection"));

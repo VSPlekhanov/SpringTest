@@ -14,6 +14,8 @@ import java.util.Optional;
 public interface QuestionRepository extends MongoRepository<Question, String> {
     List<Question> findAllBy(TextCriteria criteria, Pageable pageable);
 
+    List<Question> findAllByAllowedSubsContainsOrderByCreatedAtDesc(User sub, Pageable pageable);
+
     List<Question> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     List<Question> findAllByOrderByCreatedAtDesc();

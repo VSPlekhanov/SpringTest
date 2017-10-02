@@ -24,4 +24,6 @@ public interface UserService {
     long addIfNotExistAllWithRole(final List<String> userEmails, List<UserRoleType> roles);
 
     List<UserBaseDto> findAllUserBaseDtos();
+
+    boolean existsActiveUserWithRoleAndEmail(final UserRoleType role, String email);
 }

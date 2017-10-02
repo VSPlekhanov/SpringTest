@@ -89,7 +89,9 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
     @Test
     public void getQuestionsReturnsValidResponseEntityTest() {
 
-        when(questionService.findAllQuestionsBaseDto(someInt(), someInt())).thenReturn(getList(InstantiateUtil::someQuestionWithAnswersCountDto));
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
+        when(questionService.findAllQuestionsBaseDto(someInt(), someInt()))
+                .thenReturn(getList(InstantiateUtil::someQuestionWithAnswersCountDto));
 
         String uri= String.format("/api/question/list?questionPage=%d&questionAmount=%d", someInt(), someInt());
         assertThat(restTemplate.exchange(uri, HttpMethod.GET, null, Object.class))
@@ -98,15 +100,46 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
     }
 
     @Test
+    public void getQuestionsWithAllowedSubReturnsValidResponseEntityTest() {
+
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(false);
+        when(questionService.findAllQuestionBaseDtoWithAllowedSub(someInt(), someInt(), someString()))
+                .thenReturn(getList(InstantiateUtil::someQuestionWithAnswersCountDto));
+
+        String uri= String.format("/api/question/list?questionPage=%d&questionAmount=%d", someInt(), someInt());
+        assertThat(restTemplate.exchange(uri, HttpMethod.GET, null, Object.class))
+                .satisfies(AssertionUtils::hasStatusOk);
+        verify(questionService, times(1)).findAllQuestionBaseDtoWithAllowedSub(anyInt(), anyInt(), anyString());
+    }
+
+    @Test
     public void getQuestionsInvalidParams() {
 
-        when(questionService.findAllQuestionsBaseDto(anyInt(), anyInt())).thenReturn(getList(InstantiateUtil::someQuestionWithAnswersCountDto));
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
+        when(questionService.findAllQuestionsBaseDto(anyInt(), anyInt()))
+                .thenReturn(getList(InstantiateUtil::someQuestionWithAnswersCountDto));
 
         String uri= String.format("/api/question/list?questionPage=%d&questionAmount=%d", -4, maxQuestionAmount + 1);
         assertThat(restTemplate.exchange(uri, HttpMethod.GET, null, Object.class))
                 .satisfies(AssertionUtils::hasStatusOk);
 
         verify(questionService, times(1)).findAllQuestionsBaseDto(0, maxQuestionAmount);
+
+    }
+
+    @Test
+    public void getQuestionsWithAllowedSubInvalidParams() {
+
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(false);
+        when(questionService.findAllQuestionBaseDtoWithAllowedSub(anyInt(), anyInt(), anyString()))
+                .thenReturn(getList(InstantiateUtil::someQuestionWithAnswersCountDto));
+
+        String uri= String.format("/api/question/list?questionPage=%d&questionAmount=%d", -4, maxQuestionAmount + 1);
+        assertThat(restTemplate.exchange(uri, HttpMethod.GET, null, Object.class))
+                .satisfies(AssertionUtils::hasStatusOk);
+
+        verify(questionService, times(1))
+                .findAllQuestionBaseDtoWithAllowedSub(eq(0), eq(maxQuestionAmount), anyString());
 
     }
 

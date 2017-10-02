@@ -23,8 +23,7 @@ import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 
 import java.util.Map;
-
-import static java.util.Objects.isNull;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -40,16 +39,19 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
             String jwtClaims = jwt.getClaims();
             Map<String, Object> map = new ObjectMapper().readValue(jwtClaims, new TypeReference<Map<String, String>>() {
             });
-            EpamEmployeePrincipal principle = EpamEmployeePrincipal.ofMap(map);
 
             OAuth2Request request = new OAuth2Request(null, authorizationCodeResourceDetails.getClientId(),
                     null, true, null,
                     null, null, null, null);
 
-            val user = handleUserFromToken(principle.getEmail());
+            String email = getEmailFromMap(map);
 
+            val user = handleUserFromToken(email);
+            map.put(EpamEmployeePrincipal.DISTRIBUTION_LIST_USER, user.getIsActive());
+
+            EpamEmployeePrincipal principal = EpamEmployeePrincipal.ofMap(map);
             final UsernamePasswordAuthenticationToken finalToken =
-                    new UsernamePasswordAuthenticationToken(principle, "N/A",
+                    new UsernamePasswordAuthenticationToken(principal, "N/A",
                             AuthorityUtils.createAuthorityList(roleService.getPrincipalRoles(user)));
 
             return new OAuth2Authentication(request, finalToken);
@@ -59,16 +61,15 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
         }
     }
 
+    private String getEmailFromMap(Map<String, Object> map) {
+        return Optional.ofNullable(map.get(EpamEmployeePrincipal.EMAIL))
+                .map(o -> (String) o)
+                .orElseThrow(() -> new IllegalArgumentException("Wrong map format."));
+    }
+
     private User handleUserFromToken(String email) {
         try {
-            val user = userService.findUserByEmail(email);
-
-            if (isNull(user.getIsActive()) || !user.getIsActive()) {
-                log.error("User is not in DL");
-                throw new AuthenticationServiceException("User is not in DL");
-            }
-
-            return user;
+            return userService.findUserByEmail(email);
         } catch (NoSuchUserException e) {
             log.error("User is not in DL");
             throw new AuthenticationServiceException(e.getMessage(), e);

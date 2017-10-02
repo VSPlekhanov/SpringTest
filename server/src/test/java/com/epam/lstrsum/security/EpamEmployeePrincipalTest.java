@@ -22,9 +22,9 @@ public class EpamEmployeePrincipalTest {
 
     public static void checkThatOfMapThrowException(Map<String, Object> epamEmployeePrincipalMap) {
         assertThatThrownBy(() -> EpamEmployeePrincipal.ofMap(epamEmployeePrincipalMap))
-                .hasCause(new NullPointerException())
+                .hasNoCause()
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageMatching(".*Wrong map format.*");
+                .hasMessageMatching(".*Wrong map format by key: .*");
     }
 
     @Test

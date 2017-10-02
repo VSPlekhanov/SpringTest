@@ -5,6 +5,7 @@ import com.epam.lstrsum.email.service.ExchangeServiceHelper;
 import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.service.UserService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +29,10 @@ public class UserSynchronizer {
     private static final List<UserRoleType> ONLY_COMMON_USER_ROLES = Collections.singletonList(UserRoleType.ROLE_EXTENDED_USER);
     private final ExchangeServiceHelper exchangeServiceHelper;
     private final UserService userService;
+
+    public boolean isInDistributionList(String email) {
+        return userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_EXTENDED_USER, email);
+    }
 
     @Setter
     @Value("${email.distribution-list}")

@@ -58,21 +58,30 @@ public class QuestionController {
     @GetMapping(value = "/{questionId}")
     public ResponseEntity<QuestionAppearanceDto> getQuestionWithText(@PathVariable String questionId) {
         Optional<QuestionAppearanceDto> questionDto = questionService.getQuestionAppearanceDtoByQuestionId(questionId);
-        return questionDto.map(dto -> ResponseEntity.ok(dto)).orElse(ResponseEntity.notFound().build());
+        return questionDto.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/list")
     public ResponseEntity<List<QuestionWithAnswersCountDto>> getQuestions(
             @RequestParam(required = false, defaultValue = "-1") int questionPage,
             @RequestParam(required = false, defaultValue = "-1") int questionAmount) {
+
         if ((questionAmount > maxQuestionAmount) || (questionAmount <= 0)) {
             questionAmount = maxQuestionAmount;
         }
         if ((questionPage <= 0)) {
             questionPage = 0;
         }
-        List<QuestionWithAnswersCountDto> amountFrom = questionService.findAllQuestionsBaseDto(questionPage, questionAmount);
-        return ResponseEntity.ok(amountFrom);
+
+        List<QuestionWithAnswersCountDto> questionsFromService = currentUserInDistributionList() ?
+                questionService.findAllQuestionsBaseDto(questionPage, questionAmount) :
+                questionService.findAllQuestionBaseDtoWithAllowedSub(questionPage, questionAmount, userRuntimeRequestComponent.getEmail());
+
+        return ResponseEntity.ok(questionsFromService);
+    }
+
+    private boolean currentUserInDistributionList() {
+        return userRuntimeRequestComponent.isInDistributionList();
     }
 
     @GetMapping("/count")
