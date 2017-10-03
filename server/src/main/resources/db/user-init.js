@@ -1,4 +1,5 @@
 //mongeez formatted javascript
+
 //changeset Igor_Drozdov1:ChangeSet-1
 db.User.remove({});
 db.User.insert(
@@ -119,6 +120,30 @@ db.User.insert(
         "email": "igor_drozdov1@epam.com",
         "roles": ["ROLE_EXTENDED_USER", "ACTUATOR"],
         "createdAt": ISODate("2017-09-14T11:25:46.253Z"),
+        "isActive": true
+    }
+);
+
+//changeset Aleksandr_Shevkunenko:ChangeSet-2
+db.User.insert(
+    {
+        "_class": "com.epam.lstrsum.model.User",
+        "firstName": "Aleksandr",
+        "lastName": "Shevkunenko",
+        "email": "aleksandr_shevkunenko@epam.com",
+        "roles": ["ROLE_EXTENDED_USER", "ACTUATOR"],
+        "createdAt": ISODate("2017-10-02T15:05:00.000Z"),
+        "isActive": true
+    }
+);
+db.User.insert(
+    {
+        "_class": "com.epam.lstrsum.model.User",
+        "firstName": "Anastasiia",
+        "lastName": "Turenko",
+        "email": "anastasiia_turenko@epam.com",
+        "roles": ["ROLE_EXTENDED_USER", "ACTUATOR"],
+        "createdAt": ISODate("2017-10-02T15:05:00.000Z"),
         "isActive": true
     }
 );
