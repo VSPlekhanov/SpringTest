@@ -34,6 +34,7 @@ import javax.servlet.Filter;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 @Configuration
@@ -62,16 +63,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        RoleService roleService = roleService();
 
         http
                 .authorizeRequests()
                 .antMatchers("/sso/login")
-                .permitAll()
-                .antMatchers("/admin/**").access("hasRole('ADMIN')")
-                .antMatchers("/documentation/**", "/performance/**").access("hasAnyRole('ADMIN', 'EXTENDED_USER')")
-                .antMatchers("/api/**").access("hasAnyRole('SIMPLE_USER','EXTENDED_USER','ADMIN')")
-                .antMatchers("/**").access("hasAnyRole('SIMPLE_USER','EXTENDED_USER','ADMIN','ACTUATOR')")
-                .and();
+                .permitAll().and();
+
+        Map<String, String[]> rolesRequestsMapping = roleService.getRolesRequestsMapping();
+
+        for (Map.Entry<String, String[]> entry : rolesRequestsMapping.entrySet()) {
+            http.authorizeRequests().antMatchers(entry.getKey()).hasAnyAuthority(entry.getValue()).and();
+        }
         http
                 .addFilterBefore(oauthFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(exceptionHandlerFilter(), SecurityContextPersistenceFilter.class)
