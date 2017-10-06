@@ -25,6 +25,7 @@ import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_NOT_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someStrings;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeDataDtoWithEmail;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeEmployeeEntityDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
 import static java.util.Collections.singletonList;
@@ -32,8 +33,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -164,6 +167,26 @@ public class UserServiceTest extends SetUpDataBaseCollections {
 
         userService.addIfNotExistAllWithRole(Collections.singletonList(someEmail), singletonList(UserRoleType.ROLE_SIMPLE_USER));
 
+        verify(telescopeService, times(1)).getUsersInfoByEmails(anySetOf(String.class));
+    }
+
+    @Test
+    public void addIfNotExistAllWithRoleAndSomeWrongEmails() {
+        String existentEmail = "telescope_user_to_be_added@epam.com";
+        String nonexistentEmail1 = "no_such_user_in_telescope@epam.com";
+        String nonexistentEmail2 = SOME_NOT_USER_EMAIL.toLowerCase();
+
+        TelescopeDataDto dataDto = someTelescopeDataDtoWithEmail(existentEmail);
+        TelescopeEmployeeEntityDto employeeEntityDto = TelescopeEmployeeEntityDto.builder().data(dataDto).build();
+        List<TelescopeEmployeeEntityDto> dtoList = Collections.singletonList(employeeEntityDto);
+
+        doReturn(dtoList).when(telescopeService).getUsersInfoByEmails(anySetOf(String.class));
+        doReturn(someUser()).when(userAggregator).userTelescopeInfoDtoToUser(any(), eq(existentEmail), anyListOf(UserRoleType.class));
+
+        List<String> someEmails = Arrays.asList(existentEmail, nonexistentEmail1, nonexistentEmail2);
+        long actual = userService.addIfNotExistAllWithRole(someEmails, singletonList(UserRoleType.ROLE_SIMPLE_USER));
+
+        assertEquals(1, actual);
         verify(telescopeService, times(1)).getUsersInfoByEmails(anySetOf(String.class));
     }
 

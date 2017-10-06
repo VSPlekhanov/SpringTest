@@ -6,6 +6,7 @@ import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
+import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.exception.QuestionValidationException;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
@@ -237,6 +238,44 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
                 "just some text", 1501143330439L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
+        String authorEmail = "John_Doe@epam.com";
+        questionService.addNewQuestion(postDto, authorEmail);
+    }
+
+    private QuestionPostDto someQuestionPostDtoWithAllowedSubs(String... emails) {
+        return new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
+                "just some text", 1501143330439L, Arrays.asList(emails), emptyList());
+    }
+
+    @Test(expected = NoSuchUserException.class)
+    public void questionServiceThrowsNoSuchUserExceptionIfAuthorEmailIsWrongTest() {
+        QuestionPostDto postDto = someQuestionPostDtoWithAllowedSubs(
+                "Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com", "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com");
+        String authorEmail = "no_such_user_in_epam@epam.com";
+        questionService.addNewQuestion(postDto, authorEmail);
+    }
+
+    @Test(expected = NoSuchUserException.class)
+    public void questionServiceThrowsNoSuchUserExceptionIfAuthorEmailIsOutsideEpamTest() {
+        QuestionPostDto postDto = someQuestionPostDtoWithAllowedSubs(
+                "Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com", "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"
+        );
+        String authorEmail = "user_outside_epam@gmail.com";
+        questionService.addNewQuestion(postDto, authorEmail);
+    }
+
+    @Test(expected = NoSuchUserException.class)
+    public void questionServiceThrowsNoSuchUserExceptionIfAllowedSubsWrongTest() {
+        QuestionPostDto postDto = someQuestionPostDtoWithAllowedSubs(
+                "Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com", "Donald_Gardner@epam.com", "no_such_user_in_epam@epam.com");
+        String authorEmail = "John_Doe@epam.com";
+        questionService.addNewQuestion(postDto, authorEmail);
+    }
+
+    @Test(expected = NoSuchUserException.class)
+    public void questionServiceThrowsNoSuchUserExceptionIfAllowedSubsOutsideEpamTest() {
+        QuestionPostDto postDto = someQuestionPostDtoWithAllowedSubs(
+                "Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com", "Donald_Gardner@epam.com", "user_outside_epam@gmail.com");
         String authorEmail = "John_Doe@epam.com";
         questionService.addNewQuestion(postDto, authorEmail);
     }
