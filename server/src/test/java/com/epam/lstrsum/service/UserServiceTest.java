@@ -7,20 +7,15 @@ import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
 import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.model.User;
-import com.epam.lstrsum.persistence.UserRepository;
 import lombok.val;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,6 +25,7 @@ import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_NOT_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someStrings;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeDataDtoWithEmail;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeEmployeeEntityDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
 import static java.util.Collections.singletonList;
@@ -180,8 +176,7 @@ public class UserServiceTest extends SetUpDataBaseCollections {
         String nonexistentEmail1 = "no_such_user_in_telescope@epam.com";
         String nonexistentEmail2 = SOME_NOT_USER_EMAIL.toLowerCase();
 
-        TelescopeDataDto dataDto =
-                TelescopeDataDto.builder().email(singletonList(existentEmail)).lastName(someString()).firstName(someString()).build();
+        TelescopeDataDto dataDto = someTelescopeDataDtoWithEmail(existentEmail);
         TelescopeEmployeeEntityDto employeeEntityDto = TelescopeEmployeeEntityDto.builder().data(dataDto).build();
         List<TelescopeEmployeeEntityDto> dtoList = Collections.singletonList(employeeEntityDto);
 
