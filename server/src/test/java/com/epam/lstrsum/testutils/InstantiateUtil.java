@@ -37,6 +37,7 @@ import static java.util.Collections.singletonList;
 
 public class InstantiateUtil {
     public static final String SOME_USER_EMAIL = "John_Doe@epam.com";
+    public static final String SOME_USER_NAME = "John Doe";
     public static final String SOME_NOT_USER_EMAIL = "email@test.com";
     public static final String NON_EXISTING_USER_ID = "1123";
     public static final String EXISTING_USER_ID = "1u";
@@ -87,7 +88,7 @@ public class InstantiateUtil {
                 .build();
     }
 
-    private static TelescopeDataDto someTelescopeDataDtoWithEmail(String email) {
+    public static TelescopeDataDto someTelescopeDataDtoWithEmail(String email) {
         return TelescopeDataDto.builder()
                 ._e3sId(someString())
                 .email(singletonList(email))

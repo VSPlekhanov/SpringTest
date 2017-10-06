@@ -36,8 +36,8 @@ public class EpamEmployeePrincipal implements Principal, Serializable {
                 .map(value -> {
                     if (nonNull(value) && value instanceof Boolean) return (Boolean) value;
 
-                    log.error("Wrong format with key = {}", DISTRIBUTION_LIST_USER);
-                    throw new IllegalArgumentException("Wrong map format by key: " + DISTRIBUTION_LIST_USER);
+                    log.error("Not boolean value by a key : {}", DISTRIBUTION_LIST_USER);
+                    throw new IllegalArgumentException("Not boolean value by  a key : " + DISTRIBUTION_LIST_USER);
                 })
                 .orElse(false);
 
@@ -53,8 +53,8 @@ public class EpamEmployeePrincipal implements Principal, Serializable {
         Object value = map.get(key);
         if (nonNull(value) && value instanceof String) return (String) value;
 
-        log.error("Wrong format with key = {}", key);
-        throw new IllegalArgumentException("Wrong map format by key: " + key);
+        log.error("Not String value by a key : {}", key);
+        throw new IllegalArgumentException("Not String value by a key : " + key);
     }
 
     @Override
