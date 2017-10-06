@@ -51,6 +51,18 @@ public interface QuestionDtoMapper {
     })
     Question questionPostDtoAndAuthorEmailToQuestion(QuestionPostDto questionPostDto, User authorId, List<User> allowedSubs);
 
+    @Mappings({
+            @Mapping(target = "allowedSubs", source = "allowedSubs"),
+            @Mapping(target = "tags", expression = "java(emptyStringArrayIfNull(questionPostDto.getTags()))"),
+            @Mapping(target = "deadLine", expression = "java( java.time.Instant.ofEpochMilli(questionPostDto.getDeadLine()))"),
+            @Mapping(target = "createdAt", expression = "java( java.time.Instant.now())"),
+            @Mapping(target = "authorId", source = "authorId"),
+            @Mapping(target = "score", constant = "0"),
+            @Mapping(target = "questionId", ignore = true),
+            @Mapping(target = "attachmentIds", source = "attachmentIds")
+    })
+    Question questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(QuestionPostDto questionPostDto, User authorId, List<User> allowedSubs, List<String> attachmentIds);
+
     default List<QuestionBaseDto> subscriptionsToListOfQuestionBaseDto(List<Question> subscriptions, List<UserBaseDto> author) {
         return IntStream.range(0, subscriptions.size())
                 .mapToObj(i -> modelToBaseDto(subscriptions.get(i), author.get(i)))

@@ -96,6 +96,28 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
     }
 
     @Test
+    public void questionPostDtoAndAuthorEmailAndAttachmentsToQuestion() {
+        QuestionPostDto questionPostDto = someQuestionPostDto();
+        List<User> allowedSubs = getListWithSize(InstantiateUtil::someUser, 2);
+        User user = someUser();
+        List<String> attachmentIds = getListWithSize(InstantiateUtil::someString, 2);
+
+        assertThat(questionDtoMapper.questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(questionPostDto, user, allowedSubs, attachmentIds))
+                .satisfies(
+                        question -> {
+                            assertThat(question.getTitle()).isEqualTo(questionPostDto.getTitle());
+                            assertThat(question.getText()).isEqualTo(questionPostDto.getText());
+                            assertThat(question.getTags()).isEqualTo(questionPostDto.getTags());
+                            assertThat(question.getDeadLine()).isEqualTo(Instant.ofEpochMilli(questionPostDto.getDeadLine()));
+                            assertThat(question.getAllowedSubs()).containsExactly(allowedSubs.get(0), allowedSubs.get(1));
+                            assertThat(question.getAuthorId()).isEqualTo(user);
+                            assertThat(question.getCreatedAt()).isBeforeOrEqualTo(Instant.now());
+                            assertThat(question.getAttachmentIds()).containsExactly(attachmentIds.get(0), attachmentIds.get(1));
+                        }
+                );
+    }
+
+    @Test
     public void subscriptionsToListOfQuestionBaseDto() {
         final int size = 2;
         List<Question> subscriptions = getListWithSize(InstantiateUtil::someQuestion, size);

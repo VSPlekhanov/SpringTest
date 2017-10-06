@@ -6,6 +6,7 @@ import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
 import com.epam.lstrsum.enums.UserRoleType;
+import com.epam.lstrsum.service.AttachmentService;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -16,15 +17,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static java.util.Objects.nonNull;
 
 @RestController
 @RequestMapping("/api/question")
@@ -40,18 +45,20 @@ public class QuestionController {
     private int maxQuestionAmount;
 
     @PostMapping
-    public ResponseEntity<String> addQuestion(@RequestBody QuestionPostDto dtoObject)
+    public ResponseEntity<String> addQuestion(@RequestPart("dtoObject") QuestionPostDto dtoObject, @RequestPart("files") MultipartFile[] files)
             throws IOException {
         log.debug("addQuestion.enter; dtoObject: {}", dtoObject);
         String email = userRuntimeRequestComponent.getEmail();
+
         final long usersAdded = userService.addIfNotExistAllWithRole(
                 dtoObject.getAllowedSubs(), Collections.singletonList(UserRoleType.ROLE_SIMPLE_USER)
         );
         log.debug("{} users added", usersAdded);
         log.debug("addQuestion; email: {}", email);
-        String questionId = questionService.addNewQuestion(dtoObject, email).getQuestionId();
 
+        String questionId = questionService.addNewQuestion(dtoObject, email, files).getQuestionId();
         log.debug("addQuestion; questionId: {}", questionId);
+
         return ResponseEntity.ok(questionId);
     }
 
