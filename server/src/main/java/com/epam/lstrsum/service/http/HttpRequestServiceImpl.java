@@ -4,18 +4,17 @@ import com.epam.lstrsum.exception.BusinessLogicException;
 import com.epam.lstrsum.utils.HttpUtilEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
@@ -41,11 +40,7 @@ public class HttpRequestServiceImpl implements HttpRequestService {
             httpHeaders = addIfPresentHeaders(httpHeaders, httpUtilEntity.getHeadersNames(), httpUtilEntity.getHeadersValues());
         }
 
-        if (!isUrlValid(httpUtilEntity.getUrl())) {
-            log.error("Cannot sent GET request to null or empty url");
-            throw new BusinessLogicException("Cannot sent GET request to null or empty url");
-        }
-
+        checkUrl(httpUtilEntity.getUrl());
         String url = httpUtilEntity.getUrl();
         if (!isUrlParametersNull(httpUtilEntity.getParametersNames(), httpUtilEntity.getParametersValues())) {
             url += addIfPresentParameters(httpUtilEntity.getParametersNames(), httpUtilEntity.getParametersValues());
@@ -58,8 +53,11 @@ public class HttpRequestServiceImpl implements HttpRequestService {
         return isNull(parametersNames) || isNull(parametersValues);
     }
 
-    private boolean isUrlValid(String url) {
-        return !isNull(url) && !url.trim().isEmpty();
+    private void checkUrl(String url) {
+        if (isNull(url) || url.trim().isEmpty()) {
+            log.error("Cannot sent a http request to null or empty url");
+            throw new BusinessLogicException("Cannot sent a http request to null or empty url");
+        }
     }
 
     private boolean isHeadersNull(List<String> headersNames, List<String> headersValues) {
@@ -112,8 +110,8 @@ public class HttpRequestServiceImpl implements HttpRequestService {
     }
 
     private String createAuthHeader(final String username, final String password) {
-        final String auth = username + ":" + password;
-        final byte[] encodedAuth = Base64.encodeBase64(
+        val auth = username + ":" + password;
+        val encodedAuth = Base64.encodeBase64(
                 auth.getBytes(Charset.forName("US-ASCII")));
         return new String(encodedAuth);
     }
@@ -128,16 +126,16 @@ public class HttpRequestServiceImpl implements HttpRequestService {
 
     private <T> T executeGETRequest(final String url, final HttpEntity entity, final ParameterizedTypeReference<T> type) {
         try {
-            final URI uri = UriComponentsBuilder.fromUriString(url).build().encode().toUri();
-            final ResponseEntity<T> out = restTemplate.exchange(uri, HttpMethod.GET, entity, type);
+            val uri = UriComponentsBuilder.fromUriString(url).build().encode().toUri();
+            val out = restTemplate.exchange(uri, HttpMethod.GET, entity, type);
             if (!Objects.equals(out.getStatusCode(), HttpStatus.OK)) {
-                log.warn("Incorrect response status code = {} instead of code = 200", out.getStatusCode().toString());
+                log.error("Incorrect response status code = {} instead of code = 200", out.getStatusCode().toString());
                 throw new BusinessLogicException(
                         "Incorrect response status code = " + out.getStatusCode().toString() + " instead of code = 200");
             }
             return out.getBody();
         } catch (final Exception e) {
-            log.warn("Can't GET to: {} because of {}", url, e.getMessage());
+            log.error("Can't GET to: {} because of {}", url, e.getMessage());
             throw new BusinessLogicException("Can't perform GET request because of " + e.getMessage());
         }
     }

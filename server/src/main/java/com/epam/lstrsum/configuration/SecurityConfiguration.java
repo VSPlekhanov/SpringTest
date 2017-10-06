@@ -2,20 +2,17 @@ package com.epam.lstrsum.configuration;
 
 import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.security.CustomResourceServerTokenServices;
+import com.epam.lstrsum.security.ExceptionHandlerFilter;
 import com.epam.lstrsum.security.cert.TrustAllCertificatesSSL;
 import com.epam.lstrsum.security.role.ResourceBundleRoleService;
 import com.epam.lstrsum.security.role.RoleService;
 import com.epam.lstrsum.service.UserService;
 import lombok.Setter;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.TestingAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
@@ -25,20 +22,18 @@ import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticat
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.common.AuthenticationScheme;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
-import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 
+import javax.servlet.Filter;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 @Configuration
@@ -61,72 +56,46 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private String authorizationAccessTokenUri;
     @Setter
     private String authorizationUserUri;
-    @Setter
-    private List<String> envsToDisableCsrf;
-    @Autowired
-    private Environment env;
 
     @Autowired
     private UserService userService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        RoleService roleService = roleService();
-
-        if (firstContainsAny(Arrays.asList(env.getActiveProfiles()), envsToDisableCsrf)) {
-            http.csrf().disable();
-        }
-
-        http.authorizeRequests()
-                .antMatchers("/sso/**").permitAll().and();
-
-        Map<String, String[]> rolesRequestsMapping = roleService.getRolesRequestsMapping();
-
-        for (Map.Entry<String, String[]> entry : rolesRequestsMapping.entrySet()) {
-            http.authorizeRequests().antMatchers(entry.getKey()).hasAnyAuthority(entry.getValue()).and();
-        }
 
         http
-                .addFilterBefore(auth2ClientAuthenticationProcessingFilter(), BasicAuthenticationFilter.class)
+                .authorizeRequests()
+                .antMatchers("/sso/login")
+                .permitAll()
+                .antMatchers("/admin/**").access("hasRole('ADMIN')")
+                .antMatchers("/documentation/**", "/performance/**").access("hasAnyRole('ADMIN', 'EXTENDED_USER')")
+                .antMatchers("/api/**").access("hasAnyRole('SIMPLE_USER','EXTENDED_USER','ADMIN')")
+                .antMatchers("/**").access("hasAnyRole('SIMPLE_USER','EXTENDED_USER','ADMIN','ACTUATOR')")
+                .and();
+        http
+                .addFilterBefore(oauthFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(exceptionHandlerFilter(), SecurityContextPersistenceFilter.class)
                 .exceptionHandling()
-                .authenticationEntryPoint(authenticationEntryPoint())
-                .accessDeniedPage("/unauthorized");
+                .authenticationEntryPoint(authenticationEntryPoint());
     }
 
-    private boolean firstContainsAny(List<String> envs, List<String> envsToDisable) {
-        return !Collections.disjoint(envs, envsToDisable);
+    private Filter exceptionHandlerFilter() {
+        return new ExceptionHandlerFilter();
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(authenticationProvider());
-    }
-
-
-    @Bean
-    public OAuth2ClientAuthenticationProcessingFilter auth2ClientAuthenticationProcessingFilter() {
-        OAuth2ClientAuthenticationProcessingFilter af =
+    private OAuth2ClientAuthenticationProcessingFilter oauthFilter() {
+        OAuth2ClientAuthenticationProcessingFilter filter =
                 new OAuth2ClientAuthenticationProcessingFilter("/sso/login");
-        af.setTokenServices(tokenService());
-        af.restTemplate = new OAuth2RestTemplate(authorizationCodeResourceDetails(), oAuth2ClientContext);
-        af.setAuthenticationSuccessHandler(new SavedRequestAwareAuthenticationSuccessHandler());
-        af.setRememberMeServices(rememberMeServices());
-        return af;
-    }
-
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return new ProviderManager(Collections.singletonList(authenticationProvider()));
-    }
-
-    @Bean
-    public TestingAuthenticationProvider authenticationProvider() {
-        return new TestingAuthenticationProvider();
+        filter.setTokenServices(tokenService());
+        filter.restTemplate = new OAuth2RestTemplate(authorizationCodeResourceDetails(), oAuth2ClientContext);
+        filter.setAuthenticationSuccessHandler(new SavedRequestAwareAuthenticationSuccessHandler());
+        filter.setRememberMeServices(rememberMeServices());
+        return filter;
     }
 
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
-        return new OAuth2AuthenticationEntryPoint();
+        return new LoginUrlAuthenticationEntryPoint("/sso/login");
     }
 
     @Bean
@@ -140,7 +109,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         details.setAuthenticationScheme(AuthenticationScheme.query);
         return details;
     }
-
 
     @Bean
     public ResourceServerTokenServices tokenService() {
@@ -166,7 +134,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
             @Override
             public void loginSuccess(HttpServletRequest request, HttpServletResponse response, Authentication auth) {
-                final boolean isAdmin = auth.getAuthorities().stream()
+                val isAdmin = auth.getAuthorities().stream()
                         .anyMatch(a -> a.getAuthority().equals(UserRoleType.ROLE_ADMIN.name()));
                 response.addCookie(new Cookie("role", (isAdmin) ? UserRoleType.ROLE_ADMIN.name() : UserRoleType.ROLE_EXTENDED_USER.name()));
             }

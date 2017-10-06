@@ -19,12 +19,13 @@ public class EpamEmployeePrincipalTest {
     private static String SOME_EMAIL = "email";
     private static String SOME_UNIQUE_NAME = "unique_name";
     private static String SOME_USER_ID = "user_id";
+    private static boolean DL_USER = true;
 
     public static void checkThatOfMapThrowException(Map<String, Object> epamEmployeePrincipalMap) {
         assertThatThrownBy(() -> EpamEmployeePrincipal.ofMap(epamEmployeePrincipalMap))
                 .hasNoCause()
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageMatching(".*Wrong map format by key: .*");
+                .hasMessageMatching(".*Not String value by a key : .*");
     }
 
     @Test
@@ -34,13 +35,30 @@ public class EpamEmployeePrincipalTest {
         epamEmployeePrincipalMap.put(EpamEmployeePrincipal.EMAIL, SOME_EMAIL);
         epamEmployeePrincipalMap.put(EpamEmployeePrincipal.UNIQUE_NAME, SOME_UNIQUE_NAME);
         epamEmployeePrincipalMap.put(EpamEmployeePrincipal.USER_ID, SOME_USER_ID);
+        epamEmployeePrincipalMap.put(EpamEmployeePrincipal.DISTRIBUTION_LIST_USER, DL_USER);
 
         EpamEmployeePrincipal epamEmployeePrincipal = EpamEmployeePrincipal.ofMap(epamEmployeePrincipalMap);
 
         assertThat(epamEmployeePrincipal)
                 .hasFieldOrPropertyWithValue("email", SOME_EMAIL)
                 .hasFieldOrPropertyWithValue("displayName", SOME_UNIQUE_NAME)
-                .hasFieldOrPropertyWithValue("userId", SOME_USER_ID);
+                .hasFieldOrPropertyWithValue("userId", SOME_USER_ID)
+                .hasFieldOrPropertyWithValue("userInDistributionList", DL_USER);
+    }
+
+    @Test
+    public void EpamEmployeePrincipalOfMapNotBooleanValueByDistributionListKey() {
+        Map<String, Object> epamEmployeePrincipalMap = new HashMap<>();
+
+        epamEmployeePrincipalMap.put(EpamEmployeePrincipal.EMAIL, SOME_EMAIL);
+        epamEmployeePrincipalMap.put(EpamEmployeePrincipal.UNIQUE_NAME, SOME_UNIQUE_NAME);
+        epamEmployeePrincipalMap.put(EpamEmployeePrincipal.USER_ID, SOME_USER_ID);
+        epamEmployeePrincipalMap.put(EpamEmployeePrincipal.DISTRIBUTION_LIST_USER, 1);
+
+        assertThatThrownBy(() -> EpamEmployeePrincipal.ofMap(epamEmployeePrincipalMap))
+                .hasNoCause()
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageMatching(".*Not boolean value by  a key : .*");
     }
 
     @Test
