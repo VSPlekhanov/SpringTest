@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -32,6 +31,7 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
     private final AuthorizationCodeResourceDetails authorizationCodeResourceDetails;
     private final UserService userService;
 
+    @Override
     public OAuth2Authentication loadAuthentication(String accessToken) throws AuthenticationException, InvalidTokenException {
 
         try {
@@ -57,7 +57,7 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
             return new OAuth2Authentication(request, finalToken);
         } catch (Exception e) {
             log.error("Token process exception!");
-            throw new AuthenticationServiceException(e.getMessage(), e);
+            throw new NoSuchUserException("User not found");
         }
     }
 
@@ -71,8 +71,8 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
         try {
             return userService.findUserByEmail(email);
         } catch (NoSuchUserException e) {
-            log.error("User is not in DL");
-            throw new AuthenticationServiceException(e.getMessage(), e);
+            log.error("User with email : '{}' is not in a db. Access denied", email);
+            throw e;
         }
     }
 

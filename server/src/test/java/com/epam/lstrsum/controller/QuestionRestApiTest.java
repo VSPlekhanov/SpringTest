@@ -74,7 +74,8 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
         final Question question = someQuestion();
 
         when(userRuntimeRequestComponent.getEmail()).thenReturn(authorEmail);
-        when(userService.addIfNotExistAllWithRole(getList(InstantiateUtil::someString), Collections.singletonList(UserRoleType.ROLE_SIMPLE_USER)))
+        when(userService
+                .addIfNotExistAllWithRole(getList(InstantiateUtil::someString), Collections.singletonList(UserRoleType.ROLE_SIMPLE_USER)))
                 .thenReturn(someLong());
         when(questionService.addNewQuestion(any(), any())).thenReturn(question);
 
@@ -93,7 +94,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
         when(questionService.findAllQuestionsBaseDto(someInt(), someInt()))
                 .thenReturn(getList(InstantiateUtil::someQuestionWithAnswersCountDto));
 
-        String uri= String.format("/api/question/list?questionPage=%d&questionAmount=%d", someInt(), someInt());
+        String uri = String.format("/api/question/list?questionPage=%d&questionAmount=%d", someInt(), someInt());
         assertThat(restTemplate.exchange(uri, HttpMethod.GET, null, Object.class))
                 .satisfies(AssertionUtils::hasStatusOk);
         verify(questionService, times(1)).findAllQuestionsBaseDto(anyInt(), anyInt());
@@ -106,7 +107,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
         when(questionService.findAllQuestionBaseDtoWithAllowedSub(someInt(), someInt(), someString()))
                 .thenReturn(getList(InstantiateUtil::someQuestionWithAnswersCountDto));
 
-        String uri= String.format("/api/question/list?questionPage=%d&questionAmount=%d", someInt(), someInt());
+        String uri = String.format("/api/question/list?questionPage=%d&questionAmount=%d", someInt(), someInt());
         assertThat(restTemplate.exchange(uri, HttpMethod.GET, null, Object.class))
                 .satisfies(AssertionUtils::hasStatusOk);
         verify(questionService, times(1)).findAllQuestionBaseDtoWithAllowedSub(anyInt(), anyInt(), anyString());
@@ -119,7 +120,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
         when(questionService.findAllQuestionsBaseDto(anyInt(), anyInt()))
                 .thenReturn(getList(InstantiateUtil::someQuestionWithAnswersCountDto));
 
-        String uri= String.format("/api/question/list?questionPage=%d&questionAmount=%d", -4, maxQuestionAmount + 1);
+        String uri = String.format("/api/question/list?questionPage=%d&questionAmount=%d", -4, maxQuestionAmount + 1);
         assertThat(restTemplate.exchange(uri, HttpMethod.GET, null, Object.class))
                 .satisfies(AssertionUtils::hasStatusOk);
 
@@ -134,7 +135,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
         when(questionService.findAllQuestionBaseDtoWithAllowedSub(anyInt(), anyInt(), anyString()))
                 .thenReturn(getList(InstantiateUtil::someQuestionWithAnswersCountDto));
 
-        String uri= String.format("/api/question/list?questionPage=%d&questionAmount=%d", -4, maxQuestionAmount + 1);
+        String uri = String.format("/api/question/list?questionPage=%d&questionAmount=%d", -4, maxQuestionAmount + 1);
         assertThat(restTemplate.exchange(uri, HttpMethod.GET, null, Object.class))
                 .satisfies(AssertionUtils::hasStatusOk);
 
@@ -150,7 +151,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
         when(questionService.contains(questionId)).thenReturn(true);
         when(questionService.getQuestionAppearanceDtoByQuestionId(questionId)).thenReturn(Optional.of(someQuestionAppearanceDto()));
 
-        String uri= String.format("/api/question/%s", questionId);
+        String uri = String.format("/api/question/%s", questionId);
         assertThat(restTemplate.exchange(uri, HttpMethod.GET, null, Object.class))
                 .satisfies(AssertionUtils::hasStatusOk);
         verify(questionService, times(1)).getQuestionAppearanceDtoByQuestionId(questionId);
@@ -162,7 +163,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
         final String questionId = NON_EXISTING_QUESTION_ID;
         when(questionService.getQuestionAppearanceDtoByQuestionId(questionId)).thenReturn(Optional.empty());
 
-        String uri= String.format("/api/question/%s", questionId);
+        String uri = String.format("/api/question/%s", questionId);
         assertThat(restTemplate.exchange(uri, HttpMethod.GET, null, Object.class))
                 .satisfies(AssertionUtils::hasStatusNotFound);
 
@@ -174,7 +175,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
 
         when(questionService.search(someString(), someInt(), someInt())).thenReturn(getList(InstantiateUtil::someQuestionAllFieldsDto));
 
-        String uri= String.format("/api/question/search?query=%s&page=%d&size=%d", someString(), someInt(), someInt());
+        String uri = String.format("/api/question/search?query=%s&page=%d&size=%d", someString(), someInt(), someInt());
         assertThat(restTemplate.exchange(uri, HttpMethod.GET, null, Object.class))
                 .satisfies(AssertionUtils::hasStatusOk);
 
@@ -186,7 +187,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
 
         when(questionService.smartSearch(someString(), someInt(), someInt())).thenReturn(someString());
 
-        String uri= String.format("/api/question/smartSearch?query=%s&page=%d&size=%d", someString(), someInt(), someInt());
+        String uri = String.format("/api/question/smartSearch?query=%s&page=%d&size=%d", someString(), someInt(), someInt());
         assertThat(restTemplate.exchange(uri, HttpMethod.GET, null, Object.class))
                 .satisfies(AssertionUtils::hasStatusOk);
 
@@ -199,7 +200,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
 
         when(questionService.getTextSearchResultsCount(anyString())).thenReturn(2L);
 
-        String uri= String.format("/api/question/search/count?query=%s", query);
+        String uri = String.format("/api/question/search/count?query=%s", query);
         assertThat(restTemplate.exchange(uri, HttpMethod.GET, null, Object.class))
                 .satisfies(AssertionUtils::hasStatusOk);
 
@@ -212,7 +213,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
 
         when(questionService.getRelevantTags(anyString())).thenReturn(getList(InstantiateUtil::someString));
 
-        String uri= String.format("/api/question/getRelevantTags?key=%s", key);
+        String uri = String.format("/api/question/getRelevantTags?key=%s", key);
         assertThat(restTemplate.exchange(uri, HttpMethod.GET, null, Object.class))
                 .satisfies(AssertionUtils::hasStatusOk);
 
