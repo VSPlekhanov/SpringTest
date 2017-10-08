@@ -1,3 +1,4 @@
+
 package com.epam.lstrsum;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,12 +19,27 @@ import java.util.ArrayList;
 public class LoggingAspect {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    @Around("execution(* com.epam.lstrsum.controller..*(..))")
+    @Around("execution(* com.epam.lstrsum.controller..*(..)) && ! execution(* com.epam.lstrsum.controller.QuestionController.addQuestion(..))")
     public Object logMethodExecution(ProceedingJoinPoint joinPoint) throws Throwable {
+        return logMethod(joinPoint, 0);
+    }
+
+    @Around("execution(* com.epam.lstrsum.controller.QuestionController.addQuestion(..))")
+    public Object logMethodExecutionMultipartFile(ProceedingJoinPoint joinPoint) throws Throwable {
+        return logMethod(joinPoint, 1);
+    }
+
+    private Object logMethod(ProceedingJoinPoint joinPoint, int paramsType) throws Throwable { // paramsType: 0 - no MultipartFile parameter, 1 - MultipartFile parameter present
         Object[] args = joinPoint.getArgs();
         String methodName = joinPoint.getSignature().getName();
 
-        log.debug("{} method called with args {}", methodName, OBJECT_MAPPER.writeValueAsString(modifyArgsForLogging(args, methodName)));
+
+        if(paramsType == 0){
+            log.debug("{} method called with args {}", methodName, OBJECT_MAPPER.writeValueAsString(args));
+        }
+        if(paramsType == 1){
+            log.debug("{} method called with args {}", methodName, OBJECT_MAPPER.writeValueAsString(modifyArgsForLogging(args)));
+        }
 
         Object result;
         try {
@@ -43,31 +59,25 @@ public class LoggingAspect {
         return result;
     }
 
-    private Object[] modifyArgsForLogging(Object[] args, String methodName) {
-        if ("addQuestion".equals(methodName)){
-            val argsModified = new ArrayList<Object>();
+    private Object[] modifyArgsForLogging(Object[] args) {
+        val argsModified = new ArrayList<Object>();
 
-            // replace attachments with their filenames
-            for(Object arg: args){
-                if(arg instanceof MultipartFile[]){
-                    StringBuilder fileNames = new StringBuilder("MultipartFile[]: ");
-                    for(MultipartFile file: (MultipartFile[]) arg){
-                        fileNames.append(file.getOriginalFilename() + ", ");
-                    }
-                    argsModified.add(fileNames.substring(0, fileNames.length()-2));
+        // replace attachments with their filenames
+        for(Object arg: args){
+            if(arg instanceof MultipartFile[]){
+                StringBuilder fileNames = new StringBuilder("MultipartFile[]: ");
+                for(MultipartFile file: (MultipartFile[]) arg){
+                    fileNames.append(file.getOriginalFilename() + ", ");
                 }
-                else if(arg instanceof MultipartFile){
-                    argsModified.add(((MultipartFile) arg).getOriginalFilename());
-                }
-                else{
-                    argsModified.add(arg);
-                }
+                argsModified.add(fileNames.substring(0, fileNames.length()-2));
             }
-            return argsModified.toArray();
+            else if(arg instanceof MultipartFile){
+                argsModified.add(((MultipartFile) arg).getOriginalFilename());
+            }
+            else{
+                argsModified.add(arg);
+            }
         }
-        else {
-            return args;
-        }
+        return argsModified.toArray();
     }
-
 }
