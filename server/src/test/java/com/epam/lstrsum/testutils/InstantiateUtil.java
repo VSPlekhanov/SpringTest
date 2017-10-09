@@ -159,6 +159,16 @@ public class InstantiateUtil {
         return random.nextObject(QuestionPostDto.class);
     }
 
+    public static QuestionPostDto someQuestionPostDtoWithAllowedSubs(List<String> emails) {
+        return QuestionPostDto.builder()
+                .title(someString())
+                .tags(new String[]{"1", "2", "3", "go"})
+                .text(someString())
+                .deadLine(someLong())
+                .allowedSubs(emails)
+                .build();
+    }
+
     public static QuestionBaseDto someQuestionBaseDto() {
         return random.nextObject(QuestionBaseDto.class);
     }

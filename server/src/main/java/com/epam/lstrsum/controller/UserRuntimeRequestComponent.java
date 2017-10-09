@@ -32,7 +32,10 @@ public class UserRuntimeRequestComponent {
                 .map(u -> (EpamEmployeePrincipal) u.getPrincipal())
                 .orElseGet(() -> {
                     log.warn("Unsecured invocation detected");
-                    return EpamEmployeePrincipal.builder().email("John_Doe@epam.com").build();
+                    return EpamEmployeePrincipal.builder()
+                            .email("John_Doe@epam.com")
+                            .userInDistributionList(true)
+                            .build();
                 });
     }
 }
