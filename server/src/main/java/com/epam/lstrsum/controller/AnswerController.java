@@ -10,6 +10,7 @@ import com.epam.lstrsum.service.VoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +26,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/answer")
 @RequiredArgsConstructor
+@Validated
 public class AnswerController {
 
     private final AnswerService answerService;
@@ -70,7 +72,7 @@ public class AnswerController {
     }
 
     @GetMapping("/{questionId}/count")
-    public ResponseEntity<CounterDto> getAnswerCountByQuestionId(@PathVariable String questionId) {
+    public ResponseEntity<CounterDto> getAnswerCountByQuestionId(@NotEmptyString @PathVariable String questionId) {
         return ResponseEntity.ok().body(new CounterDto(answerService.getAnswerCountByQuestionId(questionId)));
     }
 }

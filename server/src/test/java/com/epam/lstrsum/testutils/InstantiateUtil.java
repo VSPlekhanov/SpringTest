@@ -42,6 +42,7 @@ public class InstantiateUtil {
     public static final String NON_EXISTING_USER_ID = "1123";
     public static final String EXISTING_USER_ID = "1u";
     public static final String EXISTING_QUESTION_ID = "1u_1r";
+    public static final String ANOTHER_EXISTING_QUESTION_ID = "2u_3r";
     public static final String EXISTING_USER_EMAIL = "Ernest_Hemingway@epam.com";
     public static final String EXISTING_ANSWER_ID = "1u_1r_1a";
     public static final String NON_EXISTING_QUESTION_ID = "notExist";
