@@ -1,15 +1,18 @@
 package com.epam.lstrsum.controller;
 
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
+import com.epam.lstrsum.dto.common.CounterDto;
 import com.epam.lstrsum.service.AnswerService;
 import com.epam.lstrsum.service.VoteService;
 import com.epam.lstrsum.testutils.AssertionUtils;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.springframework.http.ResponseEntity;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswerPostDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someInt;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someLong;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyInt;
@@ -92,5 +95,11 @@ public class AnswerControllerTest {
                 .satisfies(AssertionUtils::hasStatusOk);
 
         verify(answerService, times(1)).getAnswersByQuestionId(anyString(), anyInt(), anyInt());
+    }
+
+    @Test
+    public void getAnswerCountByQuestionId() {
+        assertThat(controller.getAnswerCountByQuestionId(EXISTING_QUESTION_ID)).satisfies(AssertionUtils::hasStatusOk);
+        verify(answerService, times(1)).getAnswerCountByQuestionId(anyString());
     }
 }

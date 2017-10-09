@@ -26,4 +26,6 @@ public interface AnswerService {
     List<AnswerBaseDto> getAnswersByQuestionId(String questionId, int page, int size);
 
     List<AnswerBaseDto> getAnswersByQuestionId(String questionId);
+
+    Long getAnswerCountByQuestionId(String questionId);
 }

@@ -12,5 +12,7 @@ public interface AnswerRepository extends MongoRepository<Answer, String> {
 
     void deleteAllByQuestionId_QuestionId(String questionId);
 
+    Long countAllByQuestionId(String questionId);
+
     List<Answer> findAnswerByQuestionId_QuestionIdOrderByCreatedAt(String questionId, Pageable pageable);
 }
