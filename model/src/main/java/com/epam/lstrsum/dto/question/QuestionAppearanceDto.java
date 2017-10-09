@@ -13,13 +13,15 @@ import java.time.Instant;
 @Setter
 public class QuestionAppearanceDto extends QuestionBaseDto {
     private String text;
+    private String[] attachmentIds;
 
     public QuestionAppearanceDto(
             String questionId, String title, String[] tags, Instant createdAt, Instant deadLine,
-            UserBaseDto authorId, String text
+            UserBaseDto authorId, String text, String[] attachmentIds
     ) {
         super(questionId, title, tags, createdAt, deadLine, authorId);
         this.text = text;
+        this.attachmentIds = attachmentIds;
     }
 
     @Override
@@ -29,6 +31,7 @@ public class QuestionAppearanceDto extends QuestionBaseDto {
         if (!super.equals(o)) return false;
 
         QuestionAppearanceDto that = (QuestionAppearanceDto) o;
+        if (!that.getAttachmentIds().equals(this.getAttachmentIds())) return false;
         return text != null ? text.equals(that.text) : that.text == null;
     }
 
