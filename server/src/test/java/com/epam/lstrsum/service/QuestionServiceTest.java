@@ -33,6 +33,7 @@ import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someInt;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someLong;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionPostDto;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionPostDtoWithAllowedSubs;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -50,6 +51,9 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
     private static final int PAGE_SIZE = 1;
     private static final int START_PAGE = 0;
     private static final int NONEXISTENT_PAGE = 2;
+
+    private static List<String> allowedSubsList = Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
+            "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com");
 
     @Autowired
     private QuestionAggregator questionAggregator;
@@ -178,9 +182,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
     @Test
     public void addNewQuestionConvertsPostDtoToQuestionAndPutsItIntoDbTest() {
         QuestionPostDto postDto = new QuestionPostDto("this the end", new String[]{"1", "2", "3", "go"},
-                "just some text", 1501145960439L,
-                Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
+                "just some text", 1501145960439L, allowedSubsList, emptyList());
         String authorEmail = "John_Doe@epam.com";
         String newQuestionId = questionService.addNewQuestion(postDto, authorEmail).getQuestionId();
         assertThat(questionService.contains(newQuestionId), is(true));
@@ -205,61 +207,40 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
     @Test(expected = QuestionValidationException.class)
     public void questionServiceThrowsQuestionValidationExceptionForNullTitleInPostDto() {
         QuestionPostDto postDto = new QuestionPostDto(null, new String[]{"1", "2", "3", "go"},
-                "just some text", 1501112360439L,
-                Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
-        String authorEmail = "John_Doe@epam.com";
-        questionService.addNewQuestion(postDto, authorEmail);
+                someString(), someLong(), allowedSubsList, emptyList());
+        questionService.addNewQuestion(postDto, SOME_USER_EMAIL);
     }
 
     @Test(expected = QuestionValidationException.class)
     public void questionServiceThrowsQuestionValidationExceptionForNullTextInPostDtoTest() {
         QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
-                null, 1501145111439L,
-                Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
-        String authorEmail = "John_Doe@epam.com";
-        questionService.addNewQuestion(postDto, authorEmail);
+                null, someLong(), allowedSubsList, emptyList());
+        questionService.addNewQuestion(postDto, SOME_USER_EMAIL);
     }
 
     @Test(expected = QuestionValidationException.class)
     public void questionServiceThrowsQuestionValidationExceptionIfTextIsTooShortInPostDtoTest() {
         QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
-                "", 1501145922239L,
-                Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
-        String authorEmail = "John_Doe@epam.com";
-        questionService.addNewQuestion(postDto, authorEmail);
+                "", someLong(), allowedSubsList, emptyList());
+        questionService.addNewQuestion(postDto, SOME_USER_EMAIL);
     }
 
     @Test(expected = QuestionValidationException.class)
     public void questionServiceThrowsQuestionValidationExceptionIfTitleIsTooShortInPostDtoTest() {
         QuestionPostDto postDto = new QuestionPostDto("tle", new String[]{"1", "2", "3", "go"},
-                "just some text", 1501143330439L,
-                Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
-        String authorEmail = "John_Doe@epam.com";
-        questionService.addNewQuestion(postDto, authorEmail);
-    }
-
-    private QuestionPostDto someQuestionPostDtoWithAllowedSubs(String... emails) {
-        return new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
-                "just some text", 1501143330439L, Arrays.asList(emails), emptyList());
+                someString(), someLong(), allowedSubsList, emptyList());
+        questionService.addNewQuestion(postDto, SOME_USER_EMAIL);
     }
 
     @Test(expected = NoSuchUserException.class)
     public void questionServiceThrowsNoSuchUserExceptionIfAuthorEmailIsWrongTest() {
-        QuestionPostDto postDto = someQuestionPostDtoWithAllowedSubs(
-                "Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com", "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com");
-        String authorEmail = "no_such_user_in_epam@epam.com";
-        questionService.addNewQuestion(postDto, authorEmail);
+        QuestionPostDto postDto = someQuestionPostDtoWithAllowedSubs(allowedSubsList);
+        questionService.addNewQuestion(postDto, someString());
     }
 
     @Test(expected = NoSuchUserException.class)
     public void questionServiceThrowsNoSuchUserExceptionIfAuthorEmailIsOutsideEpamTest() {
-        QuestionPostDto postDto = someQuestionPostDtoWithAllowedSubs(
-                "Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com", "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"
-        );
+        QuestionPostDto postDto = someQuestionPostDtoWithAllowedSubs(allowedSubsList);
         String authorEmail = "user_outside_epam@gmail.com";
         questionService.addNewQuestion(postDto, authorEmail);
     }
@@ -267,17 +248,15 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
     @Test(expected = NoSuchUserException.class)
     public void questionServiceThrowsNoSuchUserExceptionIfAllowedSubsWrongTest() {
         QuestionPostDto postDto = someQuestionPostDtoWithAllowedSubs(
-                "Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com", "Donald_Gardner@epam.com", "no_such_user_in_epam@epam.com");
-        String authorEmail = "John_Doe@epam.com";
-        questionService.addNewQuestion(postDto, authorEmail);
+                Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com", "Donald_Gardner@epam.com", "no_such_user_in_epam@epam.com"));
+        questionService.addNewQuestion(postDto, SOME_USER_EMAIL);
     }
 
     @Test(expected = NoSuchUserException.class)
     public void questionServiceThrowsNoSuchUserExceptionIfAllowedSubsOutsideEpamTest() {
         QuestionPostDto postDto = someQuestionPostDtoWithAllowedSubs(
-                "Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com", "Donald_Gardner@epam.com", "user_outside_epam@gmail.com");
-        String authorEmail = "John_Doe@epam.com";
-        questionService.addNewQuestion(postDto, authorEmail);
+                Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com", "Donald_Gardner@epam.com", "user_outside_epam@gmail.com"));
+        questionService.addNewQuestion(postDto, SOME_USER_EMAIL);
     }
 
     @Test(expected = QuestionValidationException.class)

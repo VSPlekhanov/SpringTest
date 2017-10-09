@@ -29,11 +29,20 @@ import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
+import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.WebUtils;
 
 import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -75,11 +84,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         for (Map.Entry<String, String[]> entry : rolesRequestsMapping.entrySet()) {
             http.authorizeRequests().antMatchers(entry.getKey()).hasAnyAuthority(entry.getValue()).and();
         }
+
+        http.csrf()
+                .csrfTokenRepository(csrfTokenRepository()).and();
         http
+                .addFilterAfter(csrfHeaderFilter(), CsrfFilter.class)
                 .addFilterBefore(oauthFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(exceptionHandlerFilter(), SecurityContextPersistenceFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint(authenticationEntryPoint());
+
+
     }
 
     private Filter exceptionHandlerFilter() {
@@ -142,5 +157,31 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 response.addCookie(new Cookie("role", (isAdmin) ? UserRoleType.ROLE_ADMIN.name() : UserRoleType.ROLE_EXTENDED_USER.name()));
             }
         };
+    }
+
+    private Filter csrfHeaderFilter() {
+        return new OncePerRequestFilter() {
+            @Override
+            protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+                    throws ServletException, IOException {
+                CsrfToken csrf = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+                if (csrf != null) {
+                    Cookie cookie = WebUtils.getCookie(request, "XSRF-TOKEN");
+                    String token = csrf.getToken();
+                    if (cookie == null || token != null && !token.equals(cookie.getValue())) {
+                        cookie = new Cookie("XSRF-TOKEN", token);
+                        cookie.setPath("/");
+                        response.addCookie(cookie);
+                    }
+                }
+                filterChain.doFilter(request, response);
+            }
+        };
+    }
+
+    private CsrfTokenRepository csrfTokenRepository() {
+        HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
+        repository.setHeaderName("X-XSRF-TOKEN");
+        return repository;
     }
 }

@@ -104,7 +104,7 @@ db.User.insert(
 db.User.insert(
     {
         "_class": "com.epam.lstrsum.model.User",
-        "firstName": "Maxim",
+        "firstName": "Maksim",
         "lastName": "Nikolaev",
         "email": "maksim_nikolaev@epam.com",
         "roles": ["ROLE_EXTENDED_USER", "ACTUATOR"],
