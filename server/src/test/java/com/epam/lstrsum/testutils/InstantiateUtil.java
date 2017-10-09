@@ -46,6 +46,9 @@ public class InstantiateUtil {
     public static final String EXISTING_USER_EMAIL = "Ernest_Hemingway@epam.com";
     public static final String EXISTING_ANSWER_ID = "1u_1r_1a";
     public static final String NON_EXISTING_QUESTION_ID = "notExist";
+    public static final String EXISTING_QUESTION_ID_WITH_ATTACHMENT = "1u_1r";
+    public static final String EXISTING_QUESTION_ID_WITHOUT_ATTACHMENT = "1u_2r";
+    public static final String EXISTING_ATTACHMENT_ID = "attachmentId1";
     private static final EnhancedRandom random = EnhancedRandomBuilder.aNewEnhancedRandomBuilder()
             .stringLengthRange(5, 50)
             .build();

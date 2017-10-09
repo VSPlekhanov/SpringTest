@@ -41,7 +41,10 @@
     ],
     "deadLine": {
       "$date": "2016-05-19T11:00:00Z"
-    }
+    },
+    "attachmentIds" : [
+      "attachmentId1"
+    ]
   },
   {
     "_id": "1u_2r",
