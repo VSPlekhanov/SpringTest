@@ -4,11 +4,13 @@ import com.epam.lstrsum.annotation.NotEmptyString;
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
+import com.epam.lstrsum.dto.common.CounterDto;
 import com.epam.lstrsum.service.AnswerService;
 import com.epam.lstrsum.service.VoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +26,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/answer")
 @RequiredArgsConstructor
+@Validated
 public class AnswerController {
 
     private final AnswerService answerService;
@@ -66,5 +69,10 @@ public class AnswerController {
             @RequestParam(value = "page", required = false, defaultValue = "-1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "-1") int size) {
         return ResponseEntity.ok(answerService.getAnswersByQuestionId(questionId, page, size));
+    }
+
+    @GetMapping("/{questionId}/count")
+    public ResponseEntity<CounterDto> getAnswerCountByQuestionId(@NotEmptyString @PathVariable String questionId) {
+        return ResponseEntity.ok().body(new CounterDto(answerService.getAnswerCountByQuestionId(questionId)));
     }
 }

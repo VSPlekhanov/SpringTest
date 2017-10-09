@@ -107,6 +107,11 @@ public class AnswerServiceImpl implements AnswerService {
         return getAnswersByQuestionId(questionId, 0, searchMaxPageSize);
     }
 
+    @Override
+    public Long getAnswerCountByQuestionId(String questionId) {
+        return answerRepository.countAllByQuestionId(questionId);
+    }
+
     private List<QuestionWithAnswersCount> completeNotFound(
             List<QuestionWithAnswersCount> resultsFromMongo, List<Question> sourceList
     ) {

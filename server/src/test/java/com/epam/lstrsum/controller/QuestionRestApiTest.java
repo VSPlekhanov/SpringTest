@@ -15,6 +15,8 @@ import org.springframework.http.HttpMethod;
 
 import java.util.Optional;
 
+import static com.epam.lstrsum.testutils.InstantiateUtil.ANOTHER_EXISTING_QUESTION_ID;
+import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.NON_EXISTING_QUESTION_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someInt;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someLong;
@@ -47,6 +49,9 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
 
     @MockBean
     private UserService userService;
+
+    @Autowired
+    private AnswerController answerController;
 
     @Test
     public void getQuestionCount() {
@@ -187,5 +192,13 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
                 .satisfies(AssertionUtils::hasStatusOk);
 
         verify(questionService, times(1)).getRelevantTags(key);
+    }
+
+    @Test
+    public void getAnswerCountByQuestionId() {
+        long answerCount1 = answerController.getAnswerCountByQuestionId(EXISTING_QUESTION_ID).getBody().getCount();
+        long answerCount2 = answerController.getAnswerCountByQuestionId(ANOTHER_EXISTING_QUESTION_ID).getBody().getCount();
+        assertThat(answerCount1).isEqualTo(3L);
+        assertThat(answerCount2).isEqualTo(2L);
     }
 }
