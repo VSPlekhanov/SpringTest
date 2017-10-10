@@ -23,6 +23,7 @@ import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID_WI
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID_WITHOUT_ATTACHMENT;
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_ATTACHMENT_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someMockMultipartFile;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionAppearanceDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionPostDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
@@ -54,64 +55,20 @@ public class QuestionControllerAttachmentsTest extends SetUpDataBaseCollections 
     @MockBean
     private UserAggregator userAggregator;
 
+
     @Test
     public void addQuestionSaveNoAttachmentsAndReturnValidResponseTest() throws Exception {
-        MockMultipartFile file = new MockMultipartFile("name", "originalName", "contentType", new byte[5]);
-
-        final String authorEmail = SOME_USER_EMAIL;
-        final QuestionPostDto postDto = someQuestionPostDto();
-        MultipartFile[] arrayMultipartFile = {}; // question with 0 attachments
-
-        when(userRuntimeRequestComponent.getEmail()).thenReturn(authorEmail);
-
-        Long questionCount = questionService.getQuestionCount();
-        Integer attachmentCount = attachmentRepository.findAll().size();
-
-        ResponseEntity responseEntity = questionController.addQuestion(postDto, arrayMultipartFile);
-        assertThat(responseEntity).satisfies(AssertionUtils::hasStatusOk);
-        assertThat(questionService.getQuestionCount()).isEqualTo(questionCount + 1);
-        assertThat(attachmentRepository.findAll().size()).isEqualTo(attachmentCount);
-        verify(userRuntimeRequestComponent, times(1)).getEmail();
+        addQuestionSaveAttachmentsAndReturnValidResponseTest(0);
     }
 
     @Test
     public void addQuestionSaveOneAttachmentsAndReturnValidResponseTest() throws Exception {
-        MockMultipartFile file = new MockMultipartFile("name", "originalName", "contentType", new byte[5]);
-
-        final String authorEmail = SOME_USER_EMAIL;
-        final QuestionPostDto postDto = someQuestionPostDto();
-        MultipartFile[] arrayMultipartFile = {file}; // question with 1 attachment
-
-        when(userRuntimeRequestComponent.getEmail()).thenReturn(authorEmail);
-
-        Long questionCount = questionService.getQuestionCount();
-        Integer attachmentCount = attachmentRepository.findAll().size();
-
-        ResponseEntity responseEntity = questionController.addQuestion(postDto, arrayMultipartFile);
-        assertThat(responseEntity).satisfies(AssertionUtils::hasStatusOk);
-        assertThat(questionService.getQuestionCount()).isEqualTo(questionCount + 1);
-        assertThat(attachmentRepository.findAll().size()).isEqualTo(attachmentCount + 1);
-        verify(userRuntimeRequestComponent, times(1)).getEmail();
+        addQuestionSaveAttachmentsAndReturnValidResponseTest(1);
     }
 
     @Test
     public void addQuestionSaveTwoAttachmentsAndReturnValidResponseTest() throws Exception {
-        MockMultipartFile file = new MockMultipartFile("name", "originalName", "contentType", new byte[5]);
-
-        final String authorEmail = SOME_USER_EMAIL;
-        final QuestionPostDto postDto = someQuestionPostDto();
-        MultipartFile[] arrayMultipartFile = {file,file}; // question with 2 attachments
-
-        when(userRuntimeRequestComponent.getEmail()).thenReturn(authorEmail);
-
-        Long questionCount = questionService.getQuestionCount();
-        Integer attachmentCount = attachmentRepository.findAll().size();
-
-        ResponseEntity responseEntity = questionController.addQuestion(postDto, arrayMultipartFile);
-        assertThat(responseEntity).satisfies(AssertionUtils::hasStatusOk);
-        assertThat(questionService.getQuestionCount()).isEqualTo(questionCount + 1);
-        assertThat(attachmentRepository.findAll().size()).isEqualTo(attachmentCount + 2);
-        verify(userRuntimeRequestComponent, times(1)).getEmail();
+        addQuestionSaveAttachmentsAndReturnValidResponseTest(2);
     }
 
     @Test
@@ -119,7 +76,8 @@ public class QuestionControllerAttachmentsTest extends SetUpDataBaseCollections 
         String questionId = EXISTING_QUESTION_ID_WITH_ATTACHMENT;
         ResponseEntity responseEntity = questionController.getQuestionWithText(questionId);
         QuestionAppearanceDto questionAppearanceDto = (QuestionAppearanceDto) responseEntity.getBody();
-        assertThat(questionAppearanceDto.getAttachmentIds()).containsOnly(EXISTING_ATTACHMENT_ID);
+        assertThat(questionAppearanceDto.getAttachments().size()).isEqualTo(1);
+        assertThat(questionAppearanceDto.getAttachments().get(0).getId()).isEqualTo(EXISTING_ATTACHMENT_ID);
     }
 
     @Test
@@ -127,6 +85,27 @@ public class QuestionControllerAttachmentsTest extends SetUpDataBaseCollections 
         String questionId = EXISTING_QUESTION_ID_WITHOUT_ATTACHMENT;
         ResponseEntity responseEntity = questionController.getQuestionWithText(questionId);
         QuestionAppearanceDto questionAppearanceDto = (QuestionAppearanceDto) responseEntity.getBody();
-        assertThat(questionAppearanceDto.getAttachmentIds()).isNull();
+        assertThat(questionAppearanceDto.getAttachments()).isEmpty();
+    }
+
+    private void addQuestionSaveAttachmentsAndReturnValidResponseTest(int attachmentsCount) throws Exception {
+        MockMultipartFile file = someMockMultipartFile();
+        final String authorEmail = SOME_USER_EMAIL;
+        final QuestionPostDto postDto = someQuestionPostDto();
+
+        MultipartFile[] arrayMultipartFile = new MultipartFile[attachmentsCount];
+        for (int i = 0; i < attachmentsCount; i++) {
+            arrayMultipartFile[i] = file;
+        }
+
+        when(userRuntimeRequestComponent.getEmail()).thenReturn(authorEmail);
+        Long questionCountBefore = questionService.getQuestionCount();
+        Integer attachmentCountBefore = attachmentRepository.findAll().size();
+
+        ResponseEntity responseEntity = questionController.addQuestion(postDto, arrayMultipartFile);
+        assertThat(responseEntity).satisfies(AssertionUtils::hasStatusOk);
+        assertThat(questionService.getQuestionCount()).isEqualTo(questionCountBefore + 1);
+        assertThat(attachmentRepository.findAll().size()).isEqualTo(attachmentCountBefore + attachmentsCount);
+        verify(userRuntimeRequestComponent, times(1)).getEmail();
     }
 }

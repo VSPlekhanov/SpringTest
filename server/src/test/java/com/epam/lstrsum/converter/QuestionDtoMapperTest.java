@@ -2,7 +2,6 @@ package com.epam.lstrsum.converter;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
-import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
 import com.epam.lstrsum.dto.question.QuestionBaseDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
@@ -13,7 +12,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -73,7 +71,7 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
                         questionAppearanceDto -> {
                             checkQuestionBaseDto(questionAppearanceDto, question, authorId);
                             assertThat(questionAppearanceDto.getText()).isEqualTo(question.getText());
-                            assertThat(Arrays.asList(questionAppearanceDto.getAttachmentIds())).isEqualTo(question.getAttachmentIds());
+                            assertThat(questionAppearanceDto.getAttachments()).isNull();
                         }
                 );
     }

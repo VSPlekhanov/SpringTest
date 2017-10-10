@@ -45,7 +45,7 @@ public class QuestionController {
     private int maxQuestionAmount;
 
     @PostMapping
-    public ResponseEntity<String> addQuestion(@RequestPart("dtoObject") QuestionPostDto dtoObject, @RequestPart("files") MultipartFile[] files)
+    public ResponseEntity<String> addQuestion(@RequestPart("dtoObject") QuestionPostDto dtoObject, @RequestPart(value = "files", required = false) MultipartFile[] files)
             throws IOException {
         log.debug("addQuestion.enter; dtoObject: {}", dtoObject);
         String email = userRuntimeRequestComponent.getEmail();

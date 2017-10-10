@@ -1,11 +1,13 @@
 package com.epam.lstrsum.dto.question;
 
+import com.epam.lstrsum.dto.attachment.AttachmentPropertiesDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.List;
 
 
 @Getter
@@ -13,15 +15,14 @@ import java.time.Instant;
 @Setter
 public class QuestionAppearanceDto extends QuestionBaseDto {
     private String text;
-    private String[] attachmentIds;
+    private List<AttachmentPropertiesDto> attachments;
 
     public QuestionAppearanceDto(
             String questionId, String title, String[] tags, Instant createdAt, Instant deadLine,
-            UserBaseDto authorId, String text, String[] attachmentIds
+            UserBaseDto authorId, String text
     ) {
         super(questionId, title, tags, createdAt, deadLine, authorId);
         this.text = text;
-        this.attachmentIds = attachmentIds;
     }
 
     @Override
@@ -31,7 +32,7 @@ public class QuestionAppearanceDto extends QuestionBaseDto {
         if (!super.equals(o)) return false;
 
         QuestionAppearanceDto that = (QuestionAppearanceDto) o;
-        if (!that.getAttachmentIds().equals(this.getAttachmentIds())) return false;
+        if (!that.getAttachments().equals(this.getAttachments())) return false;
         return text != null ? text.equals(that.text) : that.text == null;
     }
 

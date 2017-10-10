@@ -1,6 +1,8 @@
 package com.epam.lstrsum.service.impl;
 
+import com.epam.lstrsum.aggregators.AttachmentAggregator;
 import com.epam.lstrsum.aggregators.QuestionAggregator;
+import com.epam.lstrsum.dto.attachment.AttachmentPropertiesDto;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
@@ -9,10 +11,12 @@ import com.epam.lstrsum.email.EmailNotification;
 import com.epam.lstrsum.email.template.NewQuestionNotificationTemplate;
 import com.epam.lstrsum.exception.NoSuchRequestException;
 import com.epam.lstrsum.exception.QuestionValidationException;
+import com.epam.lstrsum.model.Attachment;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.QuestionWithAnswersCount;
 import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
+import com.epam.lstrsum.persistence.AttachmentRepository;
 import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.service.AnswerService;
 import com.epam.lstrsum.service.AttachmentService;
@@ -67,6 +71,8 @@ public class QuestionServiceImpl implements QuestionService {
     private final AnswerService answerService;
     private final UserService userService;
     private final AttachmentService attachmentService;
+    private final AttachmentRepository attachmentRepository;
+    private final AttachmentAggregator attachmentAggregator;
     @Setter
     private int searchDefaultPageSize;
 
@@ -163,13 +169,14 @@ public class QuestionServiceImpl implements QuestionService {
         validateQuestionData(questionPostDto, email);
 
         List<String> attachmentIds = new ArrayList<>();
-        if(nonNull(files)){
+        if (nonNull(files)) {
             for (MultipartFile file : files) {
                 attachmentIds.add(attachmentService.saveMultipartFile(file));
             }
         }
 
-        Question newQuestion = questionAggregator.questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(questionPostDto, email, attachmentIds);
+        Question newQuestion =
+                questionAggregator.questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(questionPostDto, email, attachmentIds);
         return questionRepository.save(newQuestion);
     }
 
@@ -182,8 +189,22 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestionId(String questionId) {
         Question question = questionRepository.findOne(questionId);
-        return Optional.ofNullable(question)
-                .map(questionAggregator::modelToQuestionAppearanceDto);
+        if (isNull(question)) {
+            return Optional.empty();
+        }
+
+        QuestionAppearanceDto questionAppearanceDto = questionAggregator.modelToQuestionAppearanceDto(question);
+
+        List<String> attachmentIds = question.getAttachmentIds();
+        if (nonNull(attachmentIds) && !attachmentIds.isEmpty()) {
+            ArrayList<Attachment> attachments = (ArrayList<Attachment>) attachmentRepository.findAll(attachmentIds);
+            List<AttachmentPropertiesDto> attachmentsDto = attachmentAggregator.modelToListPropertiesDto(attachments);
+            questionAppearanceDto.setAttachments(attachmentsDto);
+        } else {
+            questionAppearanceDto.setAttachments(new ArrayList<AttachmentPropertiesDto>());
+        }
+
+        return Optional.ofNullable(questionAppearanceDto);
     }
 
     @Override

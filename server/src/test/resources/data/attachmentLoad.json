@@ -1,0 +1,8 @@
+[
+  {
+    "_id" : "attachmentId1",
+    "name" : "test1.txt",
+    "type" : "text/plain",
+    "data" : 0
+  }
+]
