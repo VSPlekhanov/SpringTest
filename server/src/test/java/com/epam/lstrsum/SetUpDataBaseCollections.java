@@ -3,6 +3,7 @@ package com.epam.lstrsum;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
+import com.epam.lstrsum.model.Attachment;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.model.Vote;
 import org.bson.Document;
@@ -46,6 +47,9 @@ public abstract class SetUpDataBaseCollections {
 
         loadJsonResourcesAndFillDBCollectionWithThem("src/test/resources/data/subscriptionLoad.json",
                 Subscription.SUBSCRIPTION_COLLECTION_NAME);
+
+        loadJsonResourcesAndFillDBCollectionWithThem("src/test/resources/data/attachmentLoad.json",
+                Attachment.ATTACHMENT_COLLECTION_NAME);
     }
 
     @After

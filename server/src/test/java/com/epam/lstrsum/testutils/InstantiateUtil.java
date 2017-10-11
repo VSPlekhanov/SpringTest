@@ -24,6 +24,7 @@ import io.github.benas.randombeans.api.EnhancedRandom;
 import lombok.val;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
+import org.springframework.mock.web.MockMultipartFile;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -250,5 +251,9 @@ public class InstantiateUtil {
 
     public static int someInt() {
         return SECURE_RANDOM.nextInt();
+    }
+
+    public static MockMultipartFile someMockMultipartFile() {
+        return new MockMultipartFile(someString(), someString(), someString(), new byte[5]);
     }
 }
