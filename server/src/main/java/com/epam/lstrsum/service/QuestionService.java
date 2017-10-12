@@ -56,4 +56,6 @@ public interface QuestionService extends ElasticSearchService {
     Long getQuestionCount();
 
     void addAttachmentsToQuestion(String questionId, List<String> attachmentIds);
+
+    Long getQuestionCountWithAllowedSub(String userEmail);
 }
