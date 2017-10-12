@@ -229,6 +229,11 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    public Long getQuestionCountWithAllowedSub(String userEmail) {
+        return questionRepository.countAllByAllowedSubs(userService.findUserByEmail(userEmail));
+    }
+
+    @Override
     public void addAttachmentsToQuestion(String questionId, List<String> attachmentIds) {
         mongoTemplate.findAndModify(
                 new Query(Criteria.where("questionId").is(questionId)),

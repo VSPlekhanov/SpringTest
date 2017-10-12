@@ -58,7 +58,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
         when(questionService.getQuestionCount()).thenReturn(someLong());
         assertThat(restTemplate.exchange("/api/question/count", HttpMethod.GET, null, Object.class))
                 .satisfies(AssertionUtils::hasStatusOk);
-        verify(questionService, times(1)).getQuestionCount();
+        verify(questionService, times(1)).getQuestionCountWithAllowedSub(anyString());
     }
 
     @Test

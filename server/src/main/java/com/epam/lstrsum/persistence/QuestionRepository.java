@@ -24,4 +24,6 @@ public interface QuestionRepository extends MongoRepository<Question, String> {
     long getTextSearchResultsCount(String query);
 
     Optional<Question> findQuestionByTitleAndAuthorId(String title, User authorId);
+
+    long countAllByAllowedSubs(User user);
 }
