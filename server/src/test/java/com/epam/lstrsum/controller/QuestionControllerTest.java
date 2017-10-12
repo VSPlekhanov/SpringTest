@@ -20,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -68,7 +67,7 @@ public class QuestionControllerTest {
     public void getQuestionCount() {
         controller.getQuestionCount();
 
-        verify(questionService, times(1)).getQuestionCount();
+        verify(questionService, times(1)).getQuestionCountWithAllowedSub(anyString());
     }
 
     @Test

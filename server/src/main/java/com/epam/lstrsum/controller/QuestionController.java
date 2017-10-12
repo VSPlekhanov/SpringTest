@@ -6,7 +6,6 @@ import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
 import com.epam.lstrsum.enums.UserRoleType;
-import com.epam.lstrsum.service.AttachmentService;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
-import static java.util.Objects.nonNull;
 
 @RestController
 @RequestMapping("/api/question")
@@ -93,7 +89,11 @@ public class QuestionController {
 
     @GetMapping("/count")
     public ResponseEntity<CounterDto> getQuestionCount() {
-        return ResponseEntity.ok().body(new CounterDto(questionService.getQuestionCount()));
+        Long count = currentUserInDistributionList() ?
+                questionService.getQuestionCount() :
+                questionService.getQuestionCountWithAllowedSub(userRuntimeRequestComponent.getEmail());
+
+        return ResponseEntity.ok().body(new CounterDto(count));
     }
 
     @GetMapping("/search")
