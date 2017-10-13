@@ -32,7 +32,7 @@ public class ExchangeServiceHelperMockImplTest {
     @Test
     public void resolveGroupWithDistributionList() throws Exception {
         assertThat(exchangeServiceHelperMock.resolveGroup(distributionList))
-                .hasSize(16);
+                .hasSize(11);
 
         verify(counterService, times(1)).increment(eq("exchange.service.expand.group"));
     }

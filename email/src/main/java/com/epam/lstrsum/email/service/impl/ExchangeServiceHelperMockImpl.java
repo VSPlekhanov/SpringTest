@@ -28,22 +28,17 @@ public class ExchangeServiceHelperMockImpl implements ExchangeServiceHelper {
     public List<String> resolveGroup(String groupName) {
         counterService.increment("exchange.service.expand.group");
         if (distributionList.equalsIgnoreCase(groupName)) {
-            return Arrays.asList("Rustam_Kadyrov@epam.com",
-                    "Anna_Davydova@epam.com",
-                    "Gleb_Strus@epam.com",
-                    "Kirill_Gavrilov@epam.com",
-                    "Vyacheslav_Lapin@epam.com",
-                    "Mikhail_Figurin@epam.com",
-                    "Ivan_Chuvakhin@epam.com",
-                    "Evgenii_Aleksandrov@epam.com",
-                    "Egor_Zakovriashin@epam.com",
-                    "Igor_Siluianov@epam.com",
-                    "Ekaterina_Son@epam.com",
-                    "Daria_Makarova@epam.com",
-                    "Igor_Drozdov1@epam.com",
-                    "Aleksei_Chepuko@epam.com",
-                    "Elizaveta_Tomaeva@epam.com",
-                    "Anton_Nazarov1@epam.com");
+            return Arrays.asList("rustam_kadyrov@epam.com",
+                    "anna_davydova@epam.com",
+                    "gleb_strus@epam.com",
+                    "kirill_gavrilov@epam.com",
+                    "daria_makarova@epam.com",
+                    "elizaveta_tomaeva@epam.com",
+                    "nikita_zaitcev@epam.com",
+                    "maksim_nikolaev@epam.com",
+                    "aleksandr_shevkunenko@epam.com",
+                    "anastasiia_turenko@epam.com",
+                    "evgenii_kurdakov@epam.com");
         } else {
             return Collections.singletonList(groupName);
         }

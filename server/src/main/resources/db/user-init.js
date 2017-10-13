@@ -147,3 +147,16 @@ db.User.insert(
         "isActive": true
     }
 );
+
+//changeset Daria_Makarova:ChangeSet-3
+db.User.insert(
+    {
+        "_class": "com.epam.lstrsum.model.User",
+        "firstName": "Evgenii",
+        "lastName": "Kurdakov",
+        "email": "evgenii_kurdakov@epam.com",
+        "roles": ["ROLE_EXTENDED_USER", "ACTUATOR"],
+        "createdAt": ISODate("2017-10-12T15:05:00.000Z"),
+        "isActive": true
+    }
+);
