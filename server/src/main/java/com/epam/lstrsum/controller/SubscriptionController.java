@@ -20,7 +20,7 @@ public class SubscriptionController {
     private final UserRuntimeRequestComponent userRuntimeRequestComponent;
     private final UserService userService;
 
-    @PutMapping("/{questionId}")
+    @PutMapping("/{question}")
     public ResponseEntity subscribe(@PathVariable @NotEmptyString String questionId) {
         subscriptionService.addOrUpdate(
                 userService.findUserByEmail(userRuntimeRequestComponent.getEmail()).getUserId(),

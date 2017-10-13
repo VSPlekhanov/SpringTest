@@ -73,9 +73,9 @@ public class AnswerServiceImpl implements AnswerService {
     @Override
     public List<QuestionWithAnswersCount> aggregateToCount(List<Question> questions) {
         final Aggregation aggregation = newAggregation(
-                match(Criteria.where("questionId").in(questions)),
-                group("questionId").count().as("count"),
-                project("count").and("questionId").previousOperation()
+                match(Criteria.where("question").in(questions)),
+                group("question").count().as("count"),
+                project("count").and("question").previousOperation()
         );
 
         final List<QuestionWithAnswersCount> mappedResults = mongoTemplate.aggregate(

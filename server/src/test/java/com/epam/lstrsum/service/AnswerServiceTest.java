@@ -44,7 +44,7 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
         AnswerPostDto postDto = new AnswerPostDto("1u_2r", "answer text");
 
         AnswerAllFieldsDto answer = answerService.addNewAnswer(postDto, authorEmail);
-        assertThat(answer.getQuestionId(), notNullValue());
+        assertThat(answer.getQuestion(), notNullValue());
     }
 
     @Test

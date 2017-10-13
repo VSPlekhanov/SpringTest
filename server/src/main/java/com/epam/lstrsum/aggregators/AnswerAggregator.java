@@ -12,7 +12,9 @@ import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.persistence.AnswerRepository;
-import com.epam.lstrsum.persistence.QuestionRepository;
+import com.epam.lstrsum.persistence.UserRepository;
+import com.epam.lstrsum.service.QuestionService;
+import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,17 +31,20 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
     private final QuestionDtoMapper questionMapper;
 
     private final AnswerRepository answerRepository;
-    private final QuestionRepository questionRepository;
+//    private final QuestionRepository questionRepository;
 
     private final UserAggregator userAggregator;
 
+    private final UserService userService;
+    private final QuestionService questionService;
+
     @Override
     public AnswerAllFieldsDto modelToAllFieldsDto(Answer answer) {
-        final UserBaseDto author = userMapper.modelToBaseDto(answer.getAuthorId());
+        final UserBaseDto author = userMapper.modelToBaseDto(userService.findUserById(answer.getAuthorId()));
         return answerMapper.modelToAllFieldsDto(
                 answer,
                 author,
-                questionMapper.modelToBaseDto(answer.getQuestionId(), author)
+                questionMapper.modelToBaseDto(questionService.getQuestionByAnswerId(answer.getAnswerId()), author)
         );
     }
 
@@ -47,7 +52,7 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
     public AnswerBaseDto modelToBaseDto(Answer answer) {
         return answerMapper.modelToBaseDto(
                 answer,
-                userMapper.modelToBaseDto(answer.getAuthorId())
+                userMapper.modelToBaseDto(userService.findUserById(answer.getAuthorId()))
         );
     }
 
@@ -55,15 +60,15 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
         List<Answer> answers = answerRepository.findAnswersByQuestionIdOrderByCreatedAtAsc(question);
         return answerMapper.answersToQuestionInAnswerBaseDto(
                 answers,
-                userMapper.usersToListOfUserBaseDtos(answers.stream().map(Answer::getAuthorId).collect(Collectors.toList()))
+                userMapper.usersToListOfUserBaseDtos(answers.stream()
+                        .map(Answer::getAuthorId).map(userService::findUserById).collect(Collectors.toList()))
         );
     }
 
     public Answer answerPostDtoAndAuthorEmailToAnswer(AnswerPostDto answerPostDto, String email) {
         return answerMapper.answerPostDtoAndAuthorEmailToAnswer(
                 answerPostDto,
-                userAggregator.findByEmail(email),
-                questionRepository.findOne(answerPostDto.getQuestionId())
+                userAggregator.findByEmail(email)
         );
     }
 }

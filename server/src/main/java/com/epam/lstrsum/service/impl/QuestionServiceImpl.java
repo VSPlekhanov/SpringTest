@@ -236,7 +236,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public void addAttachmentsToQuestion(String questionId, List<String> attachmentIds) {
         mongoTemplate.findAndModify(
-                new Query(Criteria.where("questionId").is(questionId)),
+                new Query(Criteria.where("question").is(questionId)),
                 new Update().addToSet("attachmentIds").each(attachmentIds),
                 Question.class
         );
@@ -253,7 +253,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public void deleteSubscriptionsByQuestionId(String questionId) {
-        log.debug("Delete all subscriptions with questionId {}", questionId);
+        log.debug("Delete all subscriptions with question {}", questionId);
 
         final Query findAll = new Query();
         final Update pullQuestion = new Update().pull(

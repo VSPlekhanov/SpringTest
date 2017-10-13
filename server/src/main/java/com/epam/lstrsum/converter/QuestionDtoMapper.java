@@ -47,7 +47,8 @@ public interface QuestionDtoMapper {
             @Mapping(target = "authorId", source = "authorId"),
             @Mapping(target = "score", constant = "0"),
             @Mapping(target = "questionId", ignore = true),
-            @Mapping(target = "attachmentIds", ignore = true)
+            @Mapping(target = "attachmentIds", ignore = true),
+            @Mapping(target = "answers", ignore = true)
     })
     Question questionPostDtoAndAuthorEmailToQuestion(QuestionPostDto questionPostDto, User authorId, List<User> allowedSubs);
 
@@ -59,7 +60,8 @@ public interface QuestionDtoMapper {
             @Mapping(target = "authorId", source = "authorId"),
             @Mapping(target = "score", constant = "0"),
             @Mapping(target = "questionId", ignore = true),
-            @Mapping(target = "attachmentIds", source = "attachmentIds")
+            @Mapping(target = "attachmentIds", source = "attachmentIds"),
+            @Mapping(target = "answers", ignore = true)
     })
     Question questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(QuestionPostDto questionPostDto, User authorId, List<User> allowedSubs, List<String> attachmentIds);
 

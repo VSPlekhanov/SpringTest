@@ -63,7 +63,7 @@ public class AnswerController {
         }
     }
 
-    @GetMapping("/{questionId}")
+    @GetMapping("/{question}")
     public ResponseEntity<List<AnswerBaseDto>> getAnswersByQuestionId(
             @PathVariable String questionId,
             @RequestParam(value = "page", required = false, defaultValue = "-1") int page,
@@ -71,7 +71,7 @@ public class AnswerController {
         return ResponseEntity.ok(answerService.getAnswersByQuestionId(questionId, page, size));
     }
 
-    @GetMapping("/{questionId}/count")
+    @GetMapping("/{question}/count")
     public ResponseEntity<CounterDto> getAnswerCountByQuestionId(@NotEmptyString @PathVariable String questionId) {
         return ResponseEntity.ok().body(new CounterDto(answerService.getAnswerCountByQuestionId(questionId)));
     }

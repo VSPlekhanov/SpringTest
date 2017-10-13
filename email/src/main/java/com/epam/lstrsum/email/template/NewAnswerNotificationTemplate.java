@@ -55,7 +55,7 @@ public class NewAnswerNotificationTemplate implements MailTemplate<AnswerAllFiel
 
     private String getSubject(AnswerAllFieldsDto source) {
         return "[EPAM Experience Portal] A new answer has been added to the question > " +
-                source.getQuestionId().getTitle();
+                source.getQuestion().getTitle();
     }
 
     private Multipart getContentOfMessage(AnswerAllFieldsDto source) throws MessagingException {
@@ -74,15 +74,15 @@ public class NewAnswerNotificationTemplate implements MailTemplate<AnswerAllFiel
     }
 
     private String getTextMessage(AnswerAllFieldsDto source) {
-        return source.getAuthorId().getFirstName() + " " +
-                source.getAuthorId().getLastName() +
+        return source.getAuthor().getFirstName() + " " +
+                source.getAuthor().getLastName() +
                 " has posted the following answer:\n\n" +
                 source.getText() +
                 "\n\n";
     }
 
     private String getHyperLinkMessage(AnswerAllFieldsDto source) {
-        String questionPath = defaultQuestionLink + source.getQuestionId().getQuestionId();
+        String questionPath = defaultQuestionLink + source.getQuestion().getQuestionId();
         String link = "<a href=\"" + questionPath + "\">here</a>";
 
         return "More details on the answer could be found " +

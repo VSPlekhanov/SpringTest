@@ -35,7 +35,7 @@ public class AnswerDtoMapperTest extends SetUpDataBaseCollections {
         assertThat(answerBaseDto.getCreatedAt()).isEqualTo(answer.getCreatedAt());
         assertThat(answerBaseDto.getText()).isEqualTo(answer.getText());
         assertThat(answerBaseDto.getUpVote()).isEqualTo(answer.getVotes().size());
-        assertThat(answerBaseDto.getAuthorId()).isEqualTo(userBaseDto);
+        assertThat(answerBaseDto.getAuthor()).isEqualTo(userBaseDto);
     }
 
     @Test
@@ -48,7 +48,7 @@ public class AnswerDtoMapperTest extends SetUpDataBaseCollections {
                 .satisfies(a -> {
                     checkAnswerBaseDto(a, answer, userBaseDto);
                     assertThat(a.getAnswerId()).isEqualTo(answer.getAnswerId());
-                    assertThat(a.getQuestionId()).isEqualTo(questionBaseDto);
+                    assertThat(a.getQuestion()).isEqualTo(questionBaseDto);
                 });
     }
 

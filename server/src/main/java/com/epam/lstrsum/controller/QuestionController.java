@@ -53,12 +53,12 @@ public class QuestionController {
         log.debug("addQuestion; email: {}", email);
 
         String questionId = questionService.addNewQuestion(dtoObject, email, files).getQuestionId();
-        log.debug("addQuestion; questionId: {}", questionId);
+        log.debug("addQuestion; question: {}", questionId);
 
         return ResponseEntity.ok(questionId);
     }
 
-    @GetMapping(value = "/{questionId}")
+    @GetMapping(value = "/{question}")
     public ResponseEntity<QuestionAppearanceDto> getQuestionWithText(@PathVariable String questionId) {
         Optional<QuestionAppearanceDto> questionDto = questionService.getQuestionAppearanceDtoByQuestionId(questionId);
         return questionDto.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
