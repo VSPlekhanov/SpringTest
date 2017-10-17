@@ -75,12 +75,10 @@ public class AnswerDtoMapperTest extends SetUpDataBaseCollections {
     public void answerPostDtoAndAuthorEmailToAnswer() throws Exception {
         AnswerPostDto answerPostDto = someAnswerPostDto();
         User user = someUser();
-        Question question = someQuestion();
 
-        assertThat(answerMapper.answerPostDtoAndAuthorEmailToAnswer(answerPostDto, user, question))
+        assertThat(answerMapper.answerPostDtoAndAuthorEmailToAnswer(answerPostDto, user))
                 .satisfies(a -> {
                     assertThat(a.getAuthorId()).isEqualTo(user);
-                    assertThat(a.getQuestionId()).isEqualTo(question);
                     assertThat(a.getCreatedAt()).isBeforeOrEqualTo(Instant.now());
                     assertThat(a.getVotes()).isEqualTo(Collections.emptyList());
                     assertThat(a.getText()).isEqualTo(answerPostDto.getText());
