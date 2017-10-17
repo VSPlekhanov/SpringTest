@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.PageRequest;
@@ -210,6 +211,12 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Question getQuestionById(String questionId) {
         return questionRepository.findOne(questionId);
+    }
+
+    @Override
+    public Question getQuestionByAnswerId(String answerId) {
+        val query = Criteria.where("answers").elemMatch(new Criteria().in(answerId));
+        return mongoTemplate.findOne(new Query(query), Question.class);
     }
 
     @Override

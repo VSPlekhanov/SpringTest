@@ -43,7 +43,7 @@ public interface AnswerDtoMapper {
             @Mapping(target = "text", source = "answer.text"),
             @Mapping(target = "createdAt", expression = "java(java.time.Instant.now())"),
             @Mapping(target = "authorId", source = "user.userId"),
-            @Mapping(target = "answerId", expression = "java(org.bson.types.ObjectId.get())"),
+            @Mapping(target = "answerId", expression = "java(org.bson.types.ObjectId.get().toString())"),
             @Mapping(target = "votes", expression = "java(java.util.Collections.emptyList())")
     })
     Answer answerPostDtoAndAuthorEmailToAnswer(AnswerPostDto answer, User user);

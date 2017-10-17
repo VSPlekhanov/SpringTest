@@ -12,7 +12,6 @@ import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.persistence.AnswerRepository;
-import com.epam.lstrsum.persistence.UserRepository;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
