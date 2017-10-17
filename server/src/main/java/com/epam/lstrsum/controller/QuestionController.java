@@ -5,12 +5,12 @@ import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
-import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,9 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static com.epam.lstrsum.enums.UserRoleType.ROLE_SIMPLE_USER;
 
 @RestController
 @RequestMapping("/api/question")
@@ -41,14 +42,13 @@ public class QuestionController {
     private int maxQuestionAmount;
 
     @PostMapping
-    public ResponseEntity<String> addQuestion(@RequestPart("dtoObject") QuestionPostDto dtoObject, @RequestPart(value = "files", required = false) MultipartFile[] files)
+    public ResponseEntity<String> addQuestion(@RequestPart("dtoObject") QuestionPostDto dtoObject,
+            @RequestPart(value = "files", required = false) MultipartFile[] files)
             throws IOException {
         log.debug("addQuestion.enter; dtoObject: {}", dtoObject);
         String email = userRuntimeRequestComponent.getEmail();
 
-        final long usersAdded = userService.addIfNotExistAllWithRole(
-                dtoObject.getAllowedSubs(), Collections.singletonList(UserRoleType.ROLE_SIMPLE_USER)
-        );
+        val usersAdded = userService.addIfNotExistAllWithRole(dtoObject.getAllowedSubs(), ROLE_SIMPLE_USER);
         log.debug("{} users added", usersAdded);
         log.debug("addQuestion; email: {}", email);
 

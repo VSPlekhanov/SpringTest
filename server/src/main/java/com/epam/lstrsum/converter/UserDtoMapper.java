@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
@@ -24,7 +25,7 @@ public interface UserDtoMapper {
     })
     UserBaseDto modelToBaseDto(User user);
 
-    default List<UserBaseDto> usersToListOfUserBaseDtos(List<User> users) {
+    default List<UserBaseDto> usersToListOfBaseDtos(List<User> users) {
         return users.stream()
                 .map(this::modelToBaseDto)
                 .collect(Collectors.toList());
@@ -38,5 +39,5 @@ public interface UserDtoMapper {
             @Mapping(target = "roles", source = "roles"),
             @Mapping(target = "userId", ignore = true)
     })
-    User userTelescopeInfoDtoToUser(TelescopeDataDto userDto, String email, List<UserRoleType> roles);
+    User userTelescopeInfoDtoToUser(TelescopeDataDto userDto, String email, Set<UserRoleType> roles);
 }

@@ -2,7 +2,6 @@ package com.epam.lstrsum.service.mail;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.email.service.ExchangeServiceHelper;
-import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.service.TelescopeService;
 import com.epam.lstrsum.service.UserService;
@@ -13,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Arrays;
 
+import static com.epam.lstrsum.enums.UserRoleType.ROLE_EXTENDED_USER;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeEmployeeEntityDtosWithEmails;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anySetOf;
@@ -54,7 +54,7 @@ public class UserSynchronizerTest extends SetUpDataBaseCollections {
         final String bobHoplins = "Bob_Hoplins@epam.com";
         final String johnDoe = "John_Doe@epam.com";
 
-        doReturn(someTelescopeEmployeeEntityDtosWithEmails(bobHoplins, johnDoe))
+        doReturn(someTelescopeEmployeeEntityDtosWithEmails(Arrays.asList(bobHoplins, johnDoe)))
                 .when(telescopeService).getUsersInfoByEmails(anySetOf(String.class));
         doReturn(Arrays.asList(johnDoe, bobHoplins))
                 .when(exchangeServiceHelper).resolveGroup(anyString());
@@ -66,10 +66,10 @@ public class UserSynchronizerTest extends SetUpDataBaseCollections {
         assertThat(userService.findUserByEmail(bobHoplins).getIsActive())
                 .isTrue();
 
-        assertThat(userService.findAllWithRole(UserRoleType.ROLE_EXTENDED_USER).stream().filter(User::getIsActive))
+        assertThat(userService.findAllWithRole(ROLE_EXTENDED_USER).stream().filter(User::getIsActive))
                 .hasSize(2);
-        assertThat(userService.findAllWithRole(UserRoleType.ROLE_EXTENDED_USER).stream().filter(u -> !u.getIsActive()))
-                .hasSize(3);
+        assertThat(userService.findAllWithRole(ROLE_EXTENDED_USER).stream().filter(u -> !u.getIsActive()))
+                .hasSize(2);
 
     }
 

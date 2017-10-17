@@ -9,13 +9,13 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import java.util.Collections;
 import java.util.Optional;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeDataDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
 import static com.epam.lstrsum.utils.FunctionalUtil.getListWithSize;
+import static java.util.Collections.emptySet;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -53,16 +53,16 @@ public class UserAggregatorTest {
     }
 
     @Test
-    public void allowedSubsToListOfUserBaseDtos() throws Exception {
+    public void usersToListOfBaseDtos() throws Exception {
         final int size = 2;
-        aggregator.allowedSubsToListOfUserBaseDtos(getListWithSize(InstantiateUtil::someUser, size));
+        aggregator.usersToListOfBaseDtos(getListWithSize(InstantiateUtil::someUser, size));
 
-        verify(userMapper, times(1)).usersToListOfUserBaseDtos(any());
+        verify(userMapper, times(1)).usersToListOfBaseDtos(any());
     }
 
     @Test
     public void userTelescopeInfoDtoToUser() throws Exception {
-        aggregator.userTelescopeInfoDtoToUser(someTelescopeDataDto(), someString(), Collections.emptyList());
+        aggregator.userTelescopeInfoDtoToUser(someTelescopeDataDto(), someString(), emptySet());
 
         verify(userMapper, times(1)).userTelescopeInfoDtoToUser(any(), anyString(), any());
     }

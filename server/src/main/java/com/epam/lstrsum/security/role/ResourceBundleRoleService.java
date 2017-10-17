@@ -19,17 +19,18 @@ import java.util.ResourceBundle;
  * <p>
  * Properties file example:
  * #Users
- * user@domain.com=ROLE_USER
- * admin@domain.com=ROLE_USER,ROLE_ADMIN
+ * user@domain.com=ROLE_EXTENDED_USER
+ * admin@domain.com=ROLE_EXTENDED_USER,ROLE_ADMIN
  * <p>
  * #Mapping
- * allowFor(/api/**)=ROLE_USER,ROLE_ADMIN
  * allowFor(/admin/**)=ROLE_ADMIN
- * <p>
+ * allowFor(/documentation/swagger-ui.html)=ROLE_EXTENDED_USER,ROLE_ADMIN
+ * allowFor(/performance/)=ROLE_EXTENDED_USER,ROLE_ADMIN
+ * allowFor(/api/**)=ROLE_EXTENDED_USER,ROLE_SIMPLE_USER,ROLE_ADMIN
+ * allowFor(/**)=ROLE_SIMPLE_USER,ROLE_EXTENDED_USER,ROLE_ADMIN,ACTUATOR
  * #NotAllowedRole
  * not.allowed.role.name=ROLE_NOT_ALLOWED_USER
  */
-
 public class ResourceBundleRoleService implements RoleService {
     private static final String NOT_ALLOWED_USER_PROPERTY_NAME = "not.allowed.role.name";
     private final ResourceBundle bundle;

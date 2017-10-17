@@ -19,6 +19,8 @@ import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.model.Vote;
+import com.epam.lstrsum.security.EpamEmployeePrincipal;
+import com.google.common.collect.ImmutableMap;
 import io.github.benas.randombeans.EnhancedRandomBuilder;
 import io.github.benas.randombeans.api.EnhancedRandom;
 import lombok.val;
@@ -28,12 +30,14 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.utils.FunctionalUtil.getList;
+import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 
 public class InstantiateUtil {
@@ -52,6 +56,7 @@ public class InstantiateUtil {
     public static final String EXISTING_ATTACHMENT_ID = "attachmentId1";
     private static final EnhancedRandom random = EnhancedRandomBuilder.aNewEnhancedRandomBuilder()
             .stringLengthRange(5, 50)
+            .collectionSizeRange(1, 1)
             .build();
     private static SecureRandom SECURE_RANDOM = new SecureRandom();
 
@@ -61,6 +66,12 @@ public class InstantiateUtil {
 
     public static User someUser() {
         return random.nextObject(User.class);
+    }
+
+    public static User someUserWithRoles(Set<UserRoleType> roles) {
+        val user = someUser();
+        user.setRoles(roles);
+        return user;
     }
 
     public static User someActiveUser() {
@@ -135,6 +146,10 @@ public class InstantiateUtil {
         return random.nextObject(UserBaseDto.class);
     }
 
+    public static List<UserBaseDto> someUserBaseDtos() {
+        return getList(InstantiateUtil::someUserBaseDto);
+    }
+
     public static Answer someAnswer() {
         return random.nextObject(Answer.class);
     }
@@ -193,8 +208,8 @@ public class InstantiateUtil {
         return random.nextObject(Vote.class);
     }
 
-    public static List<TelescopeEmployeeEntityDto> someTelescopeEmployeeEntityDtosWithEmails(String... emails) {
-        return Arrays.stream(emails)
+    public static List<TelescopeEmployeeEntityDto> someTelescopeEmployeeEntityDtosWithEmails(List<String> emails) {
+        return emails.stream()
                 .map(email -> TelescopeDataDto.builder()
                         ._e3sId(someString())
                         .displayName(someString())
@@ -216,13 +231,23 @@ public class InstantiateUtil {
         return getList(InstantiateUtil::someTelescopeEmployeeEntityDto);
     }
 
-    public static List<UserRoleType> someRoles() {
-        return singletonList(someRole());
+    public static Set<UserRoleType> someRoles() {
+        return singleton(someRole());
     }
 
     private static UserRoleType someRole() {
         final UserRoleType[] values = UserRoleType.values();
         return values[SECURE_RANDOM.nextInt(values.length)];
+    }
+
+    public static EpamEmployeePrincipal someEpamEmployeePrincipal() {
+        Map<String, Object> epamEmployeePrincipalMap = ImmutableMap.<String, Object>builder()
+                .put(EpamEmployeePrincipal.EMAIL, someString())
+                .put(EpamEmployeePrincipal.UNIQUE_NAME, someString())
+                .put(EpamEmployeePrincipal.USER_ID, someString())
+                .build();
+
+        return EpamEmployeePrincipal.ofMap(epamEmployeePrincipalMap);
     }
 
     public static HttpEntity someEntity() {

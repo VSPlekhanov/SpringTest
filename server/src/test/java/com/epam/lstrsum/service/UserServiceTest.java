@@ -7,27 +7,35 @@ import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
 import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.model.User;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import lombok.val;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.epam.lstrsum.enums.UserRoleType.ROLE_ADMIN;
+import static com.epam.lstrsum.enums.UserRoleType.ROLE_EXTENDED_USER;
+import static com.epam.lstrsum.enums.UserRoleType.ROLE_NOT_ALLOWED_USER;
+import static com.epam.lstrsum.enums.UserRoleType.ROLE_SIMPLE_USER;
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_USER_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.NON_EXISTING_USER_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_NOT_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someStrings;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeDataDtoWithEmail;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeEmployeeEntityDto;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeEmployeeEntityDtoWithEmail;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someUserBaseDtos;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -63,7 +71,7 @@ public class UserServiceTest extends SetUpDataBaseCollections {
     }
 
     public void findAllWithRole() {
-        assertEquals(userService.findAllWithRole(UserRoleType.ROLE_EXTENDED_USER).size(), 5);
+        assertEquals(userService.findAllWithRole(ROLE_EXTENDED_USER).size(), 5);
     }
 
     @Test
@@ -103,7 +111,9 @@ public class UserServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void addIfNotExistAllWithRole() {
-        final List<String> alreadyInBaseEmails = userService.findAll().stream().map(User::getEmail).collect(Collectors.toList());
+        final List<String> alreadyInBaseEmails =
+                userService.findAll().stream().filter(user -> user.getRoles().contains(ROLE_SIMPLE_USER)).map(User::getEmail)
+                        .collect(Collectors.toList());
         List<TelescopeEmployeeEntityDto> dtos = Collections.singletonList(someTelescopeEmployeeEntityDto());
         final List<String> notInBaseEmails = dtos.stream()
                 .map(TelescopeEmployeeEntityDto::getData)
@@ -115,7 +125,7 @@ public class UserServiceTest extends SetUpDataBaseCollections {
         doReturn(dtos).when(telescopeService).getUsersInfoByEmails(anySetOf(String.class));
         when(userAggregator.userTelescopeInfoDtoToUser(any(), anyString(), any())).thenReturn(someUser());
 
-        final long actual = userService.addIfNotExistAllWithRole(concat, singletonList(UserRoleType.ROLE_SIMPLE_USER));
+        final long actual = userService.addIfNotExistAllWithRole(concat, ROLE_EXTENDED_USER);
 
         assertEquals(actual, notInBaseEmails.size());
 
@@ -123,20 +133,14 @@ public class UserServiceTest extends SetUpDataBaseCollections {
         verify(userAggregator, times(1)).userTelescopeInfoDtoToUser(any(), anyString(), any());
     }
 
-
     @Test
     public void addIfNotExistAllWithRoleWrongArgs() {
-        assertEquals(userService.addIfNotExistAllWithRole(null, singletonList(UserRoleType.ROLE_SIMPLE_USER)), 0);
+        assertEquals(userService.addIfNotExistAllWithRole(null, ROLE_SIMPLE_USER), 0);
+        assertEquals(userService.addIfNotExistAllWithRole(emptyList(), ROLE_SIMPLE_USER), 0);
+        assertEquals(userService.addIfNotExistAllWithRole(someStrings(), null), 0);
 
-        List<String> userEmails = new ArrayList<>();
-        assertEquals(userService.addIfNotExistAllWithRole(userEmails, singletonList(UserRoleType.ROLE_SIMPLE_USER)), 0);
-
-        List<TelescopeEmployeeEntityDto> dtos = Collections.emptyList();
-        userEmails = someStrings();
-        val lowerCaseUsersEmail = userEmails.stream().map(String::toLowerCase).collect(Collectors.toSet());
-
-        doReturn(dtos).when(telescopeService).getUsersInfoByEmails(lowerCaseUsersEmail);
-        assertEquals(userService.addIfNotExistAllWithRole(userEmails, singletonList(UserRoleType.ROLE_SIMPLE_USER)), 0);
+        doReturn(emptyList()).when(telescopeService).getUsersInfoByEmails(anySetOf(String.class));
+        assertEquals(userService.addIfNotExistAllWithRole(someStrings(), ROLE_SIMPLE_USER), 0);
 
         verify(telescopeService, times(1)).getUsersInfoByEmails(anySetOf(String.class));
     }
@@ -150,7 +154,7 @@ public class UserServiceTest extends SetUpDataBaseCollections {
 
         doReturn(dtoList).when(telescopeService).getUsersInfoByEmails(anySetOf(String.class));
 
-        userService.addIfNotExistAllWithRole(Collections.singletonList(someEmail), singletonList(UserRoleType.ROLE_SIMPLE_USER));
+        userService.addIfNotExistAllWithRole(Collections.singletonList(someEmail), ROLE_SIMPLE_USER);
 
         verify(telescopeService, times(1)).getUsersInfoByEmails(anySetOf(String.class));
     }
@@ -165,29 +169,54 @@ public class UserServiceTest extends SetUpDataBaseCollections {
 
         doReturn(dtoList).when(telescopeService).getUsersInfoByEmails(anySetOf(String.class));
 
-        userService.addIfNotExistAllWithRole(Collections.singletonList(someEmail), singletonList(UserRoleType.ROLE_SIMPLE_USER));
+        userService.addIfNotExistAllWithRole(Collections.singletonList(someEmail), ROLE_SIMPLE_USER);
 
         verify(telescopeService, times(1)).getUsersInfoByEmails(anySetOf(String.class));
     }
 
     @Test
     public void addIfNotExistAllWithRoleAndSomeWrongEmails() {
-        String existentEmail = "telescope_user_to_be_added@epam.com";
-        String nonexistentEmail1 = "no_such_user_in_telescope@epam.com";
-        String nonexistentEmail2 = SOME_NOT_USER_EMAIL.toLowerCase();
+        val existentEmail = "telescope_user_to_be_added@epam.com";
+        val nonexistentEmail1 = "no_such_user_in_telescope@epam.com";
+        val nonexistentEmail2 = SOME_NOT_USER_EMAIL.toLowerCase();
 
-        TelescopeDataDto dataDto = someTelescopeDataDtoWithEmail(existentEmail);
-        TelescopeEmployeeEntityDto employeeEntityDto = TelescopeEmployeeEntityDto.builder().data(dataDto).build();
-        List<TelescopeEmployeeEntityDto> dtoList = Collections.singletonList(employeeEntityDto);
+        doReturn(Lists.newArrayList(someTelescopeEmployeeEntityDtoWithEmail(existentEmail))).when(telescopeService)
+                .getUsersInfoByEmails(anySetOf(String.class));
+        doReturn(someUser()).when(userAggregator).userTelescopeInfoDtoToUser(any(), eq(existentEmail), anySetOf(UserRoleType.class));
 
-        doReturn(dtoList).when(telescopeService).getUsersInfoByEmails(anySetOf(String.class));
-        doReturn(someUser()).when(userAggregator).userTelescopeInfoDtoToUser(any(), eq(existentEmail), anyListOf(UserRoleType.class));
-
-        List<String> someEmails = Arrays.asList(existentEmail, nonexistentEmail1, nonexistentEmail2);
-        long actual = userService.addIfNotExistAllWithRole(someEmails, singletonList(UserRoleType.ROLE_SIMPLE_USER));
+        val someEmails = Arrays.asList(existentEmail, nonexistentEmail1, nonexistentEmail2);
+        val actual = userService.addIfNotExistAllWithRole(someEmails, ROLE_SIMPLE_USER);
 
         assertEquals(1, actual);
         verify(telescopeService, times(1)).getUsersInfoByEmails(anySetOf(String.class));
+    }
+
+    @Test
+    public void addIfNotExistAllWithRoleSimpleUserAddedInDistributionList() {
+        val userWithSimpleRoleEmail = "steven_tyler@epam.com";
+
+        doReturn(Lists.newArrayList(someTelescopeEmployeeEntityDtoWithEmail(userWithSimpleRoleEmail))).when(telescopeService)
+                .getUsersInfoByEmails(anySetOf(String.class));
+
+        userService.addIfNotExistAllWithRole(Arrays.asList(userWithSimpleRoleEmail), ROLE_EXTENDED_USER);
+
+        assertThat(userService.findUserByEmail(userWithSimpleRoleEmail))
+                .extracting("roles", "isActive")
+                .containsOnly(Sets.immutableEnumSet(ROLE_EXTENDED_USER), true);
+    }
+
+    @Test
+    public void addIfNotExistAllWithExDistributionListUserChangeRoleToSimpleUser() {
+        val exDistributionListUserEmail = "tyler_greeds@epam.com";
+
+        doReturn(Lists.newArrayList(someTelescopeEmployeeEntityDtoWithEmail(exDistributionListUserEmail))).when(telescopeService)
+                .getUsersInfoByEmails(anySetOf(String.class));
+
+        userService.addIfNotExistAllWithRole(Arrays.asList(exDistributionListUserEmail), ROLE_SIMPLE_USER);
+
+        assertThat(userService.findUserByEmail(exDistributionListUserEmail))
+                .extracting("roles", "isActive")
+                .containsOnly(Sets.immutableEnumSet(ROLE_SIMPLE_USER, ROLE_ADMIN), false);
     }
 
     @Test(expected = NoSuchUserException.class)
@@ -206,48 +235,58 @@ public class UserServiceTest extends SetUpDataBaseCollections {
                 "Bob_Hoplins@epam.com", "John_Doe@epam.com");
 
         assertThat(userService.findAllActive())
-                .hasSize(5)
+                .hasSize(4)
                 .allSatisfy(user -> assertThat(allowedEmails).contains(user.getEmail()));
     }
 
     @Test
     public void existsActiveUserWithExtendedUserRoleAndEmail() {
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_EXTENDED_USER, "John_Doe@epam.com")).isTrue();
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_EXTENDED_USER, "john_doe@epam.com")).isTrue();
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_EXTENDED_USER, "bob_hoplins@epam.com")).isTrue();
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_EXTENDED_USER, "tyler_greeds@epam.com")).isFalse();
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_EXTENDED_USER, "Steven_Tyler@epam.com")).isFalse();
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_EXTENDED_USER, "Donald_Gardner@epam.com")).isFalse();
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_EXTENDED_USER, "no_such_email@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_EXTENDED_USER, "John_Doe@epam.com")).isTrue();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_EXTENDED_USER, "john_doe@epam.com")).isTrue();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_EXTENDED_USER, "bob_hoplins@epam.com")).isTrue();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_EXTENDED_USER, "tyler_greeds@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_EXTENDED_USER, "Steven_Tyler@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_EXTENDED_USER, "Donald_Gardner@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_EXTENDED_USER, "no_such_email@epam.com")).isFalse();
     }
 
     @Test
     public void existsActiveUserWithAdminRoleAndEmail() {
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_ADMIN, "John_Doe@epam.com")).isTrue();
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_ADMIN, "john_doe@epam.com")).isTrue();
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_ADMIN, "ernest_hemingway@epam.com")).isTrue();
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_ADMIN, "Tyler_Greeds@epam.com")).isFalse();
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_ADMIN, "Donald_Gardner@epam.com")).isFalse();
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_ADMIN, "no_such_email@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_ADMIN, "John_Doe@epam.com")).isTrue();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_ADMIN, "john_doe@epam.com")).isTrue();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_ADMIN, "ernest_hemingway@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_ADMIN, "Tyler_Greeds@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_ADMIN, "Donald_Gardner@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_ADMIN, "no_such_email@epam.com")).isFalse();
     }
 
     @Test
     public void existsActiveUserWithSimpleUserRoleAndEmail() {
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_SIMPLE_USER, "ernest_hemingway@epam.com")).isTrue();
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_SIMPLE_USER, "Ernest_Hemingway@epam.com")).isTrue();
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_SIMPLE_USER, "John_Doe@epam.com")).isFalse();
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_SIMPLE_USER, "Tyler_Greeds@epam.com")).isFalse();
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_SIMPLE_USER, "Donald_Gardner@epam.com")).isFalse();
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_SIMPLE_USER, "no_such_email@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_SIMPLE_USER, "ernest_hemingway@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_SIMPLE_USER, "Ernest_Hemingway@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_SIMPLE_USER, "John_Doe@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_SIMPLE_USER, "Tyler_Greeds@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_SIMPLE_USER, "Donald_Gardner@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_SIMPLE_USER, "no_such_email@epam.com")).isFalse();
     }
 
     @Test
     public void existsActiveUserWithNotAllowedUserRoleAndEmail() {
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_NOT_ALLOWED_USER, "Donald_Gardner@epam.com")).isTrue();
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_NOT_ALLOWED_USER, "donald_gardner@epam.com")).isTrue();
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_NOT_ALLOWED_USER, "Ernest_Hemingway@epam.com")).isFalse();
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_NOT_ALLOWED_USER, "John_Doe@epam.com")).isFalse();
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_NOT_ALLOWED_USER, "Tyler_Greeds@epam.com")).isFalse();
-        assertThat(userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_NOT_ALLOWED_USER, "no_such_email@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_NOT_ALLOWED_USER, "Donald_Gardner@epam.com")).isTrue();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_NOT_ALLOWED_USER, "donald_gardner@epam.com")).isTrue();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_NOT_ALLOWED_USER, "Ernest_Hemingway@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_NOT_ALLOWED_USER, "John_Doe@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_NOT_ALLOWED_USER, "Tyler_Greeds@epam.com")).isFalse();
+        assertThat(userService.existsActiveUserWithRoleAndEmail(ROLE_NOT_ALLOWED_USER, "no_such_email@epam.com")).isFalse();
+    }
+
+    @Test
+    public void findAllUserBaseDtos() {
+        val dtoList = someUserBaseDtos();
+
+        doReturn(dtoList).when(userAggregator).usersToListOfBaseDtos(anyListOf(User.class));
+        assertThat(userService.findAllUserBaseDtos())
+                .hasSize(dtoList.size())
+                .allMatch(Objects::nonNull);
     }
 }

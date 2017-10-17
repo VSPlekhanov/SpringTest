@@ -2,7 +2,6 @@ package com.epam.lstrsum.service.mail;
 
 import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
 import com.epam.lstrsum.email.service.MailService;
-import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.AttachmentRepository;
@@ -32,6 +31,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.epam.lstrsum.enums.UserRoleType.ROLE_ADMIN;
 import static com.epam.lstrsum.testutils.MimeMessageCreatorUtil.createCompositeMimeMessage;
 import static com.epam.lstrsum.testutils.MimeMessageCreatorUtil.createFromFile;
 import static java.util.Collections.singletonList;
@@ -170,6 +170,6 @@ public class IntegrationMailReceiverTest {
         doReturn(dtos).when(telescopeService)
                 .getUsersInfoByEmails(anySetOf(String.class));
 
-        userService.addIfNotExistAllWithRole(userEmails, singletonList(UserRoleType.ROLE_ADMIN));
+        userService.addIfNotExistAllWithRole(userEmails, ROLE_ADMIN);
     }
 }

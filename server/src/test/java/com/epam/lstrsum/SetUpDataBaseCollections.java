@@ -84,4 +84,8 @@ public abstract class SetUpDataBaseCollections {
 
         return jsonList;
     }
+
+    public MongoTemplate getMongoTemplate() {
+        return mongoTemplate;
+    }
 }

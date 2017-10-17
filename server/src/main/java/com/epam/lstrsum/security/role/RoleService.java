@@ -21,17 +21,17 @@ public interface RoleService {
      * If principal have no roles this method should return
      * one role like "ROLE_NOT_ALLOWED_USER".
      * <p>
-     * Kepp in mind, if this method is calling, it means that
+     * Keep in mind, if this method is calling, it means that
      * principal already have passed the authentication system.
      *
-     * @param principal - Authinticated principal
+     * @param principal - Authenticated principal
      * @return - array or roles or not allowed user role
      * @throws NullPointerException - if principal is null
      */
     String[] getPrincipalRoles(EpamEmployeePrincipal principal);
 
     /**
-     * Get roles mappping.
+     * Get roles mapping.
      * <p>
      * For each request pattern should return not
      * empty roles list.

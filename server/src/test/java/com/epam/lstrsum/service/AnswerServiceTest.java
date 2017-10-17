@@ -10,17 +10,21 @@ import com.epam.lstrsum.exception.NoSuchAnswerException;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.QuestionWithAnswersCount;
+import lombok.val;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_ANSWER_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID;
+import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_NOT_USER_EMAIL;
+import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswer;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswerPostDto;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -35,13 +39,11 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     @Autowired
     private AnswerAggregator answerAggregator;
     @Autowired
-    private QuestionService questionService;
-    @Autowired
     private MongoTemplate mongoTemplate;
 
     @Test
     public void addNewAnswerWithExistingQuestionTest() throws Exception {
-        AnswerPostDto postDto = new AnswerPostDto("1u_2r", "answer text");
+        AnswerPostDto postDto = new AnswerPostDto("1u_2r", someString());
 
         AnswerAllFieldsDto answer = answerService.addNewAnswer(postDto, authorEmail);
         assertThat(answer.getQuestionId(), notNullValue());
@@ -62,37 +64,34 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
 
     @Test(expected = AnswerValidationException.class)
     public void addNewAnswerNoAuthorTest() throws IOException {
-        AnswerPostDto postDto = new AnswerPostDto("1u_2r", "answer text");
-        answerService.addNewAnswer(postDto, null);
+        answerService.addNewAnswer(someAnswerPostDto(), null);
     }
 
     @Test(expected = AnswerValidationException.class)
     public void addNewAnswerWithEmptyText() throws IOException {
-        AnswerPostDto postDto = new AnswerPostDto("1u_2r", "     ");
+        val postDto = new AnswerPostDto("1u_2r", "     ");
         answerService.addNewAnswer(postDto, authorEmail);
     }
 
     @Test(expected = AnswerValidationException.class)
     public void addNewAnswerWithNullParentId() throws IOException {
-        AnswerPostDto postDto = new AnswerPostDto(null, "answer text");
+        val postDto = new AnswerPostDto(null, someString());
         answerService.addNewAnswer(postDto, authorEmail);
     }
 
     @Test(expected = AnswerValidationException.class)
     public void addNewAnswerWithNoExistingUserTest() throws IOException {
-        AnswerPostDto postDto = new AnswerPostDto("1u_2r", "answer text");
-        answerService.addNewAnswer(postDto, "someone_nonexisting@epam.com");
+        answerService.addNewAnswer(someAnswerPostDto(), SOME_NOT_USER_EMAIL);
     }
 
     @Test(expected = AnswerValidationException.class)
     public void addNewAnswerWithNoExistingQuestionIDTest() throws IOException {
-        AnswerPostDto postDto = new AnswerPostDto("1s_2r", "answer text");
-        answerService.addNewAnswer(postDto, "John_Doe@epam.com");
+        answerService.addNewAnswer(someAnswerPostDto(), SOME_USER_EMAIL);
     }
 
     @Test
     public void deleteAllAnswersToQuestion() {
-        final String validQuestionId = EXISTING_QUESTION_ID;
+        val validQuestionId = EXISTING_QUESTION_ID;
 
         assertThat(answerService.getAnswersByQuestionId(validQuestionId).size()).isGreaterThan(0);
 
@@ -114,28 +113,28 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void findAnswersByQuestionIdBigPageSize() {
-        final int enormousPageSize = Integer.MAX_VALUE;
+        val enormousPageSize = Integer.MAX_VALUE;
 
         assertThat(answerService.getAnswersByQuestionId(EXISTING_QUESTION_ID, 0, enormousPageSize)).hasSize(ANSWERS_COUNT);
     }
 
     @Test
     public void findAnswersByQuestionIdNegativePageSize() {
-        final int negativePageSize = Integer.MIN_VALUE;
+        val negativePageSize = Integer.MIN_VALUE;
 
         assertThat(answerService.getAnswersByQuestionId(EXISTING_QUESTION_ID, 0, negativePageSize)).hasSize(ANSWERS_COUNT);
     }
 
     @Test
     public void findAnswersByQuestionIdZeroPageSize() {
-        final int zeroPageSize = 0;
+        val zeroPageSize = 0;
 
         assertThat(answerService.getAnswersByQuestionId(EXISTING_QUESTION_ID, 0, zeroPageSize)).hasSize(ANSWERS_COUNT);
     }
 
     @Test
     public void findAnswersByQuestionIdInCorrectAscOrder() {
-        final List<AnswerBaseDto> answers = answerService.getAnswersByQuestionId(EXISTING_QUESTION_ID);
+        val answers = answerService.getAnswersByQuestionId(EXISTING_QUESTION_ID);
 
         assertThat(
                 answers.stream()
@@ -161,22 +160,23 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void findAnswerByAnswerIdIsNotNull() {
-        final Answer answer = answerService.getAnswerById(EXISTING_ANSWER_ID);
+        val answer = answerService.getAnswerById(EXISTING_ANSWER_ID);
         assertThat(answer).isNotNull();
     }
 
     @Test(expected = NoSuchAnswerException.class)
     public void findAnswerByAnswerIdForNotExistingAnswerId() {
-        final Answer answer = answerService.getAnswerById(someAnswer().getAnswerId());
+        answerService.getAnswerById(someAnswer().getAnswerId());
     }
 
     @Test
     public void saveAnswer() {
-        String newAnswerText = "new answer text";
-        Answer answerSaved = answerService.getAnswerById(EXISTING_ANSWER_ID);
+        val newAnswerText = someString();
+        val answerSaved = answerService.getAnswerById(EXISTING_ANSWER_ID);
         answerSaved.setText(newAnswerText);
         answerService.save(answerSaved);
-        Answer answerLoaded = answerService.getAnswerById(EXISTING_ANSWER_ID);
+        val answerLoaded = answerService.getAnswerById(EXISTING_ANSWER_ID);
+
         assertThat(answerLoaded.getText()).isEqualTo(newAnswerText);
     }
 }
