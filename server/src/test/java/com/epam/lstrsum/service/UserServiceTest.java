@@ -4,7 +4,6 @@ import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.aggregators.UserAggregator;
 import com.epam.lstrsum.dto.user.telescope.TelescopeDataDto;
 import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
-import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.model.User;
 import com.google.common.collect.Lists;
@@ -182,7 +181,8 @@ public class UserServiceTest extends SetUpDataBaseCollections {
 
         doReturn(Lists.newArrayList(someTelescopeEmployeeEntityDtoWithEmail(existentEmail))).when(telescopeService)
                 .getUsersInfoByEmails(anySetOf(String.class));
-        doReturn(someUser()).when(userAggregator).userTelescopeInfoDtoToUser(any(), eq(existentEmail), anySetOf(UserRoleType.class));
+        doReturn(someUser()).when(userAggregator)
+                .userTelescopeInfoDtoToUser(any(), eq(existentEmail), any());
 
         val someEmails = Arrays.asList(existentEmail, nonexistentEmail1, nonexistentEmail2);
         val actual = userService.addIfNotExistAllWithRole(someEmails, ROLE_SIMPLE_USER);

@@ -10,7 +10,6 @@ import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.UserRepository;
 import com.epam.lstrsum.service.TelescopeService;
 import com.epam.lstrsum.service.UserService;
-import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -23,6 +22,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -88,7 +88,7 @@ public class UserServiceImpl implements UserService {
     public boolean existsActiveUserWithRoleAndEmail(UserRoleType role, String email) {
         val query = Criteria.where("roles").elemMatch(new Criteria().in(role))
                 .andOperator(Criteria.where("isActive").is(true)
-                .andOperator(Criteria.where("email").regex(email, "i")));
+                        .andOperator(Criteria.where("email").regex(email, "i")));
         return mongoTemplate.exists(new Query(query), User.class);
     }
 
@@ -168,7 +168,7 @@ public class UserServiceImpl implements UserService {
     private void addNewUserByTelescopeUserData(Map.Entry<String, TelescopeDataDto> emailTelescopeDataEntry, UserRoleType role) {
         val userEmail = emailTelescopeDataEntry.getKey();
         val userData = emailTelescopeDataEntry.getValue();
-        val newUser = userAggregator.userTelescopeInfoDtoToUser(userData, userEmail, Sets.newHashSet(role));
+        val newUser = userAggregator.userTelescopeInfoDtoToUser(userData, userEmail, EnumSet.of(role));
         userRepository.save(newUser);
         log.debug("New user with email = {} was added", userEmail);
     }

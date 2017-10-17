@@ -31,13 +31,12 @@ import org.springframework.mock.web.MockMultipartFile;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.utils.FunctionalUtil.getList;
-import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 
 public class InstantiateUtil {
@@ -56,19 +55,23 @@ public class InstantiateUtil {
     public static final String EXISTING_ATTACHMENT_ID = "attachmentId1";
     private static final EnhancedRandom random = EnhancedRandomBuilder.aNewEnhancedRandomBuilder()
             .stringLengthRange(5, 50)
-            .collectionSizeRange(1, 1)
             .build();
     private static SecureRandom SECURE_RANDOM = new SecureRandom();
 
     public static Subscription someSubscription() {
-        return random.nextObject(Subscription.class);
+        Subscription subscription = random.nextObject(Subscription.class, "userId", "questionIds");
+        subscription.setUserId(someUser());
+        subscription.setQuestionIds(getList(InstantiateUtil::someQuestion));
+        return subscription;
     }
 
     public static User someUser() {
-        return random.nextObject(User.class);
+        User user = random.nextObject(User.class, "roles");
+        user.setRoles(someRoles());
+        return user;
     }
 
-    public static User someUserWithRoles(Set<UserRoleType> roles) {
+    public static User someUserWithRoles(EnumSet<UserRoleType> roles) {
         val user = someUser();
         user.setRoles(roles);
         return user;
@@ -151,7 +154,10 @@ public class InstantiateUtil {
     }
 
     public static Answer someAnswer() {
-        return random.nextObject(Answer.class);
+        Answer answer = random.nextObject(Answer.class, "authorId", "questionId");
+        answer.setAuthorId(someUser());
+        answer.setQuestionId(someQuestion());
+        return answer;
     }
 
     public static List<Vote> someVotes() {
@@ -167,7 +173,10 @@ public class InstantiateUtil {
     }
 
     public static Question someQuestion() {
-        return random.nextObject(Question.class);
+        Question question = random.nextObject(Question.class, "authorId", "allowedSubs");
+        question.setAuthorId(someUser());
+        question.setAllowedSubs(getList(InstantiateUtil::someUser));
+        return question;
     }
 
     public static QuestionAllFieldsDto someQuestionAllFieldsDto() {
@@ -231,8 +240,8 @@ public class InstantiateUtil {
         return getList(InstantiateUtil::someTelescopeEmployeeEntityDto);
     }
 
-    public static Set<UserRoleType> someRoles() {
-        return singleton(someRole());
+    public static EnumSet<UserRoleType> someRoles() {
+        return EnumSet.of(someRole());
     }
 
     private static UserRoleType someRole() {

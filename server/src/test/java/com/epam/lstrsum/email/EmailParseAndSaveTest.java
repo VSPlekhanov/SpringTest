@@ -7,7 +7,6 @@ import com.epam.lstrsum.email.service.ExchangeServiceHelper;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.service.QuestionService;
-import com.google.common.collect.Sets;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.mail.internet.MimeMessage;
+import java.util.EnumSet;
 
 import static com.epam.lstrsum.enums.UserRoleType.ROLE_ADMIN;
 import static com.epam.lstrsum.enums.UserRoleType.ROLE_EXTENDED_USER;
@@ -55,14 +55,14 @@ public class EmailParseAndSaveTest extends SetUpDataBaseCollections {
                 .email("Eugen_Sandrov@epam.com")
                 .firstName(someString())
                 .lastName(someString())
-                .roles(Sets.immutableEnumSet(ROLE_EXTENDED_USER, ROLE_ADMIN))
+                .roles(EnumSet.of(ROLE_EXTENDED_USER, ROLE_ADMIN))
                 .isActive(true)
                 .build();
         final User receiverOfEmail = User.builder()
                 .email("Stan_Chivs@epam.com")
                 .firstName(someString())
                 .lastName(someString())
-                .roles(Sets.immutableEnumSet(ROLE_SIMPLE_USER))
+                .roles(EnumSet.of(ROLE_SIMPLE_USER))
                 .isActive(false)
                 .build();
 

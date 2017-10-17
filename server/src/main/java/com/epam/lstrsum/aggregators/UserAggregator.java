@@ -14,8 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +46,7 @@ public class UserAggregator implements BasicModelDtoConverter<User, UserBaseDto>
         });
     }
 
-    public User userTelescopeInfoDtoToUser(TelescopeDataDto userDto, String email, Set<UserRoleType> userRoles) {
+    public User userTelescopeInfoDtoToUser(TelescopeDataDto userDto, String email, EnumSet<UserRoleType> userRoles) {
         return userMapper.userTelescopeInfoDtoToUser(userDto, email, userRoles);
     }
 }
