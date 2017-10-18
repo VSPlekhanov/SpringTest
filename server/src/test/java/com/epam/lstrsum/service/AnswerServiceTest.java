@@ -90,17 +90,6 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void deleteAllAnswersToQuestion() {
-        val validQuestionId = EXISTING_QUESTION_ID;
-
-        assertThat(answerService.getAnswersByQuestionId(validQuestionId).size()).isGreaterThan(0);
-
-        answerService.deleteAllAnswersOnQuestion(validQuestionId);
-
-        assertThat(answerService.getAnswersByQuestionId(validQuestionId)).hasSize(0);
-    }
-
-    @Test
     public void aggregationFunctionTestingShouldReturnQuestionToAnswersCount() {
         assertThat(answerService.aggregateToCount(mongoTemplate.findAll(Question.class)))
                 .anySatisfy(q -> hasQuestionWithAnswersCount(q, "1u_1r", 3))

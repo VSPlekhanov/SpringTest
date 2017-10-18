@@ -38,7 +38,6 @@ public class AdminController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         questionService.delete(questionId);
-        answerService.deleteAllAnswersOnQuestion(questionId);
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }

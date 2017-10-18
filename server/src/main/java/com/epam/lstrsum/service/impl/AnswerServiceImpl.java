@@ -39,6 +39,7 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.grou
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.unwind;
 
 @Service
 @RequiredArgsConstructor
@@ -64,14 +65,6 @@ public class AnswerServiceImpl implements AnswerService {
         Answer newAnswer = answerAggregator.answerPostDtoAndAuthorEmailToAnswer(answerPostDto, email);
         Answer saved = answerRepository.save(newAnswer);
         return answerAggregator.modelToAllFieldsDto(saved);
-    }
-
-    @Override
-    public void deleteAllAnswersOnQuestion(String questionId) {
-        log.debug("Delete all answers on question with id {}", questionId);
-        Query filterQuery = new Query(Criteria.where("questionId").is(questionId));
-        Update updateQuery = new Update().set("answers", new Answer[] {});
-        mongoTemplate.findAndModify(filterQuery, updateQuery, Question.class);
     }
 
     @Override
@@ -113,7 +106,12 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public Long getAnswerCountByQuestionId(String questionId) {
-        return answerRepository.countAllByQuestionId(questionId);
+//        Aggregation aggregation = newAggregation(
+//                match(Criteria.where("questionId").is(questionId)),
+//                unwind("answers"),
+//
+//        );
+        return 10L;//mongoTemplate.aggregate(aggregation, Question.QUESTION_COLLECTION_NAME);
     }
 
     private List<QuestionWithAnswersCount> completeNotFound(

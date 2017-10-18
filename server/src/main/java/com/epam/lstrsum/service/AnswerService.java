@@ -19,8 +19,6 @@ public interface AnswerService {
 
     void save(Answer answer);
 
-    void deleteAllAnswersOnQuestion(String questionId);
-
     List<QuestionWithAnswersCount> aggregateToCount(List<Question> questions);
 
     List<AnswerBaseDto> getAnswersByQuestionId(String questionId, int page, int size);
