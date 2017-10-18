@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.EnumSet;
 import java.util.List;
 
 @Service
@@ -34,8 +35,8 @@ public class UserAggregator implements BasicModelDtoConverter<User, UserBaseDto>
         return userMapper.modelToBaseDto(user);
     }
 
-    public List<UserBaseDto> allowedSubsToListOfUserBaseDtos(List<User> allowedSubs) {
-        return userMapper.usersToListOfUserBaseDtos(allowedSubs);
+    public List<UserBaseDto> usersToListOfBaseDtos(List<User> users) {
+        return userMapper.usersToListOfBaseDtos(users);
     }
 
     public User findByEmail(String email) {
@@ -45,7 +46,7 @@ public class UserAggregator implements BasicModelDtoConverter<User, UserBaseDto>
         });
     }
 
-    public User userTelescopeInfoDtoToUser(TelescopeDataDto userDto, String email, List<UserRoleType> userRoles) {
+    public User userTelescopeInfoDtoToUser(TelescopeDataDto userDto, String email, EnumSet<UserRoleType> userRoles) {
         return userMapper.userTelescopeInfoDtoToUser(userDto, email, userRoles);
     }
 }

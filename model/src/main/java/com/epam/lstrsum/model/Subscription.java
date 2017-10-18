@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -17,6 +18,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @Builder
+@Setter
 @Document(collection = Subscription.SUBSCRIPTION_COLLECTION_NAME)
 public class Subscription {
     public final static String SUBSCRIPTION_COLLECTION_NAME = "Subscription";

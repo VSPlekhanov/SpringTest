@@ -1,21 +1,21 @@
 package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
-import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.persistence.QuestionRepository;
-import com.epam.lstrsum.persistence.SubscriptionRepository;
 import lombok.val;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID;
+import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_USER_ID;
+import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionPostDtoWithAllowedSubs;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,49 +24,46 @@ import static org.junit.Assert.assertNotNull;
 
 public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
+    private static List<String> allowedSubsList = Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
+            "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com");
+
     @Autowired
     private SubscriptionService subscriptionService;
     @Autowired
     private QuestionService questionService;
     @Autowired
-    private SubscriptionRepository subscriptionRepository;
-    @Autowired
     private QuestionRepository questionRepository;
     @Autowired
     private UserService userService;
-    @Autowired
-    private MongoTemplate mongoTemplate;
 
     @Test
     public void addSubscriptionAlreadyAdded() {
-        String userId = "1u";
-        String alreadySubscribed = "6u_6r";
+        val alreadySubscribed = "6u_6r";
+        val previousSize = findAllQuestionWhichSubscribedByUserId(EXISTING_USER_ID).size();
 
-        int previousSize = findAllQuestionWhichSubscribedByUserId(userId).size();
-
-        subscriptionService.addOrUpdate(userId, questionRepository.findOne(alreadySubscribed).getQuestionId());
-        int sizeAfterAdd = findAllQuestionWhichSubscribedByUserId(userId).size();
+        subscriptionService.addOrUpdate(EXISTING_USER_ID, questionRepository.findOne(alreadySubscribed).getQuestionId());
+        val sizeAfterAdd = findAllQuestionWhichSubscribedByUserId(EXISTING_USER_ID).size();
 
         assertEquals(previousSize, sizeAfterAdd);
     }
 
     @Test
     public void updateListOfSubscription() {
-        String userWithSubscriptions = "6u";
+        val userWithSubscriptions = "6u";
         int previousSize = findAllQuestionWhichSubscribedByUserId(userWithSubscriptions).size();
 
-        subscriptionService.addOrUpdate(userWithSubscriptions, questionRepository.findOne("1u_1r").getQuestionId());
-        int actual = findAllQuestionWhichSubscribedByUserId(userWithSubscriptions).size();
+        subscriptionService.addOrUpdate(userWithSubscriptions, questionRepository.findOne(EXISTING_QUESTION_ID).getQuestionId());
+        val actual = findAllQuestionWhichSubscribedByUserId(userWithSubscriptions).size();
 
         assertEquals(previousSize + 1, actual);
     }
 
     @Test
     public void addWhenTryToUpdate() {
-        String userWithoutSubscriptions = "7u";
+        val userWithoutSubscriptions = "7u";
         assertThat(findAllQuestionWhichSubscribedByUserId(userWithoutSubscriptions)).hasSize(0);
 
-        List<Question> allQuestion = questionRepository.findAll();
+        val allQuestion = questionRepository.findAll();
         subscriptionService.addOrUpdate(
                 userWithoutSubscriptions,
                 allQuestion.stream().map(Question::getQuestionId).collect(Collectors.toList())
@@ -85,28 +82,22 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void subscriptionSearchByQuestionIdReturnsListOfMatchedSubscriptions() throws Exception {
-        String questionId = "1u_1r";
-
-        List<Subscription> subscriptions = subscriptionService.findAllSubscriptionsEntitiesToQuestionWithThisId(questionId);
-        List<String> subscriptionIds = subscriptions.stream().map(Subscription::getSubscriptionId).collect(Collectors.toList());
+        val subscriptions = subscriptionService.findAllSubscriptionsEntitiesToQuestionWithThisId(EXISTING_QUESTION_ID);
+        val subscriptionIds = subscriptions.stream().map(Subscription::getSubscriptionId).collect(Collectors.toList());
 
         assertThat(subscriptionIds).containsExactlyInAnyOrder("2u_1s", "3u_1s");
     }
 
     @Test
     public void subscriptionSearchByQuestionIdReturnsEmptyListIfThisQuestionHasNoSubscribers() throws Exception {
-        String questionId = "questionWithNoSubscribersId";
-
-        List<Subscription> emptyList = subscriptionService.findAllSubscriptionsEntitiesToQuestionWithThisId(questionId);
+        val emptyList = subscriptionService.findAllSubscriptionsEntitiesToQuestionWithThisId(someString());
 
         assertThat(emptyList).isEmpty();
     }
 
     @Test
     public void subscriptionSearchQueryReturnsOnlyIdAndUserIdFieldsAndDoesNotReturnListOfQuestionIds() {
-        String questionId = "1u_1r";
-
-        List<Subscription> subscriptions = subscriptionService.findAllSubscriptionsEntitiesToQuestionWithThisId(questionId);
+        val subscriptions = subscriptionService.findAllSubscriptionsEntitiesToQuestionWithThisId(EXISTING_QUESTION_ID);
 
         val subscriptionIds = Arrays.asList("3u_1s", "2u_1s");
         val userIds = Arrays.asList("2u", "3u");
@@ -118,79 +109,61 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
     @Test
     public void getEmailsForNotificationReturnsListOfEmailsWhereToSendNotificationAboutNewAnswerToThisQuestionIfItHasSubscribedUsers() throws
             Exception {
-        String questionId = "1u_1r";
-
-        List<String> emails = subscriptionService.getEmailsOfSubscribersOfQuestion(questionId);
+        val emails = subscriptionService.getEmailsOfSubscribersOfQuestion(EXISTING_QUESTION_ID);
 
         assertThat(emails).containsExactlyInAnyOrder("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com");
     }
 
     @Test
     public void getEmailForNotificationReturnsEmptyListIfThisQuestionHasNoSubscribers() throws Exception {
-        String questionId = "questionWithNoSubscribersId";
-
-        List<String> emails = subscriptionService.getEmailsOfSubscribersOfQuestion(questionId);
+        val emails = subscriptionService.getEmailsOfSubscribersOfQuestion(someString());
 
         assertThat(emails).isEmpty();
     }
 
     @Test
     public void getEmailsForNotificationReturnsListWithOneEmailOfAuthorIfThereIsNoAllowedSubs() throws Exception {
-        QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
-                "just some text", 1501144323239L,
-                emptyList(), emptyList());
-        String authorEmail = "John_Doe@epam.com";
+        val postDto = someQuestionPostDtoWithAllowedSubs(emptyList());
+        val authorEmail = SOME_USER_EMAIL;
 
-        String newQuestionId = questionService.addNewQuestion(postDto, authorEmail).getQuestionId();
+        val newQuestionId = questionService.addNewQuestion(postDto, authorEmail).getQuestionId();
 
-        List<String> emails = subscriptionService.getEmailsOfAuthorAndAllowedSubsOfQuestion(newQuestionId);
+        val emails = subscriptionService.getEmailsOfAuthorAndAllowedSubsOfQuestion(newQuestionId);
 
         assertThat(emails)
-                .hasSize(6)
+                .hasSize(5)
                 .contains(authorEmail);
     }
 
     @Test
     public void getEmailsForNotificationReturnsListWithEmailsOfAuthorAndAllowedSubsIfThereIsSome() throws Exception {
-        QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
-                "just some text", 1501144323239L,
-                Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
-        String authorEmail = "John_Doe@epam.com";
+        val postDto = someQuestionPostDtoWithAllowedSubs(allowedSubsList);
 
-        String newQuestionId = questionService.addNewQuestion(postDto, authorEmail).getQuestionId();
-
-        List<String> emails = subscriptionService.getEmailsOfAuthorAndAllowedSubsOfQuestion(newQuestionId);
+        val newQuestionId = questionService.addNewQuestion(postDto, SOME_USER_EMAIL).getQuestionId();
+        val emails = subscriptionService.getEmailsOfAuthorAndAllowedSubsOfQuestion(newQuestionId);
 
         assertThat(emails).containsExactlyInAnyOrder("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                 "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com", "John_Doe@epam.com",
-                "Bob_Hoplins@epam.com", "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com", "Tyler_Derden@mylo.com",
+                "Bob_Hoplins@epam.com", "Donald_Gardner@epam.com", "Tyler_Derden@mylo.com",
                 "John_Doe@epam.com");
     }
 
     @Test
     public void getEmailsToNotificateAboutNewQuestionReturnsEmptyListIfThereIsNoAllowedSubs() throws Exception {
-        QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
-                "just some text", 1501144323239L,
-                emptyList(), emptyList());
-        String authorEmail = "John_Doe@epam.com";
+        val postDto = someQuestionPostDtoWithAllowedSubs(emptyList());
 
-        Question question = questionService.addNewQuestion(postDto, authorEmail);
-        Set<String> emails = subscriptionService.getEmailsToNotificateAboutNewQuestion(question);
+        val question = questionService.addNewQuestion(postDto, SOME_USER_EMAIL);
+        val emails = subscriptionService.getEmailsToNotificateAboutNewQuestion(question);
 
         assertThat(emails).hasSize(userService.findAllActive().size());
     }
 
     @Test
     public void getEmailsToNotificateAboutNewQuestionReturnsListOfEmails() throws Exception {
-        QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
-                "just some text", 1501144323239L,
-                Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                        "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
-        String authorEmail = "John_Doe@epam.com";
+        val postDto = someQuestionPostDtoWithAllowedSubs(allowedSubsList);
 
-        Question question = questionService.addNewQuestion(postDto, authorEmail);
-        Set<String> emails = subscriptionService.getEmailsToNotificateAboutNewQuestion(question);
+        val question = questionService.addNewQuestion(postDto, SOME_USER_EMAIL);
+        val emails = subscriptionService.getEmailsToNotificateAboutNewQuestion(question);
 
         assertThat(emails).containsExactlyInAnyOrder("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                 "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com", "John_Doe@epam.com", "Tyler_Derden@mylo.com");
@@ -198,10 +171,9 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void getEmailsToNotificateAboutNewAnswerReturnsSetWithEmails() {
-        String questionId = "1u_1r";
-        String user = "Bob_Hoplins@epam.com";
+        val user = "Bob_Hoplins@epam.com";
 
-        Set<String> emails = subscriptionService.getEmailsToNotificateAboutNewAnswer(questionId);
+        val emails = subscriptionService.getEmailsToNotificateAboutNewAnswer(EXISTING_QUESTION_ID);
 
         assertNotNull(emails);
         assertThat(emails).hasSize(7);

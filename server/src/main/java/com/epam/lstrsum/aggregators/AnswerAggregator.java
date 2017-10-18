@@ -59,7 +59,7 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
         List<Answer> answers = answerRepository.findAnswersByQuestionIdOrderByCreatedAtAsc(question);
         return answerMapper.answersToQuestionInAnswerBaseDto(
                 answers,
-                userMapper.usersToListOfUserBaseDtos(answers.stream()
+                userMapper.usersToListOfBaseDtos(answers.stream()
                         .map(Answer::getAuthorId).map(userService::findUserById).collect(Collectors.toList()))
         );
     }

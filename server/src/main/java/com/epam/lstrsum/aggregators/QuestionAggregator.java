@@ -37,7 +37,7 @@ public class QuestionAggregator implements BasicModelDtoConverter<Question, Ques
         return questionMapper.modelToAllFieldsDto(
                 question,
                 userMapper.modelToBaseDto(question.getAuthorId()),
-                userMapper.usersToListOfUserBaseDtos(question.getAllowedSubs())
+                userMapper.usersToListOfBaseDtos(question.getAllowedSubs())
         );
     }
 

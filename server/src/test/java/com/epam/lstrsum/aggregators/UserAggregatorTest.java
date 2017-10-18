@@ -1,6 +1,7 @@
 package com.epam.lstrsum.aggregators;
 
 import com.epam.lstrsum.converter.UserDtoMapper;
+import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.persistence.UserRepository;
 import com.epam.lstrsum.testutils.InstantiateUtil;
@@ -9,7 +10,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Optional;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
@@ -53,16 +54,16 @@ public class UserAggregatorTest {
     }
 
     @Test
-    public void allowedSubsToListOfUserBaseDtos() throws Exception {
+    public void usersToListOfBaseDtos() throws Exception {
         final int size = 2;
-        aggregator.allowedSubsToListOfUserBaseDtos(getListWithSize(InstantiateUtil::someUser, size));
+        aggregator.usersToListOfBaseDtos(getListWithSize(InstantiateUtil::someUser, size));
 
-        verify(userMapper, times(1)).usersToListOfUserBaseDtos(any());
+        verify(userMapper, times(1)).usersToListOfBaseDtos(any());
     }
 
     @Test
     public void userTelescopeInfoDtoToUser() throws Exception {
-        aggregator.userTelescopeInfoDtoToUser(someTelescopeDataDto(), someString(), Collections.emptyList());
+        aggregator.userTelescopeInfoDtoToUser(someTelescopeDataDto(), someString(), EnumSet.noneOf(UserRoleType.class));
 
         verify(userMapper, times(1)).userTelescopeInfoDtoToUser(any(), anyString(), any());
     }

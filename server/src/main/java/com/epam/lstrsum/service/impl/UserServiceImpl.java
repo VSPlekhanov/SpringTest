@@ -22,6 +22,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,6 +30,8 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import static com.epam.lstrsum.enums.UserRoleType.ROLE_EXTENDED_USER;
+import static com.epam.lstrsum.enums.UserRoleType.ROLE_SIMPLE_USER;
 import static java.util.Objects.isNull;
 
 @Service
@@ -48,6 +51,7 @@ public class UserServiceImpl implements UserService {
                     GET_EMAIL_CONTAINS_IN_BOTH_LISTS.apply(data.getEmail(), emails),
                     data
             );
+
     private final UserRepository userRepository;
     private final UserAggregator userAggregator;
     private final MongoTemplate mongoTemplate;
@@ -84,7 +88,7 @@ public class UserServiceImpl implements UserService {
     public boolean existsActiveUserWithRoleAndEmail(UserRoleType role, String email) {
         val query = Criteria.where("roles").elemMatch(new Criteria().in(role))
                 .andOperator(Criteria.where("isActive").is(true)
-                .andOperator(Criteria.where("email").regex(email, "i")));
+                        .andOperator(Criteria.where("email").regex(email, "i")));
         return mongoTemplate.exists(new Query(query), User.class);
     }
 
@@ -95,8 +99,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public long addIfNotExistAllWithRole(final List<String> userEmails, List<UserRoleType> roles) {
-        if (isNull(userEmails) || userEmails.isEmpty()) {
+    public long addIfNotExistAllWithRole(final List<String> userEmails, UserRoleType role) {
+        if (isNull(userEmails) || userEmails.isEmpty() || isNull(role)) {
             return 0;
         }
 
@@ -111,28 +115,60 @@ public class UserServiceImpl implements UserService {
                 .map(TelescopeEmployeeEntityDto::getData)
                 .filter(data -> !isNullOrEmptyString(data.getFirstName()) && !isNullOrEmptyString(data.getLastName()))
                 .map(data -> GET_PAIR_FROM_EMAIL_TO_TELESCOPE_DATA.apply(data, lowerCaseUsersEmail))
-                .filter(entry -> addIfNotExist(entry, roles))
+                .filter(entry -> addIfNotExist(entry, role))
                 .count();
     }
 
     @Override
     public List<UserBaseDto> findAllUserBaseDtos() {
-        return userAggregator.allowedSubsToListOfUserBaseDtos(findAll());
+        return userAggregator.usersToListOfBaseDtos(findAll());
     }
 
-    private boolean addIfNotExist(Map.Entry<String, TelescopeDataDto> entry, List<UserRoleType> roles) {
-        val byEmail = userRepository.findByEmailIgnoreCase(entry.getKey());
-        if (!byEmail.isPresent()) {
-            addNewUserByTelescopeUserData(entry, roles);
+    private boolean addIfNotExist(Map.Entry<String, TelescopeDataDto> entry, UserRoleType role) {
+        val user = userRepository.findByEmailIgnoreCase(entry.getKey());
+        if (!user.isPresent()) {
+            addNewUserByTelescopeUserData(entry, role);
             return true;
+        } else {
+            changeUserRoleIfNeed(user.get(), role);
+            return false;
         }
-        return false;
     }
 
-    private void addNewUserByTelescopeUserData(Map.Entry<String, TelescopeDataDto> emailTelescopeDataEntry, List<UserRoleType> userRoles) {
+    private void changeUserRoleIfNeed(User user, UserRoleType newRole) {
+        if (!user.getRoles().contains(newRole)) {
+            if (newRole.equals(ROLE_EXTENDED_USER)) {
+                replaceUserRole(user, ROLE_EXTENDED_USER);
+            }
+            if (newRole.equals(ROLE_SIMPLE_USER) && !isUserInCurrentDistributionList(user)) {
+                replaceUserRole(user, ROLE_SIMPLE_USER);
+            }
+        }
+    }
+
+    private boolean isUserInCurrentDistributionList(User user) {
+        return user.getIsActive() && user.getRoles().contains(ROLE_EXTENDED_USER);
+    }
+
+    private void replaceUserRole(User user, UserRoleType roleToAdd) {
+        val userCurrentRoles = user.getRoles();
+        if (roleToAdd.equals(ROLE_EXTENDED_USER)) {
+            userCurrentRoles.remove(ROLE_SIMPLE_USER);
+            user.setIsActive(true);
+        }
+        if (roleToAdd.equals(ROLE_SIMPLE_USER)) {
+            userCurrentRoles.remove(ROLE_EXTENDED_USER);
+            user.setIsActive(false);
+        }
+        userCurrentRoles.add(roleToAdd);
+        user.setRoles(userCurrentRoles);
+        userRepository.save(user);
+    }
+
+    private void addNewUserByTelescopeUserData(Map.Entry<String, TelescopeDataDto> emailTelescopeDataEntry, UserRoleType role) {
         val userEmail = emailTelescopeDataEntry.getKey();
         val userData = emailTelescopeDataEntry.getValue();
-        val newUser = userAggregator.userTelescopeInfoDtoToUser(userData, userEmail, userRoles);
+        val newUser = userAggregator.userTelescopeInfoDtoToUser(userData, userEmail, EnumSet.of(role));
         userRepository.save(newUser);
         log.debug("New user with email = {} was added", userEmail);
     }

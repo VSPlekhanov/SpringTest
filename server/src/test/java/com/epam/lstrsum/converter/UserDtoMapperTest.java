@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Instant;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,7 +58,7 @@ public class UserDtoMapperTest extends SetUpDataBaseCollections {
     public void allowedSubsToListOfUserBaseDtos() throws Exception {
         final List<User> users = getList(InstantiateUtil::someUser);
 
-        assertThat(userMapper.usersToListOfUserBaseDtos(users))
+        assertThat(userMapper.usersToListOfBaseDtos(users))
                 .hasSize(users.size());
     }
 
@@ -65,7 +66,7 @@ public class UserDtoMapperTest extends SetUpDataBaseCollections {
     public void userTelescopeInfoDtoToUser() throws Exception {
         final TelescopeDataDto userDto = someTelescopeDataDto();
         final String email = someString();
-        final List<UserRoleType> roles = someRoles();
+        final EnumSet<UserRoleType> roles = someRoles();
         final boolean hasExtendedRole = roles.contains(UserRoleType.ROLE_EXTENDED_USER);
 
         assertThat(userMapper.userTelescopeInfoDtoToUser(userDto, email, roles))

@@ -19,6 +19,8 @@ import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.model.Vote;
+import com.epam.lstrsum.security.EpamEmployeePrincipal;
+import com.google.common.collect.ImmutableMap;
 import io.github.benas.randombeans.EnhancedRandomBuilder;
 import io.github.benas.randombeans.api.EnhancedRandom;
 import lombok.val;
@@ -28,9 +30,10 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.utils.FunctionalUtil.getList;
@@ -56,11 +59,22 @@ public class InstantiateUtil {
     private static SecureRandom SECURE_RANDOM = new SecureRandom();
 
     public static Subscription someSubscription() {
-        return random.nextObject(Subscription.class);
+        Subscription subscription = random.nextObject(Subscription.class, "userId", "questionIds");
+        subscription.setUserId(someUser());
+        subscription.setQuestionIds(getList(InstantiateUtil::someQuestion));
+        return subscription;
     }
 
     public static User someUser() {
-        return random.nextObject(User.class);
+        User user = random.nextObject(User.class, "roles");
+        user.setRoles(someRoles());
+        return user;
+    }
+
+    public static User someUserWithRoles(EnumSet<UserRoleType> roles) {
+        val user = someUser();
+        user.setRoles(roles);
+        return user;
     }
 
     public static User someActiveUser() {
@@ -135,8 +149,15 @@ public class InstantiateUtil {
         return random.nextObject(UserBaseDto.class);
     }
 
+    public static List<UserBaseDto> someUserBaseDtos() {
+        return getList(InstantiateUtil::someUserBaseDto);
+    }
+
     public static Answer someAnswer() {
-        return random.nextObject(Answer.class);
+        Answer answer = random.nextObject(Answer.class, "authorId", "questionId");
+        answer.setAuthorId(someUser());
+        answer.setQuestionId(someQuestion());
+        return answer;
     }
 
     public static List<Vote> someVotes() {
@@ -152,7 +173,10 @@ public class InstantiateUtil {
     }
 
     public static Question someQuestion() {
-        return random.nextObject(Question.class);
+        Question question = random.nextObject(Question.class, "authorId", "allowedSubs");
+        question.setAuthorId(someUser());
+        question.setAllowedSubs(getList(InstantiateUtil::someUser));
+        return question;
     }
 
     public static QuestionAllFieldsDto someQuestionAllFieldsDto() {
@@ -193,8 +217,8 @@ public class InstantiateUtil {
         return random.nextObject(Vote.class);
     }
 
-    public static List<TelescopeEmployeeEntityDto> someTelescopeEmployeeEntityDtosWithEmails(String... emails) {
-        return Arrays.stream(emails)
+    public static List<TelescopeEmployeeEntityDto> someTelescopeEmployeeEntityDtosWithEmails(List<String> emails) {
+        return emails.stream()
                 .map(email -> TelescopeDataDto.builder()
                         ._e3sId(someString())
                         .displayName(someString())
@@ -216,13 +240,23 @@ public class InstantiateUtil {
         return getList(InstantiateUtil::someTelescopeEmployeeEntityDto);
     }
 
-    public static List<UserRoleType> someRoles() {
-        return singletonList(someRole());
+    public static EnumSet<UserRoleType> someRoles() {
+        return EnumSet.of(someRole());
     }
 
     private static UserRoleType someRole() {
         final UserRoleType[] values = UserRoleType.values();
         return values[SECURE_RANDOM.nextInt(values.length)];
+    }
+
+    public static EpamEmployeePrincipal someEpamEmployeePrincipal() {
+        Map<String, Object> epamEmployeePrincipalMap = ImmutableMap.<String, Object>builder()
+                .put(EpamEmployeePrincipal.EMAIL, someString())
+                .put(EpamEmployeePrincipal.UNIQUE_NAME, someString())
+                .put(EpamEmployeePrincipal.USER_ID, someString())
+                .build();
+
+        return EpamEmployeePrincipal.ofMap(epamEmployeePrincipalMap);
     }
 
     public static HttpEntity someEntity() {

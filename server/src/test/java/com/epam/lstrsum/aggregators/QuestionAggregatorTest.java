@@ -49,7 +49,7 @@ public class QuestionAggregatorTest {
         aggregator.modelToAllFieldsDto(someQuestion());
 
         verify(userMapper, times(1)).modelToBaseDto(any());
-        verify(userMapper, times(1)).usersToListOfUserBaseDtos(any());
+        verify(userMapper, times(1)).usersToListOfBaseDtos(any());
         verify(questionMapper, times(1)).modelToAllFieldsDto(any(), any(), any());
     }
 
