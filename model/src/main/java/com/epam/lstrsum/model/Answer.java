@@ -20,8 +20,6 @@ import java.util.List;
 @Setter
 //@Document(collection = Answer.ANSWER_COLLECTION_NAME)
 public class Answer {
-    public final static String ANSWER_COLLECTION_NAME = "Answer";   // TODO: 18.10.17 This should eventually be thrown away.
-
     private String answerId;    // must be initialized via new ObjectId()
     private String text;
     private Instant createdAt;

@@ -44,6 +44,62 @@
     },
     "attachmentIds" : [
       "attachmentId1"
+    ],
+    "answers": [
+      {
+        "_id": "1u_1r_1a",
+        "text": "You probably forgot to select the 'module's folder inside the extra contrib folder. Exact error happened to me when I only selected the extra contrib folder.",
+        "authorId": "3u",
+        "createdAt": {
+          "$date": "2016-04-19T12:15:23Z"
+        },
+        "votes": [
+          {
+            "authorEmail": "John_Doe@epam.com"
+          },
+          {
+            "authorEmail": "Bob_Hoplins@epam.com"
+          }
+        ]
+      },
+      {
+        "_id": "1u_1r_2a",
+        "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
+        "authorId": "6u",
+        "createdAt": {
+          "$date": "2016-04-19T14:23:02Z"
+        },
+        "votes": [
+          {
+            "authorEmail": "Tyler_Greeds@epam.com"
+          },
+          {
+            "authorEmail": "Donald_Gardner@epam.com"
+          }
+        ]
+      },
+      {
+        "_id": "1u_1r_3a",
+        "text": "In my case it was related to Client authentication. It happened to me when I was trying to access SOAP API from Java code without setting keystore/keystorePassword and from the stacktrace there is no way we can figure out that there's a problem with Authentication.",
+        "authorId": "5u",
+        "createdAt": {
+          "$date": "2016-04-20T18:15:46Z"
+        },
+        "votes": [
+          {
+            "authorEmail": "John_Doe@epam.com"
+          },
+          {
+            "authorEmail": "Bob_Hoplins@epam.com"
+          },
+          {
+            "authorEmail": "Tyler_Greeds@epam.com"
+          },
+          {
+            "authorEmail": "Donald_Gardner@epam.com"
+          }
+        ]
+      }
     ]
   },
   {
@@ -88,7 +144,27 @@
     ],
     "deadLine": {
       "$date": "2017-08-17T09:00:00Z"
-    }
+    },
+    "answers": [
+      {
+        "_id": "1u_2r_1a",
+        "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
+        "authorId": "5u",
+        "createdAt": {
+          "$date": "2017-08-14T12:11:05Z"
+        },
+        "votes": []
+      },
+      {
+        "_id": "1u_2r_2a",
+        "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
+        "authorId": "6u",
+        "createdAt": {
+          "$date": "2017-08-14T17:07:34Z"
+        },
+        "votes": []
+      }
+    ]
   },
   {
     "_id": "2u_3r",
@@ -131,7 +207,41 @@
     ],
     "deadLine": {
       "$date": "2017-09-10T10:00:00Z"
-    }
+    },
+    "answers": [
+      {
+        "_id": "2u_3r_1a",
+        "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
+        "authorId": "1u",
+        "createdAt": {
+          "$date": "2017-09-04T09:02:13Z"
+        },
+        "votes": [
+          {
+            "authorEmail": "Ernest_Hemingway@epam.com"
+          },
+          {
+            "authorEmail": "Steven_Tyler@epam.com"
+          }
+        ]
+      },
+      {
+        "_id": "2u_3r_2a",
+        "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
+        "authorId": "5u",
+        "createdAt": {
+          "$date": "2017-09-11T15:23:18Z"
+        },
+        "votes": [
+          {
+            "authorEmail": "Tyler_Greeds@epam.com"
+          },
+          {
+            "authorEmail": "Donald_Gardner@epam.com"
+          }
+        ]
+      }
+    ]
   },
   {
     "_id": "3u_4r",
@@ -175,7 +285,41 @@
     ],
     "deadLine": {
       "$date": "2017-05-13T10:00:00Z"
-    }
+    },
+    "answers": [
+      {
+        "_id": "3u_4r_1a",
+        "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this",
+        "authorId": "5u",
+        "createdAt": {
+          "$date": "2016-04-12T18:32:26Z"
+        },
+        "votes": [
+          {
+            "authorEmail": "Tyler_Greeds@epam.com"
+          },
+          {
+            "authorEmail": "Donald_Gardner@epam.com"
+          }
+        ]
+      },
+      {
+        "_id": "3u_4r_2a",
+        "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
+        "authorId": "4u",
+        "createdAt": {
+          "$date": "2016-04-12T20:00:02Z"
+        },
+        "votes": [
+          {
+            "authorEmail": "Tyler_Greeds@epam.com"
+          },
+          {
+            "authorEmail": "Donald_Gardner@epam.com"
+          }
+        ]
+      }
+    ]
   },
   {
     "_id": "4u_5r",
@@ -218,7 +362,57 @@
     ],
     "deadLine": {
       "$date": "2017-06-10T15:12:24Z"
-    }
+    },
+    "answers": [
+      {
+        "_id": "4u_5r_1a",
+        "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
+        "authorId": "5u",
+        "createdAt": {
+          "$date": "2017-06-25T10:59:06Z"
+        },
+        "votes": [
+          {
+            "authorEmail": "Tyler_Greeds@epam.com"
+          },
+          {
+            "authorEmail": "Donald_Gardner@epam.com"
+          }
+        ]
+      },
+      {
+        "_id": "4u_5r_2a",
+        "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
+        "authorId": "6u",
+        "createdAt": {
+          "$date": "2017-06-30T18:23:15Z"
+        },
+        "votes": [
+          {
+            "authorEmail": "Tyler_Greeds@epam.com"
+          },
+          {
+            "authorEmail": "Donald_Gardner@epam.com"
+          }
+        ]
+      },
+      {
+        "_id": "4u_5r_3a",
+        "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
+        "authorId": "5u",
+        "createdAt": {
+          "$date": "2017-07-24T12:12:12Z"
+        },
+        "votes": [
+          {
+            "authorEmail": "Tyler_Greeds@epam.com"
+          },
+          {
+            "authorEmail": "Donald_Gardner@epam.com"
+          }
+        ]
+      }
+    ]
   },
   {
     "_id": "6u_6r",
