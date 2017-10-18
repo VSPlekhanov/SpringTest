@@ -5,6 +5,8 @@ import com.epam.lstrsum.converter.QuestionDtoMapper;
 import com.epam.lstrsum.converter.UserDtoMapper;
 import com.epam.lstrsum.persistence.AnswerRepository;
 import com.epam.lstrsum.persistence.QuestionRepository;
+import com.epam.lstrsum.service.QuestionService;
+import com.epam.lstrsum.service.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -40,13 +42,20 @@ public class AnswerAggregatorTest {
     @Mock
     private QuestionDtoMapper questionMapper;
 
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private QuestionService questionService;
+
     @Before
     public void setUp() {
         initMocks(this);
         aggregator = new AnswerAggregator(
-                answerMapper, userMapper,
-                questionMapper, answerRepository,
-                questionRepository, userAggregator
+                answerMapper, userMapper, questionMapper,
+                answerRepository,
+                userAggregator,
+                userService, questionService
         );
 
     }
