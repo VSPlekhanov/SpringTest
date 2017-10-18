@@ -92,7 +92,6 @@ public class AnswerAggregatorTest {
         aggregator.answerPostDtoAndAuthorEmailToAnswer(someAnswerPostDto(), someString());
 
         verify(userAggregator, times(1)).findByEmail(anyString());
-        verify(questionRepository, times(1)).findOne(anyString());
         verify(answerMapper, times(1))
                 .answerPostDtoAndAuthorEmailToAnswer(any(), any());
     }

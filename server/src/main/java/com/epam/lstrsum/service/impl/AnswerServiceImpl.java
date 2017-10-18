@@ -23,6 +23,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -67,7 +69,9 @@ public class AnswerServiceImpl implements AnswerService {
     @Override
     public void deleteAllAnswersOnQuestion(String questionId) {
         log.debug("Delete all answers on question with id {}", questionId);
-        answerRepository.deleteAllByQuestionId_QuestionId(questionId);
+        Query filterQuery = new Query(Criteria.where("questionId").is(questionId));
+        Update updateQuery = new Update().set("answers", new Answer[] {});
+        mongoTemplate.findAndModify(filterQuery, updateQuery, Question.class);
     }
 
     @Override
