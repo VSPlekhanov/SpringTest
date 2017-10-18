@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotate methods to notify users thought email.
+ * Annotate methods to notify users through email.
  * <p>
  * Use MailTemplate implementation to specify which template
  * should be used for notification.

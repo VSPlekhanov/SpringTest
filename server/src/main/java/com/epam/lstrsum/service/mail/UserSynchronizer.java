@@ -2,7 +2,6 @@ package com.epam.lstrsum.service.mail;
 
 
 import com.epam.lstrsum.email.service.ExchangeServiceHelper;
-import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -12,11 +11,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.epam.lstrsum.enums.UserRoleType.ROLE_EXTENDED_USER;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -24,12 +23,11 @@ import static java.util.Objects.nonNull;
 @RequiredArgsConstructor
 @Slf4j
 public class UserSynchronizer {
-    private static final List<UserRoleType> ONLY_COMMON_USER_ROLES = Collections.singletonList(UserRoleType.ROLE_EXTENDED_USER);
     private final ExchangeServiceHelper exchangeServiceHelper;
     private final UserService userService;
 
     public boolean isInDistributionList(String email) {
-        return userService.existsActiveUserWithRoleAndEmail(UserRoleType.ROLE_EXTENDED_USER, email);
+        return userService.existsActiveUserWithRoleAndEmail(ROLE_EXTENDED_USER, email);
     }
 
     @Setter
@@ -40,7 +38,7 @@ public class UserSynchronizer {
     public void synchronizeUsers() {
         log.debug("Start synchronizing users");
 
-        final List<User> allWithRole = userService.findAllWithRole(UserRoleType.ROLE_EXTENDED_USER);
+        final List<User> allWithRole = userService.findAllWithRole(ROLE_EXTENDED_USER);
         final Set<String> activeUsers = allWithRole.stream()
                 .filter(u -> nonNull(u.getIsActive()))
                 .filter(User::getIsActive)
@@ -60,7 +58,7 @@ public class UserSynchronizer {
         notActiveUsers.retainAll(emails);
         final long activated = userService.setActiveForAllAs(notActiveUsers, true);
 
-        final long userAdded = userService.addIfNotExistAllWithRole(emails, ONLY_COMMON_USER_ROLES);
+        final long userAdded = userService.addIfNotExistAllWithRole(emails, ROLE_EXTENDED_USER);
 
         log.debug("added {} users, activated {} users, deactivated users {}", userAdded, activated, deactivated);
     }

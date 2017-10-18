@@ -1,6 +1,5 @@
 package com.epam.lstrsum.configuration;
 
-import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.security.CustomResourceServerTokenServices;
 import com.epam.lstrsum.security.ExceptionHandlerFilter;
 import com.epam.lstrsum.security.cert.TrustAllCertificatesSSL;
@@ -45,6 +44,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 import java.util.ResourceBundle;
+
+import static com.epam.lstrsum.enums.UserRoleType.ROLE_ADMIN;
+import static com.epam.lstrsum.enums.UserRoleType.ROLE_EXTENDED_USER;
 
 @Configuration
 @EnableOAuth2Client
@@ -138,6 +140,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new ResourceBundleRoleService(ResourceBundle.getBundle("security-roles"));
     }
 
+    /**
+     * The bean is used to send with response a cookie with user role to show some 'delete question' button only for ADMIN users.
+     * Need to check if correct works.
+     */
     @Bean
     public RememberMeServices rememberMeServices() {
         return new RememberMeServices() {
@@ -153,8 +159,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             @Override
             public void loginSuccess(HttpServletRequest request, HttpServletResponse response, Authentication auth) {
                 val isAdmin = auth.getAuthorities().stream()
-                        .anyMatch(a -> a.getAuthority().equals(UserRoleType.ROLE_ADMIN.name()));
-                response.addCookie(new Cookie("role", (isAdmin) ? UserRoleType.ROLE_ADMIN.name() : UserRoleType.ROLE_EXTENDED_USER.name()));
+                        .anyMatch(a -> a.getAuthority().equals(ROLE_ADMIN.name()));
+                response.addCookie(new Cookie("role", (isAdmin) ? ROLE_ADMIN.name() : ROLE_EXTENDED_USER.name()));
             }
         };
     }

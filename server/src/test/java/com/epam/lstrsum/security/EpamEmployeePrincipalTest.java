@@ -2,10 +2,10 @@ package com.epam.lstrsum.security;
 
 import org.junit.Test;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
@@ -63,7 +63,7 @@ public class EpamEmployeePrincipalTest {
 
     @Test
     public void EpamEmployeePrincipalOfMapNullUserId() {
-        checkThatOfMapThrowException(Collections.emptyMap());
+        checkThatOfMapThrowException(emptyMap());
     }
 
     @Test

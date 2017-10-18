@@ -8,9 +8,10 @@ import org.mockito.Mock;
 import org.springframework.boot.actuate.metrics.CounterService;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashSet;
 
+import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
+import static java.util.Collections.singleton;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
@@ -34,7 +35,7 @@ public class TelescopeServiceMockImplTest {
 
     @Test
     public void getUsersInfoByFullName() throws Exception {
-        assertThat(telescopeServiceMock.getUsersInfoByFullName("someName", 5))
+        assertThat(telescopeServiceMock.getUsersInfoByFullName(someString(), 5))
                 .isNotNull();
 
         verify(counterService, times(1)).increment(eq("telescope.get.users.info.by.full.name"));
@@ -43,7 +44,7 @@ public class TelescopeServiceMockImplTest {
 
     @Test
     public void getUserPhotoByUri() throws Exception {
-        assertThat(telescopeServiceMock.getUserPhotoByUri("someUri"))
+        assertThat(telescopeServiceMock.getUserPhotoByUri(someString()))
                 .isNotEmpty();
 
         verify(counterService, times(1)).increment(eq("telescope.get.photo"));
@@ -51,7 +52,7 @@ public class TelescopeServiceMockImplTest {
 
     @Test
     public void getUsersInfoByEmails() throws Exception {
-        assertThat(telescopeServiceMock.getUsersInfoByEmails(new HashSet<>(Collections.singleton("someList"))))
+        assertThat(telescopeServiceMock.getUsersInfoByEmails(new HashSet<>(singleton(someString()))))
                 .isNotNull();
 
         verify(counterService, times(1)).increment(eq("telescope.get.users.info.by.emails"));

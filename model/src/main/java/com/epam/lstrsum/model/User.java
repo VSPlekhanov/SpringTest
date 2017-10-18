@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.EnumSet;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,7 +28,7 @@ public class User {
     private String lastName;
     @Indexed(unique = true)
     private String email;
-    private List<UserRoleType> roles;
+    private EnumSet<UserRoleType> roles;
     private Instant createdAt;
     private Boolean isActive;
 }

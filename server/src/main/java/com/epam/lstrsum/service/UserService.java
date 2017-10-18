@@ -21,7 +21,7 @@ public interface UserService {
 
     User findUserById(String userId);
 
-    long addIfNotExistAllWithRole(final List<String> userEmails, List<UserRoleType> roles);
+    long addIfNotExistAllWithRole(final List<String> userEmails, UserRoleType role);
 
     List<UserBaseDto> findAllUserBaseDtos();
 

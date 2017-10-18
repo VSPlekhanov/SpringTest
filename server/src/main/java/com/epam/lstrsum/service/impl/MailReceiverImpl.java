@@ -4,7 +4,6 @@ import com.epam.lstrsum.dto.attachment.AttachmentAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.email.service.BackupHelper;
 import com.epam.lstrsum.email.service.EmailParser;
-import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.service.AttachmentService;
 import com.epam.lstrsum.service.MailReceiver;
@@ -29,6 +28,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.email.service.MailService.getAddressFrom;
+import static com.epam.lstrsum.enums.UserRoleType.ROLE_SIMPLE_USER;
 
 @Service
 @Profile("email")
@@ -98,9 +98,7 @@ public class MailReceiverImpl implements MailReceiver {
             final String authorEmail = parsedMessage.getSender();
             final QuestionPostDto questionPostDto = parsedMessage.getQuestionPostDto();
 
-            final long users = userService.addIfNotExistAllWithRole(
-                    questionPostDto.getAllowedSubs(), Collections.singletonList(UserRoleType.ROLE_SIMPLE_USER)
-            );
+            final long users = userService.addIfNotExistAllWithRole(questionPostDto.getAllowedSubs(), ROLE_SIMPLE_USER);
             if (users > 0) {
                 log.debug("Detected {} users not in base and added as another user", users);
             }
