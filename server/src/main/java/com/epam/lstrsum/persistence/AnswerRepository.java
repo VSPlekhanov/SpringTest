@@ -10,7 +10,5 @@ import java.util.List;
 public interface AnswerRepository extends MongoRepository<Answer, String> {
     List<Answer> findAnswersByQuestionIdOrderByCreatedAtAsc(Question question);
 
-    Long countAllByQuestionId(String questionId); // impl in AnswerService
-
     List<Answer> findAnswerByQuestionId_QuestionIdOrderByCreatedAt(String questionId, Pageable pageable); // impl in AnswerService
 }

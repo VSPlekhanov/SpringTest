@@ -106,12 +106,8 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public Long getAnswerCountByQuestionId(String questionId) {
-//        Aggregation aggregation = newAggregation(
-//                match(Criteria.where("questionId").is(questionId)),
-//                unwind("answers"),
-//
-//        );
-        return 10L;//mongoTemplate.aggregate(aggregation, Question.QUESTION_COLLECTION_NAME);
+        Query query = new Query(Criteria.where("questionId").is(questionId));
+        return (long) mongoTemplate.findOne(query, Question.class).getAnswers().size();
     }
 
     private List<QuestionWithAnswersCount> completeNotFound(
