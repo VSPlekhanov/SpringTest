@@ -12,6 +12,7 @@ import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.persistence.AnswerRepository;
+import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +57,7 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
     }
 
     public List<AnswerBaseDto> answersToQuestionInAnswerBaseDto(Question question) {
-        List<Answer> answers = answerRepository.findAnswersByQuestionIdOrderByCreatedAtAsc(question);
+        List<Answer> answers = question.getAnswers();
         return answerMapper.answersToQuestionInAnswerBaseDto(
                 answers,
                 userMapper.usersToListOfBaseDtos(answers.stream()

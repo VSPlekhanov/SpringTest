@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 public interface AnswerRepository extends MongoRepository<Answer, String> {
-    List<Answer> findAnswersByQuestionIdOrderByCreatedAtAsc(Question question);
 
     List<Answer> findAnswerByQuestionId_QuestionIdOrderByCreatedAt(String questionId, Pageable pageable); // impl in AnswerService
 }
