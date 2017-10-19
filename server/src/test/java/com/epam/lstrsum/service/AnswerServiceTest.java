@@ -24,6 +24,7 @@ import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_NOT_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswer;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswerPostDto;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestion;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -149,22 +150,22 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void findAnswerByAnswerIdIsNotNull() {
-        val answer = answerService.getAnswerById(EXISTING_ANSWER_ID);
+        val answer = answerService.getAnswerByIdAndQuestionId(EXISTING_ANSWER_ID, EXISTING_QUESTION_ID);
         assertThat(answer).isNotNull();
     }
 
     @Test(expected = NoSuchAnswerException.class)
     public void findAnswerByAnswerIdForNotExistingAnswerId() {
-        answerService.getAnswerById(someAnswer().getAnswerId());
+        answerService.getAnswerByIdAndQuestionId(someAnswer().getAnswerId(), someQuestion().getQuestionId());
     }
 
     @Test
     public void saveAnswer() {
         val newAnswerText = someString();
-        val answerSaved = answerService.getAnswerById(EXISTING_ANSWER_ID);
+        val answerSaved = answerService.getAnswerByIdAndQuestionId(EXISTING_ANSWER_ID, EXISTING_QUESTION_ID);
         answerSaved.setText(newAnswerText);
         answerService.save(answerSaved, EXISTING_QUESTION_ID);
-        val answerLoaded = answerService.getAnswerById(EXISTING_ANSWER_ID);
+        val answerLoaded = answerService.getAnswerByIdAndQuestionId(EXISTING_ANSWER_ID, EXISTING_QUESTION_ID);
 
         assertThat(answerLoaded.getText()).isEqualTo(newAnswerText);
     }

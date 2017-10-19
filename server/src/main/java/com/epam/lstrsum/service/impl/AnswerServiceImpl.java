@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -27,7 +28,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -40,6 +40,7 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.newA
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.replaceRoot;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.skip;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.sort;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.unwind;
 
 @Service
@@ -98,7 +99,8 @@ public class AnswerServiceImpl implements AnswerService {
                 match(Criteria.where("questionId").is(questionId)),
                 project("answers").andExclude("questionId"),
                 unwind("answers"),
-                replaceRoot("answer"),
+                replaceRoot("answers"),
+                sort(Sort.Direction.ASC, "createdAt"),
                 skip((long) size * (page - 1)),
                 limit(size)
         );
@@ -166,10 +168,22 @@ public class AnswerServiceImpl implements AnswerService {
         }
     }
 
-    public Answer getAnswerById(String answerId) {
-        return null;
-//                Optional.ofNullable(answerRepository.findOne(answerId))
-//                .orElseThrow(() -> new NoSuchAnswerException("No such Answer in user Collection"));
+
+    @Override
+    public Answer getAnswerByIdAndQuestionId(String answerId, String questionId) {
+        Aggregation aggregation = newAggregation(
+                match(Criteria.where("questionId").is(questionId)),
+                project("answers").andExclude("questionId"),
+                unwind("answers"),
+                replaceRoot("answers"),
+                match(Criteria.where("answerId").is(answerId))
+        );
+
+        Answer answer = mongoTemplate.aggregate(aggregation, Question.QUESTION_COLLECTION_NAME, Answer.class)
+                .getUniqueMappedResult();
+        if (isNull(answer)) throw new NoSuchAnswerException("No such Answer in this Question");
+
+        return answer;
     }
 
     public void save(Answer answer, String questionId) {
@@ -183,6 +197,6 @@ public class AnswerServiceImpl implements AnswerService {
 
         mongoTemplate.findAndModify(findQuestion, addAnswer, Question.class);
 
-        return getAnswerById(answer.getAnswerId());
+        return getAnswerByIdAndQuestionId(answer.getAnswerId(), questionId);
     }
 }

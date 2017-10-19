@@ -12,17 +12,24 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
     @Autowired
     private VoteService voteService;
 
+    @Autowired
+    private QuestionService questionService;
+
+    @Autowired
+    private AnswerService answerService;
+
     @Test
     public void voteForAnswerTest() {
         String answerIdWithoutVotes = "1u_2r_1a";
         String someUserEmail = "Tyler_Derden@mylo.com";
+        String questionId = questionService.getQuestionByAnswerId(answerIdWithoutVotes).getQuestionId();
 
-        int beforeVote = answerRepository.findOne(answerIdWithoutVotes).getVotes().size();
+        int beforeVote =  answerService.getAnswerByIdAndQuestionId(answerIdWithoutVotes, questionId).getVotes().size();
 
         assertThat(voteService.voteForAnswerByUser(answerIdWithoutVotes, someUserEmail))
                 .isTrue();
 
-        assertThat(answerRepository.findOne(answerIdWithoutVotes).getVotes())
+        assertThat(answerService.getAnswerByIdAndQuestionId(answerIdWithoutVotes, questionId).getVotes())
                 .hasSize(beforeVote + 1);
     }
 
@@ -30,13 +37,14 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
     public void voteForAnswerTwice() {
         String answerIdAlreadyVoted = "1u_1r_3a";
         String userWhoVoteAnswer = "John_Doe@epam.com";
+        String questionId = questionService.getQuestionByAnswerId(answerIdAlreadyVoted).getQuestionId();
 
-        int beforeVote = answerRepository.findOne(answerIdAlreadyVoted).getVotes().size();
+        int beforeVote = answerService.getAnswerByIdAndQuestionId(answerIdAlreadyVoted, questionId).getVotes().size();
 
         assertThat(voteService.voteForAnswerByUser(answerIdAlreadyVoted, userWhoVoteAnswer))
                 .isTrue();
 
-        assertThat(answerRepository.findOne(answerIdAlreadyVoted).getVotes())
+        assertThat(answerService.getAnswerByIdAndQuestionId(answerIdAlreadyVoted, questionId).getVotes())
                 .hasSize(beforeVote);
     }
 
@@ -52,13 +60,14 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
     public void unVoteAnswer() {
         String answerIdAlreadyVoted = "1u_1r_3a";
         String userWhoVoteAnswer = "John_Doe@epam.com";
+        String questionId = questionService.getQuestionByAnswerId(answerIdAlreadyVoted).getQuestionId();
 
-        Answer beforeUnvoting = answerRepository.findOne(answerIdAlreadyVoted);
+        Answer beforeUnvoting = answerService.getAnswerByIdAndQuestionId(answerIdAlreadyVoted, questionId);
 
         assertThat(voteService.unvoteForAnswerByUser(answerIdAlreadyVoted, userWhoVoteAnswer))
                 .isTrue();
 
-        Answer afterUnvoting = answerRepository.findOne(answerIdAlreadyVoted);
+        Answer afterUnvoting = answerService.getAnswerByIdAndQuestionId(answerIdAlreadyVoted, questionId);
 
         assertThat(afterUnvoting.getVotes())
                 .hasSize(beforeUnvoting.getVotes().size() - 1);
