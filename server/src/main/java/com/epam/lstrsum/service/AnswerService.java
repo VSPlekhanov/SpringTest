@@ -17,7 +17,7 @@ public interface AnswerService {
 
     Answer getAnswerById(String answerId);
 
-    void save(Answer answer);
+    void save(Answer answer, String questionId);
 
     List<QuestionWithAnswersCount> aggregateToCount(List<Question> questions);
 

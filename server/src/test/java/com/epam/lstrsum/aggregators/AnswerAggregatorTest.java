@@ -28,9 +28,6 @@ public class AnswerAggregatorTest {
     private UserAggregator userAggregator;
 
     @Mock
-    private AnswerRepository answerRepository;
-
-    @Mock
     private QuestionRepository questionRepository;
 
     @Mock

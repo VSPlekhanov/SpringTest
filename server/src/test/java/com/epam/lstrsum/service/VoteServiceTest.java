@@ -12,9 +12,6 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
     @Autowired
     private VoteService voteService;
 
-    @Autowired
-    private AnswerRepository answerRepository;
-
     @Test
     public void voteForAnswerTest() {
         String answerIdWithoutVotes = "1u_2r_1a";

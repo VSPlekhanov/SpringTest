@@ -11,7 +11,6 @@ import com.epam.lstrsum.exception.NoSuchAnswerException;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.QuestionWithAnswersCount;
-import com.epam.lstrsum.persistence.AnswerRepository;
 import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.persistence.UserRepository;
 import com.epam.lstrsum.service.AnswerService;
@@ -19,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -52,7 +50,6 @@ public class AnswerServiceImpl implements AnswerService {
     private static final int MIN_PAGE_SIZE = 0;
     private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
-    private final AnswerRepository answerRepository;
     private final MongoTemplate mongoTemplate;
     private final AnswerAggregator answerAggregator;
     @Setter
@@ -66,7 +63,7 @@ public class AnswerServiceImpl implements AnswerService {
         log.debug("Add new answer with email {}", email);
         validateAnswerData(answerPostDto, email);
         Answer newAnswer = answerAggregator.answerPostDtoAndAuthorEmailToAnswer(answerPostDto, email);
-        Answer saved = answerRepository.save(newAnswer);
+        Answer saved = addAnswerOnQuestion(newAnswer, answerPostDto.getQuestionId());
         return answerAggregator.modelToAllFieldsDto(saved);
     }
 
@@ -170,12 +167,22 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     public Answer getAnswerById(String answerId) {
-        return Optional.ofNullable(answerRepository.findOne(answerId))
-                .orElseThrow(() -> new NoSuchAnswerException("No such Answer in user Collection"));
+        return null;
+//                Optional.ofNullable(answerRepository.findOne(answerId))
+//                .orElseThrow(() -> new NoSuchAnswerException("No such Answer in user Collection"));
     }
 
-    public void save(Answer answer) {
+    public void save(Answer answer, String questionId) {
         log.debug("Saved answer with id {}", answer.getAnswerId());
-        answerRepository.save(answer);
+        addAnswerOnQuestion(answer, questionId);
+    }
+
+    private Answer addAnswerOnQuestion(Answer answer, String questionId) {
+        Query findQuestion = new Query(Criteria.where("questionId").is(questionId));
+        Update addAnswer = new Update().addToSet("answers", answer);
+
+        mongoTemplate.findAndModify(findQuestion, addAnswer, Question.class);
+
+        return getAnswerById(answer.getAnswerId());
     }
 }

@@ -163,7 +163,7 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
         val newAnswerText = someString();
         val answerSaved = answerService.getAnswerById(EXISTING_ANSWER_ID);
         answerSaved.setText(newAnswerText);
-        answerService.save(answerSaved);
+        answerService.save(answerSaved, EXISTING_QUESTION_ID);
         val answerLoaded = answerService.getAnswerById(EXISTING_ANSWER_ID);
 
         assertThat(answerLoaded.getText()).isEqualTo(newAnswerText);
