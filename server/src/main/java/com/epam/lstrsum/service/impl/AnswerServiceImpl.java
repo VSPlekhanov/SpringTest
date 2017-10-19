@@ -36,9 +36,12 @@ import java.util.stream.Collectors;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.limit;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.replaceRoot;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.skip;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.unwind;
 
 @Service
@@ -94,7 +97,17 @@ public class AnswerServiceImpl implements AnswerService {
             page = MIN_PAGE_SIZE;
         }
 
-        return answerRepository.findAnswerByQuestionId_QuestionIdOrderByCreatedAt(questionId, new PageRequest(page, size)).stream()
+        Aggregation aggregation = newAggregation(
+                match(Criteria.where("questionId").is(questionId)),
+                project("answers").andExclude("questionId"),
+                unwind("answers"),
+                replaceRoot("answer"),
+                skip((long) size * (page - 1)),
+                limit(size)
+        );
+
+        return mongoTemplate.aggregate(aggregation, Question.QUESTION_COLLECTION_NAME, Answer.class)
+                .getMappedResults().stream()
                 .map(answerAggregator::modelToBaseDto)
                 .collect(Collectors.toList());
     }

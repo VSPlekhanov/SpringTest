@@ -11,8 +11,6 @@ import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
-import com.epam.lstrsum.persistence.AnswerRepository;
-import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -29,9 +27,6 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
     private final AnswerDtoMapper answerMapper;
     private final UserDtoMapper userMapper;
     private final QuestionDtoMapper questionMapper;
-
-    private final AnswerRepository answerRepository;
-//    private final QuestionRepository questionRepository;
 
     private final UserAggregator userAggregator;
 

@@ -9,5 +9,4 @@ import java.util.List;
 
 public interface AnswerRepository extends MongoRepository<Answer, String> {
 
-    List<Answer> findAnswerByQuestionId_QuestionIdOrderByCreatedAt(String questionId, Pageable pageable); // impl in AnswerService
 }
