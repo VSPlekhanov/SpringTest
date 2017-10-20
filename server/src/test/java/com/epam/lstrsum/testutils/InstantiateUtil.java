@@ -53,6 +53,7 @@ public class InstantiateUtil {
     public static final String EXISTING_QUESTION_ID_WITH_ATTACHMENT = "1u_1r";
     public static final String EXISTING_QUESTION_ID_WITHOUT_ATTACHMENT = "1u_2r";
     public static final String EXISTING_ATTACHMENT_ID = "attachmentId1";
+    public static final String EXISTING_QUESTION_SEARCH_TEXT = "postman";
     private static final EnhancedRandom random = EnhancedRandomBuilder.aNewEnhancedRandomBuilder()
             .stringLengthRange(5, 50)
             .build();
