@@ -3,6 +3,7 @@ package com.epam.lstrsum.service;
 import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.persistence.AnswerRepository;
+import com.epam.lstrsum.persistence.QuestionRepository;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,7 +14,7 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
     private VoteService voteService;
 
     @Autowired
-    private QuestionService questionService;
+    private QuestionRepository questionRepository;
 
     @Autowired
     private AnswerService answerService;
@@ -22,7 +23,7 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
     public void voteForAnswerTest() {
         String answerIdWithoutVotes = "1u_2r_1a";
         String someUserEmail = "Tyler_Derden@mylo.com";
-        String questionId = questionService.getQuestionByAnswerId(answerIdWithoutVotes).getQuestionId();
+        String questionId = questionRepository.findQuestionByAnswers_AnswerId(answerIdWithoutVotes).get().getQuestionId();
 
         int beforeVote =  answerService.getAnswerByIdAndQuestionId(answerIdWithoutVotes, questionId).getVotes().size();
 
@@ -37,7 +38,7 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
     public void voteForAnswerTwice() {
         String answerIdAlreadyVoted = "1u_1r_3a";
         String userWhoVoteAnswer = "John_Doe@epam.com";
-        String questionId = questionService.getQuestionByAnswerId(answerIdAlreadyVoted).getQuestionId();
+        String questionId = questionRepository.findQuestionByAnswers_AnswerId(answerIdAlreadyVoted).get().getQuestionId();
 
         int beforeVote = answerService.getAnswerByIdAndQuestionId(answerIdAlreadyVoted, questionId).getVotes().size();
 
@@ -60,7 +61,7 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
     public void unVoteAnswer() {
         String answerIdAlreadyVoted = "1u_1r_3a";
         String userWhoVoteAnswer = "John_Doe@epam.com";
-        String questionId = questionService.getQuestionByAnswerId(answerIdAlreadyVoted).getQuestionId();
+        String questionId = questionRepository.findQuestionByAnswers_AnswerId(answerIdAlreadyVoted).get().getQuestionId();
 
         Answer beforeUnvoting = answerService.getAnswerByIdAndQuestionId(answerIdAlreadyVoted, questionId);
 

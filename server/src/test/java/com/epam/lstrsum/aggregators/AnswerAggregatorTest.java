@@ -50,8 +50,9 @@ public class AnswerAggregatorTest {
         initMocks(this);
         aggregator = new AnswerAggregator(
                 answerMapper, userMapper, questionMapper,
+                questionRepository,
                 userAggregator,
-                userService, questionService
+                userService
         );
 
     }

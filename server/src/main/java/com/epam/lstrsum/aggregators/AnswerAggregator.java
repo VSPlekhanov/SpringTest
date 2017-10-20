@@ -11,6 +11,7 @@ import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
+import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +29,11 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
     private final UserDtoMapper userMapper;
     private final QuestionDtoMapper questionMapper;
 
+    private final QuestionRepository questionRepository;
+
     private final UserAggregator userAggregator;
 
     private final UserService userService;
-    private final QuestionService questionService;
 
     @Override
     public AnswerAllFieldsDto modelToAllFieldsDto(Answer answer) {
@@ -39,7 +41,7 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
         return answerMapper.modelToAllFieldsDto(
                 answer,
                 author,
-                questionMapper.modelToBaseDto(questionService.getQuestionByAnswerId(answer.getAnswerId()), author)
+                questionMapper.modelToBaseDto(questionRepository.findQuestionByAnswers_AnswerId(answer.getAnswerId()).get(), author)
         );
     }
 

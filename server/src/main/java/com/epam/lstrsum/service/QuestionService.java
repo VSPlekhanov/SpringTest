@@ -49,7 +49,7 @@ public interface QuestionService extends ElasticSearchService {
 
     Question getQuestionById(String questionId);
 
-    Question getQuestionByAnswerId(String answerId);
+//    Question getQuestionByAnswerId(String answerId);
 
     Question findQuestionByTitleAndAuthorEmail(String title, User authorId);
 

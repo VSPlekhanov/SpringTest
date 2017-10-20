@@ -213,11 +213,11 @@ public class QuestionServiceImpl implements QuestionService {
         return questionRepository.findOne(questionId);
     }
 
-    @Override
-    public Question getQuestionByAnswerId(String answerId) {
-        val query = Criteria.where("answers").elemMatch(new Criteria().in(answerId));
-        return mongoTemplate.findOne(new Query(query), Question.class);
-    }
+//    @Override
+//    public Question getQuestionByAnswerId(String answerId) {
+//        val query = Criteria.where("answers").elemMatch(new Criteria().in(answerId));
+//        return mongoTemplate.findOne(new Query(query), Question.class);
+//    }
 
     @Override
     public boolean contains(String objectsId) {
