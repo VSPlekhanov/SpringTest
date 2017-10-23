@@ -3,7 +3,6 @@ package com.epam.lstrsum.controller;
 import com.epam.lstrsum.dto.common.CounterDto;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
-import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.service.QuestionService;
@@ -71,10 +70,11 @@ public class QuestionControllerTest {
     }
 
     @Test
-    public void addQuestionShouldSaveQuestionTest() throws IOException {
-        final String authorEmail = someString();
+    public void addQuestionWithDistributionListUserShouldSaveQuestion() throws IOException {
+        val authorEmail = someString();
         when(userRuntimeRequestComponent.getEmail()).thenReturn(authorEmail);
-        final QuestionPostDto postDto = someQuestionPostDto();
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
+        val postDto = someQuestionPostDto();
         when(questionService.addNewQuestion(any(), any(), any())).thenReturn(someQuestion());
 
         MultipartFile[] files = new MultipartFile[]{};
@@ -84,14 +84,23 @@ public class QuestionControllerTest {
     }
 
     @Test
-    public void addQuestionReturnValidResponseEntityTest() throws IOException {
+    public void addQuestionWithDistributionListUserReturnValidResponseEntityTest() throws IOException {
         final String questionId = someString();
         final Question question = Question.builder().questionId(questionId).build();
 
         when(questionService.addNewQuestion(any(), any(), any())).thenReturn(question);
         when(userRuntimeRequestComponent.getEmail()).thenReturn(someString());
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         assertThat(controller.addQuestion(someQuestionPostDto(), new MultipartFile[]{})).isEqualTo(ResponseEntity.ok(questionId));
+    }
+
+    @Test
+    public void addQuestionWithNotDistributionListUserReturnValidResponseEntityTest() throws IOException {
+        when(userRuntimeRequestComponent.getEmail()).thenReturn(someString());
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(false);
+
+        assertThat(controller.addQuestion(someQuestionPostDto(), new MultipartFile[]{})).satisfies(AssertionUtils::hasStatusNotFound);
     }
 
     @Test
@@ -142,6 +151,7 @@ public class QuestionControllerTest {
 
         when(questionService.contains(anyString())).thenReturn(true);
         when(questionService.getQuestionAppearanceDtoByQuestionId(anyString())).thenReturn(Optional.of(dto));
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         assertThat(controller.getQuestionWithText(someString())).isEqualTo(ResponseEntity.ok(dto));
     }
@@ -151,6 +161,7 @@ public class QuestionControllerTest {
         final String questionId = NON_EXISTING_QUESTION_ID;
 
         when(questionService.getQuestionAppearanceDtoByQuestionId(questionId)).thenReturn(Optional.empty());
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         assertThat(controller.getQuestionWithText(questionId)).isEqualTo(ResponseEntity.notFound().build());
     }
@@ -160,6 +171,7 @@ public class QuestionControllerTest {
         final List<QuestionAllFieldsDto> questionAllFieldsDtos = getList(InstantiateUtil::someQuestionAllFieldsDto);
 
         when(questionService.search(anyString(), anyInt(), anyInt())).thenReturn(questionAllFieldsDtos);
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         assertThat(controller.search(someString(), 0, 20)).isEqualTo(ResponseEntity.ok(questionAllFieldsDtos));
     }
@@ -168,6 +180,7 @@ public class QuestionControllerTest {
     public void countSearchResult() {
         final String searchQuery = "android";
         doReturn(2L).when(questionService).getTextSearchResultsCount(searchQuery);
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         ResponseEntity<CounterDto> actual = controller.searchCount(searchQuery);
 
@@ -179,6 +192,7 @@ public class QuestionControllerTest {
     @Test
     public void getRelevantTags() {
         final String keyTag = "j";
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
         final ResponseEntity<List<String>> actual = controller.getRelevantTags(keyTag);
 
         verify(questionService, times(1)).getRelevantTags(eq(keyTag));

@@ -59,11 +59,11 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
         );
     }
 
-    public Answer answerPostDtoAndAuthorEmailToAnswer(AnswerPostDto answerPostDto, String email) {
+    public Answer answerPostDtoAndAuthorEmailToAnswer(Question question, AnswerPostDto answerPostDto, String email) {
         return answerMapper.answerPostDtoAndAuthorEmailToAnswer(
                 answerPostDto,
                 userAggregator.findByEmail(email),
-                questionRepository.findOne(answerPostDto.getQuestionId())
+                question
         );
     }
 }

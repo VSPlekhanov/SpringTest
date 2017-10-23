@@ -8,6 +8,7 @@ import com.epam.lstrsum.dto.common.CounterDto;
 import com.epam.lstrsum.service.AnswerService;
 import com.epam.lstrsum.service.VoteService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -27,6 +28,7 @@ import java.util.List;
 @RequestMapping("/api/answer")
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 public class AnswerController {
 
     private final AnswerService answerService;
@@ -34,33 +36,33 @@ public class AnswerController {
     private final VoteService voteService;
 
     @PostMapping
-    public ResponseEntity<AnswerAllFieldsDto> addAnswer(@RequestBody AnswerPostDto dtoObject)
+    public ResponseEntity<AnswerAllFieldsDto> addAnswer(@Validated @RequestBody AnswerPostDto dtoObject)
             throws IOException {
         String email = userRuntimeRequestComponent.getEmail();
-        AnswerAllFieldsDto answerAllFieldsDto = answerService.addNewAnswer(dtoObject, email);
+        AnswerAllFieldsDto answerAllFieldsDto = currentUserInDistributionList() ?
+                answerService.addNewAnswer(dtoObject, email) :
+                answerService.addNewAnswerWithAllowedSub(dtoObject, email);
         return ResponseEntity.ok(answerAllFieldsDto);
     }
 
     @PutMapping("/vote")
     public ResponseEntity voteFor(@NotEmptyString @RequestParam String answerId) {
         String email = userRuntimeRequestComponent.getEmail();
+        boolean successVote = currentUserInDistributionList() ?
+                voteService.voteForAnswerByUser(answerId, email) :
+                voteService.voteForAnswerByAllowedSub(answerId, email);
 
-        if (voteService.voteForAnswerByUser(answerId, email)) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return successVote ? ResponseEntity.status(HttpStatus.NO_CONTENT).build() : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @PutMapping("/unvote")
     public ResponseEntity unvoteFor(@NotEmptyString @RequestParam String answerId) {
         String email = userRuntimeRequestComponent.getEmail();
+        boolean successUnvote = currentUserInDistributionList() ?
+                voteService.unvoteForAnswerByUser(answerId, email) :
+                voteService.unvoteForAnswerByAllowedSub(answerId, email);
 
-        if (voteService.unvoteForAnswerByUser(answerId, email)) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return successUnvote ? ResponseEntity.status(HttpStatus.NO_CONTENT).build() : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @GetMapping("/{questionId}")
@@ -74,5 +76,9 @@ public class AnswerController {
     @GetMapping("/{questionId}/count")
     public ResponseEntity<CounterDto> getAnswerCountByQuestionId(@NotEmptyString @PathVariable String questionId) {
         return ResponseEntity.ok().body(new CounterDto(answerService.getAnswerCountByQuestionId(questionId)));
+    }
+
+    private boolean currentUserInDistributionList() {
+        return userRuntimeRequestComponent.isInDistributionList();
     }
 }

@@ -48,6 +48,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -95,6 +96,33 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<QuestionAllFieldsDto> search(String searchQuery, Integer page, Integer size) {
+        List<Question> questionList =
+                questionRepository.findAllBy(getTextCriteriaForFullTextSearch(searchQuery), getPageableForFullTextSearch(page, size));
+
+        return questionList
+                .stream()
+                .map(questionAggregator::modelToAllFieldsDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<QuestionAllFieldsDto> searchWithAllowedSub(String searchQuery, Integer page, Integer size, String email) {
+        List<Question> questionList = questionRepository.findAllByAllowedSubsContains(
+                userService.findUserByEmail(email),
+                getTextCriteriaForFullTextSearch(searchQuery),
+                getPageableForFullTextSearch(page, size));
+
+        return questionList
+                .stream()
+                .map(questionAggregator::modelToAllFieldsDto)
+                .collect(Collectors.toList());
+    }
+
+    private TextCriteria getTextCriteriaForFullTextSearch(String searchQuery) {
+        return TextCriteria.forDefaultLanguage().matching(searchQuery);
+    }
+
+    private PageRequest getPageableForFullTextSearch(Integer page, Integer size) {
         if (isNull(size) || size <= 0) {
             size = searchDefaultPageSize;
         }
@@ -106,13 +134,7 @@ public class QuestionServiceImpl implements QuestionService {
         }
 
         Sort sort = new Sort("score");
-        TextCriteria criteria = TextCriteria.forDefaultLanguage().matching(searchQuery);
-        List<Question> questionList = questionRepository.findAllBy(criteria, new PageRequest(page, size, sort));
-
-        return questionList
-                .stream()
-                .map(questionAggregator::modelToAllFieldsDto)
-                .collect(Collectors.toList());
+        return new PageRequest(page, size, sort);
     }
 
     @Override
@@ -121,8 +143,19 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    public String smartSearchWithAllowedSub(String searchQuery, int page, int size, String email) {
+        return elasticSearchService.smartSearchWithAllowedSub(searchQuery, page, size, email);
+    }
+
+    @Override
     public Long getTextSearchResultsCount(String query) {
         return questionRepository.getTextSearchResultsCount(query);
+    }
+
+    @Override
+    public Long getTextSearchResultsCountWithAllowedSub(String query, String email) {
+        return questionRepository
+                .countAllByAllowedSubsContains(userService.findUserByEmail(email), getTextCriteriaForFullTextSearch(query));
     }
 
     @Override
@@ -193,6 +226,10 @@ public class QuestionServiceImpl implements QuestionService {
             return Optional.empty();
         }
 
+        return getQuestionAppearanceDtoByQuestion(question);
+    }
+
+    private Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestion(Question question) {
         QuestionAppearanceDto questionAppearanceDto = questionAggregator.modelToQuestionAppearanceDto(question);
 
         List<String> attachmentIds = question.getAttachmentIds();
@@ -201,10 +238,20 @@ public class QuestionServiceImpl implements QuestionService {
             List<AttachmentPropertiesDto> attachmentsDto = attachmentAggregator.modelToListPropertiesDto(attachments);
             questionAppearanceDto.setAttachments(attachmentsDto);
         } else {
-            questionAppearanceDto.setAttachments(new ArrayList<AttachmentPropertiesDto>());
+            questionAppearanceDto.setAttachments(emptyList());
         }
 
         return Optional.ofNullable(questionAppearanceDto);
+    }
+
+    @Override
+    public Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestionIdWithAllowedSub(String questionId, String userEmail) {
+        Question question = questionRepository.findOne(questionId);
+        return userHasPermissionToViewQuestion(question, userEmail) ? getQuestionAppearanceDtoByQuestion(question) : Optional.empty();
+    }
+
+    private boolean userHasPermissionToViewQuestion(Question question, String userEmail) {
+        return !isNull(question) && question.getAllowedSubs().stream().map(User::getEmail).filter(e -> e.equals(userEmail)).count() == 1;
     }
 
     @Override

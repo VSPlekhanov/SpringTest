@@ -22,11 +22,17 @@ public class SubscriptionController {
 
     @PutMapping("/{questionId}")
     public ResponseEntity subscribe(@PathVariable @NotEmptyString String questionId) {
-        subscriptionService.addOrUpdate(
-                userService.findUserByEmail(userRuntimeRequestComponent.getEmail()).getUserId(),
-                questionId
-        );
+        if (currentUserInDistributionList()) {
+            subscriptionService.addOrUpdate(
+                    userService.findUserByEmail(userRuntimeRequestComponent.getEmail()).getUserId(),
+                    questionId
+            );
+        }
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    private boolean currentUserInDistributionList() {
+        return userRuntimeRequestComponent.isInDistributionList();
     }
 }

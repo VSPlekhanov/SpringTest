@@ -15,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class SubscriptionControllerTest extends SetUpDataBaseCollections {
 
@@ -31,6 +32,7 @@ public class SubscriptionControllerTest extends SetUpDataBaseCollections {
     public void subscribeTest() {
         String someUserEmail = "Bob_Hoplins@epam.com";
         doReturn(someUserEmail).when(userRuntimeRequestComponent).getEmail();
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         String someQuestionId = "1u_1r";
         ResponseEntity<Object> exchange = testRestTemplate.exchange(

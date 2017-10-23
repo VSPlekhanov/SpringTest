@@ -28,4 +28,7 @@ public interface AnswerService {
     List<AnswerBaseDto> getAnswersByQuestionId(String questionId);
 
     Long getAnswerCountByQuestionId(String questionId);
+
+    @EmailNotification(template = NewAnswerNotificationTemplate.class)
+    AnswerAllFieldsDto addNewAnswerWithAllowedSub(AnswerPostDto dtoObject, String email);
 }

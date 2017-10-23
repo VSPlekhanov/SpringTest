@@ -14,6 +14,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import java.util.Optional;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAttachmentAllFieldsDto;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.any;
@@ -78,6 +79,12 @@ public class AttachmentServiceTest {
         attachmentService.findOne(existingId);
         verify(attachmentRepository, times(1)).findOne(anyString());
         verify(aggregator, times(1)).modelToAllFieldsDto(any());
+    }
+
+    @Test
+    public void findOneAllowedSubWithNonExistingQuestion() throws Exception {
+        attachmentService.findOneAllowedSub(someString(), null, someString());
+        verify(attachmentRepository, times(0)).findOne(anyString());
     }
 
     @Test

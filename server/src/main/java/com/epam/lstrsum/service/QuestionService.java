@@ -58,4 +58,10 @@ public interface QuestionService extends ElasticSearchService {
     void addAttachmentsToQuestion(String questionId, List<String> attachmentIds);
 
     Long getQuestionCountWithAllowedSub(String userEmail);
+
+    Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestionIdWithAllowedSub(String questionId, String email);
+
+    List<QuestionAllFieldsDto> searchWithAllowedSub(String query, Integer page, Integer size, String email);
+
+    Long getTextSearchResultsCountWithAllowedSub(String query, String email);
 }
