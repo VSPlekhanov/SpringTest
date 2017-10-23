@@ -12,6 +12,7 @@ import java.util.List;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestion;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionPostDto;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionWithAllowedSubs;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static com.epam.lstrsum.utils.FunctionalUtil.getListWithSize;
 import static org.mockito.Matchers.any;
@@ -67,7 +68,16 @@ public class QuestionAggregatorTest {
 
         verify(userMapper, times(1)).modelToBaseDto(any());
         verify(answerAggregator, times(1)).answersToQuestionInAnswerBaseDto(any());
-        verify(questionMapper, times(1)).modelToQuestionAppearanceDto(any(), any(), any());
+        verify(questionMapper, times(1)).modelToQuestionAppearanceDto(any(), any(), any(), any());
+    }
+
+    @Test
+    public void modelToQuestionAppearanceDtoWithNullAllowedSubs() throws Exception {
+        aggregator.modelToQuestionAppearanceDto(someQuestionWithAllowedSubs(null));
+
+        verify(userMapper, times(1)).modelToBaseDto(any());
+        verify(answerAggregator, times(1)).answersToQuestionInAnswerBaseDto(any());
+        verify(questionMapper, times(1)).modelToQuestionAppearanceDto(any(), any(), any(), any());
     }
 
     @Test

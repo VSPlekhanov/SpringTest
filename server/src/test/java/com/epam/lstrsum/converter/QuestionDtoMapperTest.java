@@ -64,14 +64,16 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
         Question question = someQuestion();
         UserBaseDto authorId = someUserBaseDto();
         List<AnswerBaseDto> answers = getListWithSize(InstantiateUtil::someAnswerBaseDto, 2);
+        List<UserBaseDto> allowedSubs = getListWithSize(InstantiateUtil::someUserBaseDto, 2);
 
 
-        assertThat(questionDtoMapper.modelToQuestionAppearanceDto(question, authorId, answers))
+        assertThat(questionDtoMapper.modelToQuestionAppearanceDto(question, authorId, answers, allowedSubs))
                 .satisfies(
                         questionAppearanceDto -> {
                             checkQuestionBaseDto(questionAppearanceDto, question, authorId);
                             assertThat(questionAppearanceDto.getText()).isEqualTo(question.getText());
                             assertThat(questionAppearanceDto.getAttachments()).isNull();
+                            assertThat(questionAppearanceDto.getAllowedSubs()).isEqualTo(allowedSubs);
                         }
                 );
     }
@@ -103,7 +105,8 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
         User user = someUser();
         List<String> attachmentIds = getListWithSize(InstantiateUtil::someString, 2);
 
-        assertThat(questionDtoMapper.questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(questionPostDto, user, allowedSubs, attachmentIds))
+        assertThat(
+                questionDtoMapper.questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(questionPostDto, user, allowedSubs, attachmentIds))
                 .satisfies(
                         question -> {
                             assertThat(question.getTitle()).isEqualTo(questionPostDto.getTitle());

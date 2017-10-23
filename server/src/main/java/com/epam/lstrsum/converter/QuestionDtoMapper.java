@@ -37,7 +37,11 @@ public interface QuestionDtoMapper {
     })
     QuestionAllFieldsDto modelToAllFieldsDto(Question question, UserBaseDto author, List<UserBaseDto> allowedSubs);
 
-    QuestionAppearanceDto modelToQuestionAppearanceDto(Question question, UserBaseDto author, List<AnswerBaseDto> answers);
+    @Mappings({
+            @Mapping(target = "allowedSubs", source = "allowedSubs")
+    })
+    QuestionAppearanceDto modelToQuestionAppearanceDto(Question question, UserBaseDto author, List<AnswerBaseDto> answers,
+            List<UserBaseDto> allowedSubs);
 
     @Mappings({
             @Mapping(target = "allowedSubs", source = "allowedSubs"),
@@ -61,7 +65,8 @@ public interface QuestionDtoMapper {
             @Mapping(target = "questionId", ignore = true),
             @Mapping(target = "attachmentIds", source = "attachmentIds")
     })
-    Question questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(QuestionPostDto questionPostDto, User authorId, List<User> allowedSubs, List<String> attachmentIds);
+    Question questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(QuestionPostDto questionPostDto, User authorId, List<User> allowedSubs,
+            List<String> attachmentIds);
 
     default List<QuestionBaseDto> subscriptionsToListOfQuestionBaseDto(List<Question> subscriptions, List<UserBaseDto> author) {
         return IntStream.range(0, subscriptions.size())
