@@ -155,7 +155,7 @@ public class InstantiateUtil {
     }
 
     public static Answer someAnswer() {
-        Answer answer = random.nextObject(Answer.class, "authorId", "questionId");
+        Answer answer = random.nextObject(Answer.class, "authorId");
         answer.setAuthorId(someUser().getUserId());
         return answer;
     }
