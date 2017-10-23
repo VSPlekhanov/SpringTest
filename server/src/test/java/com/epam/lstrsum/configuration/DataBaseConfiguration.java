@@ -111,7 +111,7 @@ public class DataBaseConfiguration extends AbstractMongoConfiguration {
                         .useStorageEngine("mmapv1")
                         .enableTextSearch(true)
                         .build())
-                .version(Version.Main.V3_3)
+                .version(Version.Main.V3_4)
                 .build();
     }
 

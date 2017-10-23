@@ -173,7 +173,7 @@ public class AnswerServiceImpl implements AnswerService {
     public Answer getAnswerByIdAndQuestionId(String answerId, String questionId) {
         Aggregation aggregation = newAggregation(
                 match(Criteria.where("questionId").is(questionId)),
-                project("answers").andExclude("questionId"),
+                project("answers").andExclude("_id"),
                 unwind("answers"),
                 replaceRoot("answers"),
                 match(Criteria.where("answerId").is(answerId))
