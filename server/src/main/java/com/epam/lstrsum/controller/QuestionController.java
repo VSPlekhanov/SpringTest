@@ -12,6 +12,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,6 +48,10 @@ public class QuestionController {
             throws IOException {
         log.debug("addQuestion.enter; dtoObject: {}", dtoObject);
         String email = userRuntimeRequestComponent.getEmail();
+        if (!currentUserInDistributionList()) {
+            log.warn("User with email : '" + email + "' try to add a new question. User isn't in the current distribution list!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
 
         val usersAdded = userService.addIfNotExistAllWithRole(dtoObject.getAllowedSubs(), ROLE_SIMPLE_USER);
         log.debug("{} users added", usersAdded);
@@ -60,7 +65,9 @@ public class QuestionController {
 
     @GetMapping(value = "/{questionId}")
     public ResponseEntity<QuestionAppearanceDto> getQuestionWithText(@PathVariable String questionId) {
-        Optional<QuestionAppearanceDto> questionDto = questionService.getQuestionAppearanceDtoByQuestionId(questionId);
+        Optional<QuestionAppearanceDto> questionDto = currentUserInDistributionList() ?
+                questionService.getQuestionAppearanceDtoByQuestionId(questionId) :
+                questionService.getQuestionAppearanceDtoByQuestionIdWithAllowedSub(questionId, userRuntimeRequestComponent.getEmail());
         return questionDto.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
@@ -83,10 +90,6 @@ public class QuestionController {
         return ResponseEntity.ok(questionsFromService);
     }
 
-    private boolean currentUserInDistributionList() {
-        return userRuntimeRequestComponent.isInDistributionList();
-    }
-
     @GetMapping("/count")
     public ResponseEntity<CounterDto> getQuestionCount() {
         Long count = currentUserInDistributionList() ?
@@ -101,7 +104,9 @@ public class QuestionController {
             @RequestParam("query") String query,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "size", required = false) Integer size) {
-        List<QuestionAllFieldsDto> questionDtoList = questionService.search(query, page, size);
+        List<QuestionAllFieldsDto> questionDtoList = currentUserInDistributionList() ?
+                questionService.search(query, page, size) :
+                questionService.searchWithAllowedSub(query, page, size, userRuntimeRequestComponent.getEmail());
         return ResponseEntity.ok(questionDtoList);
     }
 
@@ -110,17 +115,29 @@ public class QuestionController {
             @RequestParam("query") String query,
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "0") Integer size) {
-        return ResponseEntity.ok(questionService.smartSearch(query, page, size));
+        String searchResult = currentUserInDistributionList() ?
+                questionService.smartSearch(query, page, size) :
+                questionService.smartSearchWithAllowedSub(query, page, size, userRuntimeRequestComponent.getEmail());
+        return ResponseEntity.ok(searchResult);
     }
 
     @GetMapping("/search/count")
     public ResponseEntity<CounterDto> searchCount(@RequestParam("query") String query) {
+        Long count = currentUserInDistributionList() ?
+                questionService.getTextSearchResultsCount(query) :
+                questionService.getTextSearchResultsCountWithAllowedSub(query, userRuntimeRequestComponent.getEmail());
         return ResponseEntity.ok()
-                .body(new CounterDto(questionService.getTextSearchResultsCount(query)));
+                .body(new CounterDto(count));
     }
 
     @GetMapping("/getRelevantTags")
     public ResponseEntity<List<String>> getRelevantTags(@RequestParam("key") String key) {
-        return ResponseEntity.ok(questionService.getRelevantTags(key));
+        return currentUserInDistributionList() ?
+                ResponseEntity.ok(questionService.getRelevantTags(key)) :
+                ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    private boolean currentUserInDistributionList() {
+        return userRuntimeRequestComponent.isInDistributionList();
     }
 }

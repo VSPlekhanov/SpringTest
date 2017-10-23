@@ -169,6 +169,12 @@ public class InstantiateUtil {
         return random.nextObject(AnswerPostDto.class);
     }
 
+    public static AnswerPostDto someAnswerPostDtoWithQuestionId(String questionId) {
+        val dto = someAnswerPostDto();
+        dto.setQuestionId(questionId);
+        return dto;
+    }
+
     public static AnswerBaseDto someAnswerBaseDto() {
         return random.nextObject(AnswerBaseDto.class);
     }

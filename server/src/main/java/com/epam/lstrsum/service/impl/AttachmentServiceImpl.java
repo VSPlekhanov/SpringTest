@@ -3,6 +3,8 @@ package com.epam.lstrsum.service.impl;
 import com.epam.lstrsum.aggregators.AttachmentAggregator;
 import com.epam.lstrsum.dto.attachment.AttachmentAllFieldsDto;
 import com.epam.lstrsum.model.Attachment;
+import com.epam.lstrsum.model.Question;
+import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.AttachmentRepository;
 import com.epam.lstrsum.service.AttachmentService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Optional;
+
+import static java.util.Objects.isNull;
 
 @Service
 @RequiredArgsConstructor
@@ -52,6 +56,15 @@ public class AttachmentServiceImpl implements AttachmentService {
         return Optional
                 .ofNullable(attachmentRepository.findOne(id))
                 .map(attachmentAggregator::modelToAllFieldsDto);
+    }
+
+    @Override
+    public Optional<AttachmentAllFieldsDto> findOneAllowedSub(String id, Question question, String userEmail) {
+        return questionExistAndUserAllowedSubOnIt(question, userEmail) ? findOne(id) : Optional.empty();
+    }
+
+    private boolean questionExistAndUserAllowedSubOnIt(Question question, String userEmail) {
+        return !isNull(question) && question.getAllowedSubs().stream().map(User::getEmail).filter(e -> e.equals(userEmail)).count() == 1;
     }
 
     @Override

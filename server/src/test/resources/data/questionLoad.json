@@ -11,7 +11,7 @@
     "text": "I have this call in async task. All parameters are correct. In postman or advance rest client the call work fine and It return a json with a list of objects. But if I try to do this call in android with spring I have this error:",
     "authorId": {
       "$ref": "User",
-      "$id": "5u"
+      "$id": "1u"
     },
     "createdAt": {
       "$date": "2016-04-19T11:00:00Z"
@@ -42,7 +42,7 @@
     "deadLine": {
       "$date": "2016-05-19T11:00:00Z"
     },
-    "attachmentIds" : [
+    "attachmentIds": [
       "attachmentId1"
     ]
   },
@@ -123,10 +123,6 @@
       {
         "$ref": "User",
         "$id": "5u"
-      },
-      {
-        "$ref": "User",
-        "$id": "6u"
       }
     ],
     "deadLine": {

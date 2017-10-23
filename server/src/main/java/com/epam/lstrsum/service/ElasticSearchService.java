@@ -18,4 +18,6 @@ public interface ElasticSearchService {
      * @see <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html">Elastic Search</a>
      */
     String smartSearch(String searchQuery, int page, int size);
+
+    String smartSearchWithAllowedSub(String searchQuery, int page, int size, String email);
 }
