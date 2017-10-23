@@ -9,6 +9,7 @@ import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
 import com.epam.lstrsum.dto.question.QuestionBaseDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
+import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.QuestionWithAnswersCount;
 import com.epam.lstrsum.model.User;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -63,7 +65,8 @@ public class QuestionAggregator implements BasicModelDtoConverter<Question, Ques
         return questionMapper.modelToQuestionAppearanceDto(
                 question,
                 userMapper.modelToBaseDto(question.getAuthorId()),
-                answerAggregator.answersToQuestionInAnswerBaseDto(question)
+                answerAggregator.answersToQuestionInAnswerBaseDto(question),
+                getEmptyListIfNullOrEmpty(question.getAllowedSubs())
         );
     }
 
@@ -75,7 +78,8 @@ public class QuestionAggregator implements BasicModelDtoConverter<Question, Ques
         );
     }
 
-    public Question questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(QuestionPostDto questionPostDto, String email, List<String> attachmentIds) {
+    public Question questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(QuestionPostDto questionPostDto, String email,
+            List<String> attachmentIds) {
         return questionMapper.questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(
                 questionPostDto,
                 userAggregator.findByEmail(email),
@@ -94,10 +98,17 @@ public class QuestionAggregator implements BasicModelDtoConverter<Question, Ques
         );
     }
 
+    // TODO: 10/20/2017 Create one request to mongo
     private List<User> getEmptyListIfNull(List<String> emails) {
         return isNull(emails) ? Collections.emptyList() :
                 emails.stream()
                         .map(userAggregator::findByEmail)
                         .collect(Collectors.toList());
+    }
+
+    private List<UserBaseDto> getEmptyListIfNullOrEmpty(List<User> allowedSubs) {
+        return isNull(allowedSubs) || isEmpty(allowedSubs) ?
+                Collections.emptyList() :
+                userMapper.usersToListOfBaseDtos(allowedSubs);
     }
 }

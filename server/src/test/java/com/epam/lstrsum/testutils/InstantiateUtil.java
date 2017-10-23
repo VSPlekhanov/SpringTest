@@ -186,6 +186,12 @@ public class InstantiateUtil {
         return question;
     }
 
+    public static Question someQuestionWithAllowedSubs(List<User> allowedSubs) {
+        Question question = someQuestion();
+        question.setAllowedSubs(allowedSubs);
+        return question;
+    }
+
     public static QuestionAllFieldsDto someQuestionAllFieldsDto() {
         return random.nextObject(QuestionAllFieldsDto.class);
     }
