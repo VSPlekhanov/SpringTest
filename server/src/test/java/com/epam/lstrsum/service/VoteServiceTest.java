@@ -23,7 +23,7 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
     public void voteForAnswerTest() {
         String answerIdWithoutVotes = "1u_2r_1a";
         String someUserEmail = "Tyler_Derden@mylo.com";
-        String questionId = "1u_2r";//questionRepository.findQuestionByAnswers_AnswerId(answerIdWithoutVotes).get().getQuestionId();
+        String questionId = "1u_2r";
 
         int beforeVote =  answerService.getAnswerByIdAndQuestionId(answerIdWithoutVotes, questionId).getVotes().size();
 
@@ -38,7 +38,7 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
     public void voteForAnswerTwice() {
         String answerIdAlreadyVoted = "1u_1r_3a";
         String userWhoVoteAnswer = "John_Doe@epam.com";
-        String questionId = "1u_1r"; //questionRepository.findQuestionByAnswers_AnswerId(answerIdAlreadyVoted).get().getQuestionId();
+        String questionId = "1u_1r";
 
         int beforeVote = answerService.getAnswerByIdAndQuestionId(answerIdAlreadyVoted, questionId).getVotes().size();
 
@@ -61,7 +61,7 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
     public void unVoteAnswer() {
         String answerIdAlreadyVoted = "1u_1r_3a";
         String userWhoVoteAnswer = "John_Doe@epam.com";
-        String questionId = "1u_1r";//questionRepository.findQuestionByAnswers_AnswerId(answerIdAlreadyVoted).get().getQuestionId();
+        String questionId = "1u_1r";
 
         Answer beforeUnvoting = answerService.getAnswerByIdAndQuestionId(answerIdAlreadyVoted, questionId);
 
