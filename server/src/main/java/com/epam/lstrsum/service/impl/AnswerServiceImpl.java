@@ -96,12 +96,12 @@ public class AnswerServiceImpl implements AnswerService {
         }
 
         Aggregation aggregation = newAggregation(
-                match(Criteria.where("questionId").is(questionId)),
-                project("answers").andExclude("questionId"),
+                match(Criteria.where("_id").is(questionId)),
+                project("answers").andExclude("_id"),
                 unwind("answers"),
                 replaceRoot("answers"),
                 sort(Sort.Direction.ASC, "createdAt"),
-                skip((long) size * (page - 1)),
+                skip((long) size * page),
                 limit(size)
         );
 
