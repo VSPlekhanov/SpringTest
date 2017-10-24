@@ -77,7 +77,8 @@ public class AnswerServiceImpl implements AnswerService {
         List<QuestionWithAnswersCount> result = new ArrayList<QuestionWithAnswersCount>();
 
         for (Question question : questions) {
-            result.add(new QuestionWithAnswersCount(question, Optional.ofNullable(question.getAnswers()).orElse(Collections.emptyList()).size()));
+            result.add(new QuestionWithAnswersCount(question,
+                    Optional.ofNullable(question.getAnswers()).orElse(Collections.emptyList()).size()));
         }
         return result;
     }
