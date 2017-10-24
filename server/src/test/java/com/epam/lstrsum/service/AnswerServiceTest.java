@@ -10,6 +10,7 @@ import com.epam.lstrsum.exception.NoSuchAnswerException;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.QuestionWithAnswersCount;
+import com.epam.lstrsum.persistence.UserRepository;
 import lombok.val;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_ANSWER_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID;
+import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_USER_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_NOT_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswer;
@@ -40,6 +42,8 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     @Autowired
     private AnswerAggregator answerAggregator;
     @Autowired
+    private UserRepository userRepository;
+    @Autowired
     private MongoTemplate mongoTemplate;
 
     @Test
@@ -53,6 +57,8 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     @Test
     public void checkAnswerDtoConverterInvocation() {
         Answer someAnswer = someAnswer();
+        someAnswer.setAnswerId(EXISTING_ANSWER_ID);
+        someAnswer.setAuthorId(EXISTING_USER_ID);
         AnswerAllFieldsDto expected = answerAggregator.modelToAllFieldsDto(someAnswer);
 
         assertThat(answerAggregator.modelToAllFieldsDto(someAnswer), equalTo(expected));

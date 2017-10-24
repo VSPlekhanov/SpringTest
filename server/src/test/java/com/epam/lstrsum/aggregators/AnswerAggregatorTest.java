@@ -3,13 +3,12 @@ package com.epam.lstrsum.aggregators;
 import com.epam.lstrsum.converter.AnswerDtoMapper;
 import com.epam.lstrsum.converter.QuestionDtoMapper;
 import com.epam.lstrsum.converter.UserDtoMapper;
-import com.epam.lstrsum.persistence.AnswerRepository;
-import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswer;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswerPostDto;
@@ -28,7 +27,7 @@ public class AnswerAggregatorTest {
     private UserAggregator userAggregator;
 
     @Mock
-    private QuestionRepository questionRepository;
+    private MongoTemplate mongoTemplate;
 
     @Mock
     private UserDtoMapper userMapper;
@@ -50,7 +49,7 @@ public class AnswerAggregatorTest {
         initMocks(this);
         aggregator = new AnswerAggregator(
                 answerMapper, userMapper, questionMapper,
-                questionRepository,
+                mongoTemplate,
                 userAggregator,
                 userService
         );

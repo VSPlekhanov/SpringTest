@@ -12,9 +12,11 @@ import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.persistence.QuestionRepository;
-import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,7 +31,8 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
     private final UserDtoMapper userMapper;
     private final QuestionDtoMapper questionMapper;
 
-    private final QuestionRepository questionRepository;
+    private final MongoTemplate mongoTemplate;
+//    private final QuestionRepository questionRepository;
 
     private final UserAggregator userAggregator;
 
@@ -38,10 +41,14 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
     @Override
     public AnswerAllFieldsDto modelToAllFieldsDto(Answer answer) {
         final UserBaseDto author = userMapper.modelToBaseDto(userService.findUserById(answer.getAuthorId()));
+        final Query query = new Query(Criteria.where("answers._id").is(answer.getAnswerId()));
+        final Question question = mongoTemplate.findOne(query, Question.class);
         return answerMapper.modelToAllFieldsDto(
                 answer,
                 author,
-                questionMapper.modelToBaseDto(questionRepository.findQuestionByAnswers_AnswerId(answer.getAnswerId()).get(), author)
+                questionMapper.modelToBaseDto(
+                        question, //questionRepository.findOneByAnswers_AnswerId(answer.getAnswerId()).get(),
+                        author)
         );
     }
 
