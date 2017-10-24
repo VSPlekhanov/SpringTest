@@ -73,7 +73,9 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
                 }).getBody();
         assertThat(result).hasSize(2);
         assertThat(result.get(0).getQuestionId()).isEqualTo("2u_3r");
+        assertThat(result.get(0).getAnswersCount()).isEqualTo(2);
         assertThat(result.get(1).getQuestionId()).isEqualTo("1u_2r");
+        assertThat(result.get(1).getAnswersCount()).isEqualTo(2);
     }
 
     @Test

@@ -26,6 +26,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -70,17 +71,12 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public List<QuestionWithAnswersCount> aggregateToCount(List<Question> questions) {
-        final Aggregation aggregation = newAggregation(
-                match(Criteria.where("question").in(questions)),
-                group("question").count().as("count"),
-                project("count").and("question").previousOperation()
-        );
+        List<QuestionWithAnswersCount> result = new ArrayList<QuestionWithAnswersCount>();
 
-        final List<QuestionWithAnswersCount> mappedResults = mongoTemplate.aggregate(
-                aggregation, Answer.class, QuestionWithAnswersCount.class
-        ).getMappedResults();
-
-        return completeNotFound(mappedResults, questions);
+        for(Question question: questions){
+            result.add(new QuestionWithAnswersCount(question, question.getAnswers().size()));
+        }
+        return result;
     }
 
     @Override
