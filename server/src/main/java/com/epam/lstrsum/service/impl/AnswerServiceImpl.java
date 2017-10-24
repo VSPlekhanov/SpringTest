@@ -73,7 +73,7 @@ public class AnswerServiceImpl implements AnswerService {
     public List<QuestionWithAnswersCount> aggregateToCount(List<Question> questions) {
         List<QuestionWithAnswersCount> result = new ArrayList<QuestionWithAnswersCount>();
 
-        for(Question question: questions){
+        for (Question question : questions) {
             result.add(new QuestionWithAnswersCount(question, question.getAnswers().size()));
         }
         return result;
