@@ -26,6 +26,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.Optional;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +77,7 @@ public class AnswerServiceImpl implements AnswerService {
         List<QuestionWithAnswersCount> result = new ArrayList<QuestionWithAnswersCount>();
 
         for (Question question : questions) {
-            result.add(new QuestionWithAnswersCount(question, question.getAnswers().size()));
+            result.add(new QuestionWithAnswersCount(question, Optional.ofNullable(question.getAnswers()).orElse(Collections.emptyList()).size()));
         }
         return result;
     }
