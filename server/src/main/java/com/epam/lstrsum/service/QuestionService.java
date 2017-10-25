@@ -37,6 +37,7 @@ public interface QuestionService extends ElasticSearchService {
     @EmailNotification(template = NewQuestionNotificationTemplate.class)
     Question addNewQuestion(QuestionPostDto questionPostDto, String email);
 
+    @EmailNotification(template = NewQuestionNotificationTemplate.class)
     Question addNewQuestion(QuestionPostDto questionPostDto, String email, MultipartFile[] files);
 
     QuestionAllFieldsDto getQuestionAllFieldDtoByQuestionId(String questionId);
