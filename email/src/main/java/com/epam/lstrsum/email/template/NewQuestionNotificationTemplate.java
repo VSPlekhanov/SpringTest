@@ -25,16 +25,25 @@ public class NewQuestionNotificationTemplate implements MailTemplate<Question> {
     private final EmailCollection<Question> emailCollection;
 
     @Setter
+    @Value("${spring.mail.defaultQuestionLink}")
+    private static String defaultQuestionLink;
+
+    @Setter
     @Value("${spring.mail.username}")
     private String fromAddress;
 
     @Override
     public MimeMessage buildMailMessage(Question question) throws MessagingException {
         MimeMessage mimeMessage = new MimeMessage((Session) null);
+        String questionPath = defaultQuestionLink + question.getQuestionId();
 
         mimeMessage.setFrom(new InternetAddress(fromAddress));
         mimeMessage.setSubject("New question was added on EXP Portal: " + question.getTitle());
-        mimeMessage.setText(MAIL_HEADER + question.getText() + "\n\n" + "Deadline: " + question.getDeadLine());
+        mimeMessage.setText(MAIL_HEADER + question.getText() + "\n\n" +
+                "Deadline: " + question.getDeadLine() + "\n\n" +
+                "<a href=\"" + questionPath + "\">Go to question</a>",
+                "utf-8",
+                "html");
 
         mimeMessage.setRecipients(Message.RecipientType.TO, getAddresses(question));
         return mimeMessage;
