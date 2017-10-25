@@ -9,7 +9,6 @@ import com.epam.lstrsum.testutils.AssertionUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.ParameterizedTypeReference;
@@ -35,9 +34,6 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
 
     @Autowired
     private TestRestTemplate restTemplate;
-
-    @MockBean
-    private UserRuntimeRequestComponent userRuntimeRequestComponent;
 
     @Autowired
     private AnswerController answerController;

@@ -1,0 +1,15 @@
+{
+  "analysis": {
+    "analyzer": {
+      "custom-analyzer": {
+        "type": "custom",
+        "tokenizer": "standard",
+        "stopwords": "_english_",
+        "filter": [
+          "asciifolding",
+          "lowercase"
+        ]
+      }
+    }
+  }
+}

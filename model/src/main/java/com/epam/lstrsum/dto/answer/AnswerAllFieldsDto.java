@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -20,8 +21,9 @@ public class AnswerAllFieldsDto extends AnswerBaseDto {
             UserBaseDto authorId,
             int upVote,
             String answerId,
-            QuestionBaseDto questionId) {
-        super(answerId, text, createdAt, authorId, upVote);
+            QuestionBaseDto questionId,
+            Boolean userVoted) {
+        super(answerId, text, createdAt, authorId, upVote, userVoted);
         this.answerId = answerId;
         this.questionId = questionId;
     }
@@ -31,18 +33,13 @@ public class AnswerAllFieldsDto extends AnswerBaseDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-
         AnswerAllFieldsDto that = (AnswerAllFieldsDto) o;
-
-        if (answerId != null ? !answerId.equals(that.answerId) : that.answerId != null) return false;
-        return questionId != null ? questionId.equals(that.questionId) : that.questionId == null;
+        return Objects.equals(answerId, that.answerId) &&
+                Objects.equals(questionId, that.questionId);
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (answerId != null ? answerId.hashCode() : 0);
-        result = 31 * result + (questionId != null ? questionId.hashCode() : 0);
-        return result;
+        return Objects.hash(super.hashCode(), answerId, questionId);
     }
 }

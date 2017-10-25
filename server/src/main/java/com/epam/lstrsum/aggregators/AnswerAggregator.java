@@ -1,5 +1,6 @@
 package com.epam.lstrsum.aggregators;
 
+import com.epam.lstrsum.controller.UserRuntimeRequestComponent;
 import com.epam.lstrsum.converter.AnswerDtoMapper;
 import com.epam.lstrsum.converter.QuestionDtoMapper;
 import com.epam.lstrsum.converter.UserDtoMapper;
@@ -32,6 +33,7 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
     private final QuestionRepository questionRepository;
 
     private final UserAggregator userAggregator;
+    private final UserRuntimeRequestComponent userRuntimeRequestComponent;
 
     @Override
     public AnswerAllFieldsDto modelToAllFieldsDto(Answer answer) {
@@ -47,7 +49,8 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
     public AnswerBaseDto modelToBaseDto(Answer answer) {
         return answerMapper.modelToBaseDto(
                 answer,
-                userMapper.modelToBaseDto(answer.getAuthorId())
+                userMapper.modelToBaseDto(answer.getAuthorId()),
+                isUserVoted(answer)
         );
     }
 
@@ -55,7 +58,8 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
         List<Answer> answers = answerRepository.findAnswersByQuestionIdOrderByCreatedAtAsc(question);
         return answerMapper.answersToQuestionInAnswerBaseDto(
                 answers,
-                userMapper.usersToListOfBaseDtos(answers.stream().map(Answer::getAuthorId).collect(Collectors.toList()))
+                userMapper.usersToListOfBaseDtos(answers.stream().map(Answer::getAuthorId).collect(Collectors.toList())),
+                userRuntimeRequestComponent.getEmail()
         );
     }
 
@@ -65,5 +69,9 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
                 userAggregator.findByEmail(email),
                 question
         );
+    }
+
+    private Boolean isUserVoted(Answer answer) {
+        return answer.getVotes().stream().anyMatch(vote -> vote.getAuthorEmail().equals(userRuntimeRequestComponent.getEmail()));
     }
 }

@@ -29,14 +29,20 @@ public interface AnswerDtoMapper {
 
     @Mappings({
             @Mapping(target = "authorId", source = "authorId"),
-            @Mapping(target = "upVote", expression = "java(answer.getVotes().size())")
+            @Mapping(target = "upVote", expression = "java(answer.getVotes().size())"),
+            @Mapping(target = "userVoted", expression = "java(userVoted)")
     })
-    AnswerBaseDto modelToBaseDto(Answer answer, UserBaseDto authorId);
+    AnswerBaseDto modelToBaseDto(Answer answer, UserBaseDto authorId, Boolean userVoted);
 
 
-    default List<AnswerBaseDto> answersToQuestionInAnswerBaseDto(List<Answer> answers, List<UserBaseDto> authors) {
+    default List<AnswerBaseDto> answersToQuestionInAnswerBaseDto(List<Answer> answers, List<UserBaseDto> authors, String currentUserEmail) {
         return IntStream.range(0, answers.size())
-                .mapToObj(i -> modelToBaseDto(answers.get(i), authors.get(i)))
+                .mapToObj(i -> {
+                    Answer answer = answers.get(i);
+                    UserBaseDto author = authors.get(i);
+                    Boolean userVoted = answer.getVotes().stream().anyMatch(vote -> vote.getAuthorEmail().equals(currentUserEmail));
+                    return modelToBaseDto(answer, author, userVoted);
+                })
                 .collect(Collectors.toList());
     }
 
