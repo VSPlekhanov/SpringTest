@@ -27,7 +27,7 @@ import java.util.Arrays;
 public class NewAnswerNotificationTemplate implements MailTemplate<AnswerAllFieldsDto> {
 
     @Setter
-    @Value("${spring.mail.defaultQuestionLink}")
+    @Value("${spring.mail.default-question-link}")
     private static String defaultQuestionLink;
     private final EmailCollection<AnswerAllFieldsDto> emailCollection;
 
@@ -75,9 +75,9 @@ public class NewAnswerNotificationTemplate implements MailTemplate<AnswerAllFiel
 
         return source.getAuthorId().getFirstName() + " " +
                 source.getAuthorId().getLastName() +
-                " has posted the following answer:\n\n" +
+                " has posted the following answer:<br>" +
                 source.getText() +
-                "\n\n" +
+                "<br>" +
                 "<a href=\"" + questionPath + "\">Go to answer</a>";
     }
 }
