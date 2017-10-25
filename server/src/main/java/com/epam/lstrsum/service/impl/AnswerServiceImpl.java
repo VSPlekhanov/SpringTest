@@ -176,10 +176,9 @@ public class AnswerServiceImpl implements AnswerService {
     public Answer getAnswerByIdAndQuestionId(String answerId, String questionId) {
         Aggregation aggregation = newAggregation(
                 match(Criteria.where("_id").is(questionId)),
-                project("answers").andExclude("_id"),
                 unwind("answers"),
                 replaceRoot("answers"),
-                match(Criteria.where("_id").is(answerId))
+                match(Criteria.where("answerId").is(answerId))
         );
 
         Answer answer = mongoTemplate.aggregate(aggregation, Question.QUESTION_COLLECTION_NAME, Answer.class)
@@ -195,7 +194,7 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     private Answer addAnswerOnQuestion(Answer answer, String questionId) {
-        Query findQuestion = new Query(Criteria.where("questionId").is(questionId));
+        Query findQuestion = new Query(Criteria.where("_id").is(questionId));
         Update addAnswer = new Update().addToSet("answers", answer);
 
         mongoTemplate.findAndModify(findQuestion, addAnswer, Question.class);

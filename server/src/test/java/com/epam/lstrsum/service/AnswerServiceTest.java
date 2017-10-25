@@ -10,7 +10,6 @@ import com.epam.lstrsum.exception.NoSuchAnswerException;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.QuestionWithAnswersCount;
-import com.epam.lstrsum.persistence.UserRepository;
 import lombok.val;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +40,6 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     private AnswerService answerService;
     @Autowired
     private AnswerAggregator answerAggregator;
-    @Autowired
-    private UserRepository userRepository;
     @Autowired
     private MongoTemplate mongoTemplate;
 

@@ -18,7 +18,7 @@ public class VoteServiceImpl implements VoteService {
 
     @Override
     public boolean voteForAnswerByUser(String answerId, String userId) {
-        Query findAnswer = new Query(Criteria.where("answers._id").is(answerId));
+        Query findAnswer = new Query(Criteria.where("answers.answerId").is(answerId));
         Update addVote = new Update().addToSet("answers.$.votes", new Vote(userId));
 
         return mongoTemplate.updateFirst(findAnswer, addVote, Question.class).isUpdateOfExisting();
@@ -26,7 +26,7 @@ public class VoteServiceImpl implements VoteService {
 
     @Override
     public boolean unvoteForAnswerByUser(String answerId, String userId) {
-        Query findAnswer = new Query(Criteria.where("answers._id").is(answerId));
+        Query findAnswer = new Query(Criteria.where("answers.answerId").is(answerId));
         Update pullVote = new Update().pull("answers.$.votes", new Vote(userId));
 
         return mongoTemplate.updateFirst(findAnswer, pullVote, Question.class).isUpdateOfExisting();

@@ -47,7 +47,7 @@
     ],
     "answers": [
       {
-        "_id": "1u_1r_1a",
+        "answerId": "1u_1r_1a",
         "text": "You probably forgot to select the 'module's folder inside the extra contrib folder. Exact error happened to me when I only selected the extra contrib folder.",
         "authorId": "3u",
         "createdAt": {
@@ -63,7 +63,7 @@
         ]
       },
       {
-        "_id": "1u_1r_2a",
+        "answerId": "1u_1r_2a",
         "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
         "authorId": "6u",
         "createdAt": {
@@ -79,7 +79,7 @@
         ]
       },
       {
-        "_id": "1u_1r_3a",
+        "answerId": "1u_1r_3a",
         "text": "In my case it was related to Client authentication. It happened to me when I was trying to access SOAP API from Java code without setting keystore/keystorePassword and from the stacktrace there is no way we can figure out that there's a problem with Authentication.",
         "authorId": "5u",
         "createdAt": {
@@ -147,7 +147,7 @@
     },
     "answers": [
       {
-        "_id": "1u_2r_1a",
+        "answerId": "1u_2r_1a",
         "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
         "authorId": "5u",
         "createdAt": {
@@ -156,7 +156,7 @@
         "votes": []
       },
       {
-        "_id": "1u_2r_2a",
+        "answerId": "1u_2r_2a",
         "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
         "authorId": "6u",
         "createdAt": {
@@ -210,7 +210,7 @@
     },
     "answers": [
       {
-        "_id": "2u_3r_1a",
+        "answerId": "2u_3r_1a",
         "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
         "authorId": "1u",
         "createdAt": {
@@ -226,7 +226,7 @@
         ]
       },
       {
-        "_id": "2u_3r_2a",
+        "answerId": "2u_3r_2a",
         "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
         "authorId": "5u",
         "createdAt": {
@@ -288,7 +288,7 @@
     },
     "answers": [
       {
-        "_id": "3u_4r_1a",
+        "answerId": "3u_4r_1a",
         "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this",
         "authorId": "5u",
         "createdAt": {
@@ -304,7 +304,7 @@
         ]
       },
       {
-        "_id": "3u_4r_2a",
+        "answerId": "3u_4r_2a",
         "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
         "authorId": "4u",
         "createdAt": {
@@ -365,7 +365,7 @@
     },
     "answers": [
       {
-        "_id": "4u_5r_1a",
+        "answerId": "4u_5r_1a",
         "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
         "authorId": "5u",
         "createdAt": {
@@ -381,7 +381,7 @@
         ]
       },
       {
-        "_id": "4u_5r_2a",
+        "answerId": "4u_5r_2a",
         "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
         "authorId": "6u",
         "createdAt": {
@@ -397,7 +397,7 @@
         ]
       },
       {
-        "_id": "4u_5r_3a",
+        "answerId": "4u_5r_3a",
         "text": "The server isnt waiting for any data from the client, and when the server exits the connection will be closed. Add a ins.readLine() to the server code like this:",
         "authorId": "5u",
         "createdAt": {
