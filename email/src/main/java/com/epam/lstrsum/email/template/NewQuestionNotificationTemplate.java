@@ -21,11 +21,11 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class NewQuestionNotificationTemplate implements MailTemplate<Question> {
 
-    private static final String MAIL_HEADER = "\nHello!\n\nA new question was added to EXP Portal!\n\n";
+    private static final String MAIL_HEADER = "<br>Hello!<br>A new question was added to EXP Portal!<br>";
     private final EmailCollection<Question> emailCollection;
 
     @Setter
-    @Value("${spring.mail.defaultQuestionLink}")
+    @Value("${spring.mail.default-question-link}")
     private static String defaultQuestionLink;
 
     @Setter
@@ -39,8 +39,8 @@ public class NewQuestionNotificationTemplate implements MailTemplate<Question> {
 
         mimeMessage.setFrom(new InternetAddress(fromAddress));
         mimeMessage.setSubject("New question was added on EXP Portal: " + question.getTitle());
-        mimeMessage.setText(MAIL_HEADER + question.getText() + "\n\n" +
-                "Deadline: " + question.getDeadLine() + "\n\n" +
+        mimeMessage.setText(MAIL_HEADER + question.getText() + "<br>" +
+                "Deadline: " + question.getDeadLine() + "<br>" +
                 "<a href=\"" + questionPath + "\">Go to question</a>",
                 "utf-8",
                 "html");
