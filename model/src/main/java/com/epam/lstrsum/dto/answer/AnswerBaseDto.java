@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.Objects;
 
 @AllArgsConstructor
 @Getter
@@ -20,28 +21,23 @@ public class AnswerBaseDto {
     private Instant createdAt;
     private UserBaseDto authorId;
     private Integer upVote;
+    private Boolean userVoted;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         AnswerBaseDto that = (AnswerBaseDto) o;
-
-        if (answerId != null ? !answerId.equals(that.answerId) : that.answerId != null) return false;
-        if (text != null ? !text.equals(that.text) : that.text != null) return false;
-        if (createdAt != null ? !createdAt.equals(that.createdAt) : that.createdAt != null) return false;
-        if (authorId != null ? !authorId.equals(that.authorId) : that.authorId != null) return false;
-        return upVote != null ? upVote.equals(that.upVote) : that.upVote == null;
+        return Objects.equals(answerId, that.answerId) &&
+                Objects.equals(text, that.text) &&
+                Objects.equals(createdAt, that.createdAt) &&
+                Objects.equals(authorId, that.authorId) &&
+                Objects.equals(upVote, that.upVote) &&
+                Objects.equals(userVoted, that.userVoted);
     }
 
     @Override
     public int hashCode() {
-        int result = text != null ? text.hashCode() : 0;
-        result = 31 * result + (answerId != null ? answerId.hashCode() : 0);
-        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
-        result = 31 * result + (authorId != null ? authorId.hashCode() : 0);
-        result = 31 * result + (upVote != null ? upVote.hashCode() : 0);
-        return result;
+        return Objects.hash(answerId, text, createdAt, authorId, upVote, userVoted);
     }
 }

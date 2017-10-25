@@ -1,5 +1,6 @@
 package com.epam.lstrsum.aggregators;
 
+import com.epam.lstrsum.controller.UserRuntimeRequestComponent;
 import com.epam.lstrsum.converter.AnswerDtoMapper;
 import com.epam.lstrsum.converter.QuestionDtoMapper;
 import com.epam.lstrsum.converter.UserDtoMapper;
@@ -40,13 +41,17 @@ public class AnswerAggregatorTest {
     @Mock
     private QuestionDtoMapper questionMapper;
 
+    @Mock
+    private UserRuntimeRequestComponent userRuntimeRequestComponent;
+
     @Before
     public void setUp() {
         initMocks(this);
         aggregator = new AnswerAggregator(
                 answerMapper, userMapper,
                 questionMapper, answerRepository,
-                questionRepository, userAggregator
+                questionRepository, userAggregator,
+                userRuntimeRequestComponent
         );
 
     }
@@ -66,7 +71,7 @@ public class AnswerAggregatorTest {
         aggregator.modelToBaseDto(someAnswer());
 
         verify(userMapper, times(1)).modelToBaseDto(any());
-        verify(answerMapper, times(1)).modelToBaseDto(any(), any());
+        verify(answerMapper, times(1)).modelToBaseDto(any(), any(), any());
     }
 
     @Test
@@ -75,7 +80,7 @@ public class AnswerAggregatorTest {
 
         verify(userMapper, times(1)).usersToListOfBaseDtos(any());
         verify(answerRepository, times(1)).findAnswersByQuestionIdOrderByCreatedAtAsc(any());
-        verify(answerMapper, times(1)).answersToQuestionInAnswerBaseDto(any(), any());
+        verify(answerMapper, times(1)).answersToQuestionInAnswerBaseDto(any(), any(), any());
     }
 
     @Test

@@ -24,9 +24,6 @@ public class UserRestApiTest extends SetUpDataBaseCollections {
     @MockBean
     private TelescopeService telescopeService;
 
-    @MockBean
-    private UserRuntimeRequestComponent userRuntimeRequestComponent;
-
     @Test
     public void getUserInfoByValidFullName() {
         int defaultMaxUsersAmountInResult = 5;
