@@ -26,7 +26,7 @@ public class NewQuestionNotificationTemplate implements MailTemplate<Question> {
 
     @Setter
     @Value("${spring.mail.default-question-link}")
-    private static String defaultQuestionLink;
+    private String defaultQuestionLink;
 
     @Setter
     @Value("${spring.mail.username}")
