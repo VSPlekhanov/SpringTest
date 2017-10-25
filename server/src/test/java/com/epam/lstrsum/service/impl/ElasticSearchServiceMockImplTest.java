@@ -1,6 +1,7 @@
 package com.epam.lstrsum.service.impl;
 
-import com.epam.lstrsum.service.ElasticSearchServiceMockImpl;
+
+import com.epam.lstrsum.service.impl.mock.ElasticSearchServiceMockImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;

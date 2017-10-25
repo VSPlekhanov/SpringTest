@@ -143,6 +143,11 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    public String advancedSearch(String searchQuery, List<String> metaTags, Integer page, Integer size) {
+        return elasticSearchService.advancedSearch(searchQuery, metaTags, page, size);
+    }
+
+    @Override
     public String smartSearchWithAllowedSub(String searchQuery, int page, int size, String email) {
         return elasticSearchService.smartSearchWithAllowedSub(searchQuery, page, size, email);
     }
