@@ -27,6 +27,7 @@ import java.util.Arrays;
 public class NewAnswerNotificationTemplate implements MailTemplate<AnswerAllFieldsDto> {
 
     @Setter
+    @Value("${spring.mail.defaultQuestionLink}")
     private static String defaultQuestionLink;
     private final EmailCollection<AnswerAllFieldsDto> emailCollection;
 
@@ -62,30 +63,21 @@ public class NewAnswerNotificationTemplate implements MailTemplate<AnswerAllFiel
         Multipart parts = new MimeMultipart();
 
         MimeBodyPart plainText = new MimeBodyPart();
-        plainText.setText(getTextMessage(source), "utf-8");
-
-        MimeBodyPart hyperLink = new MimeBodyPart();
-        hyperLink.setContent(getHyperLinkMessage(source), "text/html; charset=utf-8");
+        plainText.setText(getTextMessage(source), "utf-8", "html");
 
         parts.addBodyPart(plainText);
-        parts.addBodyPart(hyperLink);
 
         return parts;
     }
 
     private String getTextMessage(AnswerAllFieldsDto source) {
+        String questionPath = defaultQuestionLink + source.getQuestionId().getQuestionId();
+
         return source.getAuthorId().getFirstName() + " " +
                 source.getAuthorId().getLastName() +
                 " has posted the following answer:\n\n" +
                 source.getText() +
-                "\n\n";
-    }
-
-    private String getHyperLinkMessage(AnswerAllFieldsDto source) {
-        String questionPath = defaultQuestionLink + source.getQuestionId().getQuestionId();
-        String link = "<a href=\"" + questionPath + "\">here</a>";
-
-        return "More details on the answer could be found " +
-                link;
+                "\n\n" +
+                "<a href=\"" + questionPath + "\">Go to answer</a>";
     }
 }
