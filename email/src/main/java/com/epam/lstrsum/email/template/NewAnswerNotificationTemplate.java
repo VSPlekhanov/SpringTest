@@ -28,7 +28,7 @@ public class NewAnswerNotificationTemplate implements MailTemplate<AnswerAllFiel
 
     @Setter
     @Value("${spring.mail.default-question-link}")
-    private static String defaultQuestionLink;
+    private String defaultQuestionLink;
     private final EmailCollection<AnswerAllFieldsDto> emailCollection;
 
     @Setter
