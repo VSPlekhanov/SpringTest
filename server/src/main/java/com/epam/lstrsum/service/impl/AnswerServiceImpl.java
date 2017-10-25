@@ -195,6 +195,8 @@ public class AnswerServiceImpl implements AnswerService {
 
     private Answer addAnswerOnQuestion(Answer answer, String questionId) {
         Query findQuestion = new Query(Criteria.where("_id").is(questionId));
+        // TODO: 25.10.17 can addToSet's duplicates control be changed? probably not.
+        // (see https://docs.mongodb.com/manual/reference/operator/update/addToSet/ )
         Update addAnswer = new Update().addToSet("answers", answer);
 
         mongoTemplate.findAndModify(findQuestion, addAnswer, Question.class);

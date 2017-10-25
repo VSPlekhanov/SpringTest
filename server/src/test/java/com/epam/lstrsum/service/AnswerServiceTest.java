@@ -164,12 +164,10 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void saveAnswer() {
-        val newAnswerText = someString();
-        val answerSaved = answerService.getAnswerByIdAndQuestionId(EXISTING_ANSWER_ID, EXISTING_QUESTION_ID);
-        answerSaved.setText(newAnswerText);
-        answerService.save(answerSaved, EXISTING_QUESTION_ID);
-        val answerLoaded = answerService.getAnswerByIdAndQuestionId(EXISTING_ANSWER_ID, EXISTING_QUESTION_ID);
+        Answer someAnswer = someAnswer();
+        answerService.save(someAnswer, EXISTING_QUESTION_ID);
+        val answerLoaded = answerService.getAnswerByIdAndQuestionId(someAnswer.getAnswerId(), EXISTING_QUESTION_ID);
 
-        assertThat(answerLoaded.getText()).isEqualTo(newAnswerText);
+        assertThat(answerLoaded).isEqualToComparingFieldByFieldRecursively(someAnswer);
     }
 }
