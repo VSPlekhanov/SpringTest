@@ -2,8 +2,6 @@ package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.model.Question;
 
-import java.util.List;
-
 public interface ElasticSearchService {
     String ENDPOINT = "/%s/" + Question.QUESTION_COLLECTION_NAME + "/_search";
     String QUESTION_SEARCH =
@@ -20,9 +18,6 @@ public interface ElasticSearchService {
      * @see <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html">Elastic Search</a>
      */
     String smartSearch(String searchQuery, int page, int size);
-
-    String advancedSearch(String searchQuery, List<String> metaTags, Integer page, Integer size);
-
 
     String smartSearchWithAllowedSub(String searchQuery, int page, int size, String email);
 }
