@@ -1,7 +1,6 @@
-package com.epam.lstrsum.service.impl.mock;
+package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.model.Question;
-import com.epam.lstrsum.service.ElasticSearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -34,12 +33,6 @@ public class ElasticSearchServiceMockImpl implements ElasticSearchService {
                 .build());
 
         return toJson(response);
-    }
-
-    // todo implement normal behavior
-    @Override
-    public String advancedSearch(String searchQuery, List<String> metaTags, Integer page, Integer size) {
-        return null;
     }
 
     private String toJson(List<Question> response) {
