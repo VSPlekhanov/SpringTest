@@ -18,5 +18,5 @@ public interface AttachmentDtoMapper {
     })
     AttachmentPropertiesDto modelToPropertiesDto(Attachment attachment);
 
-    List<AttachmentPropertiesDto> modelToListPropertiesDto(List<Attachment> attachments);
+//    List<AttachmentPropertiesDto> modelToListPropertiesDto(List<Attachment> attachments);
 }

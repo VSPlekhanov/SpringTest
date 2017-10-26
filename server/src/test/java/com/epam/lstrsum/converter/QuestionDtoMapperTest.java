@@ -5,6 +5,7 @@ import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.question.QuestionBaseDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
+import com.epam.lstrsum.model.Attachment;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.testutils.InstantiateUtil;
@@ -63,15 +64,18 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
     public void modelToQuestionAppearanceDto() {
         Question question = someQuestion();
         UserBaseDto authorId = someUserBaseDto();
-        List<AnswerBaseDto> answers = getListWithSize(InstantiateUtil::someAnswerBaseDto, 2);
+        List<Attachment> attachments = getListWithSize(InstantiateUtil::someAttachment, 2);
 
-
-        assertThat(questionDtoMapper.modelToQuestionAppearanceDto(question, authorId, answers))
+        assertThat(questionDtoMapper.modelToQuestionAppearanceDto(question, authorId, attachments))
                 .satisfies(
                         questionAppearanceDto -> {
                             checkQuestionBaseDto(questionAppearanceDto, question, authorId);
                             assertThat(questionAppearanceDto.getText()).isEqualTo(question.getText());
-                            assertThat(questionAppearanceDto.getAttachments()).isNull();
+                            assertThat(questionAppearanceDto.getAttachments().size()).isEqualTo(2);
+                            assertThat(questionAppearanceDto.getAttachments().get(0))
+                                    .isEqualToIgnoringGivenFields(attachments.get(0), "size");
+                            assertThat(questionAppearanceDto.getAttachments().get(1))
+                                    .isEqualToIgnoringGivenFields(attachments.get(1), "size");
                         }
                 );
     }

@@ -9,7 +9,6 @@ import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.TelescopeService;
 import com.epam.lstrsum.service.UserService;
 import com.epam.lstrsum.testutils.AssertionUtils;
-import com.epam.lstrsum.testutils.InstantiateUtil;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -17,18 +16,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Optional;
-
-import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID_WITH_ATTACHMENT;
-import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID_WITHOUT_ATTACHMENT;
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_ATTACHMENT_ID;
+import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID_WITHOUT_ATTACHMENT;
+import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID_WITH_ATTACHMENT;
 import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someMockMultipartFile;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionAppearanceDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionPostDto;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;

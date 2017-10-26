@@ -8,6 +8,7 @@ import com.epam.lstrsum.dto.question.QuestionBaseDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
+import com.epam.lstrsum.model.Attachment;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.QuestionWithAnswersCount;
 import com.epam.lstrsum.model.User;
@@ -37,7 +38,7 @@ public interface QuestionDtoMapper {
     })
     QuestionAllFieldsDto modelToAllFieldsDto(Question question, UserBaseDto author, List<UserBaseDto> allowedSubs);
 
-    QuestionAppearanceDto modelToQuestionAppearanceDto(Question question, UserBaseDto author, List<AnswerBaseDto> answers);
+    QuestionAppearanceDto modelToQuestionAppearanceDto(Question question, UserBaseDto author, List<Attachment> attachments);
 
     @Mappings({
             @Mapping(target = "allowedSubs", source = "allowedSubs"),

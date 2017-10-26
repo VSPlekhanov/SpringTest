@@ -29,7 +29,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.PageRequest;
@@ -190,22 +189,9 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestionId(String questionId) {
         Question question = questionRepository.findOne(questionId);
-        if (isNull(question)) {
-            return Optional.empty();
-        }
+        if (isNull(question)) return Optional.empty();
 
-        QuestionAppearanceDto questionAppearanceDto = questionAggregator.modelToQuestionAppearanceDto(question);
-
-        List<String> attachmentIds = question.getAttachmentIds();
-        if (nonNull(attachmentIds) && !attachmentIds.isEmpty()) {
-            ArrayList<Attachment> attachments = (ArrayList<Attachment>) attachmentRepository.findAll(attachmentIds);
-            List<AttachmentPropertiesDto> attachmentsDto = attachmentAggregator.modelToListPropertiesDto(attachments);
-            questionAppearanceDto.setAttachments(attachmentsDto);
-        } else {
-            questionAppearanceDto.setAttachments(new ArrayList<AttachmentPropertiesDto>());
-        }
-
-        return Optional.ofNullable(questionAppearanceDto);
+        return Optional.ofNullable(questionAggregator.modelToQuestionAppearanceDto(question));
     }
 
     @Override
@@ -243,7 +229,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public void addAttachmentsToQuestion(String questionId, List<String> attachmentIds) {
         mongoTemplate.findAndModify(
-                new Query(Criteria.where("question").is(questionId)),
+                new Query(Criteria.where("_id").is(questionId)),
                 new Update().addToSet("attachmentIds").each(attachmentIds),
                 Question.class
         );

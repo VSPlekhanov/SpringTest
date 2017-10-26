@@ -3,6 +3,7 @@ package com.epam.lstrsum.aggregators;
 import com.epam.lstrsum.converter.QuestionDtoMapper;
 import com.epam.lstrsum.converter.UserDtoMapper;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
+import com.epam.lstrsum.persistence.AttachmentRepository;
 import com.epam.lstrsum.testutils.InstantiateUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,19 +16,20 @@ import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionPostDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static com.epam.lstrsum.utils.FunctionalUtil.getListWithSize;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class QuestionAggregatorTest {
-    private QuestionAggregator aggregator;
+    private QuestionAggregator questionAggregator;
 
     @Mock
     private UserAggregator userAggregator;
 
     @Mock
-    private AnswerAggregator answerAggregator;
+    private AttachmentRepository attachmentRepository;
 
     @Mock
     private UserDtoMapper userMapper;
@@ -38,15 +40,15 @@ public class QuestionAggregatorTest {
     @Before
     public void setUp() {
         initMocks(this);
-        aggregator = new QuestionAggregator(
+        questionAggregator = new QuestionAggregator(
                 userMapper, questionMapper,
-                answerAggregator, userAggregator
+                attachmentRepository, userAggregator
         );
     }
 
     @Test
     public void modelToAllFieldsDto() throws Exception {
-        aggregator.modelToAllFieldsDto(someQuestion());
+        questionAggregator.modelToAllFieldsDto(someQuestion());
 
         verify(userMapper, times(1)).modelToBaseDto(any());
         verify(userMapper, times(1)).usersToListOfBaseDtos(any());
@@ -55,7 +57,7 @@ public class QuestionAggregatorTest {
 
     @Test
     public void modelToBaseDto() throws Exception {
-        aggregator.modelToBaseDto(someQuestion());
+        questionAggregator.modelToBaseDto(someQuestion());
 
         verify(userMapper, times(1)).modelToBaseDto(any());
         verify(questionMapper, times(1)).modelToBaseDto(any(), any());
@@ -63,17 +65,17 @@ public class QuestionAggregatorTest {
 
     @Test
     public void modelToQuestionAppearanceDto() throws Exception {
-        aggregator.modelToQuestionAppearanceDto(someQuestion());
+        questionAggregator.modelToQuestionAppearanceDto(someQuestion());
 
         verify(userMapper, times(1)).modelToBaseDto(any());
-        verify(answerAggregator, times(1)).answersToQuestionInAnswerBaseDto(any());
+        verify(attachmentRepository, times(1)).findAll(anyList());
         verify(questionMapper, times(1)).modelToQuestionAppearanceDto(any(), any(), any());
     }
 
     @Test
     public void questionPostDtoAndAuthorEmailToQuestion() throws Exception {
         final QuestionPostDto questionPostDto = someQuestionPostDto();
-        aggregator.questionPostDtoAndAuthorEmailToQuestion(questionPostDto, someString());
+        questionAggregator.questionPostDtoAndAuthorEmailToQuestion(questionPostDto, someString());
 
         verify(userAggregator, times(questionPostDto.getAllowedSubs().size() + 1))
                 .findByEmail(anyString());
@@ -85,7 +87,7 @@ public class QuestionAggregatorTest {
     public void questionPostDtoAndAuthorEmailAndAttachmentsToQuestion() throws Exception {
         final QuestionPostDto questionPostDto = someQuestionPostDto();
         List<String> attachmentIds = getListWithSize(InstantiateUtil::someString, 2);
-        aggregator.questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(questionPostDto, someString(), attachmentIds);
+        questionAggregator.questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(questionPostDto, someString(), attachmentIds);
 
         verify(userAggregator, times(questionPostDto.getAllowedSubs().size() + 1))
                 .findByEmail(anyString());
@@ -96,7 +98,7 @@ public class QuestionAggregatorTest {
     @Test
     public void subscriptionsToListOfQuestionBaseDto() throws Exception {
         final int size = 2;
-        aggregator.subscriptionsToListOfQuestionBaseDto(getListWithSize(InstantiateUtil::someQuestion, size));
+        questionAggregator.subscriptionsToListOfQuestionBaseDto(getListWithSize(InstantiateUtil::someQuestion, size));
 
         verify(userMapper, times(size)).modelToBaseDto(any());
         verify(questionMapper, times(1)).subscriptionsToListOfQuestionBaseDto(any(), any());
