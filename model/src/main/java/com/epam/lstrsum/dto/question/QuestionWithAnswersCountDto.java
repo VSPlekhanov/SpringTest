@@ -8,8 +8,8 @@ import lombok.Setter;
 import java.time.Instant;
 
 @Getter
-@NoArgsConstructor
 @Setter
+@NoArgsConstructor
 public class QuestionWithAnswersCountDto extends QuestionBaseDto {
     private Integer answersCount;
 
