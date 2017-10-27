@@ -63,7 +63,6 @@ public class QuestionController {
         Optional<QuestionAppearanceDto> questionDto = currentUserInDistributionList() ?
                 questionService.getQuestionAppearanceDtoByQuestionId(questionId) :
                 questionService.getQuestionAppearanceDtoByQuestionIdWithAllowedSub(questionId, userRuntimeRequestComponent.getEmail());
-//        Optional<QuestionAppearanceDto> questionDto = questionService.getQuestionAppearanceDtoByQuestionId(questionId);
         return questionDto.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 

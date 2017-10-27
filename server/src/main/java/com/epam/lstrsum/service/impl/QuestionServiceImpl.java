@@ -2,7 +2,6 @@ package com.epam.lstrsum.service.impl;
 
 import com.epam.lstrsum.aggregators.AttachmentAggregator;
 import com.epam.lstrsum.aggregators.QuestionAggregator;
-import com.epam.lstrsum.dto.attachment.AttachmentPropertiesDto;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
@@ -11,7 +10,6 @@ import com.epam.lstrsum.email.EmailNotification;
 import com.epam.lstrsum.email.template.NewQuestionNotificationTemplate;
 import com.epam.lstrsum.exception.NoSuchRequestException;
 import com.epam.lstrsum.exception.QuestionValidationException;
-import com.epam.lstrsum.model.Attachment;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.QuestionWithAnswersCount;
 import com.epam.lstrsum.model.Subscription;
@@ -191,6 +189,10 @@ public class QuestionServiceImpl implements QuestionService {
         Question question = questionRepository.findOne(questionId);
         if (isNull(question)) return Optional.empty();
 
+        return getQuestionAppearanceDtoByQuestion(question);
+    }
+
+    private Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestion(Question question) {
         return Optional.ofNullable(questionAggregator.modelToQuestionAppearanceDto(question));
     }
 
@@ -208,12 +210,6 @@ public class QuestionServiceImpl implements QuestionService {
     public Question getQuestionById(String questionId) {
         return questionRepository.findOne(questionId);
     }
-
-//    @Override
-//    public Question getQuestionByAnswerId(String answerId) {
-//        val query = Criteria.where("answers").elemMatch(new Criteria().in(answerId));
-//        return mongoTemplate.findOne(new Query(query), Question.class);
-//    }
 
     @Override
     public boolean contains(String objectsId) {
