@@ -47,6 +47,8 @@ public interface QuestionService extends ElasticSearchService {
 
     Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestionId(String questionId);
 
+    Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestionIdWithAllowedSub(String questionId, String userEmail);
+
     Question getQuestionById(String questionId);
 
 //    Question getQuestionByAnswerId(String answerId);

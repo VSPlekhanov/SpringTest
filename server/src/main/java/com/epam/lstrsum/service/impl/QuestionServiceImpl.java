@@ -195,6 +195,16 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    public Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestionIdWithAllowedSub(String questionId, String userEmail) {
+        Question question = questionRepository.findOne(questionId);
+        return userHasPermissionToViewQuestion(question, userEmail) ? getQuestionAppearanceDtoByQuestion(question) : Optional.empty();
+    }
+
+    private boolean userHasPermissionToViewQuestion(Question question, String userEmail) {
+        return !isNull(question) && question.getAllowedSubs().stream().map(User::getEmail).filter(e -> e.equals(userEmail)).count() == 1;
+    }
+
+    @Override
     public Question getQuestionById(String questionId) {
         return questionRepository.findOne(questionId);
     }
