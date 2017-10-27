@@ -116,6 +116,8 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
     public void getQuestionWithTextShouldReturnValidResponseEntityWhenQuestionExists() throws Exception {
         String questionId = EXISTING_QUESTION_ID;
         String uri = String.format("/api/question/%s", questionId);
+
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
         ResponseEntity<QuestionAppearanceDto> result = restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
