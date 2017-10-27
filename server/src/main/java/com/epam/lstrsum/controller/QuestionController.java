@@ -60,7 +60,10 @@ public class QuestionController {
 
     @GetMapping(value = "/{question}")
     public ResponseEntity<QuestionAppearanceDto> getQuestionWithText(@PathVariable String questionId) {
-        Optional<QuestionAppearanceDto> questionDto = questionService.getQuestionAppearanceDtoByQuestionId(questionId);
+        Optional<QuestionAppearanceDto> questionDto = currentUserInDistributionList() ?
+                questionService.getQuestionAppearanceDtoByQuestionId(questionId) :
+                questionService.getQuestionAppearanceDtoByQuestionIdWithAllowedSub(questionId, userRuntimeRequestComponent.getEmail());
+//        Optional<QuestionAppearanceDto> questionDto = questionService.getQuestionAppearanceDtoByQuestionId(questionId);
         return questionDto.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
