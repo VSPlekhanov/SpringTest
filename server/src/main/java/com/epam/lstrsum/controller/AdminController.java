@@ -32,7 +32,7 @@ public class AdminController {
         return ResponseEntity.ok(UserBaseDtoList);
     }
 
-    @DeleteMapping(value = "/question/{question}")
+    @DeleteMapping(value = "/question/{questionId}")
     public ResponseEntity deleteQuestionWithAnswers(@PathVariable String questionId) {
         if (!questionService.contains(questionId)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
