@@ -17,11 +17,11 @@ public class AnswerAllFieldsDto extends AnswerBaseDto {
 
     public AnswerAllFieldsDto(String text,
             Instant createdAt,
-            UserBaseDto authorId,
+            UserBaseDto author,
             int upVote,
             String answerId,
             QuestionBaseDto question) {
-        super(answerId, text, createdAt, authorId, upVote);
+        super(answerId, text, createdAt, author, upVote);
 //        this.answerId = answerId;
         this.question = question;
     }

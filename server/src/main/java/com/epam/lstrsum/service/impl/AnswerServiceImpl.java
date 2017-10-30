@@ -71,13 +71,6 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public List<QuestionWithAnswersCount> aggregateToCount(List<Question> questions) {
-//        List<QuestionWithAnswersCount> result = new ArrayList<QuestionWithAnswersCount>();
-//
-//        for (Question question : questions) {
-//            result.add(new QuestionWithAnswersCount(question,
-//                    Optional.ofNullable(question.getAnswers()).orElse(Collections.emptyList()).size()));
-//        }
-//        return result;
         return questions.stream().map(question ->
                 new QuestionWithAnswersCount(question,
                         Optional.ofNullable(question.getAnswers()).orElse(Collections.emptyList()).size()))

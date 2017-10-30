@@ -58,7 +58,7 @@ public class QuestionController {
         return ResponseEntity.ok(questionId);
     }
 
-    @GetMapping(value = "/{question}")
+    @GetMapping(value = "/{questionId}")
     public ResponseEntity<QuestionAppearanceDto> getQuestionWithText(@PathVariable String questionId) {
         Optional<QuestionAppearanceDto> questionDto = currentUserInDistributionList() ?
                 questionService.getQuestionAppearanceDtoByQuestionId(questionId) :

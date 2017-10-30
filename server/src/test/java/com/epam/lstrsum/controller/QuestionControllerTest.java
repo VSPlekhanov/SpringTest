@@ -142,6 +142,7 @@ public class QuestionControllerTest {
 
         when(questionService.contains(anyString())).thenReturn(true);
         when(questionService.getQuestionAppearanceDtoByQuestionId(anyString())).thenReturn(Optional.of(dto));
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         assertThat(controller.getQuestionWithText(someString())).isEqualTo(ResponseEntity.ok(dto));
     }
@@ -151,6 +152,7 @@ public class QuestionControllerTest {
         final String questionId = NON_EXISTING_QUESTION_ID;
 
         when(questionService.getQuestionAppearanceDtoByQuestionId(questionId)).thenReturn(Optional.empty());
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         assertThat(controller.getQuestionWithText(questionId)).isEqualTo(ResponseEntity.notFound().build());
     }

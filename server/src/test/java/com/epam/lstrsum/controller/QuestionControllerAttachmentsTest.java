@@ -66,9 +66,10 @@ public class QuestionControllerAttachmentsTest extends SetUpDataBaseCollections 
     }
 
     @Test
-    public void getQuestionWithAttachmentContainsAttachmentId() throws Exception {
-        String questionId = EXISTING_QUESTION_ID_WITH_ATTACHMENT;
-        ResponseEntity responseEntity = questionController.getQuestionWithText(questionId);
+    public void getQuestionWithAttachmentContainsAttachmentIdWithDistributionListUser() throws Exception {
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
+
+        ResponseEntity responseEntity = questionController.getQuestionWithText(EXISTING_QUESTION_ID_WITH_ATTACHMENT);
         QuestionAppearanceDto questionAppearanceDto = (QuestionAppearanceDto) responseEntity.getBody();
         assertThat(questionAppearanceDto.getAttachments().size()).isEqualTo(1);
         assertThat(questionAppearanceDto.getAttachments().get(0).getId()).isEqualTo(EXISTING_ATTACHMENT_ID);
@@ -76,8 +77,9 @@ public class QuestionControllerAttachmentsTest extends SetUpDataBaseCollections 
 
     @Test
     public void getQuestionWithoutAttachmentNotContainsAttachmentId() throws Exception {
-        String questionId = EXISTING_QUESTION_ID_WITHOUT_ATTACHMENT;
-        ResponseEntity responseEntity = questionController.getQuestionWithText(questionId);
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
+
+        ResponseEntity responseEntity = questionController.getQuestionWithText(EXISTING_QUESTION_ID_WITHOUT_ATTACHMENT);
         QuestionAppearanceDto questionAppearanceDto = (QuestionAppearanceDto) responseEntity.getBody();
         assertThat(questionAppearanceDto.getAttachments()).isEmpty();
     }
