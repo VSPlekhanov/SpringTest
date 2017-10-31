@@ -7,6 +7,7 @@ import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.email.EmailNotification;
 import com.epam.lstrsum.email.template.NewAnswerNotificationTemplate;
 import com.epam.lstrsum.exception.AnswerValidationException;
+import com.epam.lstrsum.exception.AnswersWithSameIdException;
 import com.epam.lstrsum.exception.NoSuchAnswerException;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
@@ -166,17 +167,19 @@ public class AnswerServiceImpl implements AnswerService {
     @Override
     public Answer getAnswerByIdAndQuestionId(String answerId, String questionId) {
         Aggregation aggregation = newAggregation(
-                match(Criteria.where("_id").is(questionId)),
+                match(Criteria.where("answers.answerId").is(answerId)),
+//                match(Criteria.where("_id").is(questionId)), // TODO: 31.10.17 need to find out why this variant doesn't work
+                project("answers").andExclude("_id"),
                 unwind("answers"),
                 replaceRoot("answers"),
                 match(Criteria.where("answerId").is(answerId))
         );
 
-        Answer answer = mongoTemplate.aggregate(aggregation, Question.QUESTION_COLLECTION_NAME, Answer.class)
-                .getUniqueMappedResult();
-        if (isNull(answer)) throw new NoSuchAnswerException("No such Answer in this Question");
+        List<Answer> answers = mongoTemplate.aggregate(aggregation, Question.QUESTION_COLLECTION_NAME, Answer.class).getMappedResults();
+        if (answers.isEmpty() || isNull(answers.get(0))) throw new NoSuchAnswerException("No such Answer in this Question");
+        if (answers.size() > 1) throw new AnswersWithSameIdException("Answers with the same id found");
 
-        return answer;
+        return answers.get(0);
     }
 
     public void save(Answer answer, String questionId) {
