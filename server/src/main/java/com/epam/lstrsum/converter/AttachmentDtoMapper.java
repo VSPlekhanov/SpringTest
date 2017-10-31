@@ -17,6 +17,4 @@ public interface AttachmentDtoMapper {
             @Mapping(target = "size", expression = "java( attachment.getData().length)")
     })
     AttachmentPropertiesDto modelToPropertiesDto(Attachment attachment);
-
-//    List<AttachmentPropertiesDto> modelToListPropertiesDto(List<Attachment> attachments);
 }
