@@ -166,6 +166,13 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public Answer getAnswerByIdAndQuestionId(String answerId, String questionId) {
+        Aggregation aggregation0 = newAggregation(
+                match(Criteria.where("answers.answerId").is(answerId))
+//                match(Criteria.where("_id").is(questionId))
+        );
+
+        List<Question> questions = mongoTemplate.aggregate(aggregation0, Question.QUESTION_COLLECTION_NAME, Question.class).getMappedResults();
+
         Aggregation aggregation = newAggregation(
                 match(Criteria.where("answers.answerId").is(answerId)),
 //                match(Criteria.where("_id").is(questionId)), // TODO: 31.10.17 need to find out why this variant doesn't work
@@ -193,7 +200,7 @@ public class AnswerServiceImpl implements AnswerService {
         // (see https://docs.mongodb.com/manual/reference/operator/update/addToSet/ )
         Update addAnswer = new Update().addToSet("answers", answer);
 
-        mongoTemplate.findAndModify(findQuestion, addAnswer, Question.class);
+        Question updatedQuestion = mongoTemplate.findAndModify(findQuestion, addAnswer, Question.class);
 
         return getAnswerByIdAndQuestionId(answer.getAnswerId(), questionId);
     }
