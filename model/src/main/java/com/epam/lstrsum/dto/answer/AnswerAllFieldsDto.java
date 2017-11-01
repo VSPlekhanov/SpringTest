@@ -7,12 +7,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.Objects;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class AnswerAllFieldsDto extends AnswerBaseDto {
-//    private String answerId;
     private QuestionBaseDto question;
 
     public AnswerAllFieldsDto(String text,
@@ -20,9 +20,10 @@ public class AnswerAllFieldsDto extends AnswerBaseDto {
             UserBaseDto author,
             int upVote,
             String answerId,
-            QuestionBaseDto question) {
-        super(answerId, text, createdAt, author, upVote);
-//        this.answerId = answerId;
+            QuestionBaseDto question,
+            Boolean userVoted) {
+
+        super(answerId, text, createdAt, author, upVote, userVoted);
         this.question = question;
     }
 
@@ -34,15 +35,11 @@ public class AnswerAllFieldsDto extends AnswerBaseDto {
 
         AnswerAllFieldsDto that = (AnswerAllFieldsDto) o;
 
-        if (getAnswerId() != null ? !getAnswerId().equals(that.getAnswerId()) : that.getAnswerId() != null) return false;
-        return question != null ? question.equals(that.question) : that.question == null;
+        return Objects.equals(question, that.question);
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (getAnswerId() != null ? getAnswerId().hashCode() : 0);
-        result = 31 * result + (question != null ? question.hashCode() : 0);
-        return result;
+        return Objects.hash(super.hashCode(), question);
     }
 }
