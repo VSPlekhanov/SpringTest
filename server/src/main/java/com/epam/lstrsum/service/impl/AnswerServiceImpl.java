@@ -113,7 +113,7 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public Long getAnswerCountByQuestionId(String questionId) {
-        Query query = new Query(Criteria.where("questionId").is(questionId));
+        Query query = new Query(Criteria.where("_id").is(questionId));
         return (long) mongoTemplate.findOne(query, Question.class).getAnswers().size();
     }
 
@@ -166,23 +166,17 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public Answer getAnswerByIdAndQuestionId(String answerId, String questionId) {
-        Aggregation aggregation0 = newAggregation(
-                match(Criteria.where("answers.answerId").is(answerId))
-//                match(Criteria.where("_id").is(questionId))
-        );
-
-        List<Question> questions = mongoTemplate.aggregate(aggregation0, Question.QUESTION_COLLECTION_NAME, Question.class).getMappedResults();
-
         Aggregation aggregation = newAggregation(
-                match(Criteria.where("answers.answerId").is(answerId)),
-//                match(Criteria.where("_id").is(questionId)), // TODO: 31.10.17 need to find out why this variant doesn't work
+                // TODO: 01.11.17 String or ObjectId(String) - what's the correct way to do this all around the project?
+                match(Criteria.where("_id").is(questionId)),
                 project("answers").andExclude("_id"),
                 unwind("answers"),
                 replaceRoot("answers"),
                 match(Criteria.where("answerId").is(answerId))
         );
 
-        List<Answer> answers = mongoTemplate.aggregate(aggregation, Question.QUESTION_COLLECTION_NAME, Answer.class).getMappedResults();
+        // TODO: 01.11.17 This doesn't work if we change Question.class to Question.QUESTION_COLLECTION_NAME
+        List<Answer> answers = mongoTemplate.aggregate(aggregation, Question.class, Answer.class).getMappedResults();
         if (answers.isEmpty() || isNull(answers.get(0))) throw new NoSuchAnswerException("No such Answer in this Question");
         if (answers.size() > 1) throw new AnswersWithSameIdException("Answers with the same id found");
 
@@ -200,7 +194,7 @@ public class AnswerServiceImpl implements AnswerService {
         // (see https://docs.mongodb.com/manual/reference/operator/update/addToSet/ )
         Update addAnswer = new Update().addToSet("answers", answer);
 
-        Question updatedQuestion = mongoTemplate.findAndModify(findQuestion, addAnswer, Question.class);
+        mongoTemplate.findAndModify(findQuestion, addAnswer, Question.class);
 
         return getAnswerByIdAndQuestionId(answer.getAnswerId(), questionId);
     }
