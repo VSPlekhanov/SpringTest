@@ -17,7 +17,6 @@ import com.epam.lstrsum.persistence.AttachmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +31,9 @@ public class QuestionAggregator implements BasicModelDtoConverter<Question, Ques
 
     private final UserDtoMapper userMapper;
     private final QuestionDtoMapper questionMapper;
+
     private final AttachmentRepository attachmentRepository;
+
     private final UserAggregator userAggregator;
 
     @Override
@@ -83,7 +84,8 @@ public class QuestionAggregator implements BasicModelDtoConverter<Question, Ques
         );
     }
 
-    public Question questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(QuestionPostDto questionPostDto, String email, List<String> attachmentIds) {
+    public Question questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(QuestionPostDto questionPostDto, String email,
+            List<String> attachmentIds) {
         return questionMapper.questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(
                 questionPostDto,
                 userAggregator.findByEmail(email),
