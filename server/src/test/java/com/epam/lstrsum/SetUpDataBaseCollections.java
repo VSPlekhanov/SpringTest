@@ -1,9 +1,10 @@
 package com.epam.lstrsum;
 
+import com.epam.lstrsum.controller.UserRuntimeRequestComponent;
 import com.epam.lstrsum.model.Answer;
+import com.epam.lstrsum.model.Attachment;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.Subscription;
-import com.epam.lstrsum.model.Attachment;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.model.Vote;
 import org.bson.Document;
@@ -15,6 +16,7 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.ActiveProfiles;
@@ -33,6 +35,10 @@ public abstract class SetUpDataBaseCollections {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @MockBean
+    public UserRuntimeRequestComponent userRuntimeRequestComponent;
+
 
     @Before
     public void setUp() throws Exception {
