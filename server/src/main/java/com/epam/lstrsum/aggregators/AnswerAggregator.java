@@ -1,5 +1,6 @@
 package com.epam.lstrsum.aggregators;
 
+import com.epam.lstrsum.controller.UserRuntimeRequestComponent;
 import com.epam.lstrsum.converter.AnswerDtoMapper;
 import com.epam.lstrsum.converter.QuestionDtoMapper;
 import com.epam.lstrsum.converter.UserDtoMapper;
@@ -36,6 +37,8 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
 
     private final UserService userService;
 
+    private final UserRuntimeRequestComponent userRuntimeRequestComponent;
+
     @Override
     public AnswerAllFieldsDto modelToAllFieldsDto(Answer answer) {
         final UserBaseDto author = userMapper.modelToBaseDto(userService.findUserById(answer.getAuthorId()));
@@ -44,9 +47,7 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
         return answerMapper.modelToAllFieldsDto(
                 answer,
                 author,
-                questionMapper.modelToBaseDto(
-                        question,
-                        author)
+                questionMapper.modelToBaseDto(question,author)
         );
     }
 
@@ -54,7 +55,8 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
     public AnswerBaseDto modelToBaseDto(Answer answer) {
         return answerMapper.modelToBaseDto(
                 answer,
-                userMapper.modelToBaseDto(userService.findUserById(answer.getAuthorId()))
+                userMapper.modelToBaseDto(userService.findUserById(answer.getAuthorId())),
+                isUserVoted(answer)
         );
     }
 
@@ -63,7 +65,8 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
         return answerMapper.answersToQuestionInAnswerBaseDto(
                 answers,
                 userMapper.usersToListOfBaseDtos(answers.stream()
-                        .map(Answer::getAuthorId).map(userService::findUserById).collect(Collectors.toList()))
+                        .map(Answer::getAuthorId).map(userService::findUserById).collect(Collectors.toList())),
+                userRuntimeRequestComponent.getEmail()
         );
     }
 
@@ -72,5 +75,9 @@ public class AnswerAggregator implements BasicModelDtoConverter<Answer, AnswerBa
                 answerPostDto,
                 userAggregator.findByEmail(email)
         );
+    }
+
+    private Boolean isUserVoted(Answer answer) {
+        return answer.getVotes().stream().anyMatch(vote -> vote.getAuthorEmail().equals(userRuntimeRequestComponent.getEmail()));
     }
 }

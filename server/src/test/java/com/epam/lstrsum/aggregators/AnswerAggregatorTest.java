@@ -1,9 +1,9 @@
 package com.epam.lstrsum.aggregators;
 
+import com.epam.lstrsum.controller.UserRuntimeRequestComponent;
 import com.epam.lstrsum.converter.AnswerDtoMapper;
 import com.epam.lstrsum.converter.QuestionDtoMapper;
 import com.epam.lstrsum.converter.UserDtoMapper;
-import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.UserService;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +42,7 @@ public class AnswerAggregatorTest {
     private UserService userService;
 
     @Mock
-    private QuestionService questionService;
+    private UserRuntimeRequestComponent userRuntimeRequestComponent;
 
     @Before
     public void setUp() {
@@ -51,7 +51,8 @@ public class AnswerAggregatorTest {
                 answerMapper, userMapper, questionMapper,
                 mongoTemplate,
                 userAggregator,
-                userService
+                userService,
+                userRuntimeRequestComponent
         );
 
     }
@@ -71,7 +72,7 @@ public class AnswerAggregatorTest {
         aggregator.modelToBaseDto(someAnswer());
 
         verify(userMapper, times(1)).modelToBaseDto(any());
-        verify(answerMapper, times(1)).modelToBaseDto(any(), any());
+        verify(answerMapper, times(1)).modelToBaseDto(any(), any(), any());
     }
 
     @Test
@@ -79,7 +80,7 @@ public class AnswerAggregatorTest {
         aggregator.answersToQuestionInAnswerBaseDto(someQuestion());
 
         verify(userMapper, times(1)).usersToListOfBaseDtos(any());
-        verify(answerMapper, times(1)).answersToQuestionInAnswerBaseDto(any(), any());
+        verify(answerMapper, times(1)).answersToQuestionInAnswerBaseDto(any(), any(), any());
     }
 
     @Test
