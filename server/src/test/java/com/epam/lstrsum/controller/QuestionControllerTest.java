@@ -125,6 +125,18 @@ public class QuestionControllerTest {
     }
 
     @Test
+    public void getQuestionsParamsCantBeTooBigTest() {
+        final int questionAmount = Integer.MAX_VALUE;
+        final int questionPage = Integer.MAX_VALUE;
+        final List<QuestionWithAnswersCountDto> list = Collections.emptyList();
+
+        when(questionService.findAllQuestionsBaseDto(anyInt(), anyInt())).thenReturn(list);
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
+
+        assertThat(controller.getQuestions(questionPage, questionAmount)).isEqualTo(ResponseEntity.ok(list));
+    }
+
+    @Test
     public void getQuestionsShouldInteractWithQuestionServiceGetWithAllowedSub() {
         val list = getList(InstantiateUtil::someQuestionWithAnswersCountDto);
         final List<QuestionWithAnswersCountDto> emptyList = Collections.emptyList();
