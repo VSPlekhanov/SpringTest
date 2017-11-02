@@ -163,7 +163,6 @@ public class AnswerServiceImpl implements AnswerService {
         }
     }
 
-
     @Override
     public Answer getAnswerByIdAndQuestionId(String answerId, String questionId) {
         Aggregation aggregation = newAggregation(
