@@ -15,6 +15,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
+import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswer;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswerPostDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionBaseDto;
@@ -55,7 +56,7 @@ public class AnswerDtoMapperTest extends SetUpDataBaseCollections {
         Answer answer = someAnswer();
         UserBaseDto userBaseDto = someUserBaseDto();
 
-        assertThat(answerMapper.modelToBaseDto(answer, userBaseDto))
+        assertThat(answerMapper.modelToBaseDto(answer, userBaseDto, false))
                 .satisfies(a -> checkAnswerBaseDto(a, answer, userBaseDto));
     }
 
@@ -65,7 +66,7 @@ public class AnswerDtoMapperTest extends SetUpDataBaseCollections {
         List<Answer> answers = getListWithSize(InstantiateUtil::someAnswer, size);
         List<UserBaseDto> authors = getListWithSize(InstantiateUtil::someUserBaseDto, size);
 
-        assertThat(answerMapper.answersToQuestionInAnswerBaseDto(answers, authors))
+        assertThat(answerMapper.answersToQuestionInAnswerBaseDto(answers, authors, "John_Doe@epam.com"))
                 .hasSize(size);
     }
 

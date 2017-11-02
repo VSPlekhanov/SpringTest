@@ -1,7 +1,6 @@
 package com.epam.lstrsum.converter;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
-import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.question.QuestionBaseDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
@@ -63,13 +62,13 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
     @Test
     public void modelToQuestionAppearanceDto() {
         Question question = someQuestion();
-        UserBaseDto authorId = someUserBaseDto();
+        UserBaseDto author = someUserBaseDto();
         List<Attachment> attachments = getListWithSize(InstantiateUtil::someAttachment, 2);
 
-        assertThat(questionDtoMapper.modelToQuestionAppearanceDto(question, authorId, attachments))
+        assertThat(questionDtoMapper.modelToQuestionAppearanceDto(question, author, attachments))
                 .satisfies(
                         questionAppearanceDto -> {
-                            checkQuestionBaseDto(questionAppearanceDto, question, authorId);
+                            checkQuestionBaseDto(questionAppearanceDto, question, author);
                             assertThat(questionAppearanceDto.getText()).isEqualTo(question.getText());
                             assertThat(questionAppearanceDto.getAttachments().size()).isEqualTo(2);
                             assertThat(questionAppearanceDto.getAttachments().get(0))
@@ -126,9 +125,9 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
     public void subscriptionsToListOfQuestionBaseDto() {
         final int size = 2;
         List<Question> subscriptions = getListWithSize(InstantiateUtil::someQuestion, size);
-        List<UserBaseDto> author = getListWithSize(InstantiateUtil::someUserBaseDto, size);
+        List<UserBaseDto> authors = getListWithSize(InstantiateUtil::someUserBaseDto, size);
 
-        assertThat(questionDtoMapper.subscriptionsToListOfQuestionBaseDto(subscriptions, author))
+        assertThat(questionDtoMapper.subscriptionsToListOfQuestionBaseDto(subscriptions, authors))
                 .hasSize(size)
                 .allMatch(Objects::nonNull);
     }

@@ -2,7 +2,6 @@ package com.epam.lstrsum.dto.question;
 
 import com.epam.lstrsum.dto.attachment.AttachmentPropertiesDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,9 +19,9 @@ public class QuestionAppearanceDto extends QuestionBaseDto {
 
     public QuestionAppearanceDto(
             String questionId, String title, String[] tags, Instant createdAt, Instant deadLine,
-            UserBaseDto authorId, String text
+            UserBaseDto author, String text
     ) {
-        super(questionId, title, tags, createdAt, deadLine, authorId);
+        super(questionId, title, tags, createdAt, deadLine, author);
         this.text = text;
     }
 

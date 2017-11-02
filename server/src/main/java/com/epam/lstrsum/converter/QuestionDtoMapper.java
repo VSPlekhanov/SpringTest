@@ -1,7 +1,6 @@
 package com.epam.lstrsum.converter;
 
 
-import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
 import com.epam.lstrsum.dto.question.QuestionBaseDto;
@@ -12,11 +11,9 @@ import com.epam.lstrsum.model.Attachment;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.QuestionWithAnswersCount;
 import com.epam.lstrsum.model.User;
-import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-import org.mapstruct.NullValueMappingStrategy;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,33 +41,34 @@ public interface QuestionDtoMapper {
 
     @Mappings({
             @Mapping(target = "allowedSubs", source = "allowedSubs"),
-            @Mapping(target = "tags", expression = "java(emptyStringArrayIfNull(questionPostDto.getTags()))"),
-            @Mapping(target = "deadLine", expression = "java( java.time.Instant.ofEpochMilli(questionPostDto.getDeadLine()))"),
-            @Mapping(target = "createdAt", expression = "java( java.time.Instant.now())"),
-            @Mapping(target = "authorId", source = "authorId"),
+            @Mapping(target = "tags", expression = "java( emptyStringArrayIfNull(questionPostDto.getTags()) )"),
+            @Mapping(target = "deadLine", expression = "java( java.time.Instant.ofEpochMilli(questionPostDto.getDeadLine()) )"),
+            @Mapping(target = "createdAt", expression = "java( java.time.Instant.now() )"),
+            @Mapping(target = "authorId", source = "author"),
             @Mapping(target = "score", constant = "0"),
             @Mapping(target = "questionId", ignore = true),
             @Mapping(target = "attachmentIds", ignore = true),
             @Mapping(target = "answers", ignore = true)
     })
-    Question questionPostDtoAndAuthorEmailToQuestion(QuestionPostDto questionPostDto, User authorId, List<User> allowedSubs);
+    Question questionPostDtoAndAuthorEmailToQuestion(QuestionPostDto questionPostDto, User author, List<User> allowedSubs);
 
     @Mappings({
             @Mapping(target = "allowedSubs", source = "allowedSubs"),
-            @Mapping(target = "tags", expression = "java(emptyStringArrayIfNull(questionPostDto.getTags()))"),
-            @Mapping(target = "deadLine", expression = "java( java.time.Instant.ofEpochMilli(questionPostDto.getDeadLine()))"),
-            @Mapping(target = "createdAt", expression = "java( java.time.Instant.now())"),
-            @Mapping(target = "authorId", source = "authorId"),
+            @Mapping(target = "tags", expression = "java( emptyStringArrayIfNull(questionPostDto.getTags()) )"),
+            @Mapping(target = "deadLine", expression = "java( java.time.Instant.ofEpochMilli(questionPostDto.getDeadLine()) )"),
+            @Mapping(target = "createdAt", expression = "java( java.time.Instant.now() )"),
+            @Mapping(target = "authorId", source = "author"),
             @Mapping(target = "score", constant = "0"),
             @Mapping(target = "questionId", ignore = true),
             @Mapping(target = "attachmentIds", source = "attachmentIds"),
             @Mapping(target = "answers", ignore = true)
     })
-    Question questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(QuestionPostDto questionPostDto, User authorId, List<User> allowedSubs, List<String> attachmentIds);
+    Question questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(QuestionPostDto questionPostDto, User author, List<User> allowedSubs,
+            List<String> attachmentIds);
 
-    default List<QuestionBaseDto> subscriptionsToListOfQuestionBaseDto(List<Question> subscriptions, List<UserBaseDto> author) {
+    default List<QuestionBaseDto> subscriptionsToListOfQuestionBaseDto(List<Question> subscriptions, List<UserBaseDto> authors) {
         return IntStream.range(0, subscriptions.size())
-                .mapToObj(i -> modelToBaseDto(subscriptions.get(i), author.get(i)))
+                .mapToObj(i -> modelToBaseDto(subscriptions.get(i), authors.get(i)))
                 .collect(Collectors.toList());
     }
 
