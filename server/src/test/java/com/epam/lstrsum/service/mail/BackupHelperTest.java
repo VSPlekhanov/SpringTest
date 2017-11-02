@@ -9,6 +9,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.mail.EmailException;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -29,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 @ActiveProfiles("email")
+@Ignore
 public class BackupHelperTest extends SetUpDataBaseCollections {
     private static final String TEMP_DIR_FOR_BACKUP = "backup";
     private static final int MAXIMUM_BACKUP = 15;

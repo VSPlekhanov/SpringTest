@@ -5,6 +5,7 @@ import com.epam.lstrsum.email.service.ExchangeServiceHelper;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.service.TelescopeService;
 import com.epam.lstrsum.service.UserService;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.doReturn;
  */
 
 @ActiveProfiles("email")
+@Ignore
 public class UserSynchronizerTest extends SetUpDataBaseCollections {
     @MockBean
     private ExchangeServiceHelper exchangeServiceHelper;
