@@ -1,7 +1,6 @@
 package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
-import lombok.extern.slf4j.Slf4j;
 import net.sf.ehcache.CacheManager;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +10,9 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.number.OrderingComparison.greaterThanOrEqualTo;
-import static org.mockito.Mockito.verify;
 
 public class TagServiceTest extends SetUpDataBaseCollections {
-    private static final int TAG_COUNT = 20;
+    private static final int TAG_COUNT = 8;
     private static final String WANTED_NON_EXISTENT_TAG_BEGINNING = "javas_abc";
     private static final String WANTED_EXISTENT_TAG_BEGINNING = "javas";
     private static final String WANTED_EXISTENT_MANY_TAGS_BEGINNING = "jav";
@@ -57,10 +54,10 @@ public class TagServiceTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void getFilteredTagsRatingReturnAllTags() {
+    public void getFilteredTagsRatingReturnMaxTagsCount() {
         List<String> actualTags = tagService.getFilteredTagsRating("");
 
-        assertThat(actualTags.size(), greaterThanOrEqualTo(TAG_COUNT));
+        assertThat(actualTags.size(), is(TAG_COUNT));
         assertThat(actualTags.get(0), is(MOST_POPULAR_TAG));
     }
 }
