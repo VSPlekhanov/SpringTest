@@ -6,18 +6,21 @@ import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.email.EmailNotification;
 import com.epam.lstrsum.email.template.NewAnswerNotificationTemplate;
-import com.epam.lstrsum.exception.AnswerValidationException;
 import com.epam.lstrsum.exception.AnswersWithSameIdException;
+import com.epam.lstrsum.exception.BusinessLogicException;
 import com.epam.lstrsum.exception.NoSuchAnswerException;
+import com.epam.lstrsum.exception.QuestionValidationException;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.QuestionWithAnswersCount;
+import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.persistence.UserRepository;
 import com.epam.lstrsum.service.AnswerService;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -64,7 +67,37 @@ public class AnswerServiceImpl implements AnswerService {
     @EmailNotification(template = NewAnswerNotificationTemplate.class)
     public AnswerAllFieldsDto addNewAnswer(AnswerPostDto answerPostDto, String email) {
         log.debug("Add new answer with email {}", email);
-        validateAnswerData(answerPostDto, email);
+//        validateAnswerData(answerPostDto, email);
+        return createAnswerAndGetAllFieldsDto(answerPostDto, email);
+    }
+
+    @Override
+    @EmailNotification(template = NewAnswerNotificationTemplate.class)
+    public AnswerAllFieldsDto addNewAnswerWithAllowedSub(AnswerPostDto answerPostDto, String email) {
+        Question question = getQuestionByIdOrThrowException(answerPostDto);
+        checkQuestionExistAndUserHasPermission(question, email);
+        return createAnswerAndGetAllFieldsDto(answerPostDto, email);
+    }
+
+    private Question getQuestionByIdOrThrowException(AnswerPostDto answerPostDto) {
+        return Optional.ofNullable(questionRepository.findOne(answerPostDto.getQuestionId()))
+                .orElseThrow(() -> new QuestionValidationException("No such question with id : " + answerPostDto.getQuestionId()));
+    }
+
+    private void checkQuestionExistAndUserHasPermission(Question question, String userEmail) {
+        if (isNull(question) || !isUserAllowedSubOnQuestion(question, userEmail)) {
+            throw new BusinessLogicException(
+                    "Question isn't exist or user with email : '" + userEmail + " ' has no permission to question id : '" +
+                            question.getQuestionId() +
+                            "' and relative answers!");
+        }
+    }
+
+    private boolean isUserAllowedSubOnQuestion(Question question, String userEmail) {
+        return question.getAllowedSubs().stream().map(User::getEmail).filter(e -> e.equals(userEmail)).count() == 1;
+    }
+
+    private AnswerAllFieldsDto createAnswerAndGetAllFieldsDto(AnswerPostDto answerPostDto, String email) {
         Answer newAnswer = answerAggregator.answerPostDtoAndAuthorEmailToAnswer(answerPostDto, email);
         Answer saved = addAnswerOnQuestion(newAnswer, answerPostDto.getQuestionId());
         return answerAggregator.modelToAllFieldsDto(saved);
@@ -117,10 +150,7 @@ public class AnswerServiceImpl implements AnswerService {
         return (long) mongoTemplate.findOne(query, Question.class).getAnswers().size();
     }
 
-    private List<QuestionWithAnswersCount> completeNotFound(
-            List<QuestionWithAnswersCount> resultsFromMongo, List<Question> sourceList
-    ) {
-
+    private List<QuestionWithAnswersCount> completeNotFound(List<QuestionWithAnswersCount> resultsFromMongo, List<Question> sourceList) {
         final Map<String, QuestionWithAnswersCount> findQuestion = resultsFromMongo.stream()
                 .collect(Collectors.toMap(
                         q -> q.getQuestionId().getQuestionId(),
@@ -132,36 +162,29 @@ public class AnswerServiceImpl implements AnswerService {
                 .collect(Collectors.toList());
     }
 
-    private QuestionWithAnswersCount getDefaultCountIfNotFound(
-            Question question, Map<String, QuestionWithAnswersCount> findQuestion
-    ) {
-        final QuestionWithAnswersCount questionWithAnswersCount = findQuestion.get(question.getQuestionId());
-
-        if (nonNull(questionWithAnswersCount)) {
-            return questionWithAnswersCount;
-        } else {
-            return new QuestionWithAnswersCount(question, 0);
-        }
+    private QuestionWithAnswersCount getDefaultCountIfNotFound(Question question, Map<String, QuestionWithAnswersCount> findQuestion) {
+        val questionWithAnswersCount = findQuestion.get(question.getQuestionId());
+        return nonNull(questionWithAnswersCount) ? questionWithAnswersCount : new QuestionWithAnswersCount(question, 0);
     }
 
-    private void validateAnswerData(AnswerPostDto answerPostDto, String email) {
-        if (isNull(answerPostDto)) {
-            throw new AnswerValidationException("Answer must be not null!");
-        }
-        if (isNull(email) || email.trim().isEmpty()) {
-            throw new AnswerValidationException("Author must be not null or empty!");
-        } else if (!userRepository.findByEmailIgnoreCase(email).isPresent()) {
-            throw new AnswerValidationException("No such user!");
-        }
-        if (isNull(answerPostDto.getText()) || answerPostDto.getText().trim().isEmpty()) {
-            throw new AnswerValidationException("Null or empty fields found in answer " + answerPostDto.toJson());
-        }
-        if (isNull(answerPostDto.getQuestionId()) || answerPostDto.getQuestionId().trim().isEmpty()) {
-            throw new AnswerValidationException("Parent is null or empty" + answerPostDto.getQuestionId());
-        } else if (isNull(questionRepository.findOne(answerPostDto.getQuestionId()))) {
-            throw new AnswerValidationException("No such question!");
-        }
-    }
+//    private void validateAnswerData(AnswerPostDto answerPostDto, String email) {
+//        if (isNull(answerPostDto)) {
+//            throw new AnswerValidationException("Answer must be not null!");
+//        }
+//        if (isNull(email) || email.trim().isEmpty()) {
+//            throw new AnswerValidationException("Author must be not null or empty!");
+//        } else if (!userRepository.findByEmailIgnoreCase(email).isPresent()) {
+//            throw new AnswerValidationException("No such user!");
+//        }
+//        if (isNull(answerPostDto.getText()) || answerPostDto.getText().trim().isEmpty()) {
+//            throw new AnswerValidationException("Null or empty fields found in answer " + answerPostDto.toJson());
+//        }
+//        if (isNull(answerPostDto.getQuestionId()) || answerPostDto.getQuestionId().trim().isEmpty()) {
+//            throw new AnswerValidationException("Parent is null or empty" + answerPostDto.getQuestionId());
+//        } else if (isNull(questionRepository.findOne(answerPostDto.getQuestionId()))) {
+//            throw new AnswerValidationException("No such question!");
+//        }
+//    }
 
     @Override
     public Answer getAnswerByIdAndQuestionId(String answerId, String questionId) {
