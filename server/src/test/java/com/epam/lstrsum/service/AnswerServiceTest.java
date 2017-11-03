@@ -6,7 +6,9 @@ import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.exception.AnswerValidationException;
+import com.epam.lstrsum.exception.BusinessLogicException;
 import com.epam.lstrsum.exception.NoSuchAnswerException;
+import com.epam.lstrsum.exception.QuestionValidationException;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.QuestionWithAnswersCount;
@@ -20,11 +22,13 @@ import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_ANSWER_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID;
+import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_USER_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_NOT_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswer;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswerPostDto;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswerPostDtoWithQuestionId;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestion;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +40,7 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     private static final int ANSWERS_COUNT = 3;
     private static final int PAGE_SIZE = 2;
     private final String authorEmail = "Bob_Hoplins@epam.com";
+
     @Autowired
     private AnswerService answerService;
     @Autowired
@@ -52,6 +57,25 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     }
 
     @Test
+    public void addNewAnswerWithAllowedSubAndExistingQuestionTest() throws Exception {
+        AnswerPostDto answerPostDto = new AnswerPostDto(EXISTING_QUESTION_ID, someString());
+        String allowedSubEmail = EXISTING_USER_EMAIL;
+
+        AnswerAllFieldsDto answer = answerService.addNewAnswerWithAllowedSub(answerPostDto, allowedSubEmail);
+        assertThat(answer.getQuestion(), notNullValue());
+    }
+
+    @Test(expected = QuestionValidationException.class)
+    public void addNewAnswerWithAllowedSubAndNonExistingQuestionTest() throws Exception {
+        answerService.addNewAnswerWithAllowedSub(someAnswerPostDto(), someString());
+    }
+
+    @Test(expected = BusinessLogicException.class)
+    public void addNewAnswerWithNotAllowedSubUser() throws Exception {
+        answerService.addNewAnswerWithAllowedSub(someAnswerPostDtoWithQuestionId(EXISTING_QUESTION_ID), someString());
+    }
+
+    @Test
     public void checkAnswerDtoConverterInvocation() {
         Answer someAnswer = someAnswer();
         someAnswer.setAnswerId(EXISTING_ANSWER_ID);
@@ -61,37 +85,10 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
         assertThat(answerAggregator.modelToAllFieldsDto(someAnswer), equalTo(expected));
     }
 
-    @Test(expected = AnswerValidationException.class)
-    public void addNewAnswerNoDTOTest() throws IOException {
-        answerService.addNewAnswer(null, authorEmail);
-    }
-
-    @Test(expected = AnswerValidationException.class)
-    public void addNewAnswerNoAuthorTest() throws IOException {
-        answerService.addNewAnswer(someAnswerPostDto(), null);
-    }
-
-    @Test(expected = AnswerValidationException.class)
-    public void addNewAnswerWithEmptyText() throws IOException {
-        val postDto = new AnswerPostDto("1u_2r", "     ");
-        answerService.addNewAnswer(postDto, authorEmail);
-    }
-
-    @Test(expected = AnswerValidationException.class)
-    public void addNewAnswerWithNullParentId() throws IOException {
-        val postDto = new AnswerPostDto(null, someString());
-        answerService.addNewAnswer(postDto, authorEmail);
-    }
-
-    @Test(expected = AnswerValidationException.class)
-    public void addNewAnswerWithNoExistingUserTest() throws IOException {
-        answerService.addNewAnswer(someAnswerPostDto(), SOME_NOT_USER_EMAIL);
-    }
-
-    @Test(expected = AnswerValidationException.class)
-    public void addNewAnswerWithNoExistingQuestionIDTest() throws IOException {
-        answerService.addNewAnswer(someAnswerPostDto(), SOME_USER_EMAIL);
-    }
+//    @Test(expected = QuestionValidationException.class)
+//    public void addNewAnswerWithNoExistingQuestionIDTest() throws IOException {
+//        answerService.addNewAnswer(someAnswerPostDtoWithQuestionId(someString()), SOME_USER_EMAIL);
+//    }
 
     @Test
     public void aggregationFunctionTestingShouldReturnQuestionToAnswersCount() {

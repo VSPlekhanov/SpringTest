@@ -67,7 +67,6 @@ public class AnswerServiceImpl implements AnswerService {
     @EmailNotification(template = NewAnswerNotificationTemplate.class)
     public AnswerAllFieldsDto addNewAnswer(AnswerPostDto answerPostDto, String email) {
         log.debug("Add new answer with email {}", email);
-//        validateAnswerData(answerPostDto, email);
         return createAnswerAndGetAllFieldsDto(answerPostDto, email);
     }
 
@@ -166,25 +165,6 @@ public class AnswerServiceImpl implements AnswerService {
         val questionWithAnswersCount = findQuestion.get(question.getQuestionId());
         return nonNull(questionWithAnswersCount) ? questionWithAnswersCount : new QuestionWithAnswersCount(question, 0);
     }
-
-//    private void validateAnswerData(AnswerPostDto answerPostDto, String email) {
-//        if (isNull(answerPostDto)) {
-//            throw new AnswerValidationException("Answer must be not null!");
-//        }
-//        if (isNull(email) || email.trim().isEmpty()) {
-//            throw new AnswerValidationException("Author must be not null or empty!");
-//        } else if (!userRepository.findByEmailIgnoreCase(email).isPresent()) {
-//            throw new AnswerValidationException("No such user!");
-//        }
-//        if (isNull(answerPostDto.getText()) || answerPostDto.getText().trim().isEmpty()) {
-//            throw new AnswerValidationException("Null or empty fields found in answer " + answerPostDto.toJson());
-//        }
-//        if (isNull(answerPostDto.getQuestionId()) || answerPostDto.getQuestionId().trim().isEmpty()) {
-//            throw new AnswerValidationException("Parent is null or empty" + answerPostDto.getQuestionId());
-//        } else if (isNull(questionRepository.findOne(answerPostDto.getQuestionId()))) {
-//            throw new AnswerValidationException("No such question!");
-//        }
-//    }
 
     @Override
     public Answer getAnswerByIdAndQuestionId(String answerId, String questionId) {
