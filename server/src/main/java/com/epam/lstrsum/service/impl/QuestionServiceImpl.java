@@ -1,6 +1,5 @@
 package com.epam.lstrsum.service.impl;
 
-import com.epam.lstrsum.aggregators.AttachmentAggregator;
 import com.epam.lstrsum.aggregators.QuestionAggregator;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
@@ -14,7 +13,6 @@ import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.QuestionWithAnswersCount;
 import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
-import com.epam.lstrsum.persistence.AttachmentRepository;
 import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.service.AnswerService;
 import com.epam.lstrsum.service.AttachmentService;
@@ -69,8 +67,6 @@ public class QuestionServiceImpl implements QuestionService {
     private final AnswerService answerService;
     private final UserService userService;
     private final AttachmentService attachmentService;
-    private final AttachmentRepository attachmentRepository;
-    private final AttachmentAggregator attachmentAggregator;
 
     @Setter
     private int searchDefaultPageSize;
