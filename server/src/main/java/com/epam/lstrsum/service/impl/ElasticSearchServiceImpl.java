@@ -44,4 +44,10 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         }
         return "";
     }
+
+    // TODO: 10/20/2017 Create a smart search only in questions on which the user is allowed sub
+    @Override
+    public String smartSearchWithAllowedSub(String searchQuery, int page, int size, String email) {
+        throw new UnsupportedOperationException("Unsupported method yet");
+    }
 }

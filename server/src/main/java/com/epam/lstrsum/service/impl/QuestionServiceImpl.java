@@ -71,6 +71,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final AttachmentService attachmentService;
     private final AttachmentRepository attachmentRepository;
     private final AttachmentAggregator attachmentAggregator;
+
     @Setter
     private int searchDefaultPageSize;
 
@@ -93,19 +94,8 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<QuestionAllFieldsDto> search(String searchQuery, Integer page, Integer size) {
-        if (isNull(size) || size <= 0) {
-            size = searchDefaultPageSize;
-        }
-        if (size > searchMaxPageSize) {
-            size = searchMaxPageSize;
-        }
-        if (isNull(page) || page < MIN_PAGE_SIZE) {
-            page = MIN_PAGE_SIZE;
-        }
-
-        Sort sort = new Sort("score");
-        TextCriteria criteria = TextCriteria.forDefaultLanguage().matching(searchQuery);
-        List<Question> questionList = questionRepository.findAllBy(criteria, new PageRequest(page, size, sort));
+        List<Question> questionList =
+                questionRepository.findAllBy(getTextCriteriaForFullTextSearch(searchQuery), getPageableForFullTextSearch(page, size));
 
         return questionList
                 .stream()
@@ -114,13 +104,49 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    public List<QuestionAllFieldsDto> searchWithAllowedSub(String searchQuery, Integer page, Integer size, String email) {
+        List<Question> questionList = questionRepository.findAllByAllowedSubsContains(
+                userService.findUserByEmail(email),
+                getTextCriteriaForFullTextSearch(searchQuery),
+                getPageableForFullTextSearch(page, size));
+
+        return questionList
+                .stream()
+                .map(questionAggregator::modelToAllFieldsDto)
+                .collect(Collectors.toList());
+    }
+
+    private TextCriteria getTextCriteriaForFullTextSearch(String searchQuery) {
+        return TextCriteria.forDefaultLanguage().matching(searchQuery);
+    }
+
+    private PageRequest getPageableForFullTextSearch(Integer page, Integer size) {
+        if (isNull(size) || size <= 0) size = searchDefaultPageSize;
+        if (size > searchMaxPageSize) size = searchMaxPageSize;
+        if (isNull(page) || page < MIN_PAGE_SIZE) page = MIN_PAGE_SIZE;
+
+        return new PageRequest(page, size, new Sort("score"));
+    }
+
+    @Override
     public String smartSearch(String searchQuery, int page, int size) {
         return elasticSearchService.smartSearch(searchQuery, page, size);
     }
 
     @Override
+    public String smartSearchWithAllowedSub(String searchQuery, int page, int size, String email) {
+        return elasticSearchService.smartSearchWithAllowedSub(searchQuery, page, size, email);
+    }
+
+    @Override
     public Long getTextSearchResultsCount(String query) {
         return questionRepository.getTextSearchResultsCount(query);
+    }
+
+    @Override
+    public Long getTextSearchResultsCountWithAllowedSub(String query, String email) {
+        return questionRepository
+                .countAllByAllowedSubsContains(userService.findUserByEmail(email), getTextCriteriaForFullTextSearch(query));
     }
 
     @Override

@@ -26,7 +26,11 @@ public interface QuestionService extends ElasticSearchService {
      */
     List<QuestionAllFieldsDto> search(String searchQuery, Integer page, Integer size);
 
+    List<QuestionAllFieldsDto> searchWithAllowedSub(String searchQuery, Integer page, Integer size, String email);
+
     Long getTextSearchResultsCount(String query);
+
+    Long getTextSearchResultsCountWithAllowedSub(String query, String email);
 
     List<QuestionWithAnswersCountDto> findAllQuestionsBaseDto(int questionPage, int questionAmount);
 

@@ -26,4 +26,8 @@ public interface QuestionRepository extends MongoRepository<Question, String> {
     Optional<Question> findQuestionByTitleAndAuthorId(String title, User authorId);
 
     long countAllByAllowedSubs(User user);
+
+    List<Question> findAllByAllowedSubsContains(User sub, TextCriteria criteria, Pageable pageable);
+
+    Long countAllByAllowedSubsContains(User user, TextCriteria criteria);
 }
