@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.TextCriteria;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -114,7 +115,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void searchWithNegativeSize() {
-        List<QuestionAllFieldsDto> actualList = questionService.search(SEARCH_PHRASE, START_PAGE, -5);
+        List<QuestionAllFieldsDto> actualList = questionService.search(SEARCH_PHRASE, START_PAGE, 100_000);
 
         assertThatListHasRightSizeAndContainsCorrectValue(actualList, 2, SEARCH_PHRASE);
     }
@@ -134,6 +135,17 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
     }
 
     @Test
+    public void searchWithAllowedSubReturnsCorrectValueFromStartOfList() {
+        List<QuestionAllFieldsDto> list =
+                questionService.searchWithAllowedSub(SEARCH_PHRASE, START_PAGE, null, "Steven_Tyler@epam.com");
+        List<QuestionAllFieldsDto> anotherList =
+                questionService.searchWithAllowedSub(SEARCH_PHRASE, START_PAGE, null, EXISTING_USER_EMAIL);
+
+        assertThatListHasRightSizeAndContainsCorrectValue(list, 1, SEARCH_PHRASE);
+        assertThatListHasRightSizeAndContainsCorrectValue(anotherList, 2, SEARCH_PHRASE);
+    }
+
+    @Test
     public void smartSearch() {
         assertThat(questionService.smartSearch("one", someInt(), someInt())).isNotNull();
     }
@@ -144,6 +156,21 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
         Long actual = questionService.getTextSearchResultsCount(SEARCH_PHRASE);
 
         assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void getTextSearchResultsCountWithAllowedSubCorrect() {
+        final TextCriteria textCriteria =
+                TextCriteria.forDefaultLanguage().matching(SEARCH_PHRASE);
+        long expected = questionRepository.countAllByAllowedSubsContains(userRepository.findOne("5u"), textCriteria);
+        Long actual = questionService.getTextSearchResultsCountWithAllowedSub(SEARCH_PHRASE, EXISTING_USER_EMAIL);
+        long anotherExpected = questionRepository.countAllByAllowedSubsContains(userRepository.findOne("6u"), textCriteria);
+        Long anotherActual = questionService.getTextSearchResultsCountWithAllowedSub(SEARCH_PHRASE, "Steven_Tyler@epam.com");
+
+        assertThat(actual, is(expected));
+        assertThat(actual).isEqualTo(2L);
+        assertThat(anotherActual, is(anotherExpected));
+        assertThat(anotherActual).isEqualTo(1L);
     }
 
     private void assertThatListHasRightSizeAndContainsCorrectValue(

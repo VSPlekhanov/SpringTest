@@ -42,4 +42,9 @@ public class ElasticSearchServiceMockImpl implements ElasticSearchService {
             return "";
         }
     }
+
+    @Override
+    public String smartSearchWithAllowedSub(String searchQuery, int page, int size, String email) {
+        return smartSearch(searchQuery, page, size);
+    }
 }
