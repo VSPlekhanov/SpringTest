@@ -41,9 +41,6 @@ public class QuestionControllerAttachmentsTest extends SetUpDataBaseCollections 
     private QuestionService questionService;
 
     @MockBean
-    private UserRuntimeRequestComponent userRuntimeRequestComponent;
-
-    @MockBean
     private TelescopeService telescopeService;
 
     @MockBean

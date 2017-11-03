@@ -25,9 +25,6 @@ public class SubscriptionControllerTest extends SetUpDataBaseCollections {
     @Autowired
     private SubscriptionService subscriptionService;
 
-    @MockBean
-    private UserRuntimeRequestComponent userRuntimeRequestComponent;
-
     @Test
     public void subscribeTest() {
         String someUserEmail = "Bob_Hoplins@epam.com";

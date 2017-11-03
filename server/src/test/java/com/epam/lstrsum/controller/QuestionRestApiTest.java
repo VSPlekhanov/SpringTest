@@ -35,9 +35,6 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @MockBean
-    private UserRuntimeRequestComponent userRuntimeRequestComponent;
-
     @Autowired
     private AnswerController answerController;
 
