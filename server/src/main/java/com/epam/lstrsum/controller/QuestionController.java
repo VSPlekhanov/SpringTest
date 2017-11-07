@@ -41,8 +41,6 @@ public class QuestionController {
     private final UserRuntimeRequestComponent userRuntimeRequestComponent;
     @Setter
     private int maxQuestionAmount;
-    @Setter
-    private int maxQuestionPage;
 
     @PostMapping
     public ResponseEntity<String> addQuestion(@RequestPart("dtoObject") QuestionPostDto dtoObject,
@@ -82,8 +80,8 @@ public class QuestionController {
             questionAmount = maxQuestionAmount;
         }
 
-        if ((questionPage > maxQuestionPage) || (questionPage <= 0)) {
-            questionPage = maxQuestionPage;
+        if (questionPage <= 0) {
+            questionPage = 0;
         }
 
         List<QuestionWithAnswersCountDto> questionsFromService = currentUserInDistributionList() ?
