@@ -41,6 +41,7 @@ public interface QuestionService extends ElasticSearchService {
     @EmailNotification(template = NewQuestionNotificationTemplate.class)
     Question addNewQuestion(QuestionPostDto questionPostDto, String email);
 
+    @EmailNotification(template = NewQuestionNotificationTemplate.class)
     Question addNewQuestion(QuestionPostDto questionPostDto, String email, MultipartFile[] files);
 
     QuestionAllFieldsDto getQuestionAllFieldDtoByQuestionId(String questionId);
@@ -66,4 +67,10 @@ public interface QuestionService extends ElasticSearchService {
     void addAttachmentsToQuestion(String questionId, List<String> attachmentIds);
 
     Long getQuestionCountWithAllowedSub(String userEmail);
+
+    Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestionIdWithAllowedSub(String questionId, String email);
+
+    List<QuestionAllFieldsDto> searchWithAllowedSub(String query, Integer page, Integer size, String email);
+
+    Long getTextSearchResultsCountWithAllowedSub(String query, String email);
 }

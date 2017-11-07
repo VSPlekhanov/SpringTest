@@ -1,6 +1,7 @@
 package com.epam.lstrsum.dto.answer;
 
 
+import com.epam.lstrsum.annotation.NotEmptyString;
 import com.epam.lstrsum.exception.ConvertToJsonException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +12,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.validation.constraints.Size;
+
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,7 +22,11 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 @Slf4j
 public class AnswerPostDto {
+    @NotEmptyString
+    @Size(min = 24, max = 24)
     private String questionId;
+    @NotEmptyString
+    @Size(min = 3)
     private String text;
 
     @Override

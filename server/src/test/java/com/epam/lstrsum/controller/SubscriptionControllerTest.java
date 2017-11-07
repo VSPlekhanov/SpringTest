@@ -4,7 +4,6 @@ import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.service.SubscriptionService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;

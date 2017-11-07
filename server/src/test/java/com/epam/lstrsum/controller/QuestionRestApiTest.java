@@ -9,7 +9,6 @@ import com.epam.lstrsum.testutils.AssertionUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.ParameterizedTypeReference;
@@ -21,6 +20,7 @@ import java.util.List;
 import static com.epam.lstrsum.testutils.InstantiateUtil.ANOTHER_EXISTING_QUESTION_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_SEARCH_TEXT;
+import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.NON_EXISTING_QUESTION_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -134,8 +134,27 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void searchSuccessful() {
+    public void searchWithDistributionListUserSuccessful() {
         String uri = String.format("/api/question/search?query=%s&page=%d&size=%d", EXISTING_QUESTION_SEARCH_TEXT, 0, 2);
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
+
+        ResponseEntity<List<QuestionAllFieldsDto>> result = restTemplate.exchange(
+                uri,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<QuestionAllFieldsDto>>() {
+                });
+
+        assertThat(result).satisfies(AssertionUtils::hasStatusOk);
+        assertThat(result.getBody().size()).isEqualTo(1);
+        assertThat(result.getBody().get(0).getQuestionId()).isEqualTo(EXISTING_QUESTION_ID);
+    }
+
+    @Test
+    public void searchWithAllowedSubUserSuccessful() {
+        String uri = String.format("/api/question/search?query=%s&page=%d&size=%d", EXISTING_QUESTION_SEARCH_TEXT, 0, 2);
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(false);
+        when(userRuntimeRequestComponent.getEmail()).thenReturn(EXISTING_USER_EMAIL);
 
         ResponseEntity<List<QuestionAllFieldsDto>> result = restTemplate.exchange(
                 uri,
@@ -152,6 +171,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
     @Test
     public void searchFailed() {
         String uri = String.format("/api/question/search?query=%s&page=%d&size=%d", someString(), 0, 2);
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         ResponseEntity<List<QuestionAllFieldsDto>> result = restTemplate.exchange(
                 uri,
@@ -167,14 +187,28 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
     @Test
     public void smartSearchSuccessful() throws Exception {
         String uri = String.format("/api/question/smartSearch?query=%s&page=%d&size=%d", someString(), 0, 2);
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         assertThat(restTemplate.exchange(uri, HttpMethod.GET, null, Object.class))
                 .satisfies(AssertionUtils::hasStatusOk);
     }
 
     @Test
+    public void smartSearchWithAllowedSubThrowException() throws Exception {
+        String uri = String.format("/api/question/smartSearch?query=%s&page=%d&size=%d", someString(), 0, 2);
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(false);
+        when(userRuntimeRequestComponent.getEmail()).thenReturn(someString());
+
+        ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.GET, null, String.class);
+
+        assertThat(result)
+                .satisfies(AssertionUtils::hasStatusInternalServerError);
+    }
+
+    @Test
     public void countSearchResult() {
         String uri = String.format("/api/question/search/count?query=%s", "postman");
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         ResponseEntity<CounterDto> result = restTemplate.exchange(
                 uri,
@@ -190,6 +224,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
     @Test
     public void countSearchFailed() {
         String uri = String.format("/api/question/search/count?query=%s", someString());
+        when(userRuntimeRequestComponent.getEmail()).thenReturn(EXISTING_USER_EMAIL);
 
         ResponseEntity<CounterDto> result = restTemplate.exchange(
                 uri,
@@ -205,6 +240,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
     @Test
     public void getRelevantTags() {
         String uri = String.format("/api/question/getRelevantTags?key=%s", "java");
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         ResponseEntity<List<String>> result = restTemplate.exchange(
                 uri,
@@ -220,8 +256,24 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void getRelevantTagsFailed() {
+    public void getRelevantTagsWithNotDistributionListUser() {
         String uri = String.format("/api/question/getRelevantTags?key=%s", someString());
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(false);
+
+        ResponseEntity<List<String>> result = restTemplate.exchange(
+                uri,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<String>>() {
+                });
+
+        assertThat(result).satisfies(AssertionUtils::hasStatusNotFound);
+    }
+
+    @Test
+    public void getRelevantTagsNonExistingTags() {
+        String uri = String.format("/api/question/getRelevantTags?key=%s", someString());
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         ResponseEntity<List<String>> result = restTemplate.exchange(
                 uri,

@@ -27,7 +27,9 @@ import java.util.Arrays;
 public class NewAnswerNotificationTemplate implements MailTemplate<AnswerAllFieldsDto> {
 
     @Setter
-    private static String defaultQuestionLink;
+    @Value("${spring.mail.default-question-link}")
+    private String defaultQuestionLink;
+
     private final EmailCollection<AnswerAllFieldsDto> emailCollection;
 
     @Setter
@@ -62,23 +64,22 @@ public class NewAnswerNotificationTemplate implements MailTemplate<AnswerAllFiel
         Multipart parts = new MimeMultipart();
 
         MimeBodyPart plainText = new MimeBodyPart();
-        plainText.setText(getTextMessage(source), "utf-8");
-
-        MimeBodyPart hyperLink = new MimeBodyPart();
-        hyperLink.setContent(getHyperLinkMessage(source), "text/html; charset=utf-8");
+        plainText.setText(getTextMessage(source), "utf-8", "html");
 
         parts.addBodyPart(plainText);
-        parts.addBodyPart(hyperLink);
 
         return parts;
     }
 
     private String getTextMessage(AnswerAllFieldsDto source) {
+        String questionPath = defaultQuestionLink + source.getQuestion().getQuestionId();
+
         return source.getAuthor().getFirstName() + " " +
                 source.getAuthor().getLastName() +
-                " has posted the following answer:\n\n" +
+                " has posted the following answer:<br>" +
                 source.getText() +
-                "\n\n";
+                "<br>" +
+                "<a href=\"" + questionPath + "\">Go to answer</a>";
     }
 
     private String getHyperLinkMessage(AnswerAllFieldsDto source) {

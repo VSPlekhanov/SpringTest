@@ -16,6 +16,7 @@ import java.util.List;
 public class QuestionAppearanceDto extends QuestionBaseDto {
     private String text;
     private List<AttachmentPropertiesDto> attachments;
+    private List<UserBaseDto> allowedSubs;
 
     public QuestionAppearanceDto(
             String questionId, String title, String[] tags, Instant createdAt, Instant deadLine,
@@ -32,6 +33,7 @@ public class QuestionAppearanceDto extends QuestionBaseDto {
         if (!super.equals(o)) return false;
 
         QuestionAppearanceDto that = (QuestionAppearanceDto) o;
+        if (!that.getAllowedSubs().equals(this.getAllowedSubs())) return false;
         if (!that.getAttachments().equals(this.getAttachments())) return false;
         return text != null ? text.equals(that.text) : that.text == null;
     }

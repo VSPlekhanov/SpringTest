@@ -122,7 +122,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void searchWithTooBigPageSize() {
-        List<QuestionAllFieldsDto> actualList = questionService.search(SEARCH_PHRASE, START_PAGE, 100000);
+        List<QuestionAllFieldsDto> actualList = questionService.search(SEARCH_PHRASE, START_PAGE, 100_000);
 
         assertThatListHasRightSizeAndContainsCorrectValue(actualList, 2, SEARCH_PHRASE);
     }

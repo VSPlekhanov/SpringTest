@@ -83,7 +83,6 @@ public class QuestionControllerAttachmentsTest extends SetUpDataBaseCollections 
 
     private void addQuestionSaveAttachmentsAndReturnValidResponseTest(int attachmentsCount) throws Exception {
         MockMultipartFile file = someMockMultipartFile();
-        final String authorEmail = SOME_USER_EMAIL;
         final QuestionPostDto postDto = someQuestionPostDto();
 
         MultipartFile[] arrayMultipartFile = new MultipartFile[attachmentsCount];
@@ -91,7 +90,8 @@ public class QuestionControllerAttachmentsTest extends SetUpDataBaseCollections 
             arrayMultipartFile[i] = file;
         }
 
-        when(userRuntimeRequestComponent.getEmail()).thenReturn(authorEmail);
+        when(userRuntimeRequestComponent.getEmail()).thenReturn(SOME_USER_EMAIL);
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
         Long questionCountBefore = questionService.getQuestionCount();
         Integer attachmentCountBefore = attachmentRepository.findAll().size();
 
