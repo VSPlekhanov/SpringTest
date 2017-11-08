@@ -43,7 +43,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     private RestClient restClient;
 
     @Autowired
-    RestHighLevelClient restHighLevelClient;
+    private RestHighLevelClient restHighLevelClient;
 
     @Setter
     private List<String> validMetaTags;
