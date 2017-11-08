@@ -12,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static com.epam.lstrsum.enums.UserRoleType.ROLE_EXTENDED_USER;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeEmployeeEntityDtosWithEmails;
@@ -26,7 +27,6 @@ import static org.mockito.Mockito.doReturn;
  */
 
 @ActiveProfiles("email")
-@Ignore
 public class UserSynchronizerTest extends SetUpDataBaseCollections {
     @MockBean
     private ExchangeServiceHelper exchangeServiceHelper;
@@ -68,11 +68,10 @@ public class UserSynchronizerTest extends SetUpDataBaseCollections {
         assertThat(userService.findUserByEmail(bobHoplins).getIsActive())
                 .isTrue();
 
-        assertThat(userService.findAllWithRole(ROLE_EXTENDED_USER).stream().filter(User::getIsActive))
-                .hasSize(2);
-        assertThat(userService.findAllWithRole(ROLE_EXTENDED_USER).stream().filter(u -> !u.getIsActive()))
-                .hasSize(2);
+        List<User> users = userService.findAllWithRole(ROLE_EXTENDED_USER);
 
+        assertThat(users.stream().filter(User::getIsActive)).hasSize(2);
+        assertThat(users.stream().filter(u -> !u.getIsActive())).hasSize(users.size() - 2);
     }
 
 }
