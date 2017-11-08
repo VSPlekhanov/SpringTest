@@ -126,14 +126,16 @@ public class AnswerServiceImpl implements AnswerService {
                 match(Criteria.where("_id").is(questionId)),
                 project("answers").andExclude("_id"),
                 unwind("answers"),
-                replaceRoot("answers"),
-                sort(Sort.Direction.ASC, "createdAt"),
-                skip((long) size * page),
-                limit(size)
+                replaceRoot("answers")
+//                sort(Sort.Direction.ASC, "createdAt"),
+//                skip((long) size * page),
+//                limit(size)
         );
 
-        return mongoTemplate.aggregate(aggregation, Question.QUESTION_COLLECTION_NAME, Answer.class)
-                .getMappedResults().stream()
+        List<Answer> mappedResults = mongoTemplate.aggregate(aggregation, Question.class, Answer.class)
+                .getMappedResults();
+
+        return mappedResults.stream()
                 .map(answerAggregator::modelToBaseDto)
                 .collect(Collectors.toList());
     }
