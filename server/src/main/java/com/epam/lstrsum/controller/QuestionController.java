@@ -1,16 +1,22 @@
 package com.epam.lstrsum.controller;
 
 import com.epam.lstrsum.dto.common.CounterDto;
+import com.epam.lstrsum.dto.question.QuestionAdvancedSearchResultDto;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
+import com.epam.lstrsum.dto.question.QuestionParsedQueryDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
 import com.epam.lstrsum.service.QuestionService;
+import com.epam.lstrsum.service.SearchQueryService;
 import com.epam.lstrsum.service.UserService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,10 +43,15 @@ import static com.epam.lstrsum.enums.UserRoleType.ROLE_SIMPLE_USER;
 public class QuestionController {
 
     private final QuestionService questionService;
+    private final SearchQueryService queryService;
     private final UserService userService;
     private final UserRuntimeRequestComponent userRuntimeRequestComponent;
+
     @Setter
     private int maxQuestionAmount;
+
+    @Autowired
+    private ObjectMapper mapper;
 
     @PostMapping
     public ResponseEntity<String> addQuestion(@RequestPart("dtoObject") QuestionPostDto dtoObject,
@@ -128,6 +139,42 @@ public class QuestionController {
                 questionService.smartSearch(query, page, size) :
                 questionService.smartSearchWithAllowedSub(query, page, size, userRuntimeRequestComponent.getEmail());
         return ResponseEntity.ok(searchResult);
+    }
+
+    @GetMapping("/advancedSearch")
+    public ResponseEntity<QuestionAdvancedSearchResultDto> advancedSearch (
+            @RequestParam("query") String query,
+            @RequestParam(required = false, defaultValue = "-1") Integer page,
+            @RequestParam(required = false, defaultValue = "-1") Integer size) {
+        if ((size > maxQuestionAmount) || (size <= 0)) {
+            size = maxQuestionAmount;
+        }
+        if ((page <= 0)) {
+            page = 0;
+        }
+
+        QuestionParsedQueryDto parsedQueryDto = queryService.parseQuery(query);
+        QuestionAdvancedSearchResultDto resultDto;
+
+        if (parsedQueryDto.getErrorsInQuery().isEmpty()){
+            String resultValue = questionService.advancedSearch(
+                    parsedQueryDto.getQueryForSearch(),
+                    parsedQueryDto.getQueryStringsWithMetaTags(),
+                    page,
+                    size
+            );
+            resultDto = QuestionAdvancedSearchResultDto.builder()
+                    .value(resultValue)
+                    .build();
+            return ResponseEntity.ok(resultDto);
+        } else {
+            JsonNode jsonNode = mapper.valueToTree(parsedQueryDto.getErrorsInQuery());
+            resultDto = QuestionAdvancedSearchResultDto.builder()
+                    .value(jsonNode.toString())
+                    .errorMessage("Error in query parsing.")
+                    .build();
+            return ResponseEntity.badRequest().body(resultDto);
+        }
     }
 
     @GetMapping("/search/count")
