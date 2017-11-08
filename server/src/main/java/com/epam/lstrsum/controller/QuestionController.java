@@ -80,8 +80,16 @@ public class QuestionController {
             questionAmount = maxQuestionAmount;
         }
 
-        if (questionPage <= 0) {
+        if (questionPage < 0) {
             questionPage = 0;
+        }
+
+        int count = currentUserInDistributionList() ?
+                questionService.getQuestionCount().intValue() :
+                questionService.getQuestionCountWithAllowedSub(userRuntimeRequestComponent.getEmail()).intValue();
+
+        if (questionPage > count) {
+            questionPage = count / questionAmount - 1;
         }
 
         List<QuestionWithAnswersCountDto> questionsFromService = currentUserInDistributionList() ?
