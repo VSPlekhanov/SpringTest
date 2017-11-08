@@ -80,7 +80,7 @@ public class QuestionController {
             questionAmount = maxQuestionAmount;
         }
 
-        if (questionPage <= 0) {
+        if (questionPage < 0) {
             questionPage = 0;
         }
 
