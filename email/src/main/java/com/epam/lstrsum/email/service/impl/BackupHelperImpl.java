@@ -134,7 +134,9 @@ public class BackupHelperImpl implements BackupHelper {
         val properties = new Properties();
         val session = Session.getDefaultInstance(properties, null);
 
-        return MimeMessageUtils.createMimeMessage(session, zipInputStream);
+        MimeMessage mimeMessage = MimeMessageUtils.createMimeMessage(session, zipInputStream);
+        zipInputStream.close();
+        return mimeMessage;
     }
 
     public Path getSafePath(String filename) {
