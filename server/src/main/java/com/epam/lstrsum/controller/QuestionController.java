@@ -49,8 +49,6 @@ public class QuestionController {
 
     @Setter
     private int maxQuestionAmount;
-    @Setter
-    private int maxQuestionPage;
 
     @Autowired
     private ObjectMapper mapper;
@@ -93,8 +91,16 @@ public class QuestionController {
             questionAmount = maxQuestionAmount;
         }
 
-        if ((questionPage > maxQuestionPage) || (questionPage <= 0)) {
-            questionPage = maxQuestionPage;
+        if (questionPage < 0) {
+            questionPage = 0;
+        }
+
+        int count = currentUserInDistributionList() ?
+                questionService.getQuestionCount().intValue() :
+                questionService.getQuestionCountWithAllowedSub(userRuntimeRequestComponent.getEmail()).intValue();
+
+        if (questionPage > count) {
+            questionPage = count / questionAmount - 1;
         }
 
         List<QuestionWithAnswersCountDto> questionsFromService = currentUserInDistributionList() ?

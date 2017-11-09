@@ -152,6 +152,8 @@ db.getCollection(QUESTION_COLLECTION_NAME).createIndex({"_fts": "text", "_ftsx":
             "text": 1
         }
     });
+db.getCollection(QUESTION_COLLECTION_NAME).createIndex({"createdAt": -1});
+
 allQuestions = db.getCollection(QUESTION_COLLECTION_NAME).find({}).toArray()
 
 //create Answers
