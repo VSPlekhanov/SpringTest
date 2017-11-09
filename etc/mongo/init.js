@@ -1,6 +1,6 @@
 /*
 * for running scripts use
-*  mongo <host>:<port> mongo.init/init.js
+*  mongo <host>:<port>/ExperienceDataBase .etc/mongo/init.js
 */
 
 function randomString(length, chars) {
@@ -34,10 +34,10 @@ function randomEpamEmail() {
 /*ATTENTION!!!!
 * This number response for how many documents will in db after script
 */
-const USERS_AMOUNT_MIN = 5//50
-const USERS_AMOUNT_MAX = 20//2000
-const QUESTIONS_AMOUNT_MIN = 5//500
-const QUESTIONS_AMOUNT_MAX = 10//1000
+const USERS_AMOUNT_MIN = 50
+const USERS_AMOUNT_MAX = 2000
+const QUESTIONS_AMOUNT_MIN = 500
+const QUESTIONS_AMOUNT_MAX = 1000
 const ANSWER_ON_QUESTION_AMOUNT_MIN = 0
 const ANSWER_ON_QUESTION_AMOUNT_MAX = 20
 const ATTACHMENT_ON_QUESTION_CHAR_AMOUNT_MIN = 102400 / 2  //102400 byte -> 100kb, assume that UTF-16 -> 2 bytes per chars
@@ -143,11 +143,10 @@ for (let i = 0; i < QUESTIONS_AMOUNT_MAX; ++i) {
     newQuestion.answers = []
     for (let j = 0, n = randomInt(ANSWER_ON_QUESTION_AMOUNT_MIN, ANSWER_ON_QUESTION_AMOUNT_MAX); j < n; ++j) {
         newAnswer = {}
-//        newAnswer._class = "com.epam.lstrsum.model.Answer";
-        newAnswer.answerId = ObjectId()
+        newAnswer.answerId = ObjectId().str
         newAnswer.text = randomString(randomInt(MINIMUM_TEXT_SIZE, MAXIMUM_TEXT_SIZE), GENERAL_CHARS)
         newAnswer.createdAt = randomISODate()
-        newAnswer.authorId = DBRef(USER_COLLECTION_NAME, allUsers[randomInt(0, allUsers.length)]._id)
+        newAnswer.authorId = allUsers[randomInt(0, allUsers.length)]._id.str
         newAnswer.votes = []
 
         newQuestion.answers.push(newAnswer)
@@ -165,22 +164,6 @@ db.getCollection(QUESTION_COLLECTION_NAME).createIndex({"_fts": "text", "_ftsx":
         }
     });
 allQuestions = db.getCollection(QUESTION_COLLECTION_NAME).find({}).toArray()
-
-//create Answers
-//allQuestions.forEach(function (question, i, arr) {
-//    for (let j = 0; j < randomInt(ANSWER_ON_QUESTION_AMOUNT_MIN, ANSWER_ON_QUESTION_AMOUNT_MAX); ++j) {
-//        newAnswer = {}
-//        newAnswer._class = "com.epam.lstrsum.model.Answer";
-//        newAnswer.questionId = DBRef(QUESTION_COLLECTION_NAME, question._id)
-//        newAnswer.text = randomString(randomInt(MINIMUM_TEXT_SIZE, MAXIMUM_TEXT_SIZE), GENERAL_CHARS)
-//        newAnswer.createdAt = randomISODate()
-//
-//        newAnswer.authorId = DBRef(USER_COLLECTION_NAME, allUsers[randomInt(0, allUsers.length)]._id)
-//        newAnswer.votes = []
-//
-//        db.getCollection(ANSWER_COLLECTION_NAME).insert(newAnswer)
-//    }
-//})
 
 //create Subscriptions
 for (let i = 0; i < USERS_AMOUNT_MAX; ++i) {

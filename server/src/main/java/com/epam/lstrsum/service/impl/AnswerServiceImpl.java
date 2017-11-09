@@ -126,16 +126,14 @@ public class AnswerServiceImpl implements AnswerService {
                 match(Criteria.where("_id").is(questionId)),
                 project("answers").andExclude("_id"),
                 unwind("answers"),
-                replaceRoot("answers")
-//                sort(Sort.Direction.ASC, "createdAt"),
-//                skip((long) size * page),
-//                limit(size)
+                replaceRoot("answers"),
+                sort(Sort.Direction.DESC, "createdAt"),
+                skip((long) size * page),
+                limit(size)
         );
 
-        List<Answer> mappedResults = mongoTemplate.aggregate(aggregation, Question.class, Answer.class)
-                .getMappedResults();
-
-        return mappedResults.stream()
+        return mongoTemplate.aggregate(aggregation, Question.class, Answer.class)
+                .getMappedResults().stream()
                 .map(answerAggregator::modelToBaseDto)
                 .collect(Collectors.toList());
     }
@@ -148,7 +146,9 @@ public class AnswerServiceImpl implements AnswerService {
     @Override
     public Long getAnswerCountByQuestionId(String questionId) {
         Query query = new Query(Criteria.where("_id").is(questionId));
-        return (long) mongoTemplate.findOne(query, Question.class).getAnswers().size();
+        List<Answer> answers = mongoTemplate.findOne(query, Question.class).getAnswers();
+
+        return isNull(answers) ? 0L : (long) answers.size();
     }
 
     private List<QuestionWithAnswersCount> completeNotFound(List<QuestionWithAnswersCount> resultsFromMongo, List<Question> sourceList) {
