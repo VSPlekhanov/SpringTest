@@ -100,7 +100,9 @@ public class QuestionController {
                 questionService.getQuestionCountWithAllowedSub(userRuntimeRequestComponent.getEmail()).intValue();
 
         if (questionPage > count) {
-            questionPage = count / questionAmount - 1;
+                questionPage = (questionAmount != 0) ?
+                        (count / questionAmount - 1) :
+                        (count - 1);
         }
 
         List<QuestionWithAnswersCountDto> questionsFromService = currentUserInDistributionList() ?
