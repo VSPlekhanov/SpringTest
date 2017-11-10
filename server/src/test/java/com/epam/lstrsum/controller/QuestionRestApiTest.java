@@ -18,13 +18,10 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.ANOTHER_EXISTING_QUESTION_ID;
-import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID;
-import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_SEARCH_TEXT;
-import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_USER_EMAIL;
-import static com.epam.lstrsum.testutils.InstantiateUtil.NON_EXISTING_QUESTION_ID;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
+import static com.epam.lstrsum.testutils.InstantiateUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @PropertySource("classpath:application.properties")
@@ -113,6 +110,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
         String uri = String.format("/api/question/%s", questionId);
 
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
+        when(userRuntimeRequestComponent.getEmail()).thenReturn("Bob_Hoplins@epam.com");
         ResponseEntity<QuestionAppearanceDto> result = restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
@@ -122,6 +120,36 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
 
         assertThat(result).satisfies(AssertionUtils::hasStatusOk);
         assertThat(result.getBody().getQuestionId()).isEqualTo(questionId);
+    }
+
+    @Test
+    public void getQuestionWithTextShouldReturnValidCurrentUserSubscribeValueTest() throws Exception {
+        String uri = String.format("/api/question/%s", EXISTING_QUESTION_ID);
+
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
+        when(userRuntimeRequestComponent.getEmail()).thenReturn("Bob_Hoplins@epam.com");
+        ResponseEntity<QuestionAppearanceDto> result = restTemplate.exchange(
+                uri,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<QuestionAppearanceDto>() {
+                });
+        assertTrue(result.getBody().isCurrentUserSubscribed());
+    }
+
+    @Test
+    public void getQuestionWithTextShouldReturnInvalidCurrentUserSubscribeValueTest() throws Exception {
+        String uri = String.format("/api/question/%s", EXISTING_QUESTION_ID);
+
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
+        when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");
+        ResponseEntity<QuestionAppearanceDto> result = restTemplate.exchange(
+                uri,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<QuestionAppearanceDto>() {
+                });
+        assertFalse(result.getBody().isCurrentUserSubscribed());
     }
 
     @Test

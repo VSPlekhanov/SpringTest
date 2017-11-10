@@ -5,11 +5,7 @@ import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.email.service.BackupHelper;
 import com.epam.lstrsum.email.service.EmailParser;
 import com.epam.lstrsum.model.Question;
-import com.epam.lstrsum.service.AttachmentService;
-import com.epam.lstrsum.service.MailReceiver;
-import com.epam.lstrsum.service.QuestionService;
-import com.epam.lstrsum.service.TelescopeService;
-import com.epam.lstrsum.service.UserService;
+import com.epam.lstrsum.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -20,11 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.email.service.MailService.getAddressFrom;
@@ -103,7 +95,7 @@ public class MailReceiverImpl implements MailReceiver {
                 log.debug("Detected {} users not in base and added as another user", users);
             }
 
-            final Question newQuestion = questionService.addNewQuestion(questionPostDto, authorEmail);
+            final Question newQuestion = questionService.addNewQuestionFromEmail(questionPostDto, authorEmail);
 
             if (parsedMessage.hasAttachment()) {
                 addAllAttachments(newQuestion.getQuestionId(), parsedMessage.getAttachmentAllFieldsDto());

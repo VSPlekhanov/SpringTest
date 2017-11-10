@@ -20,16 +20,27 @@ public class SubscriptionController {
     private final UserRuntimeRequestComponent userRuntimeRequestComponent;
     private final UserService userService;
 
-    @PutMapping("/{questionId}")
+    @PutMapping("/subscribe/{questionId}")
     public ResponseEntity subscribe(@PathVariable @NotEmptyString String questionId) {
-        if (currentUserInDistributionList()) {
-            subscriptionService.addOrUpdate(
-                    userService.findUserByEmail(userRuntimeRequestComponent.getEmail()).getUserId(),
-                    questionId
-            );
-        }
+        String email = userRuntimeRequestComponent.getEmail();
+        boolean successSubscribe = currentUserInDistributionList() ?
+                subscriptionService.subscribeForQuestionByUser(questionId, email) :
+                subscriptionService.subscribeForQuestionByAllowedSub(questionId, email);
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return successSubscribe ? ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+    }
+
+    @PutMapping("/unsubscribe/{questionId}")
+    public ResponseEntity unSubscribe(@PathVariable @NotEmptyString String questionId) {
+        String email = userRuntimeRequestComponent.getEmail();
+        boolean successSubscribe = currentUserInDistributionList() ?
+                subscriptionService.unsubscribeForQuestionByUser(questionId, email) :
+                subscriptionService.unsubscribeForQuestionByAllowedSub(questionId, email);
+
+        return successSubscribe ? ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     private boolean currentUserInDistributionList() {

@@ -16,16 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_ATTACHMENT_ID;
-import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID_WITHOUT_ATTACHMENT;
-import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID_WITH_ATTACHMENT;
-import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someMockMultipartFile;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionPostDto;
+import static com.epam.lstrsum.testutils.InstantiateUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class QuestionControllerAttachmentsTest extends SetUpDataBaseCollections {
     @Autowired
@@ -65,6 +58,7 @@ public class QuestionControllerAttachmentsTest extends SetUpDataBaseCollections 
     @Test
     public void getQuestionWithAttachmentContainsAttachmentIdWithDistributionListUser() throws Exception {
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
+        when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");
 
         ResponseEntity responseEntity = questionController.getQuestionWithText(EXISTING_QUESTION_ID_WITH_ATTACHMENT);
         QuestionAppearanceDto questionAppearanceDto = (QuestionAppearanceDto) responseEntity.getBody();
@@ -75,6 +69,7 @@ public class QuestionControllerAttachmentsTest extends SetUpDataBaseCollections 
     @Test
     public void getQuestionWithoutAttachmentNotContainsAttachmentId() throws Exception {
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
+        when(userRuntimeRequestComponent.getEmail()).thenReturn("John_Doe@epam.com");
 
         ResponseEntity responseEntity = questionController.getQuestionWithText(EXISTING_QUESTION_ID_WITHOUT_ATTACHMENT);
         QuestionAppearanceDto questionAppearanceDto = (QuestionAppearanceDto) responseEntity.getBody();

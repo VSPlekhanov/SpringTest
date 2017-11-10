@@ -1,5 +1,6 @@
 package com.epam.lstrsum.service.impl;
 
+import com.epam.lstrsum.aggregators.AttachmentAggregator;
 import com.epam.lstrsum.aggregators.QuestionAggregator;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
@@ -11,16 +12,9 @@ import com.epam.lstrsum.exception.NoSuchRequestException;
 import com.epam.lstrsum.exception.QuestionValidationException;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.QuestionWithAnswersCount;
-import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.QuestionRepository;
-import com.epam.lstrsum.service.AnswerService;
-import com.epam.lstrsum.service.AttachmentService;
-import com.epam.lstrsum.service.ElasticSearchService;
-import com.epam.lstrsum.service.QuestionService;
-import com.epam.lstrsum.service.TagService;
-import com.epam.lstrsum.service.UserService;
-import com.mongodb.DBRef;
+import com.epam.lstrsum.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -179,7 +173,7 @@ public class QuestionServiceImpl implements QuestionService {
     @CacheEvict(value = "tagsRating", allEntries = true)
     @EmailNotification(template = NewQuestionNotificationTemplate.class)
     public Question addNewQuestion(QuestionPostDto questionPostDto, String email) {
-        log.debug("Add new Question with email {}", email);
+        log.debug("Add new Question from portal with email {}", email);
         validateQuestionData(questionPostDto, email);
         Question newQuestion = questionAggregator.questionPostDtoAndAuthorEmailToQuestion(questionPostDto, email);
         return questionRepository.save(newQuestion);
@@ -190,7 +184,7 @@ public class QuestionServiceImpl implements QuestionService {
     @CacheEvict(value = "tagsRating", allEntries = true)
     @EmailNotification(template = NewQuestionNotificationTemplate.class)
     public Question addNewQuestion(QuestionPostDto questionPostDto, String email, MultipartFile[] files) {
-        log.debug("Add new Question with email {}", email);
+        log.debug("Add new Question from portal with email {}", email);
         validateQuestionData(questionPostDto, email);
 
         List<String> attachmentIds = new ArrayList<>();
@@ -206,27 +200,38 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    @CacheEvict(value = "tagsRating", allEntries = true)
+    @EmailNotification(template = NewQuestionNotificationTemplate.class, fromPortal = false)
+    public Question addNewQuestionFromEmail(QuestionPostDto questionPostDto, String email) {
+        log.debug("Add new Question from mail with email {}", email);
+        validateQuestionData(questionPostDto, email);
+        Question newQuestion = questionAggregator.questionPostDtoAndAuthorEmailToQuestion(questionPostDto, email);
+        return questionRepository.save(newQuestion);
+    }
+
+    @Override
     public QuestionAllFieldsDto getQuestionAllFieldDtoByQuestionId(String questionId) {
         Question question = questionRepository.findOne(questionId);
         return questionAggregator.modelToAllFieldsDto(question);
     }
 
     @Override
-    public Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestionId(String questionId) {
+    public Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestionId(String questionId, String email) {
         Question question = questionRepository.findOne(questionId);
         if (isNull(question)) return Optional.empty();
 
-        return getQuestionAppearanceDtoByQuestion(question);
+        return getQuestionAppearanceDtoByQuestion(question, email);
     }
 
-    private Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestion(Question question) {
-        return Optional.ofNullable(questionAggregator.modelToQuestionAppearanceDto(question));
+    private Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestion(Question question, String email) {
+        QuestionAppearanceDto questionAppearanceDto = questionAggregator.modelToQuestionAppearanceDto(question, email);
+        return  Optional.ofNullable(questionAppearanceDto);
     }
 
     @Override
     public Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestionIdWithAllowedSub(String questionId, String userEmail) {
         Question question = questionRepository.findOne(questionId);
-        return userHasPermissionToViewQuestion(question, userEmail) ? getQuestionAppearanceDtoByQuestion(question) : Optional.empty();
+        return userHasPermissionToViewQuestion(question, userEmail) ? getQuestionAppearanceDtoByQuestion(question, userEmail) : Optional.empty();
     }
 
     private boolean userHasPermissionToViewQuestion(Question question, String userEmail) {
@@ -262,7 +267,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public void addAttachmentsToQuestion(String questionId, List<String> attachmentIds) {
         mongoTemplate.findAndModify(
-                new Query(Criteria.where("_id").is(questionId)),
+                new Query(Criteria.where("questionId").is(questionId)),
                 new Update().addToSet("attachmentIds").each(attachmentIds),
                 Question.class
         );
@@ -274,20 +279,8 @@ public class QuestionServiceImpl implements QuestionService {
     public void delete(String id) {
         log.debug("Delete question with id {}", id);
         questionRepository.delete(id);
-        deleteSubscriptionsByQuestionId(id);
     }
 
-    @Override
-    public void deleteSubscriptionsByQuestionId(String questionId) {
-        log.debug("Delete all subscriptions with question {}", questionId);
-
-        final Query findAll = new Query();
-        final Update pullQuestion = new Update().pull(
-                "questionIds", new DBRef(Question.QUESTION_COLLECTION_NAME, questionId)
-        );
-
-        mongoTemplate.updateMulti(findAll, pullQuestion, Subscription.class);
-    }
 
     private void validateQuestionData(QuestionPostDto questionPostDto, String email) {
         if (questionPostDto == null) {

@@ -44,4 +44,6 @@ public class Question {
     private List<User> allowedSubs;
     private List<String> attachmentIds;
     private List<Answer> answers;
+    @DBRef(lazy = true)
+    private List<User> subscribers;
 }
