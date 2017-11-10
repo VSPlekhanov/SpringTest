@@ -22,7 +22,6 @@ import java.util.Arrays;
 
 @Component
 @Profile("email")
-@ConfigurationProperties(prefix = "email")
 @RequiredArgsConstructor
 public class NewAnswerNotificationTemplate implements MailTemplate<AnswerAllFieldsDto> {
 
