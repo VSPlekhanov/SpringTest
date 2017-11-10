@@ -18,11 +18,10 @@ import java.util.List;
 @Getter
 @Builder
 @Setter
-//@Document(collection = Answer.ANSWER_COLLECTION_NAME)
 public class Answer {
     private String answerId;    // is initialized via new ObjectId()
     private String text;
     private Instant createdAt;
-    private String authorId;    // another variant: private User author;    // TODO: 10.10.17 which variant is better?
+    private String authorId;
     private List<Vote> votes;
 }

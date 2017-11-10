@@ -5,7 +5,6 @@ import com.epam.lstrsum.aggregators.AnswerAggregator;
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
-import com.epam.lstrsum.exception.AnswerValidationException;
 import com.epam.lstrsum.exception.BusinessLogicException;
 import com.epam.lstrsum.exception.NoSuchAnswerException;
 import com.epam.lstrsum.exception.QuestionValidationException;
@@ -17,15 +16,13 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.io.IOException;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_ANSWER_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_USER_ID;
-import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_NOT_USER_EMAIL;
-import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswer;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswerPostDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswerPostDtoWithQuestionId;
@@ -85,11 +82,6 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
         assertThat(answerAggregator.modelToAllFieldsDto(someAnswer), equalTo(expected));
     }
 
-//    @Test(expected = QuestionValidationException.class)
-//    public void addNewAnswerWithNoExistingQuestionIDTest() throws IOException {
-//        answerService.addNewAnswer(someAnswerPostDtoWithQuestionId(someString()), SOME_USER_EMAIL);
-//    }
-
     @Test
     public void aggregationFunctionTestingShouldReturnQuestionToAnswersCount() {
         assertThat(answerService.aggregateToCount(mongoTemplate.findAll(Question.class)))
@@ -123,14 +115,14 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void findAnswersByQuestionIdInCorrectAscOrder() {
+    public void findAnswersByQuestionIdInCorrectDescOrder() {
         val answers = answerService.getAnswersByQuestionId(EXISTING_QUESTION_ID);
 
         assertThat(
                 answers.stream()
                         .map(AnswerBaseDto::getCreatedAt)
                         .collect(Collectors.toList())
-        ).isSorted();
+        ).isSortedAccordingTo(Comparator.reverseOrder());
     }
 
     @Test

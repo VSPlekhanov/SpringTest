@@ -55,11 +55,12 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
         assertThat(answersAfter).hasSize(2);
 
         AnswerBaseDto answerBaseDtoAfter = answersAfter.get(0);
-        assertThat(answerBaseDtoAfter.getUserVoted()).isTrue();
-        assertThat(answerBaseDtoAfter.getUpVote()).isEqualTo(1);
+        assertThat(answerBaseDtoAfter.getUserVoted()).isFalse();
+        assertThat(answerBaseDtoAfter.getUpVote()).isEqualTo(0);
 
         answerBaseDtoAfter = answersAfter.get(1);
-        assertThat(answerBaseDtoAfter.getUserVoted()).isFalse();
+        assertThat(answerBaseDtoAfter.getUserVoted()).isTrue();
+        assertThat(answerBaseDtoAfter.getUpVote()).isEqualTo(1);
 
         assertThat(voteService.voteForAnswerByUser(answerIdWithoutVotes, someOtherUserEmail)).isTrue();
 
@@ -67,11 +68,12 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
         assertThat(answersAfterOther).hasSize(2);
 
         AnswerBaseDto answerBaseDtoAfterOther = answersAfterOther.get(0);
+        assertThat(answerBaseDtoAfterOther.getUserVoted()).isFalse();
+        assertThat(answerBaseDtoAfterOther.getUpVote()).isEqualTo(0);
+
+        answerBaseDtoAfterOther = answersAfterOther.get(1);
         assertThat(answerBaseDtoAfterOther.getUserVoted()).isTrue();
         assertThat(answerBaseDtoAfterOther.getUpVote()).isEqualTo(2);
-
-        answerBaseDtoAfter = answersAfter.get(1);
-        assertThat(answerBaseDtoAfter.getUserVoted()).isFalse();
     }
 
     @Test
