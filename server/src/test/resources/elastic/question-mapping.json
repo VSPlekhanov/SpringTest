@@ -21,7 +21,7 @@
         "type" : "nested"
       },
       "createdAt": {
-        "type" : "keyword",
+        "type" : "date",
         "index": "analyzed"
       },
       "upVote": {

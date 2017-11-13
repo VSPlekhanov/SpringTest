@@ -106,8 +106,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
                     .field("tags", 2)
                     .fuzziness(Fuzziness.AUTO)
                     .type(MultiMatchQueryBuilder.Type.MOST_FIELDS)
-                    .operator(Operator.OR)
-                    .analyzer("custom-analyzer");
+                    .operator(Operator.OR);
         } else {
             queryBuilder = QueryBuilders.matchAllQuery();
         }
@@ -125,7 +124,6 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
                 (el) -> metatagBoolFilter.should(
                         QueryBuilders.queryStringQuery(el)
                 .defaultOperator(Operator.AND))
-                //.analyzer("custom-analyzer"))
         );
         return metatagBoolFilter;
     }
