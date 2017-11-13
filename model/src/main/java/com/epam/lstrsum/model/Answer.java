@@ -18,20 +18,10 @@ import java.util.List;
 @Getter
 @Builder
 @Setter
-@Document(collection = Answer.ANSWER_COLLECTION_NAME)
 public class Answer {
-    public final static String ANSWER_COLLECTION_NAME = "Answer";
-
-    @Id
-    private String answerId;
-    @DBRef(lazy = true)
-    @Indexed
-    private Question questionId;
+    private String answerId;    // is initialized via new ObjectId()
     private String text;
     private Instant createdAt;
-
-    @DBRef(lazy = true)
-    private User authorId;
-
+    private String authorId;
     private List<Vote> votes;
 }

@@ -5,7 +5,7 @@ public interface VoteService {
 
     boolean unvoteForAnswerByUser(String answerId, String userId);
 
-    boolean voteForAnswerByAllowedSub(String answerId, String email);
+    boolean voteForAnswerByAllowedSub(String answerId, String userEmail);
 
-    boolean unvoteForAnswerByAllowedSub(String answerId, String email);
+    boolean unvoteForAnswerByAllowedSub(String answerId, String userEmail);
 }

@@ -141,7 +141,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         public Address[] getEmailAddresses(AnswerAllFieldsDto answer) {
             return getAddressesFromEmails(
                     new HashSet<>(subscriptionService.getEmailsToNotificateAboutNewAnswer(
-                            answer.getQuestionId().getQuestionId()
+                            answer.getQuestion().getQuestionId()
                     )));
         }
     }

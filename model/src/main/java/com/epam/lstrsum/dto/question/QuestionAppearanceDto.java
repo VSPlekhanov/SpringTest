@@ -11,8 +11,8 @@ import java.util.List;
 
 
 @Getter
-@NoArgsConstructor
 @Setter
+@NoArgsConstructor
 public class QuestionAppearanceDto extends QuestionBaseDto {
     private String text;
     private List<AttachmentPropertiesDto> attachments;
@@ -20,9 +20,9 @@ public class QuestionAppearanceDto extends QuestionBaseDto {
 
     public QuestionAppearanceDto(
             String questionId, String title, String[] tags, Instant createdAt, Instant deadLine,
-            UserBaseDto authorId, String text
+            UserBaseDto author, String text
     ) {
-        super(questionId, title, tags, createdAt, deadLine, authorId);
+        super(questionId, title, tags, createdAt, deadLine, author);
         this.text = text;
     }
 

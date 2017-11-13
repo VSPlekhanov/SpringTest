@@ -26,7 +26,11 @@ public interface QuestionService extends ElasticSearchService {
      */
     List<QuestionAllFieldsDto> search(String searchQuery, Integer page, Integer size);
 
+    List<QuestionAllFieldsDto> searchWithAllowedSub(String searchQuery, Integer page, Integer size, String email);
+
     Long getTextSearchResultsCount(String query);
+
+    Long getTextSearchResultsCountWithAllowedSub(String query, String email);
 
     List<QuestionWithAnswersCountDto> findAllQuestionsBaseDto(int questionPage, int questionAmount);
 
@@ -48,7 +52,11 @@ public interface QuestionService extends ElasticSearchService {
 
     Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestionId(String questionId);
 
+    Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestionIdWithAllowedSub(String questionId, String userEmail);
+
     Question getQuestionById(String questionId);
+
+//    Question getQuestionByAnswerId(String answerId);
 
     Question findQuestionByTitleAndAuthorEmail(String title, User authorId);
 
@@ -59,10 +67,4 @@ public interface QuestionService extends ElasticSearchService {
     void addAttachmentsToQuestion(String questionId, List<String> attachmentIds);
 
     Long getQuestionCountWithAllowedSub(String userEmail);
-
-    Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestionIdWithAllowedSub(String questionId, String email);
-
-    List<QuestionAllFieldsDto> searchWithAllowedSub(String query, Integer page, Integer size, String email);
-
-    Long getTextSearchResultsCountWithAllowedSub(String query, String email);
 }

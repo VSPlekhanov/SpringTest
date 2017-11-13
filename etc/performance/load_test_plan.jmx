@@ -435,7 +435,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="question_Id_extractor" enabled="true">
               <stringProp name="RegexExtractor.useHeaders">false</stringProp>
               <stringProp name="RegexExtractor.refname">question_id</stringProp>
-              <stringProp name="RegexExtractor.regex">(questionId&quot;\s:\s&quot;)([\d|\w]+)</stringProp>
+              <stringProp name="RegexExtractor.regex">(question&quot;\s:\s&quot;)([\d|\w]+)</stringProp>
               <stringProp name="RegexExtractor.template">$0$</stringProp>
               <stringProp name="RegexExtractor.default"></stringProp>
               <stringProp name="RegexExtractor.match_number">0</stringProp>
@@ -452,7 +452,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <hashTree/>
             <com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.gui.JSONPathExtractorGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor" testname="all_question_id_extractor" enabled="true">
               <stringProp name="VAR">questionId_array</stringProp>
-              <stringProp name="JSONPATH">$..questionId</stringProp>
+              <stringProp name="JSONPATH">$..question</stringProp>
               <stringProp name="DEFAULT"></stringProp>
               <stringProp name="VARIABLE"></stringProp>
               <stringProp name="SUBJECT">BODY</stringProp>
@@ -461,7 +461,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="questionIds_extractor" enabled="true">
               <stringProp name="RegexExtractor.useHeaders">false</stringProp>
               <stringProp name="RegexExtractor.refname">question_json</stringProp>
-              <stringProp name="RegexExtractor.regex">questionId&quot; : &quot;.+?&quot;</stringProp>
+              <stringProp name="RegexExtractor.regex">question&quot; : &quot;.+?&quot;</stringProp>
               <stringProp name="RegexExtractor.template">$1$</stringProp>
               <stringProp name="RegexExtractor.default"></stringProp>
               <stringProp name="RegexExtractor.match_number">-1</stringProp>
@@ -523,7 +523,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="questionIds_extractor" enabled="true">
               <stringProp name="RegexExtractor.useHeaders">false</stringProp>
               <stringProp name="RegexExtractor.refname">question_amount_ui_json</stringProp>
-              <stringProp name="RegexExtractor.regex">questionId&quot; : &quot;.+?&quot;</stringProp>
+              <stringProp name="RegexExtractor.regex">question&quot; : &quot;.+?&quot;</stringProp>
               <stringProp name="RegexExtractor.template">$1$</stringProp>
               <stringProp name="RegexExtractor.default"></stringProp>
               <stringProp name="RegexExtractor.match_number">-1</stringProp>
@@ -576,7 +576,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="questionIds_extractor" enabled="true">
               <stringProp name="RegexExtractor.useHeaders">false</stringProp>
               <stringProp name="RegexExtractor.refname">question_amount_json</stringProp>
-              <stringProp name="RegexExtractor.regex">questionId&quot; : &quot;.+?&quot;</stringProp>
+              <stringProp name="RegexExtractor.regex">question&quot; : &quot;.+?&quot;</stringProp>
               <stringProp name="RegexExtractor.template">$1$</stringProp>
               <stringProp name="RegexExtractor.default"></stringProp>
               <stringProp name="RegexExtractor.match_number">-1</stringProp>
@@ -600,7 +600,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <hashTree/>
             <com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.gui.JSONPathExtractorGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor" testname="all_question_id_extractor" enabled="true">
               <stringProp name="VAR">questionId_array</stringProp>
-              <stringProp name="JSONPATH">$..questionId</stringProp>
+              <stringProp name="JSONPATH">$..question</stringProp>
               <stringProp name="DEFAULT"></stringProp>
               <stringProp name="VARIABLE"></stringProp>
               <stringProp name="SUBJECT">BODY</stringProp>
@@ -609,7 +609,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="question_Id_extractor" enabled="true">
               <stringProp name="RegexExtractor.useHeaders">false</stringProp>
               <stringProp name="RegexExtractor.refname">question_id</stringProp>
-              <stringProp name="RegexExtractor.regex">(questionId&quot;\s:\s&quot;)([\d|\w]+)</stringProp>
+              <stringProp name="RegexExtractor.regex">(question&quot;\s:\s&quot;)([\d|\w]+)</stringProp>
               <stringProp name="RegexExtractor.template">$0$</stringProp>
               <stringProp name="RegexExtractor.default"></stringProp>
               <stringProp name="RegexExtractor.match_number">0</stringProp>
@@ -1444,7 +1444,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
                   <stringProp name="Argument.value">{&#xd;
-	&quot;questionId&quot;:&quot;${new_question_id}&quot;,&#xd;
+	&quot;question&quot;:&quot;${new_question_id}&quot;,&#xd;
 	&quot;text&quot;:&quot;${__RandomString(300,0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdef   )}}&quot;&#xd;
 	}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
@@ -1530,7 +1530,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <hashTree/>
             <com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.gui.JSONPathExtractorGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor" testname="json_questionId_extractor" enabled="true">
               <stringProp name="VAR">questionId_json</stringProp>
-              <stringProp name="JSONPATH">$..questionId</stringProp>
+              <stringProp name="JSONPATH">$..question</stringProp>
               <stringProp name="DEFAULT"></stringProp>
               <stringProp name="VARIABLE"></stringProp>
               <stringProp name="SUBJECT">BODY</stringProp>

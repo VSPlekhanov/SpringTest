@@ -16,4 +16,5 @@ public class HttpConfiguration {
     public QuestionPostDtoHttpMessageConverter commonsMultipartResolver() {
         return new QuestionPostDtoHttpMessageConverter();
     }
+
 }

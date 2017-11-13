@@ -115,7 +115,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void searchWithNegativeSize() {
-        List<QuestionAllFieldsDto> actualList = questionService.search(SEARCH_PHRASE, START_PAGE, -5);
+        List<QuestionAllFieldsDto> actualList = questionService.search(SEARCH_PHRASE, START_PAGE, 100_000);
 
         assertThatListHasRightSizeAndContainsCorrectValue(actualList, 2, SEARCH_PHRASE);
     }

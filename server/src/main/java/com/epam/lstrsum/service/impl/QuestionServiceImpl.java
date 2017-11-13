@@ -1,8 +1,6 @@
 package com.epam.lstrsum.service.impl;
 
-import com.epam.lstrsum.aggregators.AttachmentAggregator;
 import com.epam.lstrsum.aggregators.QuestionAggregator;
-import com.epam.lstrsum.dto.attachment.AttachmentPropertiesDto;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
@@ -11,12 +9,10 @@ import com.epam.lstrsum.email.EmailNotification;
 import com.epam.lstrsum.email.template.NewQuestionNotificationTemplate;
 import com.epam.lstrsum.exception.NoSuchRequestException;
 import com.epam.lstrsum.exception.QuestionValidationException;
-import com.epam.lstrsum.model.Attachment;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.QuestionWithAnswersCount;
 import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
-import com.epam.lstrsum.persistence.AttachmentRepository;
 import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.service.AnswerService;
 import com.epam.lstrsum.service.AttachmentService;
@@ -48,7 +44,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -72,8 +67,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final AnswerService answerService;
     private final UserService userService;
     private final AttachmentService attachmentService;
-    private final AttachmentRepository attachmentRepository;
-    private final AttachmentAggregator attachmentAggregator;
+
     @Setter
     private int searchDefaultPageSize;
 
@@ -123,18 +117,11 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     private PageRequest getPageableForFullTextSearch(Integer page, Integer size) {
-        if (isNull(size) || size <= 0) {
-            size = searchDefaultPageSize;
-        }
-        if (size > searchMaxPageSize) {
-            size = searchMaxPageSize;
-        }
-        if (isNull(page) || page < MIN_PAGE_SIZE) {
-            page = MIN_PAGE_SIZE;
-        }
+        if (isNull(size) || size <= 0) size = searchDefaultPageSize;
+        if (size > searchMaxPageSize) size = searchMaxPageSize;
+        if (isNull(page) || page < MIN_PAGE_SIZE) page = MIN_PAGE_SIZE;
 
-        Sort sort = new Sort("score");
-        return new PageRequest(page, size, sort);
+        return new PageRequest(page, size, new Sort("score"));
     }
 
     @Override
@@ -227,26 +214,13 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestionId(String questionId) {
         Question question = questionRepository.findOne(questionId);
-        if (isNull(question)) {
-            return Optional.empty();
-        }
+        if (isNull(question)) return Optional.empty();
 
         return getQuestionAppearanceDtoByQuestion(question);
     }
 
     private Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestion(Question question) {
-        QuestionAppearanceDto questionAppearanceDto = questionAggregator.modelToQuestionAppearanceDto(question);
-
-        List<String> attachmentIds = question.getAttachmentIds();
-        if (nonNull(attachmentIds) && !attachmentIds.isEmpty()) {
-            ArrayList<Attachment> attachments = (ArrayList<Attachment>) attachmentRepository.findAll(attachmentIds);
-            List<AttachmentPropertiesDto> attachmentsDto = attachmentAggregator.modelToListPropertiesDto(attachments);
-            questionAppearanceDto.setAttachments(attachmentsDto);
-        } else {
-            questionAppearanceDto.setAttachments(emptyList());
-        }
-
-        return Optional.ofNullable(questionAppearanceDto);
+        return Optional.ofNullable(questionAggregator.modelToQuestionAppearanceDto(question));
     }
 
     @Override
@@ -288,7 +262,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public void addAttachmentsToQuestion(String questionId, List<String> attachmentIds) {
         mongoTemplate.findAndModify(
-                new Query(Criteria.where("questionId").is(questionId)),
+                new Query(Criteria.where("_id").is(questionId)),
                 new Update().addToSet("attachmentIds").each(attachmentIds),
                 Question.class
         );
@@ -305,7 +279,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public void deleteSubscriptionsByQuestionId(String questionId) {
-        log.debug("Delete all subscriptions with questionId {}", questionId);
+        log.debug("Delete all subscriptions with question {}", questionId);
 
         final Query findAll = new Query();
         final Update pullQuestion = new Update().pull(

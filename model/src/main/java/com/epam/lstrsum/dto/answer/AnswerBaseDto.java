@@ -19,7 +19,7 @@ public class AnswerBaseDto {
     private String answerId;
     private String text;
     private Instant createdAt;
-    private UserBaseDto authorId;
+    private UserBaseDto author;
     private Integer upVote;
     private Boolean userVoted;
 
@@ -27,17 +27,19 @@ public class AnswerBaseDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         AnswerBaseDto that = (AnswerBaseDto) o;
+
         return Objects.equals(answerId, that.answerId) &&
                 Objects.equals(text, that.text) &&
                 Objects.equals(createdAt, that.createdAt) &&
-                Objects.equals(authorId, that.authorId) &&
+                Objects.equals(author, that.author) &&
                 Objects.equals(upVote, that.upVote) &&
                 Objects.equals(userVoted, that.userVoted);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(answerId, text, createdAt, authorId, upVote, userVoted);
+        return Objects.hash(answerId, text, createdAt, author, upVote, userVoted);
     }
 }

@@ -4,11 +4,11 @@ import com.epam.lstrsum.controller.UserRuntimeRequestComponent;
 import com.epam.lstrsum.converter.AnswerDtoMapper;
 import com.epam.lstrsum.converter.QuestionDtoMapper;
 import com.epam.lstrsum.converter.UserDtoMapper;
-import com.epam.lstrsum.persistence.AnswerRepository;
-import com.epam.lstrsum.persistence.QuestionRepository;
+import com.epam.lstrsum.service.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswer;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswerPostDto;
@@ -27,10 +27,7 @@ public class AnswerAggregatorTest {
     private UserAggregator userAggregator;
 
     @Mock
-    private AnswerRepository answerRepository;
-
-    @Mock
-    private QuestionRepository questionRepository;
+    private MongoTemplate mongoTemplate;
 
     @Mock
     private UserDtoMapper userMapper;
@@ -42,15 +39,19 @@ public class AnswerAggregatorTest {
     private QuestionDtoMapper questionMapper;
 
     @Mock
+    private UserService userService;
+
+    @Mock
     private UserRuntimeRequestComponent userRuntimeRequestComponent;
 
     @Before
     public void setUp() {
         initMocks(this);
         aggregator = new AnswerAggregator(
-                answerMapper, userMapper,
-                questionMapper, answerRepository,
-                questionRepository, userAggregator,
+                answerMapper, userMapper, questionMapper,
+                mongoTemplate,
+                userAggregator,
+                userService,
                 userRuntimeRequestComponent
         );
 
@@ -79,16 +80,15 @@ public class AnswerAggregatorTest {
         aggregator.answersToQuestionInAnswerBaseDto(someQuestion());
 
         verify(userMapper, times(1)).usersToListOfBaseDtos(any());
-        verify(answerRepository, times(1)).findAnswersByQuestionIdOrderByCreatedAtAsc(any());
         verify(answerMapper, times(1)).answersToQuestionInAnswerBaseDto(any(), any(), any());
     }
 
     @Test
     public void answerPostDtoAndAuthorEmailToAnswer() throws Exception {
-        aggregator.answerPostDtoAndAuthorEmailToAnswer(someQuestion(), someAnswerPostDto(), someString());
+        aggregator.answerPostDtoAndAuthorEmailToAnswer(someAnswerPostDto(), someString());
 
         verify(userAggregator, times(1)).findByEmail(anyString());
         verify(answerMapper, times(1))
-                .answerPostDtoAndAuthorEmailToAnswer(any(), any(), any());
+                .answerPostDtoAndAuthorEmailToAnswer(any(), any());
     }
 }

@@ -1,7 +1,7 @@
 package com.epam.lstrsum.service.impl;
 
 import com.epam.lstrsum.exception.BusinessLogicException;
-import com.epam.lstrsum.model.Answer;
+import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.model.Vote;
 import com.epam.lstrsum.service.AnswerService;
@@ -23,45 +23,47 @@ public class VoteServiceImpl implements VoteService {
 
     @Override
     public boolean voteForAnswerByUser(String answerId, String userId) {
-        Update addVote = new Update().addToSet("votes", new Vote(userId));
-        return updateAnswerWithVote(getQueryForUpdate(answerId), addVote);
+        Update addVote = new Update().addToSet("answers.$.votes", new Vote(userId));
+        return updateQuestionWithAnswerVote(getQueryForAnswerId(answerId), addVote);
     }
 
     @Override
     public boolean unvoteForAnswerByUser(String answerId, String userId) {
-        Update pullVote = new Update().pull("votes", new Vote(userId));
-        return updateAnswerWithVote(getQueryForUpdate(answerId), pullVote);
+        Update pullVote = new Update().pull("answers.$.votes", new Vote(userId));
+        return updateQuestionWithAnswerVote(getQueryForAnswerId(answerId), pullVote);
     }
 
     @Override
     public boolean voteForAnswerByAllowedSub(String answerId, String userEmail) {
-        checkAnswerExistAndUserHasPermission(answerService.getAnswerById(answerId), userEmail);
+        checkAnswerExistsAndUserHasPermission(answerId, userEmail);
         return voteForAnswerByUser(answerId, userEmail);
     }
 
     @Override
     public boolean unvoteForAnswerByAllowedSub(String answerId, String userEmail) {
-        checkAnswerExistAndUserHasPermission(answerService.getAnswerById(answerId), userEmail);
+        checkAnswerExistsAndUserHasPermission(answerId, userEmail);
         return unvoteForAnswerByUser(answerId, userEmail);
     }
 
-    private boolean updateAnswerWithVote(Query query, Update update) {
-        return mongoTemplate.updateFirst(query, update, Answer.class).isUpdateOfExisting();
+    private boolean updateQuestionWithAnswerVote(Query query, Update update) {
+        return mongoTemplate.updateFirst(query, update, Question.class).isUpdateOfExisting();
     }
 
-    private Query getQueryForUpdate(String answerId) {
-        return new Query(Criteria.where("answerId").is(answerId));
+    private Query getQueryForAnswerId(String answerId) {
+        return new Query(Criteria.where("answers.answerId").is(answerId));
     }
 
-    private void checkAnswerExistAndUserHasPermission(Answer answer, String userEmail) {
-        if (isNull(answer) || isUserAllowedSubOnQuestion(answer, userEmail)) {
+    private void checkAnswerExistsAndUserHasPermission(String answerId, String userEmail) {
+        Question question = mongoTemplate.findOne(getQueryForAnswerId(answerId), Question.class);
+        if ( isNull(answerService.getAnswerByIdAndQuestionId(answerId, question.getQuestionId())) ||
+                isUserAllowedSubOnQuestion(question, userEmail) ) {
             throw new BusinessLogicException(
-                    "Answer isn't exist or user with email : '" + userEmail + " ' has no permission to answer id : '" +
-                            answer.getAnswerId());
+                    "Answer doesn't exist or user with email : '" + userEmail + " ' has no permission to answer id : '" + answerId);
         }
     }
 
-    private boolean isUserAllowedSubOnQuestion(Answer answer, String userEmail) {
-        return answer.getQuestionId().getAllowedSubs().stream().map(User::getEmail).filter(e -> e.equals(userEmail)).count() == 1;
+    private boolean isUserAllowedSubOnQuestion(Question question, String userEmail) {
+        return question.getAllowedSubs().stream().map(User::getEmail).filter(e -> e.equals(userEmail)).count() == 1;
     }
+
 }

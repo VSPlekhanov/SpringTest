@@ -6,6 +6,7 @@ import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.email.EmailNotification;
 import com.epam.lstrsum.email.template.NewAnswerNotificationTemplate;
+import com.epam.lstrsum.exception.AnswersWithSameIdException;
 import com.epam.lstrsum.exception.BusinessLogicException;
 import com.epam.lstrsum.exception.NoSuchAnswerException;
 import com.epam.lstrsum.exception.QuestionValidationException;
@@ -13,20 +14,23 @@ import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.QuestionWithAnswersCount;
 import com.epam.lstrsum.model.User;
-import com.epam.lstrsum.persistence.AnswerRepository;
 import com.epam.lstrsum.persistence.QuestionRepository;
+import com.epam.lstrsum.persistence.UserRepository;
 import com.epam.lstrsum.service.AnswerService;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -35,10 +39,14 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.limit;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.replaceRoot;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.skip;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.sort;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.unwind;
 
 @Service
 @RequiredArgsConstructor
@@ -46,8 +54,8 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.proj
 @Slf4j
 public class AnswerServiceImpl implements AnswerService {
     private static final int MIN_PAGE_SIZE = 0;
+    private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
-    private final AnswerRepository answerRepository;
     private final MongoTemplate mongoTemplate;
     private final AnswerAggregator answerAggregator;
     @Setter
@@ -59,18 +67,7 @@ public class AnswerServiceImpl implements AnswerService {
     @EmailNotification(template = NewAnswerNotificationTemplate.class)
     public AnswerAllFieldsDto addNewAnswer(AnswerPostDto answerPostDto, String email) {
         log.debug("Add new answer with email {}", email);
-        return createAnswerAndGetAllFieldsDto(answerPostDto, email, getQuestionByIdOrThrowException(answerPostDto));
-    }
-
-    private Question getQuestionByIdOrThrowException(AnswerPostDto answerPostDto) {
-        return Optional.ofNullable(questionRepository.findOne(answerPostDto.getQuestionId()))
-                .orElseThrow(() -> new QuestionValidationException("No such question with id : " + answerPostDto.getQuestionId()));
-    }
-
-    private AnswerAllFieldsDto createAnswerAndGetAllFieldsDto(AnswerPostDto answerPostDto, String email, Question question) {
-        Answer newAnswer = answerAggregator.answerPostDtoAndAuthorEmailToAnswer(question, answerPostDto, email);
-        Answer saved = answerRepository.save(newAnswer);
-        return answerAggregator.modelToAllFieldsDto(saved);
+        return createAnswerAndGetAllFieldsDto(answerPostDto, email);
     }
 
     @Override
@@ -78,7 +75,12 @@ public class AnswerServiceImpl implements AnswerService {
     public AnswerAllFieldsDto addNewAnswerWithAllowedSub(AnswerPostDto answerPostDto, String email) {
         Question question = getQuestionByIdOrThrowException(answerPostDto);
         checkQuestionExistAndUserHasPermission(question, email);
-        return createAnswerAndGetAllFieldsDto(answerPostDto, email, question);
+        return createAnswerAndGetAllFieldsDto(answerPostDto, email);
+    }
+
+    private Question getQuestionByIdOrThrowException(AnswerPostDto answerPostDto) {
+        return Optional.ofNullable(questionRepository.findOne(answerPostDto.getQuestionId()))
+                .orElseThrow(() -> new QuestionValidationException("No such question with id : " + answerPostDto.getQuestionId()));
     }
 
     private void checkQuestionExistAndUserHasPermission(Question question, String userEmail) {
@@ -94,36 +96,22 @@ public class AnswerServiceImpl implements AnswerService {
         return question.getAllowedSubs().stream().map(User::getEmail).filter(e -> e.equals(userEmail)).count() == 1;
     }
 
-    @Override
-    public void deleteAllAnswersOnQuestion(String questionId) {
-        log.debug("Delete all answers on question with id {}", questionId);
-        answerRepository.deleteAllByQuestionId_QuestionId(questionId);
+    private AnswerAllFieldsDto createAnswerAndGetAllFieldsDto(AnswerPostDto answerPostDto, String email) {
+        Answer newAnswer = answerAggregator.answerPostDtoAndAuthorEmailToAnswer(answerPostDto, email);
+        Answer saved = addAnswerOnQuestion(newAnswer, answerPostDto.getQuestionId());
+        return answerAggregator.modelToAllFieldsDto(saved);
     }
 
     @Override
     public List<QuestionWithAnswersCount> aggregateToCount(List<Question> questions) {
-        final Aggregation aggregation = newAggregation(
-                match(Criteria.where("questionId").in(questions)),
-                group("questionId").count().as("count"),
-                project("count").and("questionId").previousOperation()
-        );
-
-        final List<QuestionWithAnswersCount> mappedResults = mongoTemplate.aggregate(
-                aggregation, Answer.class, QuestionWithAnswersCount.class
-        ).getMappedResults();
-
-        return completeNotFound(mappedResults, questions);
+        return questions.stream().map(question ->
+                new QuestionWithAnswersCount(question,
+                        Optional.ofNullable(question.getAnswers()).orElse(Collections.emptyList()).size()))
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<AnswerBaseDto> getAnswersByQuestionId(String questionId, int page, int size) {
-        return answerRepository.findAnswerByQuestionId_QuestionIdOrderByCreatedAt(questionId, getPageable(page, size))
-                .stream()
-                .map(answerAggregator::modelToBaseDto)
-                .collect(Collectors.toList());
-    }
-
-    private PageRequest getPageable(Integer page, Integer size) {
         if (size <= 0) {
             size = searchDefaultPageSize;
         } else if (size > searchMaxPageSize) {
@@ -133,7 +121,21 @@ public class AnswerServiceImpl implements AnswerService {
         if (page < MIN_PAGE_SIZE) {
             page = MIN_PAGE_SIZE;
         }
-        return new PageRequest(page, size);
+
+        Aggregation aggregation = newAggregation(
+                match(Criteria.where("_id").is(questionId)),
+                project("answers").andExclude("_id"),
+                unwind("answers"),
+                replaceRoot("answers"),
+                sort(Sort.Direction.DESC, "createdAt"),
+                skip((long) size * page),
+                limit(size)
+        );
+
+        return mongoTemplate.aggregate(aggregation, Question.class, Answer.class)
+                .getMappedResults().stream()
+                .map(answerAggregator::modelToBaseDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -143,7 +145,10 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public Long getAnswerCountByQuestionId(String questionId) {
-        return answerRepository.countAllByQuestionId(questionId);
+        Query query = new Query(Criteria.where("_id").is(questionId));
+        List<Answer> answers = mongoTemplate.findOne(query, Question.class).getAnswers();
+
+        return isNull(answers) ? 0L : (long) answers.size();
     }
 
     private List<QuestionWithAnswersCount> completeNotFound(List<QuestionWithAnswersCount> resultsFromMongo, List<Question> sourceList) {
@@ -163,13 +168,38 @@ public class AnswerServiceImpl implements AnswerService {
         return nonNull(questionWithAnswersCount) ? questionWithAnswersCount : new QuestionWithAnswersCount(question, 0);
     }
 
-    public Answer getAnswerById(String answerId) {
-        return Optional.ofNullable(answerRepository.findOne(answerId))
-                .orElseThrow(() -> new NoSuchAnswerException("No such Answer in user Collection"));
+    @Override
+    public Answer getAnswerByIdAndQuestionId(String answerId, String questionId) {
+        Aggregation aggregation = newAggregation(
+                // TODO: 01.11.17 String or ObjectId(String) - what's the correct way to do this all around the project?
+                match(Criteria.where("_id").is(questionId)),
+                project("answers").andExclude("_id"),
+                unwind("answers"),
+                replaceRoot("answers"),
+                match(Criteria.where("answerId").is(answerId))
+        );
+
+        // TODO: 01.11.17 This doesn't work if we change Question.class to Question.QUESTION_COLLECTION_NAME
+        List<Answer> answers = mongoTemplate.aggregate(aggregation, Question.class, Answer.class).getMappedResults();
+        if (answers.isEmpty() || isNull(answers.get(0))) throw new NoSuchAnswerException("No such Answer in this Question");
+        if (answers.size() > 1) throw new AnswersWithSameIdException("Answers with the same id found");
+
+        return answers.get(0);
     }
 
-    public void save(Answer answer) {
+    public void save(Answer answer, String questionId) {
         log.debug("Saved answer with id {}", answer.getAnswerId());
-        answerRepository.save(answer);
+        addAnswerOnQuestion(answer, questionId);
+    }
+
+    private Answer addAnswerOnQuestion(Answer answer, String questionId) {
+        Query findQuestion = new Query(Criteria.where("_id").is(questionId));
+        // TODO: 25.10.17 can addToSet's duplicates control be changed? probably not.
+        // (see https://docs.mongodb.com/manual/reference/operator/update/addToSet/ )
+        Update addAnswer = new Update().addToSet("answers", answer);
+
+        mongoTemplate.findAndModify(findQuestion, addAnswer, Question.class);
+
+        return getAnswerByIdAndQuestionId(answer.getAnswerId(), questionId);
     }
 }

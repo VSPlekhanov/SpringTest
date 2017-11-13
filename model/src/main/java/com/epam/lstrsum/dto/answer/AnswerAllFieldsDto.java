@@ -13,19 +13,18 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 public class AnswerAllFieldsDto extends AnswerBaseDto {
-    private String answerId;
-    private QuestionBaseDto questionId;
+    private QuestionBaseDto question;
 
     public AnswerAllFieldsDto(String text,
             Instant createdAt,
-            UserBaseDto authorId,
+            UserBaseDto author,
             int upVote,
             String answerId,
-            QuestionBaseDto questionId,
+            QuestionBaseDto question,
             Boolean userVoted) {
-        super(answerId, text, createdAt, authorId, upVote, userVoted);
-        this.answerId = answerId;
-        this.questionId = questionId;
+
+        super(answerId, text, createdAt, author, upVote, userVoted);
+        this.question = question;
     }
 
     @Override
@@ -33,13 +32,14 @@ public class AnswerAllFieldsDto extends AnswerBaseDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
+
         AnswerAllFieldsDto that = (AnswerAllFieldsDto) o;
-        return Objects.equals(answerId, that.answerId) &&
-                Objects.equals(questionId, that.questionId);
+
+        return Objects.equals(question, that.question);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), answerId, questionId);
+        return Objects.hash(super.hashCode(), question);
     }
 }

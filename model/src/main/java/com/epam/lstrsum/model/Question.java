@@ -20,7 +20,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-@CompoundIndex(unique = true, def = "{'title': 1, 'authorId': 1}")
+@CompoundIndex(unique = true, def = "{'title': 1, 'author': 1}")
 @Document(collection = Question.QUESTION_COLLECTION_NAME)
 public class Question {
     public static final String QUESTION_COLLECTION_NAME = "Question";
@@ -43,4 +43,5 @@ public class Question {
     @DBRef(lazy = true)
     private List<User> allowedSubs;
     private List<String> attachmentIds;
+    private List<Answer> answers;
 }

@@ -4,7 +4,6 @@ import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.controller.AnswerController;
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.model.Answer;
-import com.epam.lstrsum.persistence.AnswerRepository;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,7 +21,7 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
     private VoteService voteService;
 
     @Autowired
-    private AnswerRepository answerRepository;
+    private AnswerService answerService;
 
     @Test
     public void voteForAnswerTest() {
@@ -43,11 +42,11 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
         answerBaseDto = answers.get(1);
         assertThat(answerBaseDto.getUserVoted()).isFalse();
 
-        assertThat(answerRepository.findOne(answerIdWithoutVotes).getVotes().size()).isEqualTo(0);
+        assertThat(answerService.getAnswerByIdAndQuestionId(answerIdWithoutVotes, questionId).getVotes().size()).isEqualTo(0);
 
         assertThat(voteService.voteForAnswerByUser(answerIdWithoutVotes, someUserEmail)).isTrue();
 
-        Answer answer = answerRepository.findOne(answerIdWithoutVotes);
+        Answer answer = answerService.getAnswerByIdAndQuestionId(answerIdWithoutVotes, questionId);
 
         assertThat(answer.getVotes()).hasSize(1);
         assertThat(answer.getVotes().get(0).getAuthorEmail()).isEqualTo("Tyler_Derden@mylo.com");
@@ -56,11 +55,12 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
         assertThat(answersAfter).hasSize(2);
 
         AnswerBaseDto answerBaseDtoAfter = answersAfter.get(0);
-        assertThat(answerBaseDtoAfter.getUserVoted()).isTrue();
-        assertThat(answerBaseDtoAfter.getUpVote()).isEqualTo(1);
+        assertThat(answerBaseDtoAfter.getUserVoted()).isFalse();
+        assertThat(answerBaseDtoAfter.getUpVote()).isEqualTo(0);
 
         answerBaseDtoAfter = answersAfter.get(1);
-        assertThat(answerBaseDtoAfter.getUserVoted()).isFalse();
+        assertThat(answerBaseDtoAfter.getUserVoted()).isTrue();
+        assertThat(answerBaseDtoAfter.getUpVote()).isEqualTo(1);
 
         assertThat(voteService.voteForAnswerByUser(answerIdWithoutVotes, someOtherUserEmail)).isTrue();
 
@@ -68,24 +68,27 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
         assertThat(answersAfterOther).hasSize(2);
 
         AnswerBaseDto answerBaseDtoAfterOther = answersAfterOther.get(0);
+        assertThat(answerBaseDtoAfterOther.getUserVoted()).isFalse();
+        assertThat(answerBaseDtoAfterOther.getUpVote()).isEqualTo(0);
+
+        answerBaseDtoAfterOther = answersAfterOther.get(1);
         assertThat(answerBaseDtoAfterOther.getUserVoted()).isTrue();
         assertThat(answerBaseDtoAfterOther.getUpVote()).isEqualTo(2);
-
-        answerBaseDtoAfter = answersAfter.get(1);
-        assertThat(answerBaseDtoAfter.getUserVoted()).isFalse();
     }
 
     @Test
     public void voteForAnswerTwice() {
         String answerIdAlreadyVoted = "1u_1r_3a";
         String userWhoVoteAnswer = "John_Doe@epam.com";
+        String questionId = "1u_1r";
 
-        assertThat(answerRepository.findOne(answerIdAlreadyVoted).getVotes().size()).isEqualTo(4);
+        assertThat(answerService.getAnswerByIdAndQuestionId(answerIdAlreadyVoted, questionId).getVotes().size())
+                .isEqualTo(4);
 
         assertThat(voteService.voteForAnswerByUser(answerIdAlreadyVoted, userWhoVoteAnswer))
                 .isTrue();
 
-        assertThat(answerRepository.findOne(answerIdAlreadyVoted).getVotes())
+        assertThat(answerService.getAnswerByIdAndQuestionId(answerIdAlreadyVoted, questionId).getVotes())
                 .hasSize(4);
     }
 
@@ -101,16 +104,16 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
     public void unVoteAnswer() {
         String answerIdAlreadyVoted = "1u_1r_3a";
         String userWhoVoteAnswer = "John_Doe@epam.com";
+        String questionId = "1u_1r";
 
-        Answer beforeUnvoting = answerRepository.findOne(answerIdAlreadyVoted);
+        Answer beforeUnvoting = answerService.getAnswerByIdAndQuestionId(answerIdAlreadyVoted, questionId);
 
         assertThat(voteService.unvoteForAnswerByUser(answerIdAlreadyVoted, userWhoVoteAnswer))
                 .isTrue();
 
-        Answer afterUnvoting = answerRepository.findOne(answerIdAlreadyVoted);
+        Answer afterUnvoting = answerService.getAnswerByIdAndQuestionId(answerIdAlreadyVoted, questionId);
 
-        assertThat(afterUnvoting.getVotes())
-                .hasSize(beforeUnvoting.getVotes().size() - 1);
+        assertThat(afterUnvoting.getVotes()).hasSize(beforeUnvoting.getVotes().size() - 1);
     }
 
     @Test

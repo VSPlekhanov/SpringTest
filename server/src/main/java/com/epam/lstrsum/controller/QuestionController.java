@@ -69,7 +69,7 @@ public class QuestionController {
         log.debug("addQuestion; email: {}", email);
 
         String questionId = questionService.addNewQuestion(dtoObject, email, files).getQuestionId();
-        log.debug("addQuestion; questionId: {}", questionId);
+        log.debug("addQuestion; question: {}", questionId);
 
         return ResponseEntity.ok(questionId);
     }
