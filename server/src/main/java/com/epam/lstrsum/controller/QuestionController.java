@@ -49,8 +49,6 @@ public class QuestionController {
 
     @Setter
     private int maxQuestionAmount;
-    @Setter
-    private int maxQuestionPage;
 
     @Autowired
     private ObjectMapper mapper;
@@ -71,7 +69,7 @@ public class QuestionController {
         log.debug("addQuestion; email: {}", email);
 
         String questionId = questionService.addNewQuestion(dtoObject, email, files).getQuestionId();
-        log.debug("addQuestion; questionId: {}", questionId);
+        log.debug("addQuestion; question: {}", questionId);
 
         return ResponseEntity.ok(questionId);
     }
@@ -93,8 +91,18 @@ public class QuestionController {
             questionAmount = maxQuestionAmount;
         }
 
-        if ((questionPage > maxQuestionPage) || (questionPage <= 0)) {
-            questionPage = maxQuestionPage;
+        if (questionPage < 0) {
+            questionPage = 0;
+        }
+
+        int count = currentUserInDistributionList() ?
+                questionService.getQuestionCount().intValue() :
+                questionService.getQuestionCountWithAllowedSub(userRuntimeRequestComponent.getEmail()).intValue();
+
+        if (questionPage > count) {
+                questionPage = (questionAmount != 0) ?
+                        (count / questionAmount - 1) :
+                        (count - 1);
         }
 
         List<QuestionWithAnswersCountDto> questionsFromService = currentUserInDistributionList() ?

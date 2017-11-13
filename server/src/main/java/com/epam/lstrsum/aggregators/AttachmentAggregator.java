@@ -20,8 +20,4 @@ public class AttachmentAggregator implements
     public AttachmentAllFieldsDto modelToAllFieldsDto(Attachment attachment) {
         return attachmentMapper.modelToAllFieldsDto(attachment);
     }
-
-    public List<AttachmentPropertiesDto> modelToListPropertiesDto(List<Attachment> attachments) {
-        return attachmentMapper.modelToListPropertiesDto(attachments);
-    }
 }

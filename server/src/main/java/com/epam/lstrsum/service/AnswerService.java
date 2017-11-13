@@ -15,11 +15,9 @@ public interface AnswerService {
     @EmailNotification(template = NewAnswerNotificationTemplate.class)
     AnswerAllFieldsDto addNewAnswer(AnswerPostDto answerPostDto, String email);
 
-    Answer getAnswerById(String answerId);
+    Answer getAnswerByIdAndQuestionId(String answerId, String questionId);
 
-    void save(Answer answer);
-
-    void deleteAllAnswersOnQuestion(String questionId);
+    void save(Answer answer, String questionId);
 
     List<QuestionWithAnswersCount> aggregateToCount(List<Question> questions);
 

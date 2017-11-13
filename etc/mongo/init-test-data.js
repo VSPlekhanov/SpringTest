@@ -1,9 +1,8 @@
 /*
 * for running scripts use
-*  mongo <host>:<port> /etc/mongo/init-test-data.js
-
-* init-test-data.js should generate random data except users.
-* It has to take existing users and use them instead of randomly generated users.
+*  mongo <host>:<port>/ExperienceDataBase .etc/mongo/init-test-data.js
+* init-test-data.js generates random data except users.
+* It takes existing users and uses them instead of randomly generated users.
 */
 
 function randomString(length, chars) {
@@ -33,7 +32,6 @@ const ANSWER_ON_QUESTION_AMOUNT_MAX = 20
 const USER_COLLECTION_NAME = "User"
 const ATTACHMENT_COLLECTION_NAME = "Attachment"
 const QUESTION_COLLECTION_NAME = "Question"
-const ANSWER_COLLECTION_NAME = "Answer"
 const SUBSCRIPTION_COLLECTION_NAME = "Subscription"
 const LITTLE_STRING_LENGTH = 50
 const MAXIMUM_TAGS_AMOUNT = 20
@@ -46,7 +44,6 @@ collectionNames = db.getCollectionNames()
 
 //clear Question, Answer and Subscription collections
 db.getCollection(QUESTION_COLLECTION_NAME).remove({})
-db.getCollection(ANSWER_COLLECTION_NAME).remove({})
 db.getCollection(SUBSCRIPTION_COLLECTION_NAME).remove({})
 
 //if the index already exist, this will take no effect
@@ -78,6 +75,19 @@ for (let i = 0; i < QUESTIONS_AMOUNT_MAX; ++i) {
 
     newQuestion.attachmentIds = []
 
+    // create some answers on a question
+    newQuestion.answers = []
+    for (let j = 0, n = randomInt(ANSWER_ON_QUESTION_AMOUNT_MIN, ANSWER_ON_QUESTION_AMOUNT_MAX); j < n; ++j) {
+        newAnswer = {}
+        newAnswer.answerId = ObjectId().str
+        newAnswer.text = randomString(randomInt(MINIMUM_TEXT_SIZE, MAXIMUM_TEXT_SIZE), GENERAL_CHARS)
+        newAnswer.createdAt = randomISODate()
+        newAnswer.authorId = allUsers[randomInt(0, allUsers.length)]._id.str
+        newAnswer.votes = []
+
+        newQuestion.answers.push(newAnswer)
+    }
+
     db.getCollection(QUESTION_COLLECTION_NAME).insert(newQuestion)
 }
 
@@ -90,25 +100,6 @@ db.getCollection(QUESTION_COLLECTION_NAME).createIndex({"_fts": "text", "_ftsx":
         }
     });
 allQuestions = db.getCollection(QUESTION_COLLECTION_NAME).find({}).toArray()
-
-//create Answers
-allQuestions.forEach(function (question, i, arr) {
-    for (let j = 0, n = randomInt(ANSWER_ON_QUESTION_AMOUNT_MIN, ANSWER_ON_QUESTION_AMOUNT_MAX); j < n; ++j) {
-        newAnswer = {}
-        newAnswer._class = "com.epam.lstrsum.model.Answer";
-        newAnswer.questionId = DBRef(QUESTION_COLLECTION_NAME, question._id)
-        newAnswer.text = randomString(randomInt(MINIMUM_TEXT_SIZE, MAXIMUM_TEXT_SIZE), GENERAL_CHARS)
-        newAnswer.createdAt = randomISODate()
-
-        newAnswer.authorId = DBRef(USER_COLLECTION_NAME, allUsers[randomInt(0, allUsers.length)]._id)
-        newAnswer.votes = []
-
-        db.getCollection(ANSWER_COLLECTION_NAME).insert(newAnswer)
-    }
-})
-
-db.getCollection(ANSWER_COLLECTION_NAME).createIndex({"questionId": 1});
-allAnswers = db.getCollection(ANSWER_COLLECTION_NAME).find().toArray()
 
 //create Subscriptions
 for (let i = 0; i < allUsers.length; ++i) {

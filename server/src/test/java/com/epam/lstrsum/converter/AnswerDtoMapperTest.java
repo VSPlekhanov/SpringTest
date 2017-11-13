@@ -6,7 +6,6 @@ import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.dto.question.QuestionBaseDto;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.model.Answer;
-import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.testutils.InstantiateUtil;
 import org.junit.Test;
@@ -16,9 +15,9 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
+import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_USER_EMAIL;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswer;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswerPostDto;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestion;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionBaseDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someUserBaseDto;
@@ -35,7 +34,7 @@ public class AnswerDtoMapperTest extends SetUpDataBaseCollections {
         assertThat(answerBaseDto.getCreatedAt()).isEqualTo(answer.getCreatedAt());
         assertThat(answerBaseDto.getText()).isEqualTo(answer.getText());
         assertThat(answerBaseDto.getUpVote()).isEqualTo(answer.getVotes().size());
-        assertThat(answerBaseDto.getAuthorId()).isEqualTo(userBaseDto);
+        assertThat(answerBaseDto.getAuthor()).isEqualTo(userBaseDto);
     }
 
     @Test
@@ -48,7 +47,7 @@ public class AnswerDtoMapperTest extends SetUpDataBaseCollections {
                 .satisfies(a -> {
                     checkAnswerBaseDto(a, answer, userBaseDto);
                     assertThat(a.getAnswerId()).isEqualTo(answer.getAnswerId());
-                    assertThat(a.getQuestionId()).isEqualTo(questionBaseDto);
+                    assertThat(a.getQuestion()).isEqualTo(questionBaseDto);
                 });
     }
 
@@ -75,12 +74,10 @@ public class AnswerDtoMapperTest extends SetUpDataBaseCollections {
     public void answerPostDtoAndAuthorEmailToAnswer() throws Exception {
         AnswerPostDto answerPostDto = someAnswerPostDto();
         User user = someUser();
-        Question question = someQuestion();
 
-        assertThat(answerMapper.answerPostDtoAndAuthorEmailToAnswer(answerPostDto, user, question))
+        assertThat(answerMapper.answerPostDtoAndAuthorEmailToAnswer(answerPostDto, user))
                 .satisfies(a -> {
-                    assertThat(a.getAuthorId()).isEqualTo(user);
-                    assertThat(a.getQuestionId()).isEqualTo(question);
+                    assertThat(a.getAuthorId()).isEqualTo(user.getUserId());
                     assertThat(a.getCreatedAt()).isBeforeOrEqualTo(Instant.now());
                     assertThat(a.getVotes()).isEqualTo(Collections.emptyList());
                     assertThat(a.getText()).isEqualTo(answerPostDto.getText());

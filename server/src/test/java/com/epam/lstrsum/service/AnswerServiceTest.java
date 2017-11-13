@@ -16,16 +16,17 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.io.IOException;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_ANSWER_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_USER_EMAIL;
-import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
+import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_USER_ID;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswer;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswerPostDto;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someAnswerPostDtoWithQuestionId;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestion;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -36,6 +37,7 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     private static final int ANSWERS_COUNT = 3;
     private static final int PAGE_SIZE = 2;
     private final String authorEmail = "Bob_Hoplins@epam.com";
+
     @Autowired
     private AnswerService answerService;
     @Autowired
@@ -48,16 +50,16 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
         AnswerPostDto postDto = new AnswerPostDto("1u_2r", someString());
 
         AnswerAllFieldsDto answer = answerService.addNewAnswer(postDto, authorEmail);
-        assertThat(answer.getQuestionId(), notNullValue());
+        assertThat(answer.getQuestion(), notNullValue());
     }
 
     @Test
     public void addNewAnswerWithAllowedSubAndExistingQuestionTest() throws Exception {
-        AnswerPostDto postDto = new AnswerPostDto(EXISTING_QUESTION_ID, someString());
+        AnswerPostDto answerPostDto = new AnswerPostDto(EXISTING_QUESTION_ID, someString());
         String allowedSubEmail = EXISTING_USER_EMAIL;
 
-        AnswerAllFieldsDto answer = answerService.addNewAnswerWithAllowedSub(postDto, allowedSubEmail);
-        assertThat(answer.getQuestionId(), notNullValue());
+        AnswerAllFieldsDto answer = answerService.addNewAnswerWithAllowedSub(answerPostDto, allowedSubEmail);
+        assertThat(answer.getQuestion(), notNullValue());
     }
 
     @Test(expected = QuestionValidationException.class)
@@ -73,23 +75,11 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     @Test
     public void checkAnswerDtoConverterInvocation() {
         Answer someAnswer = someAnswer();
+        someAnswer.setAnswerId(EXISTING_ANSWER_ID);
+        someAnswer.setAuthorId(EXISTING_USER_ID);
         AnswerAllFieldsDto expected = answerAggregator.modelToAllFieldsDto(someAnswer);
 
         assertThat(answerAggregator.modelToAllFieldsDto(someAnswer), equalTo(expected));
-    }
-
-    @Test(expected = QuestionValidationException.class)
-    public void addNewAnswerWithNoExistingQuestionIDTest() throws IOException {
-        answerService.addNewAnswer(someAnswerPostDtoWithQuestionId(someString()), SOME_USER_EMAIL);
-    }
-
-    @Test
-    public void deleteAllAnswersToQuestion() {
-        assertThat(answerService.getAnswersByQuestionId(EXISTING_QUESTION_ID).size()).isGreaterThan(0);
-
-        answerService.deleteAllAnswersOnQuestion(EXISTING_QUESTION_ID);
-
-        assertThat(answerService.getAnswersByQuestionId(EXISTING_QUESTION_ID)).hasSize(0);
     }
 
     @Test
@@ -125,14 +115,14 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void findAnswersByQuestionIdInCorrectAscOrder() {
+    public void findAnswersByQuestionIdInCorrectDescOrder() {
         val answers = answerService.getAnswersByQuestionId(EXISTING_QUESTION_ID);
 
         assertThat(
                 answers.stream()
                         .map(AnswerBaseDto::getCreatedAt)
                         .collect(Collectors.toList())
-        ).isSorted();
+        ).isSortedAccordingTo(Comparator.reverseOrder());
     }
 
     @Test
@@ -152,23 +142,21 @@ public class AnswerServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void findAnswerByAnswerIdIsNotNull() {
-        val answer = answerService.getAnswerById(EXISTING_ANSWER_ID);
+        val answer = answerService.getAnswerByIdAndQuestionId(EXISTING_ANSWER_ID, EXISTING_QUESTION_ID);
         assertThat(answer).isNotNull();
     }
 
     @Test(expected = NoSuchAnswerException.class)
     public void findAnswerByAnswerIdForNotExistingAnswerId() {
-        answerService.getAnswerById(someAnswer().getAnswerId());
+        answerService.getAnswerByIdAndQuestionId(someAnswer().getAnswerId(), someQuestion().getQuestionId());
     }
 
     @Test
     public void saveAnswer() {
-        val newAnswerText = someString();
-        val answerSaved = answerService.getAnswerById(EXISTING_ANSWER_ID);
-        answerSaved.setText(newAnswerText);
-        answerService.save(answerSaved);
-        val answerLoaded = answerService.getAnswerById(EXISTING_ANSWER_ID);
+        Answer someAnswer = someAnswer();
+        answerService.save(someAnswer, EXISTING_QUESTION_ID);
+        val answerLoaded = answerService.getAnswerByIdAndQuestionId(someAnswer.getAnswerId(), EXISTING_QUESTION_ID);
 
-        assertThat(answerLoaded.getText()).isEqualTo(newAnswerText);
+        assertThat(answerLoaded).isEqualToComparingFieldByFieldRecursively(someAnswer);
     }
 }

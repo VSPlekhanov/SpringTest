@@ -50,7 +50,6 @@ public class AdminControllerTest {
 
         assertThat(adminController.deleteQuestionWithAnswers(validQuestionId)).satisfies(AssertionUtils::hasStatusNoContent);
         verify(questionService, times(1)).delete(anyString());
-        verify(answerService, times(1)).deleteAllAnswersOnQuestion(anyString());
     }
 
     @Test
@@ -60,7 +59,6 @@ public class AdminControllerTest {
 
         assertThat(adminController.deleteQuestionWithAnswers(not_valid)).satisfies(AssertionUtils::hasStatusNotFound);
         verify(questionService, never()).delete(anyString());
-        verify(answerService, never()).deleteAllAnswersOnQuestion(anyString());
     }
 
 

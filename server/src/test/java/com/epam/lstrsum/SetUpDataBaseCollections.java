@@ -39,6 +39,7 @@ public abstract class SetUpDataBaseCollections {
     @MockBean
     public UserRuntimeRequestComponent userRuntimeRequestComponent;
 
+
     @Before
     public void setUp() throws Exception {
         loadJsonResourcesAndFillDBCollectionWithThem("src/test/resources/data/userLoad.json",
@@ -46,9 +47,6 @@ public abstract class SetUpDataBaseCollections {
 
         loadJsonResourcesAndFillDBCollectionWithThem("src/test/resources/data/questionLoad.json",
                 Question.QUESTION_COLLECTION_NAME);
-
-        loadJsonResourcesAndFillDBCollectionWithThem("src/test/resources/data/answerLoad.json",
-                Answer.ANSWER_COLLECTION_NAME);
 
         loadJsonResourcesAndFillDBCollectionWithThem("src/test/resources/data/subscriptionLoad.json",
                 Subscription.SUBSCRIPTION_COLLECTION_NAME);
