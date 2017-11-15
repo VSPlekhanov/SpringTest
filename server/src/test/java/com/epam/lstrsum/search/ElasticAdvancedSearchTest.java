@@ -95,7 +95,7 @@ public class ElasticAdvancedSearchTest {
 
     }
 
-    @BeforeClass
+    /*@BeforeClass
     public static void startEmbeddedElastic() throws Exception{
         InputStream questionsStream = ElasticSearchServiceTest.class.getClassLoader().getResourceAsStream(questionMapping);
         InputStream settingsStream = ElasticSearchServiceTest.class.getClassLoader().getResourceAsStream(analyzeSettings);
@@ -297,5 +297,5 @@ public class ElasticAdvancedSearchTest {
         assertThat(nodeResult.path("hits").path("hits").get(2).get("_source").path("id").getTextValue(), is("3u_4r"));
         assertThat(nodeResult.path("hits").path("hits").get(1).get("_source").path("id").getTextValue(), is("1u_1r"));
         assertThat(nodeResult.path("hits").path("hits").get(0).get("_source").path("id").getTextValue(), is("2u_3r"));
-    }
+    }*/
 }

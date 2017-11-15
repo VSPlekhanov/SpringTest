@@ -144,7 +144,7 @@ public class QuestionController {
     }
 
     @GetMapping("/advancedSearch")
-    public ResponseEntity<QuestionAdvancedSearchResultDto> advancedSearch (
+    public ResponseEntity<String> advancedSearch (
             @RequestParam("query") String query,
             @RequestParam(required = false, defaultValue = "-1") Integer page,
             @RequestParam(required = false, defaultValue = "-1") Integer size) {
@@ -156,7 +156,6 @@ public class QuestionController {
         }
 
         QuestionParsedQueryDto parsedQueryDto = queryService.parseQuery(query);
-        QuestionAdvancedSearchResultDto resultDto;
 
         if (parsedQueryDto.getErrorsInQuery().isEmpty()){
             String resultValue = questionService.advancedSearch(
@@ -165,17 +164,12 @@ public class QuestionController {
                     page,
                     size
             );
-            resultDto = QuestionAdvancedSearchResultDto.builder()
-                    .value(resultValue)
-                    .build();
-            return ResponseEntity.ok(resultDto);
+            return ResponseEntity.ok(resultValue);
         } else {
             JsonNode jsonNode = mapper.valueToTree(parsedQueryDto.getErrorsInQuery());
-            resultDto = QuestionAdvancedSearchResultDto.builder()
-                    .value(jsonNode.toString())
-                    .errorMessage("Error in query parsing.")
-                    .build();
-            return ResponseEntity.badRequest().body(resultDto);
+            StringBuilder sb = new StringBuilder("Error in query parsing. Error indexes: ");
+            sb.append(jsonNode.toString());
+            return ResponseEntity.badRequest().body(sb.toString());
         }
     }
 
