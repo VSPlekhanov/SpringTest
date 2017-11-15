@@ -1,6 +1,7 @@
 package com.epam.lstrsum.configuration;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConfigurationProperties(prefix = "elastic")
+@Slf4j
 public class ElasticConfiguration {
     @Setter
     private String host;
@@ -19,6 +21,7 @@ public class ElasticConfiguration {
 
     @Bean
     public RestClient restClient() {
+        log.debug("Building elastic on: " + host + ":" + port);
         return RestClient.builder(new HttpHost(host, port, "http")).build();
     }
 

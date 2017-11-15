@@ -4,6 +4,7 @@ import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.email.EmailCollection;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Profile;
@@ -23,6 +24,7 @@ import java.util.Arrays;
 @Component
 @Profile("email")
 @RequiredArgsConstructor
+@Slf4j
 public class NewAnswerNotificationTemplate implements MailTemplate<AnswerAllFieldsDto> {
 
     @Setter
@@ -73,6 +75,8 @@ public class NewAnswerNotificationTemplate implements MailTemplate<AnswerAllFiel
     private String getTextMessage(AnswerAllFieldsDto source) {
         String questionPath = defaultQuestionLink + source.getQuestion().getQuestionId();
 
+        log.debug("New answer on question: " + questionPath);
+
         return source.getAuthor().getFirstName() + " " +
                 source.getAuthor().getLastName() +
                 " has posted the following answer:<br>" +
@@ -83,6 +87,7 @@ public class NewAnswerNotificationTemplate implements MailTemplate<AnswerAllFiel
 
     private String getHyperLinkMessage(AnswerAllFieldsDto source) {
         String questionPath = defaultQuestionLink + source.getQuestion().getQuestionId();
+
         String link = "<a href=\"" + questionPath + "\">here</a>";
 
         return "More details on the answer could be found " +

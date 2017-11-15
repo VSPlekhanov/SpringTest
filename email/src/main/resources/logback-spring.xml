@@ -2,8 +2,8 @@
 
 <configuration scan="true" scanPeriod="30 seconds">
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
-    <property name="LOG_FILE" value="experience-server"/>
-    <property name="ERROR_LOG_FILE" value="experience-server-error"/>
+    <property name="LOG_FILE" value="experience-email"/>
+    <property name="ERROR_LOG_FILE" value="experience-email-error"/>
 
     <appender name="ROLLING-FILE-ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <maxHistory>60</maxHistory>
@@ -24,6 +24,8 @@
     </appender>
 
     <appender name="ROLLING-FILE-ALL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <maxHistory>60</maxHistory>
+        <totalSizeCap>5GB</totalSizeCap>
         <encoder>
             <pattern>${FILE_LOG_PATTERN}</pattern>
         </encoder>

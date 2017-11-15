@@ -7,6 +7,7 @@ import com.epam.lstrsum.model.Vote;
 import com.epam.lstrsum.service.AnswerService;
 import com.epam.lstrsum.service.VoteService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -17,6 +18,7 @@ import static java.util.Objects.isNull;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class VoteServiceImpl implements VoteService {
     private final MongoTemplate mongoTemplate;
     private final AnswerService answerService;
@@ -24,12 +26,14 @@ public class VoteServiceImpl implements VoteService {
     @Override
     public boolean voteForAnswerByUser(String answerId, String userId) {
         Update addVote = new Update().addToSet("answers.$.votes", new Vote(userId));
+        log.debug("User " + userId + " voted answer" + answerId);
         return updateQuestionWithAnswerVote(getQueryForAnswerId(answerId), addVote);
     }
 
     @Override
     public boolean unvoteForAnswerByUser(String answerId, String userId) {
         Update pullVote = new Update().pull("answers.$.votes", new Vote(userId));
+        log.debug("User " + userId + " unvoted answer" + answerId);
         return updateQuestionWithAnswerVote(getQueryForAnswerId(answerId), pullVote);
     }
 
@@ -57,8 +61,10 @@ public class VoteServiceImpl implements VoteService {
         Question question = mongoTemplate.findOne(getQueryForAnswerId(answerId), Question.class);
         if ( isNull(answerService.getAnswerByIdAndQuestionId(answerId, question.getQuestionId())) ||
                 isUserAllowedSubOnQuestion(question, userEmail) ) {
-            throw new BusinessLogicException(
+            BusinessLogicException e = new BusinessLogicException(
                     "Answer doesn't exist or user with email : '" + userEmail + " ' has no permission to answer id : '" + answerId);
+            log.error(e.getMessage());
+            throw e;
         }
     }
 

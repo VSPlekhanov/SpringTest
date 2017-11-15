@@ -55,6 +55,8 @@ public class BackupHelperImpl implements BackupHelper {
     public void setBackupDir(String backupDir) {
         this.backupDir = backupDir;
         backupDirPath = Paths.get(backupDir);
+
+        log.debug("Set backup directory: " + backupDirPath);
     }
 
     @Override
@@ -72,6 +74,8 @@ public class BackupHelperImpl implements BackupHelper {
                 .subject(mimeMessage.getSubject())
                 .build();
         emailRepository.insert(email);
+
+        log.debug("Mail: " + fullFileName + " inserted into repository");
 
         if (!backupDir.isEmpty()) {
             FileOutputStream fileOutputStream = null;

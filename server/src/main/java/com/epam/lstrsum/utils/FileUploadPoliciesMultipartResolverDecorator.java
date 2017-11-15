@@ -3,6 +3,7 @@ package com.epam.lstrsum.utils;
 import com.epam.lstrsum.exception.RestrictedMultipartException;
 import com.epam.lstrsum.exception.SizeLimitMultipartException;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUploadBase;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -28,6 +29,7 @@ import java.util.Optional;
  */
 @Component
 @ConfigurationProperties(prefix = "multipart")
+@Slf4j
 public class FileUploadPoliciesMultipartResolverDecorator implements MultipartResolver {
 
     private MultipartResolver resolver = defaultResolver();
@@ -51,15 +53,21 @@ public class FileUploadPoliciesMultipartResolverDecorator implements MultipartRe
             for (MultipartFile file : multipartHttpServletRequest.getFileMap().values()) {
                 String filename = file.getOriginalFilename();
                 String extension = filename.substring(filename.lastIndexOf(".") + 1).trim();
-                if (!isAllowed(extension))
-                    throw new RestrictedMultipartException("File type " + extension + " is not allowed!");
+                if (!isAllowed(extension)) {
+                    RestrictedMultipartException e = new RestrictedMultipartException("File type " + extension + " is not allowed!");
+                    log.error(e.getMessage());
+                    throw e;
+                }
             }
 
             return multipartHttpServletRequest;
         } catch (MultipartException e) {
             if (isSizeLimitException(e)) {
-                throw new SizeLimitMultipartException("File size is to large", e);
+                SizeLimitMultipartException err = new SizeLimitMultipartException("File size is to large", e);
+                log.error(err.getMessage());
+                throw err;
             } else {
+                log.error(e.getMessage());
                 throw e;
             }
         }
