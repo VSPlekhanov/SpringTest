@@ -1,17 +1,13 @@
 package com.epam.lstrsum.controller;
 
 import com.epam.lstrsum.dto.common.CounterDto;
-import com.epam.lstrsum.dto.question.QuestionAdvancedSearchResultDto;
-import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
-import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
-import com.epam.lstrsum.dto.question.QuestionParsedQueryDto;
-import com.epam.lstrsum.dto.question.QuestionPostDto;
-import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
+import com.epam.lstrsum.dto.question.*;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.SearchQueryService;
 import com.epam.lstrsum.service.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -166,10 +156,12 @@ public class QuestionController {
             );
             return ResponseEntity.ok(resultValue);
         } else {
-            JsonNode jsonNode = mapper.valueToTree(parsedQueryDto.getErrorsInQuery());
-            StringBuilder sb = new StringBuilder("Error in query parsing. Error indexes: ");
-            sb.append(jsonNode.toString());
-            return ResponseEntity.badRequest().body(sb.toString());
+            JsonNode errorNode = mapper.createObjectNode();
+            JsonNode indexesNode = mapper.valueToTree(parsedQueryDto.getErrorsInQuery());
+            ((ObjectNode) errorNode).put("message", "Error in query parsing.");
+            ((ObjectNode) errorNode).put("indexes", indexesNode);
+
+            return ResponseEntity.badRequest().body(errorNode.toString());
         }
     }
 
