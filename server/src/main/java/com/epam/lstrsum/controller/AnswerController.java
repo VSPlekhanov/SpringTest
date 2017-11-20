@@ -5,6 +5,7 @@ import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.dto.common.CounterDto;
+import com.epam.lstrsum.dto.question.AnswerListDto;
 import com.epam.lstrsum.service.AnswerService;
 import com.epam.lstrsum.service.VoteService;
 import lombok.RequiredArgsConstructor;
@@ -66,11 +67,15 @@ public class AnswerController {
     }
 
     @GetMapping("/{questionId}")
-    public ResponseEntity<List<AnswerBaseDto>> getAnswersByQuestionId(
+    public ResponseEntity<AnswerListDto> getAnswersByQuestionId(
             @PathVariable String questionId,
             @RequestParam(value = "page", required = false, defaultValue = "-1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "-1") int size) {
-        return ResponseEntity.ok(answerService.getAnswersByQuestionId(questionId, page, size));
+
+        return ResponseEntity.ok( new AnswerListDto(
+                answerService.getAnswerCountByQuestionId(questionId),
+                answerService.getAnswersByQuestionId(questionId, page, size) )
+        );
     }
 
     @GetMapping("/{questionId}/count")

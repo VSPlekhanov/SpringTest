@@ -96,23 +96,20 @@ public class QuestionController {
             questionPage = 0;
         }
 
-        int count = currentUserInDistributionList() ?
-                questionService.getQuestionCount().intValue() :
-                questionService.getQuestionCountWithAllowedSub(userRuntimeRequestComponent.getEmail()).intValue();
-
-        if (questionPage > count) {
-                questionPage = (questionAmount != 0) ?
-                        (count / questionAmount - 1) :
-                        (count - 1);
-        }
-
         boolean currentUserInDistributionList = currentUserInDistributionList();
+        Long count = getTotalQuestionsCount(currentUserInDistributionList);
+
+        if (questionPage > count.intValue()) {
+            questionPage = (questionAmount != 0) ?
+                        (count.intValue() / questionAmount - 1) :
+                        (count.intValue() - 1);
+        }
 
         List<QuestionWithAnswersCountDto> questionsFromService = currentUserInDistributionList ?
                 questionService.findAllQuestionsBaseDto(questionPage, questionAmount) :
                 questionService.findAllQuestionBaseDtoWithAllowedSub(questionPage, questionAmount, userRuntimeRequestComponent.getEmail());
 
-        return ResponseEntity.ok(new QuestionListDto(getTotalQuestionsCount(currentUserInDistributionList), questionsFromService));
+        return ResponseEntity.ok(new QuestionListDto(count, questionsFromService));
     }
 
     @GetMapping("/count")

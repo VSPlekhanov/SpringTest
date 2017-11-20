@@ -4,6 +4,7 @@ import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.dto.common.CounterDto;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
+import com.epam.lstrsum.dto.question.QuestionListDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
 import com.epam.lstrsum.testutils.AssertionUtils;
 import org.junit.Test;
@@ -66,8 +67,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
         String uri = String.format("/api/question/list?questionPage=%d&questionAmount=%d", 0, 2);
         List<QuestionWithAnswersCountDto> result = restTemplate.exchange(uri, HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<QuestionWithAnswersCountDto>>() {
-                }).getBody();
+                new ParameterizedTypeReference<QuestionListDto>() {}).getBody().getQuestions();
         assertThat(result).hasSize(2);
         assertThat(result.get(0).getQuestionId()).isEqualTo("2u_3r");
         assertThat(result.get(0).getAnswersCount()).isEqualTo(2);
@@ -82,8 +82,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
 
         String uri = String.format("/api/question/list?questionPage=%d&questionAmount=%d", 0, 5);
         List<QuestionWithAnswersCountDto> result = restTemplate.exchange(uri, HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<QuestionWithAnswersCountDto>>() {
-                }).getBody();
+                new ParameterizedTypeReference<QuestionListDto>() {}).getBody().getQuestions();
         assertThat(result).hasSize(5);
         assertThat(result.get(0).getQuestionId()).isEqualTo("1u_2r");
         assertThat(result.get(1).getQuestionId()).isEqualTo("6u_6r");
@@ -99,8 +98,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
 
         String uri = String.format("/api/question/list?questionPage=%d&questionAmount=%d", 0, 5);
         List<QuestionWithAnswersCountDto> result = restTemplate.exchange(uri, HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<QuestionWithAnswersCountDto>>() {
-                }).getBody();
+                new ParameterizedTypeReference<QuestionListDto>() {}).getBody().getQuestions();
         assertThat(result).hasSize(5);
         assertThat(result.get(0).getQuestionId()).isEqualTo("2u_3r");
         assertThat(result.get(1).getQuestionId()).isEqualTo("1u_2r");

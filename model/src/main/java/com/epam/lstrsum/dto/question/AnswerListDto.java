@@ -1,5 +1,6 @@
 package com.epam.lstrsum.dto.question;
 
+import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -7,7 +8,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public class QuestionListDto {
+public class AnswerListDto {
     private final Long totalNumber;
-    private final List<QuestionWithAnswersCountDto> questions;
+    private final List<AnswerBaseDto> answers;
 }
