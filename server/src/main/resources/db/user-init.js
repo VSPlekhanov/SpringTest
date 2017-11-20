@@ -209,3 +209,50 @@ db.User.insert(
     }
 );
 
+//changeset Kirill_Lysov:ChangeSet-5
+db.User.insert(
+    {
+        "_class": "com.epam.lstrsum.model.User",
+        "firstName": "Yury",
+        "lastName": "Bazylev",
+        "email": "yury_bazylev@epam.com",
+        "roles": ["ROLE_EXTENDED_USER", "ACTUATOR"],
+        "createdAt": ISODate("2017-11-21T00:05:00.000Z"),
+        "isActive": true
+    }
+);
+db.User.insert(
+    {
+        "_class": "com.epam.lstrsum.model.User",
+        "firstName": "Andrei",
+        "lastName": "Dedov",
+        "email": "andrei_dedov@epam.com",
+        "roles": ["ROLE_EXTENDED_USER", "ACTUATOR"],
+        "createdAt": ISODate("2017-11-21T00:05:00.000Z"),
+        "isActive": true
+    }
+);
+
+db.User.insert(
+    {
+        "_class": "com.epam.lstrsum.model.User",
+        "firstName": "Vladimir",
+        "lastName": "Klimchuk",
+        "email": "vladimir_klimchuk@epam.com",
+        "roles": ["ROLE_EXTENDED_USER", "ACTUATOR"],
+        "createdAt": ISODate("2017-11-21T00:05:00.000Z"),
+        "isActive": true
+    }
+);
+
+db.User.insert(
+    {
+        "_class": "com.epam.lstrsum.model.User",
+        "firstName": "Ivan",
+        "lastName": "Seliukov",
+        "email": "ivan_seliukov@epam.com",
+        "roles": ["ROLE_EXTENDED_USER", "ACTUATOR"],
+        "createdAt": ISODate("2017-11-21T00:05:00.000Z"),
+        "isActive": true
+    }
+);
