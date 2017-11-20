@@ -4,6 +4,7 @@ import com.epam.lstrsum.dto.common.CounterDto;
 import com.epam.lstrsum.dto.question.QuestionAdvancedSearchResultDto;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
+import com.epam.lstrsum.dto.question.QuestionListDto;
 import com.epam.lstrsum.dto.question.QuestionParsedQueryDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
@@ -83,7 +84,7 @@ public class QuestionController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<QuestionWithAnswersCountDto>> getQuestions(
+    public ResponseEntity<QuestionListDto> getQuestions(
             @RequestParam(required = false, defaultValue = "-1") int questionPage,
             @RequestParam(required = false, defaultValue = "-1") int questionAmount) {
 
@@ -105,20 +106,28 @@ public class QuestionController {
                         (count - 1);
         }
 
-        List<QuestionWithAnswersCountDto> questionsFromService = currentUserInDistributionList() ?
+        boolean currentUserInDistributionList = currentUserInDistributionList();
+
+        List<QuestionWithAnswersCountDto> questionsFromService = currentUserInDistributionList ?
                 questionService.findAllQuestionsBaseDto(questionPage, questionAmount) :
                 questionService.findAllQuestionBaseDtoWithAllowedSub(questionPage, questionAmount, userRuntimeRequestComponent.getEmail());
 
-        return ResponseEntity.ok(questionsFromService);
+        return ResponseEntity.ok(new QuestionListDto(getTotalQuestionsCount(currentUserInDistributionList), questionsFromService));
     }
 
     @GetMapping("/count")
     public ResponseEntity<CounterDto> getQuestionCount() {
-        Long count = currentUserInDistributionList() ?
+        return ResponseEntity.ok().body(new CounterDto(getTotalQuestionsCount()));
+    }
+
+    private Long getTotalQuestionsCount() {
+        return getTotalQuestionsCount(currentUserInDistributionList());
+    }
+
+    private Long getTotalQuestionsCount(boolean currentUserInDistributionList) {
+        return currentUserInDistributionList ?
                 questionService.getQuestionCount() :
                 questionService.getQuestionCountWithAllowedSub(userRuntimeRequestComponent.getEmail());
-
-        return ResponseEntity.ok().body(new CounterDto(count));
     }
 
     @GetMapping("/search")
