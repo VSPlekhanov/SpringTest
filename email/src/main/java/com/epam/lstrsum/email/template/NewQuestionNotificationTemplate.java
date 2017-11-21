@@ -5,9 +5,12 @@ import com.epam.lstrsum.model.Question;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import javax.mail.Address;
 import javax.mail.Message;
@@ -15,6 +18,10 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 @Component
 @Profile("email")
@@ -22,8 +29,9 @@ import javax.mail.internet.MimeMessage;
 @Slf4j
 public class NewQuestionNotificationTemplate implements MailTemplate<Question> {
 
-    private static final String MAIL_HEADER = "<br>Hello!<br>A new question was added to EXP Portal!<br>";
     private final EmailCollection<Question> emailCollection;
+    @Autowired
+    private final TemplateEngine templateEngine;
 
     @Setter
     @Value("${spring.mail.default-question-link}")
@@ -34,22 +42,57 @@ public class NewQuestionNotificationTemplate implements MailTemplate<Question> {
     private String fromAddress;
 
     @Override
-    public MimeMessage buildMailMessage(Question question, boolean fromPortal) throws MessagingException {
-        MimeMessage mimeMessage = new MimeMessage((Session) null);
-        String questionPath = defaultQuestionLink + question.getQuestionId();
+    public Collection<MimeMessage> buildMailMessages(Question question, boolean fromPortal) throws MessagingException {
+        List<MimeMessage> mimeMessageCollection = new LinkedList<>();
 
+        String questionPath = defaultQuestionLink + question.getQuestionId();
         log.debug("Building message, question path: {}", questionPath);
 
-        mimeMessage.setFrom(new InternetAddress(fromAddress));
-        mimeMessage.setSubject("New question was added on EXP Portal: " + question.getTitle());
-        mimeMessage.setText(MAIL_HEADER + question.getText() + "<br>" +
-                "Deadline: " + question.getDeadLine() + "<br>" +
-                "<a href=\"" + questionPath + "\">Go to question</a>",
-                "utf-8",
-                "html");
+        Context context = new Context();
+        context.setVariable("questionText", question.getText());
+        context.setVariable("questionDeadline", question.getDeadLine());
+        context.setVariable("questionPath", questionPath);
 
-        mimeMessage.setRecipients(Message.RecipientType.TO,
-                fromPortal ? getAddressesToNotifyFromPortal(question) : getAddressesToNotifyFromEmail(question));
+        Address[] addressesToNotify;
+        if (fromPortal)
+            addressesToNotify = getAddressesToNotifyFromPortal(question);
+        else
+            addressesToNotify = getAddressesToNotifyFromEmail(question);
+
+        Address creatorAddress = new InternetAddress(question.getAuthorId().getEmail());
+        List<Address> addressesToNotifyList = new LinkedList<>(Arrays.asList(addressesToNotify));
+        addressesToNotifyList.remove(creatorAddress);
+        addressesToNotify = addressesToNotifyList.toArray(new Address[addressesToNotifyList.size()]);
+
+        mimeMessageCollection.add(buildMimeMessage(question, context, creatorAddress,
+                addressesToNotify, true));
+
+        if (addressesToNotify.length > 0)
+            mimeMessageCollection.add(buildMimeMessage(question, context, creatorAddress,
+                    addressesToNotify, false));
+
+        return mimeMessageCollection;
+    }
+
+    private MimeMessage buildMimeMessage(Question question, Context context, Address creatorAddress,
+                                         Address[] addressesToNotify, boolean isItMailToCreator)
+            throws MessagingException {
+
+        MimeMessage mimeMessage = new MimeMessage((Session) null);
+        mimeMessage.setFrom(new InternetAddress(fromAddress));
+        if (isItMailToCreator) {
+            mimeMessage.setSubject("New question was added on EXP Portal by you: " + question.getTitle());
+            mimeMessage.setText(templateEngine.process("newQuestionCreator", context),
+                    "utf-8","html");
+            mimeMessage.setRecipient(Message.RecipientType.TO, creatorAddress);
+        }
+        else {
+            mimeMessage.setSubject("New question was added on EXP Portal: " + question.getTitle());
+            mimeMessage.setText(templateEngine.process("newQuestionSubscriber", context),
+                    "utf-8", "html");
+            mimeMessage.setRecipients(Message.RecipientType.TO, addressesToNotify);
+        }
+        mimeMessage.saveChanges();
         return mimeMessage;
     }
 

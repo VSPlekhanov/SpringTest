@@ -16,6 +16,10 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import static java.util.Objects.isNull;
 
 @Service
@@ -42,17 +46,21 @@ public class MailServiceImpl implements MailService {
         mailMsg.setSubject(subject);
         mailMsg.setText(text);
         mailMsg.setFrom(new InternetAddress(fromAddress));
-        sendMessage(mailMsg.getMimeMessage());
+        Collection<MimeMessage> mimeMessageCollection = new LinkedList<>();
+        mimeMessageCollection.add(mailMsg.getMimeMessage());
+        sendMessages(mimeMessageCollection);
     }
 
     @Async
     @Override
-    public void sendMessage(MimeMessage mimeMessage) throws MessagingException {
-        if (isNull(mimeMessage.getFrom())) {
-            log.warn("From address is null, i set it correct, but you should do it, please correct your code");
-            mimeMessage.setFrom(new InternetAddress(fromAddress));
+    public void sendMessages(Collection<MimeMessage> mimeMessageCollection) throws MessagingException {
+        MimeMessage mimeMessage;
+        for (MimeMessage nextMimeMessage : mimeMessageCollection) {
+            if (isNull((mimeMessage = nextMimeMessage).getFrom())) {
+                log.warn("From address is null, i set it correct, but you should do it, please correct your code");
+                mimeMessage.setFrom(new InternetAddress(fromAddress));
+            }
+            mailSender.send(mimeMessage);
         }
-
-        mailSender.send(mimeMessage);
     }
 }
