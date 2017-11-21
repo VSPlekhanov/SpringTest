@@ -1,6 +1,7 @@
 package com.epam.lstrsum.converter;
 
 
+import com.epam.lstrsum.dto.attachment.AttachmentPropertiesDto;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
 import com.epam.lstrsum.dto.question.QuestionBaseDto;
@@ -75,4 +76,9 @@ public interface QuestionDtoMapper {
     default String[] emptyStringArrayIfNull(String[] arrayToCheck) {
         return isNull(arrayToCheck) ? new String[]{} : arrayToCheck;
     }
+
+    @Mappings({
+            @Mapping(target = "size", expression = "java( attachment.getData().length)")
+    })
+    AttachmentPropertiesDto attachmentToAttachmentPropertiesDto(Attachment attachment);
 }
