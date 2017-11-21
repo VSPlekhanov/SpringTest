@@ -6,8 +6,6 @@
     <property name="ERROR_LOG_FILE" value="experience-email-error"/>
 
     <appender name="ROLLING-FILE-ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <maxHistory>60</maxHistory>
-        <totalSizeCap>5GB</totalSizeCap>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>ERROR</level>
         </filter>

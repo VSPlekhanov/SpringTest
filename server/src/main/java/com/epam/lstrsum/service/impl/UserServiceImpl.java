@@ -69,11 +69,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUserByEmail(String email) {
-        return userRepository.findByEmailIgnoreCase(email).orElseThrow(() -> {
-            NoSuchUserException e = new NoSuchUserException("No such User in user Collection");
-            log.error(e.getMessage());
-            throw e;
-        });
+        return userRepository.findByEmailIgnoreCase(email).orElseThrow(() ->
+                new NoSuchUserException("No such User in user Collection"));
     }
 
     @Override
@@ -99,11 +96,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findUserById(String userId) {
         return Optional.ofNullable(userRepository.findOne(userId))
-                .orElseThrow(() -> {
-            NoSuchUserException e = new NoSuchUserException("No such User in user Collection");
-            log.error(e.getMessage());
-            throw e;
-        });
+                .orElseThrow(() -> new NoSuchUserException("No such User in user Collection"));
     }
 
     @Override
