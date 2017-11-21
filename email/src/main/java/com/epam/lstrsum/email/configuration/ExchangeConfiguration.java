@@ -47,7 +47,7 @@ public class ExchangeConfiguration {
             throw new RuntimeException(e);
         }
 
-        log.debug("Set exchange server: " + exchangeServer);
+        log.debug("Set exchange server: {}", exchangeServer);
 
         return service;
     }

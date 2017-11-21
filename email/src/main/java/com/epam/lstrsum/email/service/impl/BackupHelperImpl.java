@@ -56,7 +56,7 @@ public class BackupHelperImpl implements BackupHelper {
         this.backupDir = backupDir;
         backupDirPath = Paths.get(backupDir);
 
-        log.debug("Set backup directory: " + backupDirPath);
+        log.debug("Set backup directory: {}", backupDirPath);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class BackupHelperImpl implements BackupHelper {
                 .build();
         emailRepository.insert(email);
 
-        log.debug("Mail: " + fullFileName + " inserted into repository");
+        log.debug("Mail: {} inserted into repository", fullFileName);
 
         if (!backupDir.isEmpty()) {
             FileOutputStream fileOutputStream = null;

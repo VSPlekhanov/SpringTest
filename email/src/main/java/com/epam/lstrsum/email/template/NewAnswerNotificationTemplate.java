@@ -75,7 +75,7 @@ public class NewAnswerNotificationTemplate implements MailTemplate<AnswerAllFiel
     private String getTextMessage(AnswerAllFieldsDto source) {
         String questionPath = defaultQuestionLink + source.getQuestion().getQuestionId();
 
-        log.debug("New answer on question: " + questionPath);
+        log.debug("New answer on question: {}", questionPath);
 
         return source.getAuthor().getFirstName() + " " +
                 source.getAuthor().getLastName() +

@@ -29,7 +29,7 @@ public class StartupBean {
 
         File backupDirHandler = new File(backupDir);
 
-        log.debug("Set backup directory handler: " + backupDir);
+        log.debug("Set backup directory handler: {}", backupDir);
 
         if (backupDir.isEmpty()) {
             Exception e = new Exception("Error: no config value email.backup-dir is present");

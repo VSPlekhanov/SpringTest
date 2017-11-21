@@ -52,7 +52,7 @@ public class AnswerPostDto {
         try {
             return objectMapper.writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            log.error("QuestionPostDto toJson() exception, probably during question validation" + e.getMessage());
+            log.error("QuestionPostDto toJson() exception, probably during question validation {}", e.getMessage());
             throw new ConvertToJsonException("Can't convert answer to JSON!");
         }
     }

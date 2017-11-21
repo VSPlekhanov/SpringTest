@@ -26,14 +26,14 @@ public class VoteServiceImpl implements VoteService {
     @Override
     public boolean voteForAnswerByUser(String answerId, String userId) {
         Update addVote = new Update().addToSet("answers.$.votes", new Vote(userId));
-        log.debug("User " + userId + " voted answer" + answerId);
+        log.debug("User {} voted answer {}", userId, answerId);
         return updateQuestionWithAnswerVote(getQueryForAnswerId(answerId), addVote);
     }
 
     @Override
     public boolean unvoteForAnswerByUser(String answerId, String userId) {
         Update pullVote = new Update().pull("answers.$.votes", new Vote(userId));
-        log.debug("User " + userId + " unvoted answer" + answerId);
+        log.debug("User {} unvoted answer {}", userId, answerId);
         return updateQuestionWithAnswerVote(getQueryForAnswerId(answerId), pullVote);
     }
 

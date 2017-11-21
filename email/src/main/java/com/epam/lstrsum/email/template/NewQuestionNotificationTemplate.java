@@ -39,7 +39,7 @@ public class NewQuestionNotificationTemplate implements MailTemplate<Question> {
         MimeMessage mimeMessage = new MimeMessage((Session) null);
         String questionPath = defaultQuestionLink + question.getQuestionId();
 
-        log.debug("Building message, question path: " + questionPath);
+        log.debug("Building message, question path: {}", questionPath);
 
         mimeMessage.setFrom(new InternetAddress(fromAddress));
         mimeMessage.setSubject("New question was added on EXP Portal: " + question.getTitle());
