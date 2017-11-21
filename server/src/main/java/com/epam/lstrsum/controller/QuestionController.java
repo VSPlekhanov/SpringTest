@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,10 +100,12 @@ public class QuestionController {
         boolean currentUserInDistributionList = currentUserInDistributionList();
         Long count = getTotalQuestionsCount(currentUserInDistributionList);
 
+        if (questionAmount == 0) {
+            return ResponseEntity.ok(new QuestionListDto(count, Collections.emptyList()));
+        }
+
         if (questionPage > count.intValue()) {
-            questionPage = (questionAmount != 0) ?
-                        (count.intValue() / questionAmount - 1) :
-                        (count.intValue() - 1);
+            questionPage = count.intValue() / questionAmount - 1;
         }
 
         List<QuestionWithAnswersCountDto> questionsFromService = currentUserInDistributionList ?
