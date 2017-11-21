@@ -120,7 +120,7 @@ public class EmailParser {
         if (isNull(title)) {
             throw new NullPointerException("There is no title");
         }
-        log.debug("Subject:", title);
+        log.debug("Subject: {}", title);
         if (title.trim().isEmpty()) {
             log.error("Error: received email has empty title");
             throw new EmailValidationException("Email has empty subject");
@@ -189,7 +189,7 @@ public class EmailParser {
             for (DataSource datasource : attacheDataSourceList) {
                 final String fileName = datasource.getName();
 
-                log.debug("Attachment file name: " + fileName);
+                log.debug("Attachment file name: {}", fileName);
 
                 if (notAllowedFile(fileName)) {
                     continue;
