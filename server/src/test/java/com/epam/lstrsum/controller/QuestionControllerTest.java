@@ -3,6 +3,7 @@ package com.epam.lstrsum.controller;
 import com.epam.lstrsum.dto.common.CounterDto;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
+import com.epam.lstrsum.dto.question.QuestionListDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.service.QuestionService;
@@ -108,8 +109,15 @@ public class QuestionControllerTest {
         final List<QuestionWithAnswersCountDto> list = getList(InstantiateUtil::someQuestionWithAnswersCountDto);
 
         when(questionService.findAllQuestionsBaseDto(anyInt(), anyInt())).thenReturn(list);
+        when(questionService.getQuestionCount()).thenReturn((long) list.size());
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
-        assertThat(controller.getQuestions(someInt(), someInt())).isEqualTo(ResponseEntity.ok(list));
+
+        controller.setMaxQuestionAmount(200);
+        ResponseEntity<QuestionListDto> actual = controller.getQuestions(someInt(), someInt());
+
+        assertThat(actual.getStatusCode(), is(HttpStatus.OK));
+        assertThat(actual.getBody().getTotalNumber(), is((long) list.size()));
+        assertThat(actual.getBody().getQuestions()).isEqualTo(list);
     }
 
     @Test
@@ -119,9 +127,14 @@ public class QuestionControllerTest {
         final List<QuestionWithAnswersCountDto> list = Collections.emptyList();
 
         when(questionService.findAllQuestionsBaseDto(anyInt(), anyInt())).thenReturn(list);
+        when(questionService.getQuestionCount()).thenReturn((long) list.size());
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
-        assertThat(controller.getQuestions(questionPage, questionAmount)).isEqualTo(ResponseEntity.ok(list));
+        ResponseEntity<QuestionListDto> actual = controller.getQuestions(questionPage, questionAmount);
+
+        assertThat(actual.getStatusCode(), is(HttpStatus.OK));
+        assertThat(actual.getBody().getTotalNumber(), is((long) list.size()));
+        assertThat(actual.getBody().getQuestions()).isEqualTo(list);
     }
 
     @Test
@@ -131,9 +144,14 @@ public class QuestionControllerTest {
         final List<QuestionWithAnswersCountDto> list = Collections.emptyList();
 
         when(questionService.findAllQuestionsBaseDto(anyInt(), anyInt())).thenReturn(list);
+        when(questionService.getQuestionCount()).thenReturn((long) list.size());
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
-        assertThat(controller.getQuestions(questionPage, questionAmount)).isEqualTo(ResponseEntity.ok(list));
+        ResponseEntity<QuestionListDto> actual = controller.getQuestions(questionPage, questionAmount);
+
+        assertThat(actual.getStatusCode(), is(HttpStatus.OK));
+        assertThat(actual.getBody().getTotalNumber(), is((long) list.size()));
+        assertThat(actual.getBody().getQuestions()).isEqualTo(list);
     }
 
     @Test
@@ -143,14 +161,25 @@ public class QuestionControllerTest {
 
         when(questionService.findAllQuestionsBaseDto(anyInt(), anyInt())).thenReturn(emptyList);
         when(questionService.findAllQuestionBaseDtoWithAllowedSub(anyInt(), anyInt(), anyString())).thenReturn(list);
+        when(questionService.getQuestionCount()).thenReturn(0L);
+        when(questionService.getQuestionCountWithAllowedSub(anyString())).thenReturn((long) list.size());
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(false);
 
-        assertThat(controller.getQuestions(0, 100))
-                .satisfies(AssertionUtils::hasStatusOk)
-                .satisfies(
-                        listResponseEntity -> assertThat(listResponseEntity.getBody()).isEqualTo(list)
-                );
+        controller.setMaxQuestionAmount(200);
+        ResponseEntity<QuestionListDto> actual = controller.getQuestions(0, 100);
 
+        assertThat(actual).satisfies(AssertionUtils::hasStatusOk).satisfies(
+                listResponseEntity -> assertThat(listResponseEntity.getBody().getTotalNumber(), is((long) list.size()))
+        );
+
+        assertThat(actual).satisfies(
+                listResponseEntity -> assertThat(listResponseEntity.getBody().getQuestions()).isEqualTo(list)
+        );
+
+        verify(questionService, times(0))
+                .getQuestionCount();
+        verify(questionService, times(1))
+                .getQuestionCountWithAllowedSub(anyString());
         verify(questionService, times(0))
                 .findAllQuestionsBaseDto(anyInt(), anyInt());
         verify(questionService, times(1))

@@ -32,7 +32,7 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
         String someUserEmail = "Tyler_Derden@mylo.com";
         String someOtherUserEmail = "Steven_Tyler@epam.com";
 
-        List<AnswerBaseDto> answers = answerController.getAnswersByQuestionId(questionId, -1, -1).getBody();
+        List<AnswerBaseDto> answers = answerController.getAnswersByQuestionId(questionId, -1, -1).getBody().getAnswers();
         assertThat(answers).hasSize(2);
 
         AnswerBaseDto answerBaseDto = answers.get(0);
@@ -51,7 +51,7 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
         assertThat(answer.getVotes()).hasSize(1);
         assertThat(answer.getVotes().get(0).getAuthorEmail()).isEqualTo("Tyler_Derden@mylo.com");
 
-        List<AnswerBaseDto> answersAfter = answerController.getAnswersByQuestionId(questionId, -1, -1).getBody();
+        List<AnswerBaseDto> answersAfter = answerController.getAnswersByQuestionId(questionId, -1, -1).getBody().getAnswers();
         assertThat(answersAfter).hasSize(2);
 
         AnswerBaseDto answerBaseDtoAfter = answersAfter.get(0);
@@ -64,7 +64,7 @@ public class VoteServiceTest extends SetUpDataBaseCollections {
 
         assertThat(voteService.voteForAnswerByUser(answerIdWithoutVotes, someOtherUserEmail)).isTrue();
 
-        List<AnswerBaseDto> answersAfterOther = answerController.getAnswersByQuestionId(questionId, -1, -1).getBody();
+        List<AnswerBaseDto> answersAfterOther = answerController.getAnswersByQuestionId(questionId, -1, -1).getBody().getAnswers();
         assertThat(answersAfterOther).hasSize(2);
 
         AnswerBaseDto answerBaseDtoAfterOther = answersAfterOther.get(0);

@@ -106,6 +106,7 @@ public class AnswerControllerTest {
         assertThat(controller.getAnswersByQuestionId(EXISTING_QUESTION_ID, someInt(), someInt()))
                 .satisfies(AssertionUtils::hasStatusOk);
 
+        verify(answerService, times(1)).getAnswerCountByQuestionId(anyString());
         verify(answerService, times(1)).getAnswersByQuestionId(anyString(), anyInt(), anyInt());
     }
 
