@@ -112,6 +112,7 @@ public class QuestionControllerTest {
         when(questionService.getQuestionCount()).thenReturn((long) list.size());
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
+        controller.setMaxQuestionAmount(200);
         ResponseEntity<QuestionListDto> actual = controller.getQuestions(someInt(), someInt());
 
         assertThat(actual.getStatusCode(), is(HttpStatus.OK));
@@ -164,6 +165,7 @@ public class QuestionControllerTest {
         when(questionService.getQuestionCountWithAllowedSub(anyString())).thenReturn((long) list.size());
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(false);
 
+        controller.setMaxQuestionAmount(200);
         ResponseEntity<QuestionListDto> actual = controller.getQuestions(0, 100);
 
         assertThat(actual).satisfies(AssertionUtils::hasStatusOk).satisfies(
