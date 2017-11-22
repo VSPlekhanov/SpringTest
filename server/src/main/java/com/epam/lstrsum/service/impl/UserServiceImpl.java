@@ -69,7 +69,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUserByEmail(String email) {
-        return userRepository.findByEmailIgnoreCase(email).orElseThrow(() -> new NoSuchUserException("No such User in user Collection"));
+        return userRepository.findByEmailIgnoreCase(email).orElseThrow(() ->
+                new NoSuchUserException("No such User in user Collection"));
     }
 
     @Override

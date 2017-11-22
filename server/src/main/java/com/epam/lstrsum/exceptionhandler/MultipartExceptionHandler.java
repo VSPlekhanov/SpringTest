@@ -14,7 +14,7 @@ public class MultipartExceptionHandler {
 
     @ExceptionHandler(SizeLimitMultipartException.class)
     public ResponseEntity<String> tooLargeFile(SizeLimitMultipartException e) {
-        log.warn("Multipart exception --> " + e.getMessage());
+        log.warn("Multipart exception --> {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.PAYLOAD_TOO_LARGE)
                 .header("message", "File is to large")
@@ -23,7 +23,7 @@ public class MultipartExceptionHandler {
 
     @ExceptionHandler(RestrictedMultipartException.class)
     public ResponseEntity<String> restrictedFileType(RestrictedMultipartException e) {
-        log.warn("Multipart exception --> " + e.getMessage());
+        log.warn("Multipart exception --> {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
                 .header("message", "Restricted file format")

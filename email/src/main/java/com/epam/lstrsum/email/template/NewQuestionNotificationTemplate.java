@@ -4,6 +4,7 @@ import com.epam.lstrsum.email.EmailCollection;
 import com.epam.lstrsum.model.Question;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 @Component
 @Profile("email")
 @RequiredArgsConstructor
+@Slf4j
 public class NewQuestionNotificationTemplate implements MailTemplate<Question> {
 
     private static final String MAIL_HEADER = "<br>Hello!<br>A new question was added to EXP Portal!<br>";
@@ -36,6 +38,8 @@ public class NewQuestionNotificationTemplate implements MailTemplate<Question> {
     public MimeMessage buildMailMessage(Question question) throws MessagingException {
         MimeMessage mimeMessage = new MimeMessage((Session) null);
         String questionPath = defaultQuestionLink + question.getQuestionId();
+
+        log.debug("Building message, question path: {}", questionPath);
 
         mimeMessage.setFrom(new InternetAddress(fromAddress));
         mimeMessage.setSubject("New question was added on EXP Portal: " + question.getTitle());

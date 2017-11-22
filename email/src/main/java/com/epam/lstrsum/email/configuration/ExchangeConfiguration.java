@@ -2,6 +2,7 @@ package com.epam.lstrsum.email.configuration;
 
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.enumeration.misc.ExchangeVersion;
 import microsoft.exchange.webservices.data.credential.ExchangeCredentials;
@@ -15,6 +16,7 @@ import java.net.URI;
 import static java.util.Objects.isNull;
 
 @Configuration
+@Slf4j
 public class ExchangeConfiguration {
     @Setter
     @Value("${email.exchangeServer}")
@@ -41,8 +43,11 @@ public class ExchangeConfiguration {
         try {
             service.setUrl(new URI(exchangeServer));
         } catch (final Exception e) {
+            log.error(e.getMessage());
             throw new RuntimeException(e);
         }
+
+        log.debug("Set exchange server: {}", exchangeServer);
 
         return service;
     }

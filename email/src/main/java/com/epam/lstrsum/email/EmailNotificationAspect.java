@@ -44,7 +44,7 @@ public class EmailNotificationAspect {
 
             mailService.sendMessage(template.buildMailMessage(proceed));
         } catch (Exception e) {
-            log.error("Error sending email notification.", e);
+            log.error("Error sending email notification. {}", e.getMessage());
         }
 
         return proceed;

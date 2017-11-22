@@ -50,7 +50,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                     try {
                         return new InternetAddress(s);
                     } catch (Exception e) {
-                        log.warn("Could not parse email address: " + s, e);
+                        log.warn("Could not parse email address: {} {}", s, e.getMessage());
                         return null;
                     }
                 })

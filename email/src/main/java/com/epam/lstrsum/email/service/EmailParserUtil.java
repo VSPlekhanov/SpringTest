@@ -1,5 +1,6 @@
 package com.epam.lstrsum.email.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.util.MimeMessageParser;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
@@ -14,16 +15,21 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
+@Slf4j
 public class EmailParserUtil {
     public static String getReplyTo(MimeMessage mimeMessage) throws MessagingException {
         String[] replyTo = mimeMessage.getHeader("Reply-To");
         if (isNull(replyTo) || replyTo.length == 0) {
             return null;
         }
+
+        log.debug(mimeMessage.getHeader("Reply-To")[0]);
+
         return mimeMessage.getHeader("Reply-To")[0];
     }
 
     public static String getSender(MimeMessage mimeMessage) throws MessagingException {
+        log.debug("Sender: " + ((InternetAddress) mimeMessage.getFrom()[0]).getAddress());
         return ((InternetAddress) mimeMessage.getFrom()[0]).getAddress();
     }
 

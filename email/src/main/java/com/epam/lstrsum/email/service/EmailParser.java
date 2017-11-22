@@ -120,7 +120,7 @@ public class EmailParser {
         if (isNull(title)) {
             throw new NullPointerException("There is no title");
         }
-        log.debug("Subject:", title);
+        log.debug("Subject: {}", title);
         if (title.trim().isEmpty()) {
             log.error("Error: received email has empty title");
             throw new EmailValidationException("Email has empty subject");
@@ -175,7 +175,7 @@ public class EmailParser {
             try {
                 return IOUtils.toByteArray(dataSource.getInputStream());
             } catch (Exception e) {
-                log.warn("Can't convert DataSource to byte array\nWith error {}", e.getMessage());
+                log.error("Can't convert DataSource to byte array\nWith error {}", e.getMessage());
                 return new byte[0];
             }
         }
@@ -188,6 +188,8 @@ public class EmailParser {
             final List<AttachmentAllFieldsDto> attached = new ArrayList<>();
             for (DataSource datasource : attacheDataSourceList) {
                 final String fileName = datasource.getName();
+
+                log.debug("Attachment file name: {}", fileName);
 
                 if (notAllowedFile(fileName)) {
                     continue;
