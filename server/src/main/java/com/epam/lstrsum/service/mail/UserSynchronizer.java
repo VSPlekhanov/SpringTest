@@ -36,7 +36,7 @@ public class UserSynchronizer {
 
     @Scheduled(cron = "0 0 9 * * *")
     public void synchronizeUsers() {
-        log.debug("Start synchronizing users");
+        log.info("Start synchronizing users");
 
         final List<User> allWithRole = userService.findAllWithRole(ROLE_EXTENDED_USER);
         final Set<String> activeUsers = allWithRole.stream()
@@ -60,7 +60,7 @@ public class UserSynchronizer {
 
         final long userAdded = userService.addIfNotExistAllWithRole(emails, ROLE_EXTENDED_USER);
 
-        log.debug("added {} users, activated {} users, deactivated users {}", userAdded, activated, deactivated);
+        log.info("added {} users, activated {} users, deactivated users {}", userAdded, activated, deactivated);
     }
 
 }
