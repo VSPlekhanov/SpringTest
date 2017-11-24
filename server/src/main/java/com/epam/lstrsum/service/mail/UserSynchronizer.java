@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import static com.epam.lstrsum.enums.UserRoleType.ROLE_EXTENDED_USER;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.collections4.CollectionUtils.size;
 
 @Service
 @RequiredArgsConstructor
@@ -39,18 +40,23 @@ public class UserSynchronizer {
         log.info("Start synchronizing users");
 
         final List<User> allWithRole = userService.findAllWithRole(ROLE_EXTENDED_USER);
+        log.info("found {} extended users", size(allWithRole));
+
         final Set<String> activeUsers = allWithRole.stream()
                 .filter(u -> nonNull(u.getIsActive()))
                 .filter(User::getIsActive)
                 .map(User::getEmail)
                 .collect(Collectors.toSet());
+        log.info("found {} active users", size(activeUsers));
 
         final Set<String> notActiveUsers = allWithRole.stream()
                 .filter(u -> isNull(u.getIsActive()) || !u.getIsActive())
                 .map(User::getEmail)
                 .collect(Collectors.toSet());
+        log.info("found {} not active users", size(notActiveUsers));
 
         List<String> emails = exchangeServiceHelper.resolveGroup(distributionList);
+        log.info("found {} users in distribution list", size(emails));
 
         activeUsers.removeAll(emails);
         final long deactivated = userService.setActiveForAllAs(activeUsers, false);
