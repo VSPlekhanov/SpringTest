@@ -35,7 +35,7 @@ public class UserController {
     }
 
     @GetMapping("/telescope/photo")
-    public ResponseEntity<String> getUserPhotoByUri(@NotEmptyString @RequestParam String uri) {
+    public ResponseEntity<byte[]> getUserPhotoByUri(@NotEmptyString @RequestParam String uri) {
         return currentUserInDistributionList() ?
                 ResponseEntity.ok(telescopeService.getUserPhotoByUri(uri)) :
                 ResponseEntity.status(HttpStatus.NOT_FOUND).build();

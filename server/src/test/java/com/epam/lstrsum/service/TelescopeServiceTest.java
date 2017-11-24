@@ -45,9 +45,9 @@ public class TelescopeServiceTest {
         doReturn(expected).when(httpRequestService).sendGetRequest(any(HttpUtilEntity.class), eq(new ParameterizedTypeReference<String>() {
         }));
 
-        String userPhotoByUri = telescopeService.getUserPhotoByUri(SOME_URI);
+        byte[] userPhotoByUri = telescopeService.getUserPhotoByUri(SOME_URI);
 
-        assertThat(userPhotoByUri).isEqualTo(expected);
+        assertThat(new String(userPhotoByUri)).isEqualTo(expected);
     }
 
     @Test

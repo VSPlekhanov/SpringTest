@@ -21,10 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.epam.lstrsum.utils.FunctionalUtil.getEmailPostfix;
-import static com.epam.lstrsum.utils.FunctionalUtil.getList;
-import static com.epam.lstrsum.utils.FunctionalUtil.getMap;
-import static com.epam.lstrsum.utils.FunctionalUtil.getRandomString;
+import static com.epam.lstrsum.utils.FunctionalUtil.*;
 
 @Service
 @Profile("standalone")
@@ -48,9 +45,9 @@ public class TelescopeServiceMockImpl implements TelescopeService {
     }
 
     @Override
-    public String getUserPhotoByUri(String uri) {
+    public byte[] getUserPhotoByUri(String uri) {
         counterService.increment("telescope.get.photo");
-        return base64;
+        return base64.getBytes();
     }
 
     @Override

@@ -54,12 +54,12 @@ public class TelescopeServiceImpl implements TelescopeService {
     }
 
     @Override
-    public String getUserPhotoByUri(String uri) {
+    public byte[] getUserPhotoByUri(String uri) {
         return httpRequestService.sendGetRequest(
                 getEntityTemplate()
                         .url(String.format(TELESCOPE_API_PHOTO_URL, uri))
                         .build(),
-                new ParameterizedTypeReference<String>() {
+                new ParameterizedTypeReference<byte[]>() {
                 }
         );
     }

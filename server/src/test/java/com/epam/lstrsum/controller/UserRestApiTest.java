@@ -12,10 +12,7 @@ import org.springframework.http.HttpMethod;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeEmployeeEntityDtos;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class UserRestApiTest extends SetUpDataBaseCollections {
     @Autowired
@@ -103,7 +100,7 @@ public class UserRestApiTest extends SetUpDataBaseCollections {
     public void getUserPhotoByUri() {
         String uri = someString();
 
-        when(telescopeService.getUserPhotoByUri(uri)).thenReturn(someString());
+        when(telescopeService.getUserPhotoByUri(uri)).thenReturn(someString().getBytes());
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         assertThat(restTemplate.exchange(
