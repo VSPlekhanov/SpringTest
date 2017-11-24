@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
+import static org.apache.commons.collections4.CollectionUtils.size;
 
 @Service
 @Slf4j
@@ -73,7 +74,7 @@ public class TelescopeServiceImpl implements TelescopeService {
                         .parametersValues(
                                 Arrays.asList(TELESCOPE_API_META_TYPE_FIELD_VALUE,
                                         TELESCOPE_API_EMAIL_SEARCH_QUERY + TELESCOPE_API_EMAIL_SEARCH_FILTER_EMAIL + emailsForSearch +
-                                                TELESCOPE_API_EMAIL_SEARCH_FILTER_EMPLOYMENT_STATUS,
+                                                TELESCOPE_API_EMAIL_SEARCH_FILTER_EMPLOYMENT_STATUS + size(emails) + "}",
                                         TELESCOPE_API_FIELDS_FOR_ADD_NEW_USER))
                         .build(),
                 LIST_TELESCOPE_EMPLOYEE_ENTITIES);
