@@ -2,8 +2,9 @@ package com.epam.lstrsum.controller;
 
 import com.epam.lstrsum.dto.common.CounterDto;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
+import com.epam.lstrsum.dto.question.QuestionAllFieldsListDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
-import com.epam.lstrsum.dto.question.QuestionListDto;
+import com.epam.lstrsum.dto.question.QuestionWithAnswersCountListDto;
 import com.epam.lstrsum.dto.question.QuestionParsedQueryDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
@@ -85,7 +86,7 @@ public class QuestionController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<QuestionListDto> getQuestions(
+    public ResponseEntity<QuestionWithAnswersCountListDto> getQuestions(
             @RequestParam(required = false, defaultValue = "-1") int questionPage,
             @RequestParam(required = false, defaultValue = "-1") int questionAmount) {
 
@@ -93,26 +94,27 @@ public class QuestionController {
             questionAmount = maxQuestionAmount;
         }
 
-        if (questionPage < 0) {
-            questionPage = 0;
-        }
-
         boolean currentUserInDistributionList = currentUserInDistributionList();
         Long count = getTotalQuestionsCount(currentUserInDistributionList);
 
-        if (questionAmount == 0) {
-            return ResponseEntity.ok(new QuestionListDto(count, Collections.emptyList()));
+        if (questionAmount <= 0 || count <= 0L) {
+            return ResponseEntity.ok(new QuestionWithAnswersCountListDto(count, Collections.emptyList()));
         }
 
-        if (questionPage > count.intValue()) {
-            questionPage = count.intValue() / questionAmount - 1;
+        int lastPage = (count.intValue() - 1) / questionAmount;
+        if (questionPage > lastPage) {
+            questionPage = lastPage;
+        }
+
+        if (questionPage < 0) {
+            questionPage = 0;
         }
 
         List<QuestionWithAnswersCountDto> questionsFromService = currentUserInDistributionList ?
                 questionService.findAllQuestionsBaseDto(questionPage, questionAmount) :
                 questionService.findAllQuestionBaseDtoWithAllowedSub(questionPage, questionAmount, userRuntimeRequestComponent.getEmail());
 
-        return ResponseEntity.ok(new QuestionListDto(count, questionsFromService));
+        return ResponseEntity.ok(new QuestionWithAnswersCountListDto(count, questionsFromService));
     }
 
     @GetMapping("/count")
@@ -131,14 +133,36 @@ public class QuestionController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<QuestionAllFieldsDto>> search(
+    public ResponseEntity<QuestionAllFieldsListDto> search(
             @RequestParam("query") String query,
-            @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "size", required = false) Integer size) {
-        List<QuestionAllFieldsDto> questionDtoList = currentUserInDistributionList() ?
+            @RequestParam(required = false, defaultValue = "-1") Integer page,
+            @RequestParam(required = false, defaultValue = "-1") Integer size) {
+
+        if ((size > maxQuestionAmount) || (size <= 0)) {
+            size = maxQuestionAmount;
+        }
+
+        boolean currentUserInDistributionList = currentUserInDistributionList();
+        Long count = getSearchCount(query, currentUserInDistributionList);
+
+        if (size <= 0 || count <= 0L) {
+            return ResponseEntity.ok(new QuestionAllFieldsListDto(count, Collections.emptyList()));
+        }
+
+        int lastPage = (count.intValue() - 1) / size;
+        if (page > lastPage) {
+            page = lastPage;
+        }
+
+        if (page < 0) {
+            page = 0;
+        }
+
+        List<QuestionAllFieldsDto> questionDtoList = currentUserInDistributionList ?
                 questionService.search(query, page, size) :
                 questionService.searchWithAllowedSub(query, page, size, userRuntimeRequestComponent.getEmail());
-        return ResponseEntity.ok(questionDtoList);
+
+        return ResponseEntity.ok(new QuestionAllFieldsListDto(count, questionDtoList));
     }
 
     @GetMapping("/smartSearch")
@@ -186,11 +210,19 @@ public class QuestionController {
 
     @GetMapping("/search/count")
     public ResponseEntity<CounterDto> searchCount(@RequestParam("query") String query) {
-        Long count = currentUserInDistributionList() ?
-                questionService.getTextSearchResultsCount(query) :
-                questionService.getTextSearchResultsCountWithAllowedSub(query, userRuntimeRequestComponent.getEmail());
+        Long count = getSearchCount(query);
         return ResponseEntity.ok()
                 .body(new CounterDto(count));
+    }
+
+    private Long getSearchCount(@RequestParam("query") String query) {
+        return getSearchCount(query, currentUserInDistributionList());
+    }
+
+    private Long getSearchCount(@RequestParam("query") String query, boolean currentUserInDistributionList) {
+        return currentUserInDistributionList ?
+                questionService.getTextSearchResultsCount(query) :
+                questionService.getTextSearchResultsCountWithAllowedSub(query, userRuntimeRequestComponent.getEmail());
     }
 
     @GetMapping("/getRelevantTags")
