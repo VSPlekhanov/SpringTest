@@ -6,7 +6,6 @@ import com.epam.lstrsum.service.impl.TelescopeServiceImpl;
 import com.epam.lstrsum.testutils.InstantiateUtil;
 import com.epam.lstrsum.utils.HttpUtilEntity;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.springframework.core.ParameterizedTypeReference;
@@ -41,10 +40,9 @@ public class TelescopeServiceTest {
     }
 
     @Test
-    @Ignore
     public void getPhotoByUri() {
-        byte[] expected = new byte[] { (byte)0xe0, 0x4f, (byte)0xd0};
-        doReturn(expected).when(httpRequestService).sendGetRequest(any(HttpUtilEntity.class), eq(new ParameterizedTypeReference<String>() {
+        byte[] expected = new byte[]{ (byte)0xe0, 0x4f, (byte)0xd0};
+        doReturn(expected).when(httpRequestService).sendGetRequest(any(HttpUtilEntity.class), eq(new ParameterizedTypeReference<byte[]>() {
         }));
 
         byte[] userPhotoByUri = telescopeService.getUserPhotoByUri(SOME_URI);
