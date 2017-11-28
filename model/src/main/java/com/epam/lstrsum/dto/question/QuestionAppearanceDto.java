@@ -11,19 +11,21 @@ import java.util.List;
 
 
 @Getter
-@Setter
 @NoArgsConstructor
+@Setter
 public class QuestionAppearanceDto extends QuestionBaseDto {
     private String text;
     private List<AttachmentPropertiesDto> attachments;
     private List<UserBaseDto> allowedSubs;
+    private boolean currentUserSubscribed;
 
     public QuestionAppearanceDto(
             String questionId, String title, String[] tags, Instant createdAt, Instant deadLine,
-            UserBaseDto author, String text
+            UserBaseDto authorId, String text, boolean currentUserSubscribed
     ) {
-        super(questionId, title, tags, createdAt, deadLine, author);
+        super(questionId, title, tags, createdAt, deadLine, authorId);
         this.text = text;
+        this.currentUserSubscribed = currentUserSubscribed;
     }
 
     @Override
@@ -35,6 +37,7 @@ public class QuestionAppearanceDto extends QuestionBaseDto {
         QuestionAppearanceDto that = (QuestionAppearanceDto) o;
         if (!that.getAllowedSubs().equals(this.getAllowedSubs())) return false;
         if (!that.getAttachments().equals(this.getAttachments())) return false;
+        if (that.isCurrentUserSubscribed() != this.isCurrentUserSubscribed()) return false;
         return text != null ? text.equals(that.text) : that.text == null;
     }
 

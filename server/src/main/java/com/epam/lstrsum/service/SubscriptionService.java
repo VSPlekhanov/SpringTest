@@ -1,28 +1,24 @@
 package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.model.Question;
-import com.epam.lstrsum.model.Subscription;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 public interface SubscriptionService {
-    List<Subscription> findAll();
 
-    List<Subscription> findAllSubscriptionsEntitiesToQuestionWithThisId(String questionId);
+    Set<String> getEmailsToNotifyAboutNewQuestionFromPortal(Question question);
 
-    Set<String> getEmailsToNotificateAboutNewQuestion(Question question);
+    Set<String> getEmailsToNotifyAboutNewAnswerFromPortal(String questionId);
 
-    Set<String> getEmailsToNotificateAboutNewAnswer(String questionId);
+    Set<String> getEmailsToNotifyAboutNewQuestionFromEmail(Question question);
 
-    List<String> getEmailsOfSubscribersOfQuestion(String questionId);
+    Set<String> getEmailsToNotifyAboutNewAnswerFromEmail(String questionId);
 
-    List<String> getEmailsOfAuthorAndAllowedSubsOfQuestion(String questionId);
+    boolean subscribeForQuestionByUser(String questionId, String email);
 
-    void addOrUpdate(String userId, List<String> questionIds);
+    boolean unsubscribeForQuestionByUser(String questionId, String email);
 
-    default void addOrUpdate(String userId, String questionId) {
-        addOrUpdate(userId, Collections.singletonList(questionId));
-    }
+    boolean subscribeForQuestionByAllowedSub(String questionId, String email);
+
+    boolean unsubscribeForQuestionByAllowedSub(String questionId, String email);
 }

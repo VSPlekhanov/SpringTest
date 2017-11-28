@@ -24,16 +24,16 @@ public class VoteServiceImpl implements VoteService {
     private final AnswerService answerService;
 
     @Override
-    public boolean voteForAnswerByUser(String answerId, String userId) {
-        Update addVote = new Update().addToSet("answers.$.votes", new Vote(userId));
-        log.debug("User {} voted answer {}", userId, answerId);
+    public boolean voteForAnswerByUser(String answerId, String userEmail) {
+        Update addVote = new Update().addToSet("answers.$.votes", new Vote(userEmail));
+        log.debug("User {} voted answer {}", userEmail, answerId);
         return updateQuestionWithAnswerVote(getQueryForAnswerId(answerId), addVote);
     }
 
     @Override
-    public boolean unvoteForAnswerByUser(String answerId, String userId) {
-        Update pullVote = new Update().pull("answers.$.votes", new Vote(userId));
-        log.debug("User {} unvoted answer {}", userId, answerId);
+    public boolean unvoteForAnswerByUser(String answerId, String userEmail) {
+        Update pullVote = new Update().pull("answers.$.votes", new Vote(userEmail));
+        log.debug("User {} unvoted answer {}", userEmail, answerId);
         return updateQuestionWithAnswerVote(getQueryForAnswerId(answerId), pullVote);
     }
 
@@ -60,7 +60,7 @@ public class VoteServiceImpl implements VoteService {
     private void checkAnswerExistsAndUserHasPermission(String answerId, String userEmail) {
         Question question = mongoTemplate.findOne(getQueryForAnswerId(answerId), Question.class);
         if ( isNull(answerService.getAnswerByIdAndQuestionId(answerId, question.getQuestionId())) ||
-                isUserAllowedSubOnQuestion(question, userEmail) ) {
+                !isUserAllowedSubOnQuestion(question, userEmail) ) {
             BusinessLogicException e = new BusinessLogicException(
                     "Answer doesn't exist or user with email : '" + userEmail + " ' has no permission to answer id : '" + answerId);
             log.error(e.getMessage());

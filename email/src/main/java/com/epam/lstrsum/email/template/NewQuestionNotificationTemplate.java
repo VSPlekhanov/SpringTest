@@ -15,7 +15,6 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.util.Arrays;
 
 @Component
 @Profile("email")
@@ -35,7 +34,7 @@ public class NewQuestionNotificationTemplate implements MailTemplate<Question> {
     private String fromAddress;
 
     @Override
-    public MimeMessage buildMailMessage(Question question) throws MessagingException {
+    public MimeMessage buildMailMessage(Question question, boolean fromPortal) throws MessagingException {
         MimeMessage mimeMessage = new MimeMessage((Session) null);
         String questionPath = defaultQuestionLink + question.getQuestionId();
 
@@ -49,12 +48,16 @@ public class NewQuestionNotificationTemplate implements MailTemplate<Question> {
                 "utf-8",
                 "html");
 
-        mimeMessage.setRecipients(Message.RecipientType.TO, getAddresses(question));
+        mimeMessage.setRecipients(Message.RecipientType.TO,
+                fromPortal ? getAddressesToNotifyFromPortal(question) : getAddressesToNotifyFromEmail(question));
         return mimeMessage;
     }
 
-    private Address[] getAddresses(Question source) {
-        return Arrays.stream(emailCollection.getEmailAddresses(source))
-                .toArray(Address[]::new);
+    private Address[] getAddressesToNotifyFromEmail(Question source) {
+        return emailCollection.getEmailAddressesToNotifyFromEmail(source);
+    }
+
+    private Address[] getAddressesToNotifyFromPortal(Question source) {
+        return emailCollection.getEmailAddressesToNotifyFromPortal(source);
     }
 }

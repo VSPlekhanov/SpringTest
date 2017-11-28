@@ -1,7 +1,8 @@
 package com.epam.lstrsum.controller;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
-import com.epam.lstrsum.service.SubscriptionService;
+import com.epam.lstrsum.model.User;
+import com.epam.lstrsum.service.QuestionService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -10,38 +11,71 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class SubscriptionControllerTest extends SetUpDataBaseCollections {
 
     @Autowired
-    private TestRestTemplate testRestTemplate;
+    private TestRestTemplate restTemplate;
 
     @Autowired
-    private SubscriptionService subscriptionService;
+    private QuestionService questionService;
 
     @Test
-    public void subscribeTest() {
-        String someUserEmail = "Bob_Hoplins@epam.com";
-        doReturn(someUserEmail).when(userRuntimeRequestComponent).getEmail();
-        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
+    public void subscribeFromDlTest() {
+        subscribeTest("6u_6r", "Donald_Gardner@epam.com", true);
+    }
 
-        String someQuestionId = "1u_1r";
-        ResponseEntity<Object> exchange = testRestTemplate.exchange(
-                "/api/subscription/" + someQuestionId, HttpMethod.PUT, RequestEntity.EMPTY, Object.class
+    @Test
+    public void unsubscribeFromDlTest() {
+        unsubscribeTest("6u_6r", "John_Doe@epam.com", false);
+    }
+
+    @Test
+    public void subscribeFromAllowedSubTest() {
+        subscribeTest("6u_6r", "Bob_Hoplins@epam.com", true);
+    }
+
+    @Test
+    public void unsubscribeFromAllowedSubTest() {
+        unsubscribeTest("6u_6r", "Tyler_Greeds@epam.com", false);
+    }
+
+    private void subscribeTest(String questionId, String userEmail, boolean isInDistributionList) {
+        List<User> listBeforeUpdate = questionService.getQuestionById(questionId).getSubscribers();
+
+        doReturn(userEmail).when(userRuntimeRequestComponent).getEmail();
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(isInDistributionList);
+
+        ResponseEntity<Object> exchange = restTemplate.exchange(
+                String.format("/api/subscription/subscribe/%s", questionId),
+                HttpMethod.PUT, RequestEntity.EMPTY, Object.class
         );
 
         assertThat(exchange.getStatusCode()).isEqualByComparingTo(HttpStatus.NO_CONTENT);
-
-        assertThat(subscriptionService.findAllSubscriptionsEntitiesToQuestionWithThisId(someQuestionId))
-                .anySatisfy(
-                        subscription -> assertThat(subscription.getUserId().getEmail()).isEqualTo(someUserEmail)
-                );
-
+        assertThat(questionService.getQuestionById(questionId).getSubscribers())
+                .hasSize(listBeforeUpdate.size() + 1);
         verify(userRuntimeRequestComponent, times(1)).getEmail();
     }
+
+    private void unsubscribeTest(String questionId, String userEmail, boolean isInDistributionList) {
+        List<User> listBeforeUpdate = questionService.getQuestionById(questionId).getSubscribers();
+
+        doReturn(userEmail).when(userRuntimeRequestComponent).getEmail();
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(isInDistributionList);
+
+        ResponseEntity<Object> exchange = restTemplate.exchange(
+                String.format("/api/subscription/unsubscribe/%s", questionId),
+                HttpMethod.PUT, RequestEntity.EMPTY, Object.class
+        );
+
+        assertThat(exchange.getStatusCode()).isEqualByComparingTo(HttpStatus.NO_CONTENT);
+        assertThat(questionService.getQuestionById(questionId).getSubscribers())
+                .hasSize(listBeforeUpdate.size() - 1);
+        verify(userRuntimeRequestComponent, times(1)).getEmail();
+    }
+
 }

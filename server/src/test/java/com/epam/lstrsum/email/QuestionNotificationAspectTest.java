@@ -18,6 +18,8 @@ import javax.mail.Message;
 import javax.mail.internet.MimeMessage;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,13 +27,7 @@ import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ActiveProfiles("email")
 public class QuestionNotificationAspectTest extends SetUpDataBaseCollections {
@@ -55,16 +51,25 @@ public class QuestionNotificationAspectTest extends SetUpDataBaseCollections {
     private EmailNotificationAspect aspect;
 
     @Test
-    public void whenNewQuestionAddedMailWithExpectedSubjectShouldBeSent() throws Exception {
+    public void whenNewQuestionAddedMailFromPortalWithExpectedSubjectShouldBeSent() throws Exception {
+        whenNewQuestionAddedMailWithExpectedSubjectShouldBeSent(true, questionService::addNewQuestion);
+    }
+
+    @Test
+    public void whenNewQuestionAddedMailFromEmailWithExpectedSubjectShouldBeSent() throws Exception {
+        whenNewQuestionAddedMailWithExpectedSubjectShouldBeSent(false, questionService::addNewQuestionFromEmail);
+    }
+
+    public void whenNewQuestionAddedMailWithExpectedSubjectShouldBeSent(boolean fromPortal, BiFunction<QuestionPostDto, String, Question> addQuestion) throws Exception {
         String authorEmail = "John_Doe@epam.com";
         QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 "just some text", 11223344L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
 
-        Question savedDto = questionService.addNewQuestion(postDto, authorEmail);
+        Question savedDto = addQuestion.apply(postDto, authorEmail);
 
-        MimeMessage expected = template.buildMailMessage(savedDto);
+        MimeMessage expected = template.buildMailMessage(savedDto, fromPortal);
 
         verify(mailService).sendMessage(any());
 
@@ -76,33 +81,49 @@ public class QuestionNotificationAspectTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void whenNewQuestionAddedMailShouldBeSentOnce() throws Exception {
+    public void whenNewQuestionAddedFromPortalMailShouldBeSentOnce() throws Exception {
+        whenNewQuestionAddedMailShouldBeSentOnce(questionService::addNewQuestion);
+    }
+
+    @Test
+    public void whenNewQuestionAddedFromEmailMailShouldBeSentOnce() throws Exception {
+        whenNewQuestionAddedMailShouldBeSentOnce(questionService::addNewQuestionFromEmail);
+    }
+
+    public void whenNewQuestionAddedMailShouldBeSentOnce(BiFunction<QuestionPostDto, String, Question> addQuestion) throws Exception {
         String authorEmail = "John_Doe@epam.com";
         QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 "just some text", 11223344L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
 
-        Question savedDto = questionService.addNewQuestion(postDto, authorEmail);
-
-        MimeMessage expected = template.buildMailMessage(savedDto);
-
+        addQuestion.apply(postDto, authorEmail);
         verify(mailService, times(1)).sendMessage(any());
     }
 
     @Test
-    public void whenNewQuestionAddedNotificationShouldBeSentToCorrectMailingList() throws Exception {
+    public void whenNewQuestionAddedFromPortalNotificationShouldBeSentToCorrectMailingList() throws Exception {
+        whenNewQuestionAddedNotificationShouldBeSentToCorrectMailingList(
+                questionService::addNewQuestion, questionEmailCollection::getEmailAddressesToNotifyFromPortal);
+    }
+
+    @Test
+    public void whenNewQuestionAddedFromEmailNotificationShouldBeSentToCorrectMailingList() throws Exception {
+        whenNewQuestionAddedNotificationShouldBeSentToCorrectMailingList(
+                questionService::addNewQuestionFromEmail, questionEmailCollection::getEmailAddressesToNotifyFromEmail);
+    }
+
+    public void whenNewQuestionAddedNotificationShouldBeSentToCorrectMailingList(
+            BiFunction<QuestionPostDto, String, Question> addQuestion,
+            Function<Question, Address[]> getEmails) throws Exception {
         String authorEmail = "John_Doe@epam.com";
         QuestionPostDto postDto = new QuestionPostDto(someString(), new String[]{"1", "2", "3", "go"},
                 "just some text", 11223344L,
                 Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
                         "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com"), emptyList());
 
-        Question savedDto = questionService.addNewQuestion(postDto, authorEmail);
-
-        MimeMessage expected = template.buildMailMessage(savedDto);
-
-        Address[] expectedEmails = questionEmailCollection.getEmailAddresses(savedDto);
+        Question savedDto = addQuestion.apply(postDto, authorEmail);
+        Address[] expectedEmails = getEmails.apply(savedDto);
 
         verify(mailService).sendMessage(any());
 
@@ -116,9 +137,18 @@ public class QuestionNotificationAspectTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void whenQuestionServiceThrowExceptionNotificationShouldNotBeSent() throws Exception {
+    public void whenQuestionServiceFromPortalThrowExceptionNotificationShouldNotBeSent() throws Exception {
         try {
             questionService.addNewQuestion(null, "");
+        } catch (Exception e) {
+            verify(mailService, never()).sendMessage(any());
+        }
+    }
+
+    @Test
+    public void whenQuestionServiceFromEmailThrowExceptionNotificationShouldNotBeSent() throws Exception {
+        try {
+            questionService.addNewQuestionFromEmail(null, "");
         } catch (Exception e) {
             verify(mailService, never()).sendMessage(any());
         }
