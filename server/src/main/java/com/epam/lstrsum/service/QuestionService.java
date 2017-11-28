@@ -44,13 +44,14 @@ public interface QuestionService extends ElasticSearchService {
     @EmailNotification(template = NewQuestionNotificationTemplate.class)
     Question addNewQuestion(QuestionPostDto questionPostDto, String email, MultipartFile[] files);
 
+    @EmailNotification(template = NewQuestionNotificationTemplate.class, fromPortal = false)
+    Question addNewQuestionFromEmail(QuestionPostDto questionPostDto, String email);
+
     QuestionAllFieldsDto getQuestionAllFieldDtoByQuestionId(String questionId);
 
     void delete(String id);
 
-    void deleteSubscriptionsByQuestionId(String questionId);
-
-    Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestionId(String questionId);
+    Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestionId(String questionId, String email);
 
     Optional<QuestionAppearanceDto> getQuestionAppearanceDtoByQuestionIdWithAllowedSub(String questionId, String userEmail);
 

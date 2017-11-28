@@ -39,6 +39,28 @@
         "$id": "6u"
       }
     ],
+    "subscribers": [
+      {
+        "$ref": "User",
+        "$id": "2u"
+      },
+      {
+        "$ref": "User",
+        "$id": "3u"
+      },
+      {
+        "$ref": "User",
+        "$id": "4u"
+      },
+      {
+        "$ref": "User",
+        "$id": "5u"
+      },
+      {
+        "$ref": "User",
+        "$id": "6u"
+      }
+    ],
     "deadLine": {
       "$date": "2016-05-19T11:00:00Z"
     },
@@ -142,6 +164,24 @@
         "$id": "6u"
       }
     ],
+    "subscribers": [
+      {
+        "$ref": "User",
+        "$id": "1u"
+      },
+      {
+        "$ref": "User",
+        "$id": "2u"
+      },
+      {
+        "$ref": "User",
+        "$id": "5u"
+      },
+      {
+        "$ref": "User",
+        "$id": "6u"
+      }
+    ],
     "deadLine": {
       "$date": "2017-08-17T09:00:00Z"
     },
@@ -184,6 +224,24 @@
     },
     "upVote": 0,
     "allowedSubs": [
+      {
+        "$ref": "User",
+        "$id": "1u"
+      },
+      {
+        "$ref": "User",
+        "$id": "3u"
+      },
+      {
+        "$ref": "User",
+        "$id": "4u"
+      },
+      {
+        "$ref": "User",
+        "$id": "5u"
+      }
+    ],
+    "subscribers": [
       {
         "$ref": "User",
         "$id": "1u"
@@ -279,6 +337,12 @@
         "$id": "6u"
       }
     ],
+    "subscribers": [
+      {
+      "$ref": "User",
+      "$id": "3u"
+      }
+    ],
     "deadLine": {
       "$date": "2017-05-13T10:00:00Z"
     },
@@ -354,6 +418,16 @@
       {
         "$ref": "User",
         "$id": "6u"
+      }
+    ],
+    "subscribers": [
+      {
+        "$ref": "User",
+        "$id": "1u"
+      },
+      {
+        "$ref": "User",
+        "$id": "2u"
       }
     ],
     "deadLine": {
@@ -442,11 +516,17 @@
       },
       {
         "$ref": "User",
-        "$id": "4u"
+        "$id": "5u"
+      }
+    ],
+    "subscribers": [
+      {
+        "$ref": "User",
+        "$id": "1u"
       },
       {
         "$ref": "User",
-        "$id": "5u"
+        "$id": "3u"
       }
     ],
     "deadLine": {

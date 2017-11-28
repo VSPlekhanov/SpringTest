@@ -3,6 +3,8 @@ package com.epam.lstrsum.aggregators;
 import com.epam.lstrsum.converter.QuestionDtoMapper;
 import com.epam.lstrsum.converter.UserDtoMapper;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
+import com.epam.lstrsum.model.Question;
+import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.AttachmentRepository;
 import com.epam.lstrsum.testutils.InstantiateUtil;
 import org.junit.Before;
@@ -11,13 +13,10 @@ import org.mockito.Mock;
 
 import java.util.List;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestion;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionPostDto;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
+import static com.epam.lstrsum.testutils.InstantiateUtil.*;
+import static com.epam.lstrsum.utils.FunctionalUtil.getList;
 import static com.epam.lstrsum.utils.FunctionalUtil.getListWithSize;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -65,11 +64,11 @@ public class QuestionAggregatorTest {
 
     @Test
     public void modelToQuestionAppearanceDto() throws Exception {
-        questionAggregator.modelToQuestionAppearanceDto(someQuestion());
+        questionAggregator.modelToQuestionAppearanceDto(someQuestion(), someString());
 
         verify(userMapper, times(1)).modelToBaseDto(any());
         verify(attachmentRepository, times(1)).findAll(anyList());
-        verify(questionMapper, times(1)).modelToQuestionAppearanceDto(any(), any(), any());
+        verify(questionMapper, times(1)).modelToQuestionAppearanceDto(any(), any(), any(), anyBoolean());
     }
 
     @Test
@@ -80,7 +79,7 @@ public class QuestionAggregatorTest {
         verify(userAggregator, times(questionPostDto.getAllowedSubs().size() + 1))
                 .findByEmail(anyString());
         verify(questionMapper, times(1))
-                .questionPostDtoAndAuthorEmailToQuestion(any(), any(), any());
+                .questionPostDtoAndAuthorEmailToQuestion(any(), any(), any(), any());
     }
 
     @Test
@@ -92,7 +91,7 @@ public class QuestionAggregatorTest {
         verify(userAggregator, times(questionPostDto.getAllowedSubs().size() + 1))
                 .findByEmail(anyString());
         verify(questionMapper, times(1))
-                .questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(any(), any(), any(), any());
+                .questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(any(), any(), any(), any(), any());
     }
 
     @Test
@@ -103,4 +102,30 @@ public class QuestionAggregatorTest {
         verify(userMapper, times(size)).modelToBaseDto(any());
         verify(questionMapper, times(1)).subscriptionsToListOfQuestionBaseDto(any(), any());
     }
+
+    @Test
+    public void currentUserSubscribeQuestionTest(){
+        Question question = someQuestion();
+        List<User> subscribers = getList(InstantiateUtil::someUser);
+        User currentUser = someUser();
+        subscribers.add(currentUser);
+        question.setSubscribers(subscribers);
+
+        questionAggregator.modelToQuestionAppearanceDto(question, currentUser.getEmail());
+        verify(questionMapper).modelToQuestionAppearanceDto(any(), any(), any(), eq(true));
+    }
+
+    @Test
+    public void currentUserNotSubscribeQuestionTest(){
+        Question question = someQuestion();
+        List<User> subscribers = getList(InstantiateUtil::someUser);
+        User currentUser = someUser();
+        subscribers.remove(currentUser);
+        question.setSubscribers(subscribers);
+
+        questionAggregator.modelToQuestionAppearanceDto(question, currentUser.getEmail());
+        verify(questionMapper).modelToQuestionAppearanceDto(any(), any(), any(), eq(false));
+    }
+
+
 }

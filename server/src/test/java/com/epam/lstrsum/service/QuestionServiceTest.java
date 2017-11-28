@@ -9,7 +9,6 @@ import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
 import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.exception.QuestionValidationException;
 import com.epam.lstrsum.model.Question;
-import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.persistence.UserRepository;
@@ -27,22 +26,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_QUESTION_ID;
-import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_USER_EMAIL;
-import static com.epam.lstrsum.testutils.InstantiateUtil.NON_EXISTING_QUESTION_ID;
-import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someInt;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someLong;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionPostDto;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionPostDtoWithAllowedSubs;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
+import static com.epam.lstrsum.testutils.InstantiateUtil.*;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class QuestionServiceTest extends SetUpDataBaseCollections {
     private static final String SEARCH_PHRASE = "android";
@@ -218,7 +209,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
     @Test
     public void questionServiceIsAbleToGetQuestionAppearanceDTOFromDBIfIdIsValid() {
         Optional<QuestionAppearanceDto> dtoQuestionDto =
-                questionService.getQuestionAppearanceDtoByQuestionId(InstantiateUtil.EXISTING_QUESTION_ID);
+                questionService.getQuestionAppearanceDtoByQuestionId(InstantiateUtil.EXISTING_QUESTION_ID, someString());
 
         assertThat(dtoQuestionDto.isPresent(), is(true));
     }
@@ -226,9 +217,35 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
     @Test
     public void getQuestionAppearanceDtoByQuestionIdIfIdIsNotExists() {
         Optional<QuestionAppearanceDto> dtoQuestionDto =
-                questionService.getQuestionAppearanceDtoByQuestionId(InstantiateUtil.NON_EXISTING_QUESTION_ID);
+                questionService.getQuestionAppearanceDtoByQuestionId(InstantiateUtil.NON_EXISTING_QUESTION_ID, someString());
 
         assertThat(dtoQuestionDto.isPresent(), is(false));
+    }
+
+    @Test
+    public void getQuestionAppearanceDtoByQuestionIdWhichIsSubscribedByUser() {
+        Optional<QuestionAppearanceDto> questionDto = questionService.getQuestionAppearanceDtoByQuestionId(
+                InstantiateUtil.EXISTING_QUESTION_ID,
+                "Bob_Hoplins@epam.com");
+        questionDto.ifPresent(
+                questionAppearanceDto -> assertTrue(questionAppearanceDto.isCurrentUserSubscribed()));
+    }
+
+    @Test
+    public void getQuestionAppearanceDtoByQuestionIdWhichIsNotSubscribedByUser() {
+        Optional<QuestionAppearanceDto> questionDto = questionService.getQuestionAppearanceDtoByQuestionId(
+                InstantiateUtil.EXISTING_QUESTION_ID,
+                "John_Doe@epam.com");
+        questionDto.ifPresent(
+                questionAppearanceDto -> assertFalse(questionAppearanceDto.isCurrentUserSubscribed()));
+    }
+
+    @Test
+    public void getQuestionAppearanceDtoByQuestionIdWithoutPermissions() {
+        Optional<QuestionAppearanceDto> questionDto = questionService.getQuestionAppearanceDtoByQuestionIdWithAllowedSub(
+                InstantiateUtil.EXISTING_QUESTION_ID,
+                "Tyler_Derden@mylo.com");
+        assertFalse(questionDto.isPresent());
     }
 
     @Test(expected = QuestionValidationException.class)
@@ -343,44 +360,6 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
         questionService.delete(validQuestionId);
 
         assertThat(questionRepository.findOne(validQuestionId)).isNull();
-
-        assertThat(mongoTemplate.findAll(Subscription.class))
-                .allSatisfy(
-                        subscription -> assertThat(subscription.getQuestionIds().stream().map(Question::getQuestionId))
-                                .doesNotContain(validQuestionId)
-                );
-    }
-
-    @Test
-    public void checkDeleting() {
-        final String someQuestionWhoSubscribed = "6u_6r";
-
-        assertThat(mongoTemplate.findAll(Subscription.class))
-                .anySatisfy(
-                        subscription -> assertThat(subscription.getQuestionIds().stream().map(Question::getQuestionId))
-                                .contains(someQuestionWhoSubscribed)
-                );
-
-        questionService.deleteSubscriptionsByQuestionId(someQuestionWhoSubscribed);
-
-        assertThat(mongoTemplate.findAll(Subscription.class))
-                .allSatisfy(
-                        subscription -> assertThat(subscription.getQuestionIds().stream().map(Question::getQuestionId))
-                                .doesNotContain(someQuestionWhoSubscribed)
-                );
-    }
-
-    @Test
-    public void notUpdateAnything() {
-        final String notExistingQuestionId = NON_EXISTING_QUESTION_ID;
-
-        assertThat(mongoTemplate.findAll(Subscription.class))
-                .allSatisfy(
-                        subscription -> assertThat(subscription.getQuestionIds().stream().map(Question::getQuestionId))
-                                .doesNotContain(notExistingQuestionId)
-                );
-
-        questionService.deleteSubscriptionsByQuestionId(notExistingQuestionId);
     }
 
     @Test
@@ -397,4 +376,20 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
         assertThat(questionService.findAllQuestionBaseDtoWithAllowedSub(0, 100, EXISTING_USER_EMAIL))
                 .hasSize(6);
     }
+
+    @Test
+    public void addQuestionWithSuccessInitializeSubscribersListTest() {
+        QuestionPostDto questionPostDto = someQuestionPostDto();
+        questionPostDto.setAllowedSubs(Arrays.asList("John_Doe@epam.com", "Bob_Hoplins@epam.com", "Donald_Gardner@epam.com"));
+
+        List<Question> questionListBeforeUpdate = questionRepository.findAll();
+
+        Question question = questionService.addNewQuestion(questionPostDto, "John_Doe@epam.com");
+        List<User> expectedSubscribers = question.getAllowedSubs();
+        expectedSubscribers.add(question.getAuthorId());
+
+        assertThat(questionRepository.findAll().size()).isEqualTo(questionListBeforeUpdate.size() + 1);
+        assertThat(question.getSubscribers()).containsExactlyInAnyOrder(expectedSubscribers.toArray(new User[4]));
+    }
+
 }

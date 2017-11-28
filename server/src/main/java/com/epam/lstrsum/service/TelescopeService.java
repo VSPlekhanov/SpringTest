@@ -21,7 +21,7 @@ public interface TelescopeService {
     String TELESCOPE_API_EMAIL_SEARCH_QUERY = "{\"statements\":[{\"query\":\"*\"}],";
     String TELESCOPE_API_EMAIL_SEARCH_FILTER_EMAIL = "\"filters\":[{\"field\":\"email\",\"values\":[";
     String TELESCOPE_API_EMAIL_SEARCH_FILTER_EMPLOYMENT_STATUS =
-            "]},{\"field\":\"employmentStatus\",\"values\":[\"Employee\",\"Contractor\",\"Intern\",\"Trainee\"]}]}";
+            "]},{\"field\":\"employmentStatus\",\"values\":[\"Employee\",\"Contractor\",\"Intern\",\"Trainee\"]}],\"limit\":";
     String TELESCOPE_API_FIELDS_FOR_ADD_NEW_USER = "email,firstName,lastName";
 
     List<String> SEARCH_QUERY_PARAMETERS_NAMES = Arrays.asList("metaType", "query", "fields");

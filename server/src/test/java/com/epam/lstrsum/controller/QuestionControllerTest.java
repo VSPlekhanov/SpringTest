@@ -24,12 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.NON_EXISTING_QUESTION_ID;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someInt;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestion;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionAppearanceDto;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionPostDto;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
+import static com.epam.lstrsum.testutils.InstantiateUtil.*;
 import static com.epam.lstrsum.utils.FunctionalUtil.getList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -191,7 +186,7 @@ public class QuestionControllerTest {
         final QuestionAppearanceDto dto = someQuestionAppearanceDto();
 
         when(questionService.contains(anyString())).thenReturn(true);
-        when(questionService.getQuestionAppearanceDtoByQuestionId(anyString())).thenReturn(Optional.of(dto));
+        when(questionService.getQuestionAppearanceDtoByQuestionId(anyString(), anyString())).thenReturn(Optional.of(dto));
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         assertThat(controller.getQuestionWithText(someString())).isEqualTo(ResponseEntity.ok(dto));
@@ -200,8 +195,10 @@ public class QuestionControllerTest {
     @Test
     public void getQuestionWithAnswersShouldReturnNotFoundResponseEntityWhenSuchQuestionDoesNotExist() throws Exception {
         final String questionId = NON_EXISTING_QUESTION_ID;
+        final String userEmail = someString();
 
-        when(questionService.getQuestionAppearanceDtoByQuestionId(questionId)).thenReturn(Optional.empty());
+        when(userRuntimeRequestComponent.getEmail()).thenReturn(userEmail);
+        when(questionService.getQuestionAppearanceDtoByQuestionId(questionId, userEmail)).thenReturn(Optional.empty());
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         assertThat(controller.getQuestionWithText(questionId)).isEqualTo(ResponseEntity.notFound().build());

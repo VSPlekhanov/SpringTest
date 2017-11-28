@@ -14,5 +14,7 @@ public interface EmailCollection<T> {
      * @param param - parameter
      * @return - set of emails or empty set
      */
-    Address[] getEmailAddresses(T param);
+    Address[] getEmailAddressesToNotifyFromEmail(T param);
+
+    Address[] getEmailAddressesToNotifyFromPortal(T param);
 }

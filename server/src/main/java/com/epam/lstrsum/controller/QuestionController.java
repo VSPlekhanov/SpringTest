@@ -48,12 +48,10 @@ public class QuestionController {
     private final SearchQueryService queryService;
     private final UserService userService;
     private final UserRuntimeRequestComponent userRuntimeRequestComponent;
+    private final ObjectMapper mapper;
 
     @Setter
     private int maxQuestionAmount;
-
-    @Autowired
-    private ObjectMapper mapper;
 
     @PostMapping
     public ResponseEntity<String> addQuestion(@RequestPart("dtoObject") QuestionPostDto dtoObject,
@@ -79,7 +77,7 @@ public class QuestionController {
     @GetMapping(value = "/{questionId}")
     public ResponseEntity<QuestionAppearanceDto> getQuestionWithText(@PathVariable String questionId) {
         Optional<QuestionAppearanceDto> questionDto = currentUserInDistributionList() ?
-                questionService.getQuestionAppearanceDtoByQuestionId(questionId) :
+                questionService.getQuestionAppearanceDtoByQuestionId(questionId, userRuntimeRequestComponent.getEmail()) :
                 questionService.getQuestionAppearanceDtoByQuestionIdWithAllowedSub(questionId, userRuntimeRequestComponent.getEmail());
         return questionDto.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }

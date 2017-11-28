@@ -21,4 +21,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface EmailNotification {
     Class<? extends MailTemplate> template();
+    boolean fromPortal() default true;
 }

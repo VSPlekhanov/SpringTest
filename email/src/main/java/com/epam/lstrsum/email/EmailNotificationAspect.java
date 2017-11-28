@@ -35,14 +35,15 @@ public class EmailNotificationAspect {
     public Object aroundAdvice(ProceedingJoinPoint joinPoint) throws Throwable {
         Object proceed = joinPoint.proceed();
         try {
-            Class<? extends MailTemplate> templateClass = getAnnotationParameter(joinPoint, EmailNotification.class);
+            EmailNotification annotation = getAnnotation(joinPoint, EmailNotification.class);
+            Class<? extends MailTemplate> templateClass = annotation.template();
 
             MailTemplate template = templates.stream()
                     .filter(templateClass::isInstance)
                     .findFirst()
                     .orElseThrow(() -> new NoMailTemplateFoundException("Can not found template bean of type: " + templateClass));
 
-            mailService.sendMessage(template.buildMailMessage(proceed));
+            mailService.sendMessage(template.buildMailMessage(proceed, annotation.fromPortal()));
         } catch (Exception e) {
             log.error("Error sending email notification. {}", e.getMessage());
         }
@@ -50,12 +51,9 @@ public class EmailNotificationAspect {
         return proceed;
     }
 
-    private Class<? extends MailTemplate> getAnnotationParameter(ProceedingJoinPoint joinPoint, Class<EmailNotification> annotationClass) {
+    private EmailNotification getAnnotation(ProceedingJoinPoint joinPoint, Class<EmailNotification> annotationClass) {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
-        EmailNotification annotation = method.getAnnotation(annotationClass);
-        return annotation.template();
+        return method.getAnnotation(annotationClass);
     }
-
-
 }

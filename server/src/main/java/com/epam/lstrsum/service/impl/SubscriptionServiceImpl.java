@@ -1,19 +1,19 @@
 package com.epam.lstrsum.service.impl;
 
-import com.epam.lstrsum.aggregators.SubscriptionAggregator;
 import com.epam.lstrsum.dto.answer.AnswerAllFieldsDto;
 import com.epam.lstrsum.email.EmailCollection;
+import com.epam.lstrsum.exception.BusinessLogicException;
 import com.epam.lstrsum.model.Question;
-import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
-import com.epam.lstrsum.persistence.SubscriptionRepository;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.SubscriptionService;
 import com.epam.lstrsum.service.UserService;
 import com.mongodb.DBRef;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -25,24 +25,31 @@ import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Objects.isNull;
+
 @Service
 @RequiredArgsConstructor
+@ConfigurationProperties(prefix = "notify")
 @Slf4j
 public class SubscriptionServiceImpl implements SubscriptionService {
-    private final SubscriptionRepository subscriptionRepository;
-    private final SubscriptionAggregator subscriptionAggregator;
     private final QuestionService questionService;
     private final UserService userService;
     private final MongoTemplate mongoTemplate;
 
     @Value("${spring.mail.username}")
     private String fromAddress;
+
+    @Setter
+    private boolean notifyAllowedSubs;
+    @Setter
+    private boolean notifyAuthor;
+    @Setter
+    private boolean notifyDL;
 
     private static Address[] getAddressesFromEmails(Collection<String> emails) {
         return emails.stream()
@@ -59,17 +66,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public List<Subscription> findAll() {
-        return subscriptionRepository.findAll();
-    }
-
-    @Override
-    public List<Subscription> findAllSubscriptionsEntitiesToQuestionWithThisId(String questionId) {
-        return subscriptionRepository.findAllByQuestionIdsContains(questionId);
-    }
-
-    @Override
-    public Set<String> getEmailsToNotificateAboutNewQuestion(Question question) {
+    public Set<String> getEmailsToNotifyAboutNewQuestionFromPortal(Question question) {
         return Stream.concat(question.getAllowedSubs().stream(), userService.findAllActive().stream())
                 .map(User::getEmail)
                 .filter(e -> !e.equalsIgnoreCase(fromAddress))
@@ -77,47 +74,76 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public Set<String> getEmailsToNotificateAboutNewAnswer(String questionId) {
-        Set<String> emailsWithNoDuplicates = new HashSet<>();
-        emailsWithNoDuplicates.addAll(getEmailsOfAuthorAndAllowedSubsOfQuestion(questionId));
-        emailsWithNoDuplicates.addAll(getEmailsOfSubscribersOfQuestion(questionId));
-
-        return emailsWithNoDuplicates;
+    public Set<String> getEmailsToNotifyAboutNewAnswerFromPortal(String questionId) {
+        return questionService.getQuestionById(questionId).getSubscribers().stream()
+                .map(User::getEmail)
+                .collect(Collectors.toSet());
     }
 
     @Override
-    public List<String> getEmailsOfSubscribersOfQuestion(String questionId) {
-        return findAllSubscriptionsEntitiesToQuestionWithThisId(questionId).stream()
-                .map(s -> s.getUserId().getEmail())
-                .filter(e -> !e.equalsIgnoreCase(fromAddress))
-                .collect(Collectors.toList());
+    public Set<String> getEmailsToNotifyAboutNewQuestionFromEmail(Question question) {
+        return Stream.concat(Stream.concat(
+                notifyAllowedSubs ? question.getAllowedSubs().stream() : Stream.empty(),
+                notifyDL ? userService.findAllActive().stream() : Stream.empty()
+            ), notifyAuthor ? Stream.of(question.getAuthorId()) : Stream.empty())
+            .map(User::getEmail)
+            .filter(e -> !e.equalsIgnoreCase(fromAddress))
+            .collect(Collectors.toSet());
     }
 
     @Override
-    public List<String> getEmailsOfAuthorAndAllowedSubsOfQuestion(String questionId) {
-        Question question = questionService.getQuestionById(questionId);
+    public Set<String> getEmailsToNotifyAboutNewAnswerFromEmail(String questionId) {
+        throw new UnsupportedOperationException();
+    }
 
-        List<String> emails =
-                Stream.concat(question.getAllowedSubs().stream(), userService.findAllActive().stream())
-                        .map(User::getEmail)
-                        .filter(e -> !e.equalsIgnoreCase(fromAddress))
-                        .collect(Collectors.toList());
-        emails.add(question.getAuthorId().getEmail());
+    public void checkQuestionExistsAndUserHasPermission(String questionId, String userEmail) {
+        Question question = mongoTemplate.findOne(getQueryForQuestionId(questionId), Question.class);
+        if (isNull(question) || !isUserAllowedSubOnQuestion(question, userEmail)) {
+            throw new BusinessLogicException(
+                    "Question doesn't exist or user with email : '" + userEmail + " ' has no permission to answer id : '" + questionId);
+        }
+    }
 
-        return emails;
+    private boolean isUserAllowedSubOnQuestion(Question question, String userEmail) {
+        return question.getAllowedSubs().stream().map(User::getEmail).anyMatch(email -> email.equals(userEmail));
     }
 
     @Override
-    public void addOrUpdate(String userId, List<String> questionIds) {
-        // TODO: 16.08.17 it will add user even if user is not exists
-        mongoTemplate.upsert(
-                new Query(Criteria.where("userId").is(new DBRef(User.USER_COLLECTION_NAME, userId))),
-                new Update().addToSet("questionIds").each(
-                        questionIds.stream()
-                                .map(question -> new DBRef(Question.QUESTION_COLLECTION_NAME, question))
-                                .toArray()),
-                Subscription.class
-        );
+    public boolean subscribeForQuestionByUser(String questionId, String email) {
+        String userId = userService.findUserByEmail(email).getUserId();
+        Update addSubscription = new Update().addToSet("subscribers")
+                .value(new DBRef(User.USER_COLLECTION_NAME, userId));
+        return updateQuestionWithSubscriber(getQueryForQuestionId(questionId), addSubscription);
+
+    }
+
+    @Override
+    public boolean unsubscribeForQuestionByUser(String questionId, String email) {
+        String userId = userService.findUserByEmail(email).getUserId();
+        Update pullSubscription = new Update().pull("subscribers",
+                new DBRef(User.USER_COLLECTION_NAME, userId));
+        return updateQuestionWithSubscriber(getQueryForQuestionId(questionId), pullSubscription);
+
+    }
+
+    @Override
+    public boolean subscribeForQuestionByAllowedSub(String questionId, String email) {
+        checkQuestionExistsAndUserHasPermission(questionId, email);
+        return subscribeForQuestionByUser(questionId, email);
+    }
+
+    @Override
+    public boolean unsubscribeForQuestionByAllowedSub(String questionId, String email) {
+        checkQuestionExistsAndUserHasPermission(questionId, email);
+        return unsubscribeForQuestionByUser(questionId, email);
+    }
+
+    private Query getQueryForQuestionId(String questionId) {
+        return new Query(Criteria.where("_id").is(questionId));
+    }
+
+    private boolean updateQuestionWithSubscriber(Query query, Update update) {
+        return mongoTemplate.updateFirst(query, update, Question.class).isUpdateOfExisting();
     }
 
     @Component
@@ -126,9 +152,15 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         private final SubscriptionService subscriptionService;
 
         @Override
-        public Address[] getEmailAddresses(Question question) {
+        public Address[] getEmailAddressesToNotifyFromEmail(Question question) {
             return getAddressesFromEmails(
-                    new HashSet<>(subscriptionService.getEmailsToNotificateAboutNewQuestion(question)));
+                    new HashSet<>(subscriptionService.getEmailsToNotifyAboutNewQuestionFromEmail(question)));
+        }
+
+        @Override
+        public Address[] getEmailAddressesToNotifyFromPortal(Question question) {
+            return getAddressesFromEmails(
+                    new HashSet<>(subscriptionService.getEmailsToNotifyAboutNewQuestionFromPortal(question)));
         }
     }
 
@@ -138,9 +170,17 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         private final SubscriptionService subscriptionService;
 
         @Override
-        public Address[] getEmailAddresses(AnswerAllFieldsDto answer) {
+        public Address[] getEmailAddressesToNotifyFromPortal(AnswerAllFieldsDto answer) {
             return getAddressesFromEmails(
-                    new HashSet<>(subscriptionService.getEmailsToNotificateAboutNewAnswer(
+                    new HashSet<>(subscriptionService.getEmailsToNotifyAboutNewAnswerFromPortal(
+                            answer.getQuestion().getQuestionId()
+                    )));
+        }
+
+        @Override
+        public Address[] getEmailAddressesToNotifyFromEmail(AnswerAllFieldsDto answer) {
+            return getAddressesFromEmails(
+                    new HashSet<>(subscriptionService.getEmailsToNotifyAboutNewAnswerFromEmail(
                             answer.getQuestion().getQuestionId()
                     )));
         }

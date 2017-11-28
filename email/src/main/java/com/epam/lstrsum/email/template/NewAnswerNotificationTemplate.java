@@ -6,20 +6,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import javax.mail.Address;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Session;
+import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import java.util.Arrays;
 
 @Component
 @Profile("email")
@@ -38,22 +32,26 @@ public class NewAnswerNotificationTemplate implements MailTemplate<AnswerAllFiel
     private String fromAddress;
 
     @Override
-    public MimeMessage buildMailMessage(AnswerAllFieldsDto source) throws MessagingException {
+    public MimeMessage buildMailMessage(AnswerAllFieldsDto source, boolean fromPortal) throws MessagingException {
         MimeMessage mimeMessage = new MimeMessage((Session) null);
 
         mimeMessage.setFrom(new InternetAddress(fromAddress));
         mimeMessage.setSubject(getSubject(source));
         mimeMessage.setContent(getContentOfMessage(source));
-        mimeMessage.setRecipients(Message.RecipientType.TO, getAddresses(source));
+        mimeMessage.setRecipients(Message.RecipientType.TO,
+                fromPortal ? getAddressesToNotifyFromPortal(source) : getAddressesToNotifyFromEmail(source));
 
         mimeMessage.saveChanges();
 
         return mimeMessage;
     }
 
-    private Address[] getAddresses(AnswerAllFieldsDto source) {
-        return Arrays.stream(emailCollection.getEmailAddresses(source))
-                .toArray(Address[]::new);
+    private Address[] getAddressesToNotifyFromEmail(AnswerAllFieldsDto source) {
+        return emailCollection.getEmailAddressesToNotifyFromEmail(source);
+    }
+
+    private Address[] getAddressesToNotifyFromPortal(AnswerAllFieldsDto source) {
+        return emailCollection.getEmailAddressesToNotifyFromPortal(source);
     }
 
     private String getSubject(AnswerAllFieldsDto source) {

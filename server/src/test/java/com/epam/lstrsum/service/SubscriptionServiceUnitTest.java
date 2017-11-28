@@ -35,14 +35,14 @@ public class SubscriptionServiceUnitTest {
     }
 
     @Test
-    public void questionEmailCollectionAdapterShouldNotTakeIncorrectEmails() throws Exception {
+    public void amswerEmailCollectionAdapterShouldNotTakeIncorrectEmailsFromPortal() throws Exception {
         String incorrectEmail = "(incorrect";
         String correctEmail = "correct@com.epam.lstrsum.email.service.mail.com";
 
         SubscriptionServiceImpl.AnswerEmailCollectionAdapter adapter =
                 new SubscriptionServiceImpl.AnswerEmailCollectionAdapter(subscriptionService);
 
-        when(subscriptionService.getEmailsToNotificateAboutNewAnswer(any()))
+        when(subscriptionService.getEmailsToNotifyAboutNewAnswerFromPortal(any()))
                 .thenReturn(new HashSet<String>() {{
                     add(incorrectEmail);
                     add(correctEmail);
@@ -51,21 +51,21 @@ public class SubscriptionServiceUnitTest {
         when(answer.getQuestion()).thenReturn(new QuestionBaseDto("question_id",
                 null, null, null, null, null));
 
-        Address[] emailAddresses = adapter.getEmailAddresses(answer);
+        Address[] emailAddresses = adapter.getEmailAddressesToNotifyFromPortal(answer);
 
         assertThat(emailAddresses.length, equalTo(1));
         assertThat(emailAddresses[0], equalTo(new InternetAddress(correctEmail)));
     }
 
     @Test
-    public void answerEmailCollectionAdapterShouldNotTakeIncorrectEmails() throws Exception {
+    public void questionEmailCollectionAdapterShouldNotTakeIncorrectEmailsFromPortal() throws Exception {
         String incorrectEmail = "(incorrect";
         String correctEmail = "correct@com.epam.lstrsum.email.service.mail.com";
 
         SubscriptionServiceImpl.QuestionEmailCollectionAdapter adapter =
                 new SubscriptionServiceImpl.QuestionEmailCollectionAdapter(subscriptionService);
 
-        when(subscriptionService.getEmailsToNotificateAboutNewQuestion(any()))
+        when(subscriptionService.getEmailsToNotifyAboutNewQuestionFromPortal(any()))
                 .thenReturn(new HashSet<String>() {{
                     add(incorrectEmail);
                     add(correctEmail);
@@ -73,7 +73,29 @@ public class SubscriptionServiceUnitTest {
 
         when(question.getQuestionId()).thenReturn("question_id");
 
-        Address[] emailAddresses = adapter.getEmailAddresses(question);
+        Address[] emailAddresses = adapter.getEmailAddressesToNotifyFromPortal(question);
+
+        assertThat(emailAddresses.length, equalTo(1));
+        assertThat(emailAddresses[0], equalTo(new InternetAddress(correctEmail)));
+    }
+
+    @Test
+    public void questionEmailCollectionAdapterShouldNotTakeIncorrectEmailsFromEmail() throws Exception {
+        String incorrectEmail = "(incorrect";
+        String correctEmail = "correct@com.epam.lstrsum.email.service.mail.com";
+
+        SubscriptionServiceImpl.QuestionEmailCollectionAdapter adapter =
+                new SubscriptionServiceImpl.QuestionEmailCollectionAdapter(subscriptionService);
+
+        when(subscriptionService.getEmailsToNotifyAboutNewQuestionFromEmail(any()))
+                .thenReturn(new HashSet<String>() {{
+                    add(incorrectEmail);
+                    add(correctEmail);
+                }});
+
+        when(question.getQuestionId()).thenReturn("question_id");
+
+        Address[] emailAddresses = adapter.getEmailAddressesToNotifyFromEmail(question);
 
         assertThat(emailAddresses.length, equalTo(1));
         assertThat(emailAddresses[0], equalTo(new InternetAddress(correctEmail)));

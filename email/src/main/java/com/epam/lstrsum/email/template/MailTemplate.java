@@ -13,5 +13,5 @@ import javax.mail.internet.MimeMessage;
  * @param <T> Source for building MimeMessage
  */
 public interface MailTemplate<T> {
-    MimeMessage buildMailMessage(T source) throws MessagingException;
+    MimeMessage buildMailMessage(T source, boolean fromPortal) throws MessagingException;
 }

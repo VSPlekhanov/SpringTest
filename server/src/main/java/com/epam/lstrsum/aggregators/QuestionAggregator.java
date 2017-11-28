@@ -4,11 +4,7 @@ import com.epam.lstrsum.converter.QuestionDtoMapper;
 import com.epam.lstrsum.converter.UserDtoMapper;
 import com.epam.lstrsum.converter.contract.AllFieldModelDtoConverter;
 import com.epam.lstrsum.converter.contract.BasicModelDtoConverter;
-import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
-import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
-import com.epam.lstrsum.dto.question.QuestionBaseDto;
-import com.epam.lstrsum.dto.question.QuestionPostDto;
-import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
+import com.epam.lstrsum.dto.question.*;
 import com.epam.lstrsum.model.Attachment;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.QuestionWithAnswersCount;
@@ -17,6 +13,7 @@ import com.epam.lstrsum.persistence.AttachmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -63,7 +60,7 @@ public class QuestionAggregator implements BasicModelDtoConverter<Question, Ques
         );
     }
 
-    public QuestionAppearanceDto modelToQuestionAppearanceDto(Question question) {
+    public QuestionAppearanceDto modelToQuestionAppearanceDto(Question question, String currentUserEmail) {
         List<String> attachmentIds = question.getAttachmentIds();
         List<Attachment> attachments = (nonNull(attachmentIds) && !attachmentIds.isEmpty()) ?
                 (List<Attachment>) attachmentRepository.findAll(attachmentIds) :
@@ -72,26 +69,48 @@ public class QuestionAggregator implements BasicModelDtoConverter<Question, Ques
         return questionMapper.modelToQuestionAppearanceDto(
                 question,
                 userMapper.modelToBaseDto(question.getAuthorId()),
-                attachments
+                attachments,
+                isCurrentUserSubscribe(question, currentUserEmail)
         );
     }
 
     public Question questionPostDtoAndAuthorEmailToQuestion(QuestionPostDto questionPostDto, String email) {
+        User author = userAggregator.findByEmail(email);
+        List<User> allowedSubs = getEmptyListIfNull(questionPostDto.getAllowedSubs());
         return questionMapper.questionPostDtoAndAuthorEmailToQuestion(
                 questionPostDto,
-                userAggregator.findByEmail(email),
-                getEmptyListIfNull(questionPostDto.getAllowedSubs())
+                author,
+                allowedSubs,
+                initializeSubscribersListByAllowedSubsListAndAuthor(allowedSubs, author)
+
         );
     }
 
     public Question questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(QuestionPostDto questionPostDto, String email,
             List<String> attachmentIds) {
+        User author = userAggregator.findByEmail(email);
+        List<User> allowedSubs = getEmptyListIfNull(questionPostDto.getAllowedSubs());
+
         return questionMapper.questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(
                 questionPostDto,
-                userAggregator.findByEmail(email),
-                getEmptyListIfNull(questionPostDto.getAllowedSubs()),
-                attachmentIds
+                author,
+                allowedSubs,
+                attachmentIds,
+                initializeSubscribersListByAllowedSubsListAndAuthor(allowedSubs, author)
         );
+    }
+
+    private boolean isCurrentUserSubscribe(Question question, String userEmail){
+        return question.getSubscribers()
+                .stream()
+                .map(User::getEmail)
+                .anyMatch(userEmail::equalsIgnoreCase);
+    }
+
+    private List<User> initializeSubscribersListByAllowedSubsListAndAuthor(List<User> allowedSubs, User author){
+        List<User> subscribers = new ArrayList<>(allowedSubs);
+        if (!subscribers.contains(author)) subscribers.add(author);
+        return subscribers;
     }
 
     public List<QuestionBaseDto> subscriptionsToListOfQuestionBaseDto(List<Question> subscriptions) {

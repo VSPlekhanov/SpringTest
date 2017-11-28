@@ -21,6 +21,7 @@ import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someUserBaseDto;
 import static com.epam.lstrsum.utils.FunctionalUtil.getListWithSize;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
     @Autowired
@@ -65,7 +66,7 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
         UserBaseDto author = someUserBaseDto();
         List<Attachment> attachments = getListWithSize(InstantiateUtil::someAttachment, 2);
 
-        assertThat(questionDtoMapper.modelToQuestionAppearanceDto(question, author, attachments))
+        assertThat(questionDtoMapper.modelToQuestionAppearanceDto(question, author, attachments, true))
                 .satisfies(
                         questionAppearanceDto -> {
                             checkQuestionBaseDto(questionAppearanceDto, question, author);
@@ -75,6 +76,7 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
                                     .isEqualToIgnoringGivenFields(attachments.get(0), "size");
                             assertThat(questionAppearanceDto.getAttachments().get(1))
                                     .isEqualToIgnoringGivenFields(attachments.get(1), "size");
+                            assertTrue(questionAppearanceDto.isCurrentUserSubscribed());
                         }
                 );
     }
@@ -84,8 +86,9 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
         QuestionPostDto questionPostDto = someQuestionPostDto();
         List<User> allowedSubs = getListWithSize(InstantiateUtil::someUser, 2);
         User user = someUser();
+        List<User> subscribers = getListWithSize(InstantiateUtil::someUser, 2);
 
-        assertThat(questionDtoMapper.questionPostDtoAndAuthorEmailToQuestion(questionPostDto, user, allowedSubs))
+        assertThat(questionDtoMapper.questionPostDtoAndAuthorEmailToQuestion(questionPostDto, user, allowedSubs, subscribers))
                 .satisfies(
                         question -> {
                             assertThat(question.getTitle()).isEqualTo(questionPostDto.getTitle());
@@ -95,6 +98,7 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
                             assertThat(question.getAllowedSubs()).containsExactly(allowedSubs.get(0), allowedSubs.get(1));
                             assertThat(question.getAuthorId()).isEqualTo(user);
                             assertThat(question.getCreatedAt()).isBeforeOrEqualTo(Instant.now());
+                            assertThat(question.getSubscribers()).containsExactly(subscribers.get(0), subscribers.get(1));
                         }
                 );
     }
@@ -105,8 +109,10 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
         List<User> allowedSubs = getListWithSize(InstantiateUtil::someUser, 2);
         User user = someUser();
         List<String> attachmentIds = getListWithSize(InstantiateUtil::someString, 2);
+        List<User> subscribers = getListWithSize(InstantiateUtil::someUser, 2);
 
-        assertThat(questionDtoMapper.questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(questionPostDto, user, allowedSubs, attachmentIds))
+        assertThat(questionDtoMapper
+                .questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(questionPostDto, user, allowedSubs, attachmentIds, subscribers))
                 .satisfies(
                         question -> {
                             assertThat(question.getTitle()).isEqualTo(questionPostDto.getTitle());
@@ -117,6 +123,7 @@ public class QuestionDtoMapperTest extends SetUpDataBaseCollections {
                             assertThat(question.getAuthorId()).isEqualTo(user);
                             assertThat(question.getCreatedAt()).isBeforeOrEqualTo(Instant.now());
                             assertThat(question.getAttachmentIds()).containsExactly(attachmentIds.get(0), attachmentIds.get(1));
+                            assertThat(question.getSubscribers()).containsExactly(subscribers.get(0), subscribers.get(1));
                         }
                 );
     }

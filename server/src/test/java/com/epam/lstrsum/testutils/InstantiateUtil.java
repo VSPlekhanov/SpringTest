@@ -16,7 +16,6 @@ import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.Answer;
 import com.epam.lstrsum.model.Attachment;
 import com.epam.lstrsum.model.Question;
-import com.epam.lstrsum.model.Subscription;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.model.Vote;
 import com.epam.lstrsum.security.EpamEmployeePrincipal;
@@ -30,10 +29,7 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.utils.FunctionalUtil.getList;
@@ -58,13 +54,6 @@ public class InstantiateUtil {
             .stringLengthRange(5, 50)
             .build();
     private static SecureRandom SECURE_RANDOM = new SecureRandom();
-
-    public static Subscription someSubscription() {
-        Subscription subscription = random.nextObject(Subscription.class, "userId", "questionIds");
-        subscription.setUserId(someUser());
-        subscription.setQuestionIds(getList(InstantiateUtil::someQuestion));
-        return subscription;
-    }
 
     public static User someUser() {
         User user = random.nextObject(User.class, "roles");
@@ -179,9 +168,10 @@ public class InstantiateUtil {
     }
 
     public static Question someQuestion() {
-        Question question = random.nextObject(Question.class, "authorId", "allowedSubs");
+        Question question = random.nextObject(Question.class, "authorId", "allowedSubs", "subscribers");
         question.setAuthorId(someUser());
         question.setAllowedSubs(getList(InstantiateUtil::someUser));
+        question.setSubscribers(getList(InstantiateUtil::someUser));
         return question;
     }
 

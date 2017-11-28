@@ -18,7 +18,8 @@ import java.util.stream.Collectors;
 import static com.epam.lstrsum.enums.UserRoleType.ROLE_EXTENDED_USER;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.collections4.CollectionUtils.size;
+import static org.apache.commons.collections.CollectionUtils.size;
+
 
 @Service
 @RequiredArgsConstructor

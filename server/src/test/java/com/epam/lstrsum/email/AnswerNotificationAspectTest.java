@@ -24,10 +24,7 @@ import static com.epam.lstrsum.testutils.InstantiateUtil.someLong;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ActiveProfiles("email")
 public class AnswerNotificationAspectTest extends SetUpDataBaseCollections {
@@ -156,6 +153,6 @@ public class AnswerNotificationAspectTest extends SetUpDataBaseCollections {
 
         AnswerAllFieldsDto savedAnswer = answerService.addNewAnswer(answerPost, answerAuthor);
 
-        return answerTemplate.buildMailMessage(savedAnswer);
+        return answerTemplate.buildMailMessage(savedAnswer, true);
     }
 }

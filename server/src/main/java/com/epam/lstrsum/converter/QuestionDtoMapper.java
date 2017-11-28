@@ -2,11 +2,7 @@ package com.epam.lstrsum.converter;
 
 
 import com.epam.lstrsum.dto.attachment.AttachmentPropertiesDto;
-import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
-import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
-import com.epam.lstrsum.dto.question.QuestionBaseDto;
-import com.epam.lstrsum.dto.question.QuestionPostDto;
-import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
+import com.epam.lstrsum.dto.question.*;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.model.Attachment;
 import com.epam.lstrsum.model.Question;
@@ -38,7 +34,10 @@ public interface QuestionDtoMapper {
     })
     QuestionAllFieldsDto modelToAllFieldsDto(Question question, UserBaseDto author, List<UserBaseDto> allowedSubs);
 
-    QuestionAppearanceDto modelToQuestionAppearanceDto(Question question, UserBaseDto author, List<Attachment> attachments);
+    @Mappings({
+            @Mapping(target = "currentUserSubscribed", source = "currentUserSubscribed")
+    })
+    QuestionAppearanceDto modelToQuestionAppearanceDto(Question question, UserBaseDto author, List<Attachment> attachments, boolean currentUserSubscribed);
 
     @Mappings({
             @Mapping(target = "allowedSubs", source = "allowedSubs"),
@@ -49,9 +48,10 @@ public interface QuestionDtoMapper {
             @Mapping(target = "score", constant = "0"),
             @Mapping(target = "questionId", ignore = true),
             @Mapping(target = "attachmentIds", ignore = true),
-            @Mapping(target = "answers", ignore = true)
+            @Mapping(target = "answers", ignore = true),
+            @Mapping(target = "subscribers", source = "subscribers")
     })
-    Question questionPostDtoAndAuthorEmailToQuestion(QuestionPostDto questionPostDto, User author, List<User> allowedSubs);
+    Question questionPostDtoAndAuthorEmailToQuestion(QuestionPostDto questionPostDto, User author, List<User> allowedSubs, List<User> subscribers);
 
     @Mappings({
             @Mapping(target = "allowedSubs", source = "allowedSubs"),
@@ -62,10 +62,11 @@ public interface QuestionDtoMapper {
             @Mapping(target = "score", constant = "0"),
             @Mapping(target = "questionId", ignore = true),
             @Mapping(target = "attachmentIds", source = "attachmentIds"),
-            @Mapping(target = "answers", ignore = true)
+            @Mapping(target = "answers", ignore = true),
+            @Mapping(target = "subscribers", source = "subscribers")
     })
     Question questionPostDtoAndAuthorEmailAndAttachmentsToQuestion(QuestionPostDto questionPostDto, User author, List<User> allowedSubs,
-            List<String> attachmentIds);
+                                                                   List<String> attachmentIds, List<User> subscribers);
 
     default List<QuestionBaseDto> subscriptionsToListOfQuestionBaseDto(List<Question> subscriptions, List<UserBaseDto> authors) {
         return IntStream.range(0, subscriptions.size())
