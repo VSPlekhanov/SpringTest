@@ -14,7 +14,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import java.util.Arrays;
 
 @Component
 @Profile("email")
@@ -48,13 +47,11 @@ public class NewAnswerNotificationTemplate implements MailTemplate<AnswerAllFiel
     }
 
     private Address[] getAddressesToNotifyFromEmail(AnswerAllFieldsDto source) {
-        return Arrays.stream(emailCollection.getEmailAddressesToNotifyFromEmail(source))
-                .toArray(Address[]::new);
+        return emailCollection.getEmailAddressesToNotifyFromEmail(source);
     }
 
     private Address[] getAddressesToNotifyFromPortal(AnswerAllFieldsDto source) {
-        return Arrays.stream(emailCollection.getEmailAddressesToNotifyFromPortal(source))
-                .toArray(Address[]::new);
+        return emailCollection.getEmailAddressesToNotifyFromPortal(source);
     }
 
     private String getSubject(AnswerAllFieldsDto source) {

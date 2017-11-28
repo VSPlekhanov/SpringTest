@@ -15,7 +15,6 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.util.Arrays;
 
 @Component
 @Profile("email")
@@ -55,12 +54,10 @@ public class NewQuestionNotificationTemplate implements MailTemplate<Question> {
     }
 
     private Address[] getAddressesToNotifyFromEmail(Question source) {
-        return Arrays.stream(emailCollection.getEmailAddressesToNotifyFromEmail(source))
-                .toArray(Address[]::new);
+        return emailCollection.getEmailAddressesToNotifyFromEmail(source);
     }
 
     private Address[] getAddressesToNotifyFromPortal(Question source) {
-        return Arrays.stream(emailCollection.getEmailAddressesToNotifyFromPortal(source))
-                .toArray(Address[]::new);
+        return emailCollection.getEmailAddressesToNotifyFromPortal(source);
     }
 }
