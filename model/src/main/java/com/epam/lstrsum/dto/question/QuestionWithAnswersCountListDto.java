@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public class QuestionListDto {
+public class QuestionWithAnswersCountListDto {
     private final Long totalNumber;
     private final List<QuestionWithAnswersCountDto> questions;
 }

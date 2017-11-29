@@ -2,8 +2,9 @@ package com.epam.lstrsum.controller;
 
 import com.epam.lstrsum.dto.common.CounterDto;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
+import com.epam.lstrsum.dto.question.QuestionAllFieldsListDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
-import com.epam.lstrsum.dto.question.QuestionListDto;
+import com.epam.lstrsum.dto.question.QuestionWithAnswersCountListDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.service.QuestionService;
@@ -108,7 +109,7 @@ public class QuestionControllerTest {
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         controller.setMaxQuestionAmount(200);
-        ResponseEntity<QuestionListDto> actual = controller.getQuestions(someInt(), someInt());
+        ResponseEntity<QuestionWithAnswersCountListDto> actual = controller.getQuestions(someInt(), someInt());
 
         assertThat(actual.getStatusCode(), is(HttpStatus.OK));
         assertThat(actual.getBody().getTotalNumber(), is((long) list.size()));
@@ -125,7 +126,7 @@ public class QuestionControllerTest {
         when(questionService.getQuestionCount()).thenReturn((long) list.size());
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
-        ResponseEntity<QuestionListDto> actual = controller.getQuestions(questionPage, questionAmount);
+        ResponseEntity<QuestionWithAnswersCountListDto> actual = controller.getQuestions(questionPage, questionAmount);
 
         assertThat(actual.getStatusCode(), is(HttpStatus.OK));
         assertThat(actual.getBody().getTotalNumber(), is((long) list.size()));
@@ -142,7 +143,7 @@ public class QuestionControllerTest {
         when(questionService.getQuestionCount()).thenReturn((long) list.size());
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
-        ResponseEntity<QuestionListDto> actual = controller.getQuestions(questionPage, questionAmount);
+        ResponseEntity<QuestionWithAnswersCountListDto> actual = controller.getQuestions(questionPage, questionAmount);
 
         assertThat(actual.getStatusCode(), is(HttpStatus.OK));
         assertThat(actual.getBody().getTotalNumber(), is((long) list.size()));
@@ -161,7 +162,7 @@ public class QuestionControllerTest {
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(false);
 
         controller.setMaxQuestionAmount(200);
-        ResponseEntity<QuestionListDto> actual = controller.getQuestions(0, 100);
+        ResponseEntity<QuestionWithAnswersCountListDto> actual = controller.getQuestions(0, 100);
 
         assertThat(actual).satisfies(AssertionUtils::hasStatusOk).satisfies(
                 listResponseEntity -> assertThat(listResponseEntity.getBody().getTotalNumber(), is((long) list.size()))
@@ -207,11 +208,16 @@ public class QuestionControllerTest {
     @Test
     public void searchSuccessful() {
         final List<QuestionAllFieldsDto> questionAllFieldsDtos = getList(InstantiateUtil::someQuestionAllFieldsDto);
+        Long totalNumber = (long) questionAllFieldsDtos.size();
 
         when(questionService.search(anyString(), anyInt(), anyInt())).thenReturn(questionAllFieldsDtos);
+        when(questionService.getTextSearchResultsCount(anyString())).thenReturn(totalNumber);
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
-        assertThat(controller.search(someString(), 0, 20)).isEqualTo(ResponseEntity.ok(questionAllFieldsDtos));
+        controller.setMaxQuestionAmount(200);
+        QuestionAllFieldsListDto actual = controller.search(someString(), 0, 20).getBody();
+        assertThat(actual.getTotalNumber()).isEqualTo(totalNumber);
+        assertThat(actual.getQuestions()).isEqualTo(questionAllFieldsDtos);
     }
 
     @Test

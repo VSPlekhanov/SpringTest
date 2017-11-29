@@ -41,7 +41,7 @@ public interface TelescopeService {
      * @param uri format example "attachment:///upsa_profilePhoto.4060741400007345041_1.GIF_cba0891d-a69f-47c9-96ib-c61a14e6e33d"
      * @return string with base64
      */
-    String getUserPhotoByUri(String uri);
+    byte[] getUserPhotoByUri(String uri);
 
     List<TelescopeEmployeeEntityDto> getUsersInfoByEmails(Set<String> emails);
 

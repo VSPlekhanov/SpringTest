@@ -2,10 +2,10 @@ package com.epam.lstrsum.controller;
 
 import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.dto.common.CounterDto;
-import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
+import com.epam.lstrsum.dto.question.QuestionAllFieldsListDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
-import com.epam.lstrsum.dto.question.QuestionListDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
+import com.epam.lstrsum.dto.question.QuestionWithAnswersCountListDto;
 import com.epam.lstrsum.testutils.AssertionUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +64,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
         String uri = String.format("/api/question/list?questionPage=%d&questionAmount=%d", 0, 2);
         List<QuestionWithAnswersCountDto> result = restTemplate.exchange(uri, HttpMethod.GET, null,
-                new ParameterizedTypeReference<QuestionListDto>() {}).getBody().getQuestions();
+                new ParameterizedTypeReference<QuestionWithAnswersCountListDto>() {}).getBody().getQuestions();
         assertThat(result).hasSize(2);
         assertThat(result.get(0).getQuestionId()).isEqualTo("2u_3r");
         assertThat(result.get(0).getAnswersCount()).isEqualTo(2);
@@ -79,7 +79,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
 
         String uri = String.format("/api/question/list?questionPage=%d&questionAmount=%d", 0, 5);
         List<QuestionWithAnswersCountDto> result = restTemplate.exchange(uri, HttpMethod.GET, null,
-                new ParameterizedTypeReference<QuestionListDto>() {}).getBody().getQuestions();
+                new ParameterizedTypeReference<QuestionWithAnswersCountListDto>() {}).getBody().getQuestions();
         assertThat(result).hasSize(5);
         assertThat(result.get(0).getQuestionId()).isEqualTo("1u_2r");
         assertThat(result.get(1).getQuestionId()).isEqualTo("6u_6r");
@@ -95,7 +95,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
 
         String uri = String.format("/api/question/list?questionPage=%d&questionAmount=%d", 0, 5);
         List<QuestionWithAnswersCountDto> result = restTemplate.exchange(uri, HttpMethod.GET, null,
-                new ParameterizedTypeReference<QuestionListDto>() {}).getBody().getQuestions();
+                new ParameterizedTypeReference<QuestionWithAnswersCountListDto>() {}).getBody().getQuestions();
         assertThat(result).hasSize(5);
         assertThat(result.get(0).getQuestionId()).isEqualTo("2u_3r");
         assertThat(result.get(1).getQuestionId()).isEqualTo("1u_2r");
@@ -164,16 +164,16 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
         String uri = String.format("/api/question/search?query=%s&page=%d&size=%d", EXISTING_QUESTION_SEARCH_TEXT, 0, 2);
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
-        ResponseEntity<List<QuestionAllFieldsDto>> result = restTemplate.exchange(
+        ResponseEntity<QuestionAllFieldsListDto> result = restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<QuestionAllFieldsDto>>() {
+                new ParameterizedTypeReference<QuestionAllFieldsListDto>() {
                 });
 
         assertThat(result).satisfies(AssertionUtils::hasStatusOk);
-        assertThat(result.getBody().size()).isEqualTo(1);
-        assertThat(result.getBody().get(0).getQuestionId()).isEqualTo(EXISTING_QUESTION_ID);
+        assertThat(result.getBody().getQuestions().size()).isEqualTo(1);
+        assertThat(result.getBody().getQuestions().get(0).getQuestionId()).isEqualTo(EXISTING_QUESTION_ID);
     }
 
     @Test
@@ -182,16 +182,16 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(false);
         when(userRuntimeRequestComponent.getEmail()).thenReturn(EXISTING_USER_EMAIL);
 
-        ResponseEntity<List<QuestionAllFieldsDto>> result = restTemplate.exchange(
+        ResponseEntity<QuestionAllFieldsListDto> result = restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<QuestionAllFieldsDto>>() {
+                new ParameterizedTypeReference<QuestionAllFieldsListDto>() {
                 });
 
         assertThat(result).satisfies(AssertionUtils::hasStatusOk);
-        assertThat(result.getBody().size()).isEqualTo(1);
-        assertThat(result.getBody().get(0).getQuestionId()).isEqualTo(EXISTING_QUESTION_ID);
+        assertThat(result.getBody().getQuestions().size()).isEqualTo(1);
+        assertThat(result.getBody().getQuestions().get(0).getQuestionId()).isEqualTo(EXISTING_QUESTION_ID);
     }
 
     @Test
@@ -199,15 +199,15 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
         String uri = String.format("/api/question/search?query=%s&page=%d&size=%d", someString(), 0, 2);
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
-        ResponseEntity<List<QuestionAllFieldsDto>> result = restTemplate.exchange(
+        ResponseEntity<QuestionAllFieldsListDto> result = restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<QuestionAllFieldsDto>>() {
+                new ParameterizedTypeReference<QuestionAllFieldsListDto>() {
                 });
 
         assertThat(result).satisfies(AssertionUtils::hasStatusOk);
-        assertThat(result.getBody().size()).isEqualTo(0);
+        assertThat(result.getBody().getQuestions().size()).isEqualTo(0);
     }
 
     @Test
