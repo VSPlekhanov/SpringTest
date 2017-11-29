@@ -41,11 +41,11 @@ public class TelescopeServiceTest {
 
     @Test
     public void getPhotoByUri() {
-        String expected = "someBase64code";
-        doReturn(expected).when(httpRequestService).sendGetRequest(any(HttpUtilEntity.class), eq(new ParameterizedTypeReference<String>() {
+        byte[] expected = new byte[]{ (byte)0xe0, 0x4f, (byte)0xd0};
+        doReturn(expected).when(httpRequestService).sendGetRequest(any(HttpUtilEntity.class), eq(new ParameterizedTypeReference<byte[]>() {
         }));
 
-        String userPhotoByUri = telescopeService.getUserPhotoByUri(SOME_URI);
+        byte[] userPhotoByUri = telescopeService.getUserPhotoByUri(SOME_URI);
 
         assertThat(userPhotoByUri).isEqualTo(expected);
     }

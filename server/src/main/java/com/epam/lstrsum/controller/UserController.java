@@ -4,7 +4,11 @@ import com.epam.lstrsum.annotation.NotEmptyString;
 import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
 import com.epam.lstrsum.service.TelescopeService;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,10 +39,20 @@ public class UserController {
     }
 
     @GetMapping("/telescope/photo")
-    public ResponseEntity<String> getUserPhotoByUri(@NotEmptyString @RequestParam String uri) {
+    public ResponseEntity<Resource> getUserPhotoByUri(@NotEmptyString @RequestParam String uri) {
         return currentUserInDistributionList() ?
-                ResponseEntity.ok(telescopeService.getUserPhotoByUri(uri)) :
+                buildResponse(telescopeService.getUserPhotoByUri(uri)) :
                 ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @SneakyThrows
+    private ResponseEntity<Resource> buildResponse(byte[] content){
+        Resource image = new ByteArrayResource(content);
+
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(image);
     }
 
     private boolean currentUserInDistributionList() {
