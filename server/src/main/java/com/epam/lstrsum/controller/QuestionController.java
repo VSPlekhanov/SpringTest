@@ -155,6 +155,7 @@ public class QuestionController {
             @RequestParam("query") String query,
             @RequestParam(required = false, defaultValue = "-1") Integer page,
             @RequestParam(required = false, defaultValue = "-1") Integer size) {
+
         if ((size > maxQuestionAmount) || (size <= 0)) {
             size = maxQuestionAmount;
         }
