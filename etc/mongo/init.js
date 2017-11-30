@@ -152,7 +152,8 @@ for (let i = 0; i < QUESTIONS_AMOUNT_MAX; ++i) {
         newQuestion.answers.push(newAnswer)
     }
 
-    newQuestion.subscribers = newQuestion.allowedSubs.concat([newQuestion.authorId])
+    newQuestion.subscribers = [].concat(newQuestion.allowedSubs)
+    if (!newQuestion.subscribers.includes(newQuestion.authorId)) newQuestion.subscribers.push(newQuestion.authorId)
 
     db.getCollection(QUESTION_COLLECTION_NAME).insert(newQuestion)
 }
