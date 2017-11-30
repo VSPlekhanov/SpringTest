@@ -1,5 +1,6 @@
 package com.epam.lstrsum.service;
 
+import com.epam.lstrsum.dto.question.QuestionAllFieldsListDto;
 import com.epam.lstrsum.model.Question;
 
 import java.util.List;
@@ -24,4 +25,6 @@ public interface ElasticSearchService {
     String advancedSearch(String searchQuery, List<String> metaTags, Integer page, Integer size);
 
     String smartSearchWithAllowedSub(String searchQuery, int page, int size, String email);
+
+    QuestionAllFieldsListDto elasticSimpleSearch(String searchString, List<String> metaTags, Integer page, Integer size);
 }

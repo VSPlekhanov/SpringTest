@@ -130,7 +130,7 @@ public class QuestionController {
                 questionService.getQuestionCountWithAllowedSub(userRuntimeRequestComponent.getEmail());
     }
 
-    @GetMapping("/search")
+    @GetMapping("/searchMongo") // TODO: 11/29/2017 Remove (unused method)
     public ResponseEntity<QuestionAllFieldsListDto> search(
             @RequestParam("query") String query,
             @RequestParam(required = false, defaultValue = "-1") Integer page,
@@ -161,6 +161,42 @@ public class QuestionController {
                 questionService.searchWithAllowedSub(query, page, size, userRuntimeRequestComponent.getEmail());
 
         return ResponseEntity.ok(new QuestionAllFieldsListDto(count, questionDtoList));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<QuestionAllFieldsListDto> elasticSearch(
+            @RequestParam("query") String query,
+            @RequestParam(value = "page", required = false, defaultValue = "-1") Integer page,
+            @RequestParam(value = "size", required = false, defaultValue = "-1") Integer size) {
+
+        if ((size > maxQuestionAmount) || (size <= 0)) {
+            size = maxQuestionAmount;
+        }
+        if ((page < 0)) {
+            page = 0;
+        }
+
+        QuestionParsedQueryDto parsedQueryDto = queryService.parseQuery(query);
+
+        if (parsedQueryDto.getErrorsInQuery().isEmpty()){
+            QuestionAllFieldsListDto questionAllFieldsListDto = currentUserInDistributionList() ?
+                    questionService.elasticSimpleSearch(
+                            parsedQueryDto.getQueryForSearch(),
+                            parsedQueryDto.getQueryStringsWithMetaTags(),
+                            page,
+                            size
+                    ) :
+                    // TODO: 11/29/2017 Create search method for users not in DistributionList
+                    questionService.elasticSimpleSearch(
+                            parsedQueryDto.getQueryForSearch(),
+                            parsedQueryDto.getQueryStringsWithMetaTags(),
+                            page,
+                            size
+                    );
+            return ResponseEntity.ok(questionAllFieldsListDto);
+        } else {
+            return ResponseEntity.ok(null);
+        }
     }
 
     @GetMapping("/smartSearch")

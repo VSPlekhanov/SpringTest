@@ -1,5 +1,8 @@
 package com.epam.lstrsum.service.impl;
 
+import com.epam.lstrsum.converter.UserDtoMapper;
+import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
+import com.epam.lstrsum.dto.question.QuestionAllFieldsListDto;
 import com.epam.lstrsum.controller.UserRuntimeRequestComponent;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.persistence.UserRepository;
@@ -7,6 +10,7 @@ import com.epam.lstrsum.service.ElasticSearchService;
 import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.apache.http.nio.entity.NStringEntity;
@@ -21,6 +25,8 @@ import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortOrder;
@@ -29,7 +35,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.lang.String.valueOf;
 
@@ -38,6 +50,11 @@ import static java.lang.String.valueOf;
 @ConfigurationProperties(prefix = "elastic")
 @RequiredArgsConstructor
 public class ElasticSearchServiceImpl implements ElasticSearchService {
+
+    // Pattern for getting id from string like "DBRef(u'User', ObjectId('5a1571563867e59abcba48ca'))"
+    private final Pattern dbRefPattern = Pattern.compile("^.*\\'(\\w*)\\'\\)\\)$");
+    private final String elsticDateTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+
     @Setter
     private String index;
 
@@ -55,6 +72,38 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
 
     @Setter
     private List<String> validMetaTags;
+
+    @Autowired
+    private UserDtoMapper userMapper;
+
+    @Override
+    public QuestionAllFieldsListDto elasticSimpleSearch(String searchString, List<String> metaTags, Integer page, Integer size) {
+        List<QuestionAllFieldsDto> result = new ArrayList<>();
+
+        try {
+            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
+                    .query(createQuery(searchString, metaTags))
+                    .from(page)
+                    .size(size)
+                    .sort("createdAt", SortOrder.DESC)
+                    .highlighter(createHighlighter());
+
+            String[] includeFields = new String[]{"title", "createdAt", "authorId"};
+            String[] excludeFields = new String[]{""};
+            searchSourceBuilder.fetchSource(includeFields, excludeFields);
+
+            SearchRequest searchRequest = new SearchRequest(index)
+                    .types(Question.QUESTION_COLLECTION_NAME)
+                    .source(searchSourceBuilder);
+
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest);
+            SearchHits hits = searchResponse.getHits();
+            Arrays.stream(hits.getHits()).forEach(h -> result.add(hitToDto(h)));
+        } catch (IOException e) {
+            log.warn("elasticSimpleSearch_Can't perform request to ES, with error {}", e.getMessage());
+        }
+        return new QuestionAllFieldsListDto((long) result.size(), result);
+    }
 
     public String smartSearch(String searchQuery, int page, int size) {
         final ImmutableMap<String, String> params = new ImmutableMap.Builder<String, String>()
@@ -158,4 +207,24 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         return highlightBuilder;
     }
 
+    @SneakyThrows
+    private QuestionAllFieldsDto hitToDto(SearchHit hit) {
+        Map<String, Object> map = hit.getSource();
+
+        QuestionAllFieldsDto questionAllFieldsDto = new QuestionAllFieldsDto();
+        questionAllFieldsDto.setQuestionId(hit.getId());
+        questionAllFieldsDto.setTitle((String) map.get("title"));
+
+        String value = (String) map.get("authorId");
+        Matcher m = dbRefPattern.matcher(value);
+        m.matches();
+        value = m.group(1);
+        questionAllFieldsDto.setAuthor(userMapper.modelToBaseDto(userRepository.findByUserId(value).get()));
+
+        value = (String) map.get("createdAt");
+        value = value.substring(0, value.length() - 3); // "2017-11-15T08:49:28.106000" -> "2017-11-15T08:49:28.106"
+        questionAllFieldsDto.setCreatedAt(new SimpleDateFormat(elsticDateTimePattern).parse(value).toInstant());
+
+        return questionAllFieldsDto;
+    }
 }
