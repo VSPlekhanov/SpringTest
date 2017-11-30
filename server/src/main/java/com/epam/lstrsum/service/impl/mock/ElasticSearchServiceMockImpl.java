@@ -1,5 +1,6 @@
 package com.epam.lstrsum.service.impl.mock;
 
+import com.epam.lstrsum.dto.question.QuestionAllFieldsListDto;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.service.ElasticSearchService;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,11 @@ public class ElasticSearchServiceMockImpl implements ElasticSearchService {
     // todo implement normal behavior
     @Override
     public String advancedSearch(String searchQuery, List<String> metaTags, Integer page, Integer size) {
+        return null;
+    }
+
+    @Override
+    public QuestionAllFieldsListDto elasticSimpleSearch(String searchString, List<String> metaTags, Integer page, Integer size) {
         return null;
     }
 

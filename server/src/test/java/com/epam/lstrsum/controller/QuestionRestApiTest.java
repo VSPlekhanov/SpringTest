@@ -161,7 +161,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
 
     @Test
     public void searchWithDistributionListUserSuccessful() {
-        String uri = String.format("/api/question/search?query=%s&page=%d&size=%d", EXISTING_QUESTION_SEARCH_TEXT, 0, 2);
+        String uri = String.format("/api/question/searchMongo?query=%s&page=%d&size=%d", EXISTING_QUESTION_SEARCH_TEXT, 0, 2);
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         ResponseEntity<QuestionAllFieldsListDto> result = restTemplate.exchange(
@@ -178,7 +178,7 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
 
     @Test
     public void searchWithAllowedSubUserSuccessful() {
-        String uri = String.format("/api/question/search?query=%s&page=%d&size=%d", EXISTING_QUESTION_SEARCH_TEXT, 0, 2);
+        String uri = String.format("/api/question/searchMongo?query=%s&page=%d&size=%d", EXISTING_QUESTION_SEARCH_TEXT, 0, 2);
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(false);
         when(userRuntimeRequestComponent.getEmail()).thenReturn(EXISTING_USER_EMAIL);
 

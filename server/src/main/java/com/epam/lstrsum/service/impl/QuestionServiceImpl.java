@@ -3,6 +3,7 @@ package com.epam.lstrsum.service.impl;
 import com.epam.lstrsum.aggregators.AttachmentAggregator;
 import com.epam.lstrsum.aggregators.QuestionAggregator;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
+import com.epam.lstrsum.dto.question.QuestionAllFieldsListDto;
 import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
@@ -126,6 +127,11 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public String advancedSearch(String searchQuery, List<String> metaTags, Integer page, Integer size) {
         return elasticSearchService.advancedSearch(searchQuery, metaTags, page, size);
+    }
+
+    @Override
+    public QuestionAllFieldsListDto elasticSimpleSearch(String searchString, List<String> metaTags, Integer page, Integer size) {
+        return elasticSearchService.elasticSimpleSearch(searchString, metaTags, page, size);
     }
 
     @Override
