@@ -6,6 +6,7 @@ import com.epam.lstrsum.model.User;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
 
@@ -13,7 +14,9 @@ public interface UserService {
 
     List<User> findAllActive();
 
-    User findUserByEmail(String email);
+    User findUserByEmailOrThrowException(String email);
+
+    Optional<User> findUserByEmailIfExist(String email);
 
     long setActiveForAllAs(Collection<? super String> emails, boolean active);
 

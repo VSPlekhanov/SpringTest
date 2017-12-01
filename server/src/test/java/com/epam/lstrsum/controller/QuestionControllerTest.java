@@ -1,11 +1,7 @@
 package com.epam.lstrsum.controller;
 
 import com.epam.lstrsum.dto.common.CounterDto;
-import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
-import com.epam.lstrsum.dto.question.QuestionAllFieldsListDto;
-import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
-import com.epam.lstrsum.dto.question.QuestionWithAnswersCountListDto;
-import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
+import com.epam.lstrsum.dto.question.*;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.UserService;
@@ -34,10 +30,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class QuestionControllerTest {
@@ -67,10 +60,10 @@ public class QuestionControllerTest {
     }
 
     @Test
-    public void addQuestionWithDistributionListUserShouldSaveQuestion() throws IOException {
+    public void addQuestionUserShouldSaveQuestion() throws IOException {
         val authorEmail = someString();
         when(userRuntimeRequestComponent.getEmail()).thenReturn(authorEmail);
-        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
+        when(userService.findUserByEmailIfExist(authorEmail)).thenReturn(Optional.of(someUser()));
         val postDto = someQuestionPostDto();
         when(questionService.addNewQuestion(any(), any(), any())).thenReturn(someQuestion());
 
@@ -81,23 +74,16 @@ public class QuestionControllerTest {
     }
 
     @Test
-    public void addQuestionWithDistributionListUserReturnValidResponseEntityTest() throws IOException {
+    public void addQuestionUserReturnValidResponseEntityTest() throws IOException {
         final String questionId = someString();
+        final String authorEmail = someString();
         final Question question = Question.builder().questionId(questionId).build();
 
+        when(userRuntimeRequestComponent.getEmail()).thenReturn(authorEmail);
         when(questionService.addNewQuestion(any(), any(), any())).thenReturn(question);
-        when(userRuntimeRequestComponent.getEmail()).thenReturn(someString());
-        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
+        when(userService.findUserByEmailIfExist(authorEmail)).thenReturn(Optional.of(someUser()));
 
         assertThat(controller.addQuestion(someQuestionPostDto(), new MultipartFile[]{})).isEqualTo(ResponseEntity.ok(questionId));
-    }
-
-    @Test
-    public void addQuestionWithNotDistributionListUserReturnValidResponseEntityTest() throws IOException {
-        when(userRuntimeRequestComponent.getEmail()).thenReturn(someString());
-        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(false);
-
-        assertThat(controller.addQuestion(someQuestionPostDto(), new MultipartFile[]{})).satisfies(AssertionUtils::hasStatusNotFound);
     }
 
     @Test
