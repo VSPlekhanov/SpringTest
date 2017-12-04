@@ -171,7 +171,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         BoolQueryBuilder query = QueryBuilders.boolQuery().must(queryBuilder);
         if (!userRuntimeRequestComponent.isInDistributionList()) {
             String currentUserId = userRepository.findByEmailIgnoreCase(userRuntimeRequestComponent.getEmail()).get().getUserId();
-            query.filter(userPermissionFilter(currentUserId));
+            query.filter(getUserPermissionFilter(currentUserId));
         }
 
         if (!metaTags.isEmpty()) {
@@ -181,7 +181,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         return query;
     }
 
-    private BoolQueryBuilder userPermissionFilter(String currentUserId) {
+    private BoolQueryBuilder getUserPermissionFilter(String currentUserId) {
         return QueryBuilders.boolQuery()
                             .should(QueryBuilders.termQuery("authorId", currentUserId))
                             .should(QueryBuilders.termQuery("allowedSubs", currentUserId));
