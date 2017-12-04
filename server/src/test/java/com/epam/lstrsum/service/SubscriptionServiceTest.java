@@ -41,7 +41,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
     public void subscribeForQuestionByUserHasBeenAlreadySubscribedTest() {
         String questionId = "1u_1r";
         String userEmail = "Bob_Hoplins@epam.com";
-        User user = userService.findUserByEmail(userEmail);
+        User user = userService.findUserByEmailOrThrowException(userEmail);
         List<User> listBeforeUpdate = questionService.getQuestionById(questionId).getSubscribers();
         assertTrue(subscriptionService.subscribeForQuestionByUser(questionId, userEmail));
 
@@ -55,7 +55,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
     public void subscribeForQuestionByUserSuccessTest() {
         String questionId = "1u_1r";
         String userEmail = "John_Doe@epam.com";
-        User user = userService.findUserByEmail(userEmail);
+        User user = userService.findUserByEmailOrThrowException(userEmail);
         List<User> listBeforeUpdate = questionService.getQuestionById(questionId).getSubscribers();
         assertTrue(subscriptionService.subscribeForQuestionByUser(questionId, userEmail));
 
@@ -74,7 +74,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
     public void unsubscribeForQuestionByUserHasBeenAlreadyUnsubscribedTest() {
         String questionId = "1u_1r";
         String userEmail = "John_Doe@epam.com";
-        User user = userService.findUserByEmail(userEmail);
+        User user = userService.findUserByEmailOrThrowException(userEmail);
         List<User> listBeforeUpdate = questionService.getQuestionById(questionId).getSubscribers();
         assertTrue(subscriptionService.unsubscribeForQuestionByUser(questionId, userEmail));
 
@@ -87,7 +87,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
     public void unsubscribeForQuestionByUserSuccessTest() {
         String questionId = "1u_1r";
         String userEmail = "Bob_Hoplins@epam.com";
-        User user = userService.findUserByEmail(userEmail);
+        User user = userService.findUserByEmailOrThrowException(userEmail);
         List<User> listBeforeUpdate = questionService.getQuestionById(questionId).getSubscribers();
         assertTrue(subscriptionService.unsubscribeForQuestionByUser(questionId, userEmail));
 
@@ -124,7 +124,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
     public void subscribeForQuestionByAllowedSubSuccessTest() {
         String questionId = "6u_6r";
         String userEmail = "Bob_Hoplins@epam.com";
-        User user = userService.findUserByEmail(userEmail);
+        User user = userService.findUserByEmailOrThrowException(userEmail);
         List<User> listBeforeUpdate = questionService.getQuestionById(questionId).getSubscribers();
         assertTrue(subscriptionService.subscribeForQuestionByAllowedSub(questionId, userEmail));
 
@@ -137,7 +137,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
     public void unsubscribeForQuestionByAllowedSubSuccessTest() {
         String questionId = "6u_6r";
         String userEmail = "Tyler_Greeds@epam.com";
-        User user = userService.findUserByEmail(userEmail);
+        User user = userService.findUserByEmailOrThrowException(userEmail);
         List<User> listBeforeUpdate = questionService.getQuestionById(questionId).getSubscribers();
         assertTrue(subscriptionService.unsubscribeForQuestionByAllowedSub(questionId, userEmail));
 

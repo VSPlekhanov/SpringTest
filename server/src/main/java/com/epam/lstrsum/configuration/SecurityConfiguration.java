@@ -6,6 +6,7 @@ import com.epam.lstrsum.security.cert.TrustAllCertificatesSSL;
 import com.epam.lstrsum.security.role.ResourceBundleRoleService;
 import com.epam.lstrsum.security.role.RoleService;
 import com.epam.lstrsum.service.UserService;
+import com.epam.lstrsum.utils.MessagesHelper;
 import lombok.Setter;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private MessagesHelper messagesHelper;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         RoleService roleService = roleService();
@@ -132,7 +136,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     public ResourceServerTokenServices tokenService() {
-        return new CustomResourceServerTokenServices(roleService(), authorizationCodeResourceDetails(), userService);
+        return new CustomResourceServerTokenServices(roleService(), authorizationCodeResourceDetails(), userService, messagesHelper);
     }
 
     @Bean

@@ -6,13 +6,17 @@ import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.model.Vote;
 import com.epam.lstrsum.service.AnswerService;
 import com.epam.lstrsum.service.VoteService;
+import com.epam.lstrsum.utils.MessagesHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+
+import java.text.MessageFormat;
 
 import static java.util.Objects.isNull;
 
@@ -22,6 +26,9 @@ import static java.util.Objects.isNull;
 public class VoteServiceImpl implements VoteService {
     private final MongoTemplate mongoTemplate;
     private final AnswerService answerService;
+
+    @Autowired
+    private MessagesHelper messagesHelper;
 
     @Override
     public boolean voteForAnswerByUser(String answerId, String userEmail) {
@@ -62,7 +69,8 @@ public class VoteServiceImpl implements VoteService {
         if ( isNull(answerService.getAnswerByIdAndQuestionId(answerId, question.getQuestionId())) ||
                 !isUserAllowedSubOnQuestion(question, userEmail) ) {
             BusinessLogicException e = new BusinessLogicException(
-                    "Answer doesn't exist or user with email : '" + userEmail + " ' has no permission to answer id : '" + answerId);
+                    MessageFormat.format(messagesHelper.get("validation.service.answer-not-exist-or-user-has-no-permission-to-answer"),
+                            userEmail, answerId));
             log.error(e.getMessage());
             throw e;
         }

@@ -2,10 +2,13 @@ package com.epam.lstrsum.service.http;
 
 import com.epam.lstrsum.exception.BusinessLogicException;
 import com.epam.lstrsum.utils.HttpUtilEntity;
+import com.epam.lstrsum.utils.MessagesHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.slf4j.helpers.MessageFormatter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.nio.charset.Charset;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +34,9 @@ import static java.util.Objects.isNull;
 public class HttpRequestServiceImpl implements HttpRequestService {
 
     private final RestTemplate restTemplate;
+
+    @Autowired
+    private final MessagesHelper messagesHelper;
 
     public <T> T sendGetRequest(HttpUtilEntity httpUtilEntity, ParameterizedTypeReference<T> type) {
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -56,7 +63,7 @@ public class HttpRequestServiceImpl implements HttpRequestService {
     private void checkUrl(String url) {
         if (isNull(url) || url.trim().isEmpty()) {
             log.error("Cannot sent a http request to null or empty url");
-            throw new BusinessLogicException("Cannot sent a http request to null or empty url");
+            throw new BusinessLogicException(messagesHelper.get("validation.service.cannot-sent-http-request-to-null-or-empty-url"));
         }
     }
 
@@ -131,12 +138,15 @@ public class HttpRequestServiceImpl implements HttpRequestService {
             if (!Objects.equals(out.getStatusCode(), HttpStatus.OK)) {
                 log.error("Incorrect response status code = {} instead of code = 200", out.getStatusCode().toString());
                 throw new BusinessLogicException(
-                        "Incorrect response status code = " + out.getStatusCode().toString() + " instead of code = 200");
+                        MessageFormat.format(messagesHelper.get("validation.service.incorrect-responce-status-code"),
+                                                out.getStatusCode().toString()));
             }
             return out.getBody();
         } catch (final Exception e) {
             log.error("Can't GET to: {} because of {}", url, e.getMessage());
-            throw new BusinessLogicException("Can't perform GET request because of " + e.getMessage());
+            throw new BusinessLogicException(
+                    MessageFormat.format(messagesHelper.get("validation.service.cannot-perform-get-request-because-of"),
+                                            e.getMessage()));
         }
     }
 }

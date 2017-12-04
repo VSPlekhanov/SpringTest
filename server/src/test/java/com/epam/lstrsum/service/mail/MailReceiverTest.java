@@ -5,11 +5,7 @@ import com.epam.lstrsum.email.persistence.EmailRepository;
 import com.epam.lstrsum.email.service.BackupHelper;
 import com.epam.lstrsum.email.service.EmailParser;
 import com.epam.lstrsum.email.service.ExchangeServiceHelper;
-import com.epam.lstrsum.service.AttachmentService;
-import com.epam.lstrsum.service.QuestionService;
-import com.epam.lstrsum.service.SubscriptionService;
-import com.epam.lstrsum.service.TelescopeService;
-import com.epam.lstrsum.service.UserService;
+import com.epam.lstrsum.service.*;
 import com.epam.lstrsum.service.impl.MailReceiverImpl;
 import com.epam.lstrsum.testutils.InstantiateUtil;
 import org.junit.Before;
@@ -28,9 +24,7 @@ import java.util.Collections;
 
 import static java.util.Collections.singletonList;
 import static org.mockito.Matchers.anySetOf;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 

@@ -7,6 +7,7 @@ import com.epam.lstrsum.dto.question.QuestionAllFieldsListDto;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.persistence.UserRepository;
 import com.epam.lstrsum.service.ElasticSearchService;
+import com.epam.lstrsum.utils.MessagesHelper;
 import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -63,6 +64,9 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
 
     @Autowired
     private RestHighLevelClient restHighLevelClient;
+
+    @Autowired
+    private MessagesHelper messagesHelper;
 
     @Autowired
     private UserRuntimeRequestComponent userRuntimeRequestComponent;
@@ -128,7 +132,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     // TODO: 10/20/2017 Create a smart search only in questions on which the user is allowed sub
     @Override
     public String smartSearchWithAllowedSub(String searchQuery, int page, int size, String email) {
-        throw new UnsupportedOperationException("Unsupported method yet");
+        throw new UnsupportedOperationException(messagesHelper.get("validation.service.unsupported-method-yet"));
     }
 
     @Override
