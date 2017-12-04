@@ -18,7 +18,8 @@
         "index": "analyzed"
       },
       "authorId": {
-        "type" : "nested"
+        "type" : "text",
+        "index": "not_analyzed"
       },
       "createdAt": {
         "type" : "date",
@@ -28,14 +29,8 @@
         "type" : "integer"
       },
       "allowedSubs": {
-        "properties": {
-          "$ref": {
-            "type": "string"
-          },
-          "$id": {
-            "type": "string"
-          }
-        }
+        "type" : "text",
+        "index": "not_analyzed"
       },
       "deadLine": {
         "type" : "nested"

@@ -1,9 +1,9 @@
 package com.epam.lstrsum.service.impl;
 
+import com.epam.lstrsum.controller.UserRuntimeRequestComponent;
 import com.epam.lstrsum.converter.UserDtoMapper;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsListDto;
-import com.epam.lstrsum.controller.UserRuntimeRequestComponent;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.persistence.UserRepository;
 import com.epam.lstrsum.service.ElasticSearchService;
@@ -70,11 +70,11 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     @Autowired
     private UserRepository userRepository;
 
-    @Setter
-    private List<String> validMetaTags;
-
     @Autowired
     private UserDtoMapper userMapper;
+
+    @Setter
+    private List<String> validMetaTags;
 
     @Override
     public QuestionAllFieldsListDto elasticSimpleSearch(String searchString, List<String> metaTags, Integer page, Integer size) {
@@ -169,10 +169,8 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         }
 
         BoolQueryBuilder query = QueryBuilders.boolQuery().must(queryBuilder);
-        boolean userInDistributionList = userRuntimeRequestComponent.isInDistributionList();
-        if (!userInDistributionList) {
-            String currentUserEmail = userRuntimeRequestComponent.getEmail();
-            String currentUserId = userRepository.findByEmailIgnoreCase(currentUserEmail).get().getUserId();
+        if (!userRuntimeRequestComponent.isInDistributionList()) {
+            String currentUserId = userRepository.findByEmailIgnoreCase(userRuntimeRequestComponent.getEmail()).get().getUserId();
             query.filter(userPermissionFilter(currentUserId));
         }
 
