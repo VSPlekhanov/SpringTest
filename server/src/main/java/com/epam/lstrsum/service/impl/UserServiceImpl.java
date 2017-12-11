@@ -85,10 +85,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmailIgnoreCase(email);
     }
 
-    @Override
-    public Optional<User> findUserByEmailIfExist(String email) {
-        return userRepository.findByEmailIgnoreCase(email);
-    }
+
 
     @Override
     public long setActiveForAllAs(Collection<? super String> emails, boolean active) {
