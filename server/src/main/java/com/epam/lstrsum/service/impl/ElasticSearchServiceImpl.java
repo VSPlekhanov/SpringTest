@@ -1,5 +1,6 @@
 package com.epam.lstrsum.service.impl;
 
+import com.epam.lstrsum.controller.UserRuntimeRequestComponent;
 import com.epam.lstrsum.converter.UserDtoMapper;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionAllFieldsListDto;
@@ -63,14 +64,17 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     @Autowired
     private RestHighLevelClient restHighLevelClient;
 
-    @Setter
-    private List<String> validMetaTags;
+    @Autowired
+    private UserRuntimeRequestComponent userRuntimeRequestComponent;
 
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private UserDtoMapper userMapper;
+
+    @Setter
+    private List<String> validMetaTags;
 
     @Override
     public QuestionAllFieldsListDto elasticSimpleSearch(String searchString, List<String> metaTags, Integer page, Integer size) {
@@ -165,10 +169,22 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         }
 
         BoolQueryBuilder query = QueryBuilders.boolQuery().must(queryBuilder);
+        if (!userRuntimeRequestComponent.isInDistributionList()) {
+            String currentUserId = userRepository.findByEmailIgnoreCase(userRuntimeRequestComponent.getEmail()).get().getUserId();
+            query.filter(getUserPermissionFilter(currentUserId));
+        }
+
         if (!metaTags.isEmpty()) {
             query.filter(createFilter(metaTags));
         }
+
         return query;
+    }
+
+    private BoolQueryBuilder getUserPermissionFilter(String currentUserId) {
+        return QueryBuilders.boolQuery()
+                            .should(QueryBuilders.termQuery("authorId", currentUserId))
+                            .should(QueryBuilders.termQuery("allowedSubs", currentUserId));
     }
 
     private BoolQueryBuilder createFilter(List<String> metaTags){

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="3.2" jmeter="3.2 r1790748">
+<jmeterTestPlan version="1.2" properties="3.2" jmeter="3.3 r1808647">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
@@ -24,12 +24,12 @@
           </elementProp>
           <elementProp name="mongodb_users_amount" elementType="Argument">
             <stringProp name="Argument.name">mongodb_users_amount</stringProp>
-            <stringProp name="Argument.value">${__P(mongodbUsersAmount,2000)}</stringProp>
+            <stringProp name="Argument.value">${__P(mongodbUsersAmount,21)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="mongodb_questions_amount" elementType="Argument">
             <stringProp name="Argument.name">mongodb_questions_amount</stringProp>
-            <stringProp name="Argument.value">${__P(mongodbQuestionsAmount,1000)}</stringProp>
+            <stringProp name="Argument.value">${__P(mongodbQuestionsAmount,100)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="default_questions_amount_return" elementType="Argument">
@@ -88,9 +88,9 @@
             <boolProp name="resetInterpreter">false</boolProp>
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>
-            <stringProp name="script">log.info(&quot;--------------------------------SET UP START PRODUCTION--------------------------------&quot;);
-Runtime.getRuntime().exec(&quot;path\\to\\init_mongo_remote_script_file&quot;).waitFor();
-log.info(&quot;--------------------------------SET UP END PRODUCTION--------------------------------&quot;);</stringProp>
+            <stringProp name="script">log.info(&quot;--------------------------------SET UP START LOCALHOST--------------------------------&quot;);
+Runtime.getRuntime().exec(&quot;init_mongo_remote_win.cmd&quot;).waitFor();        
+log.info(&quot;--------------------------------SET UP END LOCALHOST--------------------------------&quot;);</stringProp>
           </BeanShellPreProcessor>
           <hashTree/>
           <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="preprocessor_mongo_init_localhost" enabled="false">
@@ -98,7 +98,7 @@ log.info(&quot;--------------------------------SET UP END PRODUCTION------------
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>
             <stringProp name="script">log.info(&quot;--------------------------------SET UP START LOCALHOST--------------------------------&quot;);
-Runtime.getRuntime().exec(&quot;path\\to\\init_mongo_localhost_script_file&quot;).waitFor();
+Runtime.getRuntime().exec(&quot;init_mongo_localhost_win.cmd&quot;).waitFor();        
 log.info(&quot;--------------------------------SET UP END LOCALHOST--------------------------------&quot;);</stringProp>
           </BeanShellPreProcessor>
           <hashTree/>
@@ -222,7 +222,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
       <hashTree/>
       <kg.apc.jmeter.threads.SteppingThreadGroup guiclass="kg.apc.jmeter.threads.SteppingThreadGroupGui" testclass="kg.apc.jmeter.threads.SteppingThreadGroup" testname="GET_Stepping Thread Group" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-        <stringProp name="ThreadGroup.num_threads">${__P(usersAll,10)}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${__P(usersAll,100)}</stringProp>
         <stringProp name="Threads initial delay">${__P(firstWait,1)}</stringProp>
         <stringProp name="Start users count">${__P(usersNextAdd,4)}</stringProp>
         <stringProp name="Start users count burst">${__P(usersFirstStart,6)}</stringProp>
@@ -247,7 +247,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <stringProp name="HTTPSampler.port"></stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/experience/api/question/count</stringProp>
+            <stringProp name="HTTPSampler.path">/api/question/count</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -324,7 +324,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <stringProp name="HTTPSampler.port"></stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/experience/admin/user/list</stringProp>
+            <stringProp name="HTTPSampler.path">/admin/user/list</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -353,12 +353,12 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             </com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor>
             <hashTree/>
             <BeanShellAssertion guiclass="BeanShellAssertionGui" testclass="BeanShellAssertion" testname="users_amount_assertion" enabled="true">
-              <stringProp name="BeanShellAssertion.query">if((${mongodb_users_amount}+1) == ${user_json_matchNr}){
+              <stringProp name="BeanShellAssertion.query">if((${mongodb_users_amount}) == ${user_json_matchNr}){
 	Failure = false;
 		}
 	else {
 		log.info(&quot;----------------------FAILURE USERS AMOUNT ASSERTION---------------------&quot;);
-	     FailureMessage = &quot;Expected users = &quot; + (${mongodb_users_amount}+1) + &quot;   actual users = &quot; + ${user_json_matchNr};
+	     FailureMessage = &quot;Expected users = &quot; + (${mongodb_users_amount}) + &quot;   actual users = &quot; + ${user_json_matchNr};
 		Failure = true;
 		}</stringProp>
               <stringProp name="BeanShellAssertion.filename"></stringProp>
@@ -407,21 +407,14 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
         <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Simple Controller" enabled="true"/>
         <hashTree>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Question_list_amount_default_200" enabled="false">
-            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-              <collectionProp name="Arguments.arguments">
-                <elementProp name="" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value"></stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                </elementProp>
-              </collectionProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
             </elementProp>
             <stringProp name="HTTPSampler.domain"></stringProp>
             <stringProp name="HTTPSampler.port"></stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/experience/api/question/list</stringProp>
+            <stringProp name="HTTPSampler.path">/api/question/list</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -509,7 +502,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <stringProp name="HTTPSampler.port"></stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/experience/api/question/list</stringProp>
+            <stringProp name="HTTPSampler.path">/api/question/list</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -520,7 +513,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <stringProp name="HTTPSampler.response_timeout"></stringProp>
           </HTTPSamplerProxy>
           <hashTree>
-            <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="questionIds_extractor" enabled="true">
+            <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="questionIds_extractor" enabled="false">
               <stringProp name="RegexExtractor.useHeaders">false</stringProp>
               <stringProp name="RegexExtractor.refname">question_amount_ui_json</stringProp>
               <stringProp name="RegexExtractor.regex">question&quot; : &quot;.+?&quot;</stringProp>
@@ -529,15 +522,23 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
               <stringProp name="RegexExtractor.match_number">-1</stringProp>
             </RegexExtractor>
             <hashTree/>
+            <com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.gui.JSONPathExtractorGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor" testname="jp@gc - JSON Path Extractor" enabled="true">
+              <stringProp name="VAR">question_amount_ui_json</stringProp>
+              <stringProp name="JSONPATH">$.questions.length()</stringProp>
+              <stringProp name="DEFAULT">-1</stringProp>
+              <stringProp name="VARIABLE"></stringProp>
+              <stringProp name="SUBJECT">BODY</stringProp>
+            </com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor>
+            <hashTree/>
             <BeanShellAssertion guiclass="BeanShellAssertionGui" testclass="BeanShellAssertion" testname="questionIds_amount_assertion" enabled="true">
-              <stringProp name="BeanShellAssertion.query">if( ${ui_questions_amount_return} == ${question_amount_ui_json_matchNr}){
+              <stringProp name="BeanShellAssertion.query">if( ${ui_questions_amount_return} == ${question_amount_ui_json}){
 	Failure = false;
 		}
 	else {
 		log.info(&quot;-----------------------------FAILURE QUESTION AMOUNT ASSERTION-----------------------------&quot;);
-		log.info(&quot;Expected = &quot; + ${ui_questions_amount_return} + &quot;   actual = &quot; + ${question_amount_ui_json_matchNr});
+		log.info(&quot;Expected = &quot; + ${ui_questions_amount_return} + &quot;   actual = &quot; + ${question_amount_ui_json});
 		log.info(&quot;-----------------------------------------------------------------------------&quot;);
-	     FailureMessage = &quot;Expected questions amount = &quot; + ${ui_questions_amount_return} + &quot;   actual questions amount = &quot; + ${question_amount_ui_json_matchNr};
+	     FailureMessage = &quot;Expected questions amount = &quot; + ${ui_questions_amount_return} + &quot;   actual questions amount = &quot; + ${question_amount_ui_json};
 		Failure = true;
 		}</stringProp>
               <stringProp name="BeanShellAssertion.filename"></stringProp>
@@ -562,7 +563,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <stringProp name="HTTPSampler.port"></stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/experience/api/question/list</stringProp>
+            <stringProp name="HTTPSampler.path">/api/question/list</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -573,7 +574,15 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <stringProp name="HTTPSampler.response_timeout"></stringProp>
           </HTTPSamplerProxy>
           <hashTree>
-            <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="questionIds_extractor" enabled="true">
+            <com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.gui.JSONPathExtractorGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor" testname="jp@gc - JSON Path Extractor" enabled="true">
+              <stringProp name="VAR">question_amount_json</stringProp>
+              <stringProp name="JSONPATH">$.questions.length()</stringProp>
+              <stringProp name="DEFAULT">-1</stringProp>
+              <stringProp name="VARIABLE"></stringProp>
+              <stringProp name="SUBJECT">BODY</stringProp>
+            </com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor>
+            <hashTree/>
+            <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="questionIds_extractor" enabled="false">
               <stringProp name="RegexExtractor.useHeaders">false</stringProp>
               <stringProp name="RegexExtractor.refname">question_amount_json</stringProp>
               <stringProp name="RegexExtractor.regex">question&quot; : &quot;.+?&quot;</stringProp>
@@ -583,14 +592,14 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             </RegexExtractor>
             <hashTree/>
             <BeanShellAssertion guiclass="BeanShellAssertionGui" testclass="BeanShellAssertion" testname="questionIds_amount_assertion" enabled="true">
-              <stringProp name="BeanShellAssertion.query">if( 50 == ${question_amount_json_matchNr}){
+              <stringProp name="BeanShellAssertion.query">if( 50 == ${question_amount_json}){
 	Failure = false;
 		}
 	else {
 		log.info(&quot;-----------------------------FAILURE QUESTION AMOUNT ASSERTION-----------------------------&quot;);
-		log.info(&quot;Expected = &quot; + 50 + &quot;   actual = &quot; + ${question_amount_json_matchNr});
+		log.info(&quot;Expected = &quot; + 50 + &quot;   actual = &quot; + ${question_amount_json});
 		log.info(&quot;-----------------------------------------------------------------------------&quot;);
-	     FailureMessage = &quot;Expected questions amount = &quot; + 50 + &quot;   actual questions amount = &quot; + ${question_amount_json_matchNr};
+	     FailureMessage = &quot;Expected questions amount = &quot; + 50 + &quot;   actual questions amount = &quot; + ${question_amount_json};
 		Failure = true;
 		}</stringProp>
               <stringProp name="BeanShellAssertion.filename"></stringProp>
@@ -600,7 +609,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <hashTree/>
             <com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.gui.JSONPathExtractorGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor" testname="all_question_id_extractor" enabled="true">
               <stringProp name="VAR">questionId_array</stringProp>
-              <stringProp name="JSONPATH">$..question</stringProp>
+              <stringProp name="JSONPATH">$..questionId</stringProp>
               <stringProp name="DEFAULT"></stringProp>
               <stringProp name="VARIABLE"></stringProp>
               <stringProp name="SUBJECT">BODY</stringProp>
@@ -609,10 +618,10 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="question_Id_extractor" enabled="true">
               <stringProp name="RegexExtractor.useHeaders">false</stringProp>
               <stringProp name="RegexExtractor.refname">question_id</stringProp>
-              <stringProp name="RegexExtractor.regex">(question&quot;\s:\s&quot;)([\d|\w]+)</stringProp>
-              <stringProp name="RegexExtractor.template">$0$</stringProp>
-              <stringProp name="RegexExtractor.default"></stringProp>
-              <stringProp name="RegexExtractor.match_number">0</stringProp>
+              <stringProp name="RegexExtractor.regex">(questionId&quot;\s:\s&quot;)([\d|\w]+)</stringProp>
+              <stringProp name="RegexExtractor.template">$2$</stringProp>
+              <stringProp name="RegexExtractor.default">qwe1</stringProp>
+              <stringProp name="RegexExtractor.match_number">qwe1</stringProp>
             </RegexExtractor>
             <hashTree/>
             <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="random_tag_extractor" enabled="true">
@@ -633,7 +642,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <stringProp name="HTTPSampler.port"></stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/experience/api/question/getRelevantTags?key=${random_tag_g2}</stringProp>
+            <stringProp name="HTTPSampler.path">/api/question/getRelevantTags?key=${random_tag_g2}</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -745,7 +754,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <stringProp name="HTTPSampler.port"></stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/experience/api/question/${question_id_g2}</stringProp>
+            <stringProp name="HTTPSampler.path">/api/question/${questionId_array_in_loop}</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -759,7 +768,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.gui.JSONPathExtractorGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor" testname="json_text_extractor" enabled="true">
               <stringProp name="VAR">text_json</stringProp>
               <stringProp name="JSONPATH">$..text</stringProp>
-              <stringProp name="DEFAULT"></stringProp>
+              <stringProp name="DEFAULT"> 1</stringProp>
               <stringProp name="VARIABLE"></stringProp>
               <stringProp name="SUBJECT">BODY</stringProp>
             </com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor>
@@ -775,10 +784,10 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="text_for_search_extractor" enabled="true">
               <stringProp name="RegexExtractor.useHeaders">false</stringProp>
               <stringProp name="RegexExtractor.refname">text_for_search</stringProp>
-              <stringProp name="RegexExtractor.regex">(\[&quot;\s*)([\d|\w]+)</stringProp>
-              <stringProp name="RegexExtractor.template">$0$</stringProp>
-              <stringProp name="RegexExtractor.default"></stringProp>
-              <stringProp name="RegexExtractor.match_number">0</stringProp>
+              <stringProp name="RegexExtractor.regex">(text&quot;\s:\s&quot;)([\d|\w]+)</stringProp>
+              <stringProp name="RegexExtractor.template">$2$</stringProp>
+              <stringProp name="RegexExtractor.default">qwerty123</stringProp>
+              <stringProp name="RegexExtractor.match_number">qwerty123</stringProp>
               <stringProp name="Sample.scope">variable</stringProp>
               <stringProp name="Scope.variable">text_json</stringProp>
             </RegexExtractor>
@@ -852,7 +861,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
               <collectionProp name="Arguments.arguments">
                 <elementProp name="query" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">${text_for_search_g2}</stringProp>
+                  <stringProp name="Argument.value">${text_for_search}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                   <boolProp name="HTTPArgument.use_equals">true</boolProp>
                   <stringProp name="Argument.name">query</stringProp>
@@ -863,7 +872,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <stringProp name="HTTPSampler.port"></stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/experience/api/question/search</stringProp>
+            <stringProp name="HTTPSampler.path">/api/question/search</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -925,7 +934,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
               <collectionProp name="Arguments.arguments">
                 <elementProp name="query" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">${text_for_search_g2}</stringProp>
+                  <stringProp name="Argument.value">${text_for_search}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                   <boolProp name="HTTPArgument.use_equals">true</boolProp>
                   <stringProp name="Argument.name">query</stringProp>
@@ -936,7 +945,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <stringProp name="HTTPSampler.port"></stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/experience/api/question/smartSearch</stringProp>
+            <stringProp name="HTTPSampler.path">/api/question/smartSearch</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -998,7 +1007,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
               <collectionProp name="Arguments.arguments">
                 <elementProp name="query" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">${text_for_search_g2}</stringProp>
+                  <stringProp name="Argument.value">${text_for_search}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                   <boolProp name="HTTPArgument.use_equals">true</boolProp>
                   <stringProp name="Argument.name">query</stringProp>
@@ -1009,7 +1018,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <stringProp name="HTTPSampler.port"></stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/experience/api/question/search/count</stringProp>
+            <stringProp name="HTTPSampler.path">/api/question/search/count</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1245,7 +1254,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
       <hashTree/>
       <kg.apc.jmeter.threads.SteppingThreadGroup guiclass="kg.apc.jmeter.threads.SteppingThreadGroupGui" testclass="kg.apc.jmeter.threads.SteppingThreadGroup" testname="POST_PUT_Stepping Thread Group" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-        <stringProp name="ThreadGroup.num_threads">${__P(usersAll,10)}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${__P(usersAll,100)}</stringProp>
         <stringProp name="Threads initial delay">${__P(firstWait,1)}</stringProp>
         <stringProp name="Start users count">${__P(usersNextAdd,4)}</stringProp>
         <stringProp name="Start users count burst">${__P(usersFirstStart,6)}</stringProp>
@@ -1268,18 +1277,13 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
               <collectionProp name="Arguments.arguments">
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">{&#xd;
-	&quot;title&quot;:&quot;${__RandomString(300,0123456789abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ   abcdef)}&quot;,&#xd;
-	&quot;tags&quot;:[&#xd;
-	         &quot;${__RandomString(20,0123456789abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ   abcdef)}&quot;,&#xd;
-	         &quot;${__RandomString(20,0123456789abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ   abcdef)}&quot;,&#xd;
-	         &quot;${__RandomString(20,0123456789abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ   abcdef)}&quot;&#xd;
-	         ],&#xd;
-	&quot;text&quot;:&quot;${__RandomString(300,0123456789abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ   abcdef)}&quot;,&#xd;
-	&quot;deadLine&quot;:1502564326,&#xd;
-	&quot;allowedSubs&quot;:[&quot;John_Doe@epam.com&quot;]&#xd;
+                  <stringProp name="Argument.value">--custom_boundary&#xd;
+Content-type: application/json; charset=UTF-8&#xd;
+Content-Disposition: form-data; name=&quot;dtoObject&quot;&#xd;
 &#xd;
-	}</stringProp>
+{&quot;title&quot;:&quot;${__RandomString(50,0123456789abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ   abcdef)}&quot;,&quot;text&quot;:&quot;${__RandomString(300,0123456789abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ   abcdef)}&quot;,&quot;allowedSubs&quot;:[&quot;John_Doe@epam.com&quot;],&quot;tags&quot;:[&quot;${__RandomString(20,0123456789abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ   abcdef)}&quot;,&quot;${__RandomString(20,0123456789abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ   abcdef)}&quot;,&quot;${__RandomString(20,0123456789abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ   abcdef)}&quot; ], &quot;deadLine&quot;:1512057240510}&#xd;
+--custom_boundary--&#xd;
+</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
               </collectionProp>
@@ -1288,7 +1292,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <stringProp name="HTTPSampler.port"></stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/experience/api/question</stringProp>
+            <stringProp name="HTTPSampler.path">/api/question</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1339,7 +1343,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
               <collectionProp name="HeaderManager.headers">
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">Content-Type</stringProp>
-                  <stringProp name="Header.value">application/json;charset=utf8</stringProp>
+                  <stringProp name="Header.value">multipart/form-data; boundary=custom_boundary</stringProp>
                 </elementProp>
               </collectionProp>
             </HeaderManager>
@@ -1380,7 +1384,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <stringProp name="HTTPSampler.port"></stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/experience/api/subscription/${new_question_id}</stringProp>
+            <stringProp name="HTTPSampler.path">/api/subscription/subscribe/${new_question_id}</stringProp>
             <stringProp name="HTTPSampler.method">PUT</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1443,10 +1447,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
               <collectionProp name="Arguments.arguments">
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">{&#xd;
-	&quot;question&quot;:&quot;${new_question_id}&quot;,&#xd;
-	&quot;text&quot;:&quot;${__RandomString(300,0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdef   )}}&quot;&#xd;
-	}</stringProp>
+                  <stringProp name="Argument.value">{&quot;text&quot;:&quot;${__RandomString(300,0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdef   )}}&quot;, &quot;questionId&quot;:&quot;${new_question_id}&quot;}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
               </collectionProp>
@@ -1455,7 +1456,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <stringProp name="HTTPSampler.port"></stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/experience/api/answer</stringProp>
+            <stringProp name="HTTPSampler.path">/api/answer</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1530,11 +1531,33 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <hashTree/>
             <com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.gui.JSONPathExtractorGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor" testname="json_questionId_extractor" enabled="true">
               <stringProp name="VAR">questionId_json</stringProp>
-              <stringProp name="JSONPATH">$..question</stringProp>
+              <stringProp name="JSONPATH">$.question..questionId</stringProp>
               <stringProp name="DEFAULT"></stringProp>
               <stringProp name="VARIABLE"></stringProp>
               <stringProp name="SUBJECT">BODY</stringProp>
             </com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor>
+            <hashTree/>
+            <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="question_id_from_json" enabled="true">
+              <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+              <stringProp name="RegexExtractor.refname">question_id_for_equals</stringProp>
+              <stringProp name="RegexExtractor.regex">&quot;(.*?)&quot;</stringProp>
+              <stringProp name="RegexExtractor.template">$1$</stringProp>
+              <stringProp name="RegexExtractor.default"></stringProp>
+              <stringProp name="RegexExtractor.match_number">1</stringProp>
+              <stringProp name="Sample.scope">variable</stringProp>
+              <stringProp name="Scope.variable">questionId_json</stringProp>
+            </RegexExtractor>
+            <hashTree/>
+            <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="answerId_from_json" enabled="true">
+              <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+              <stringProp name="RegexExtractor.refname">answerId_without_quotes</stringProp>
+              <stringProp name="RegexExtractor.regex">&quot;(.*?)&quot;</stringProp>
+              <stringProp name="RegexExtractor.template">$1$</stringProp>
+              <stringProp name="RegexExtractor.default"></stringProp>
+              <stringProp name="RegexExtractor.match_number">1</stringProp>
+              <stringProp name="Sample.scope">variable</stringProp>
+              <stringProp name="Scope.variable">answerId_json</stringProp>
+            </RegexExtractor>
             <hashTree/>
             <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200_assertion" enabled="true">
               <collectionProp name="Asserion.test_strings">
@@ -1553,7 +1576,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
               <boolProp name="Assertion.assume_success">false</boolProp>
               <intProp name="Assertion.test_type">8</intProp>
               <stringProp name="Assertion.scope">variable</stringProp>
-              <stringProp name="Scope.variable">questionId_json_2</stringProp>
+              <stringProp name="Scope.variable">question_id_for_equals</stringProp>
             </ResponseAssertion>
             <hashTree/>
             <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="answerId_assertion" enabled="true">
@@ -1576,7 +1599,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <stringProp name="HTTPSampler.port"></stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding">UTF-8</stringProp>
-            <stringProp name="HTTPSampler.path">/experience/api/answer/vote?answerId=${new_answer_id_g2}</stringProp>
+            <stringProp name="HTTPSampler.path">/api/answer/vote?answerId=${answerId_without_quotes}</stringProp>
             <stringProp name="HTTPSampler.method">PUT</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1641,7 +1664,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <stringProp name="HTTPSampler.port"></stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/experience/api/answer/unvote?answerId=${new_answer_id_g2}</stringProp>
+            <stringProp name="HTTPSampler.path">/api/answer/unvote?answerId=${answerId_without_quotes}</stringProp>
             <stringProp name="HTTPSampler.method">PUT</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1707,7 +1730,7 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/experience/admin/question/${new_question_id}</stringProp>
+          <stringProp name="HTTPSampler.path">/admin/question/${new_question_id}</stringProp>
           <stringProp name="HTTPSampler.method">DELETE</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1921,9 +1944,9 @@ log.info(&quot;--------------------------------SET UP END LOCALHOST-------------
             <boolProp name="resetInterpreter">false</boolProp>
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>
-            <stringProp name="script">log.info(&quot;--------------------------------TEAR DOWN START PRODUCTION--------------------------------&quot;);
-Runtime.getRuntime().exec(&quot;path\\to\\init_mongo_remote_script_file&quot;).waitFor();
-log.info(&quot;--------------------------------TEAR DOWN END PRODUCTION--------------------------------&quot;);</stringProp>
+            <stringProp name="script">log.info(&quot;--------------------------------SET UP START LOCALHOST--------------------------------&quot;);
+Runtime.getRuntime().exec(&quot;init_mongo_remote_win.cmd&quot;).waitFor();        
+log.info(&quot;--------------------------------SET UP END LOCALHOST--------------------------------&quot;);</stringProp>
           </BeanShellPreProcessor>
           <hashTree/>
           <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="preprocessor_mongo_init_locahost" enabled="false">
@@ -1931,7 +1954,7 @@ log.info(&quot;--------------------------------TEAR DOWN END PRODUCTION---------
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>
             <stringProp name="script">log.info(&quot;--------------------------------TEAR DOWN START LOCALHOST--------------------------------&quot;);
-Runtime.getRuntime().exec(&quot;path\\to\\init_mongo_localhost_script_file&quot;).waitFor();
+Runtime.getRuntime().exec(&quot;init_mongo_localhost_win.cmd&quot;).waitFor();
 log.info(&quot;--------------------------------TEAR DOWN END LOCALHOST--------------------------------&quot;);</stringProp>
           </BeanShellPreProcessor>
           <hashTree/>
