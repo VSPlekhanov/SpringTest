@@ -64,10 +64,10 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
 
             return new OAuth2Authentication(request, finalToken);
         } catch (AuthenticationException | InvalidTokenException e) {
-            log.error("Token process exception: %s", e.getMessage());
+            log.error("Token process exception: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
-            log.error("Token process exception: %s", e.getMessage());
+            log.error("Token process exception: {}", e.getMessage());
             throw new InvalidTokenException(e.getMessage(), e);
         }
     }

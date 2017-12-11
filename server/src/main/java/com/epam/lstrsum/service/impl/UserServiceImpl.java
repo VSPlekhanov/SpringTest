@@ -86,6 +86,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<User> findUserByEmailIfExist(String email) {
+        return userRepository.findByEmailIgnoreCase(email);
+    }
+
+    @Override
     public long setActiveForAllAs(Collection<? super String> emails, boolean active) {
         val inEmails = Criteria.where("email").in(emails);
         return mongoTemplate.updateMulti(new Query(inEmails), Update.update("isActive", active), User.class).getN();
