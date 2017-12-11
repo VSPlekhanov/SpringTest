@@ -21,12 +21,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -41,9 +36,10 @@ public class UserServiceImpl implements UserService {
     //List<String> -> Set<String> -> String
     private static final BiFunction<List<String>, Set<String>, String> GET_EMAIL_CONTAINS_IN_BOTH_LISTS =
             (emailsFromDto, emailsFromInputSet) -> emailsFromDto.stream()
+                    .map(String::toLowerCase)
                     .filter(emailsFromInputSet::contains)
                     .findFirst()
-                    .orElseThrow(RuntimeException::new);
+                      .orElseThrow(RuntimeException::new);
     //TelescopeDataDto -> Set<String> -> Pair<String, TelescopeDataDto>
     private static final BiFunction<TelescopeDataDto, Set<String>, Pair<String, TelescopeDataDto>>
             GET_PAIR_FROM_EMAIL_TO_TELESCOPE_DATA = (data, emails) ->
@@ -68,9 +64,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findUserByEmail(String email) {
+    public User findUserByEmailOrThrowException(String email) {
         return userRepository.findByEmailIgnoreCase(email).orElseThrow(() ->
                 new NoSuchUserException("No such User in user Collection"));
+    }
+
+    @Override
+    public Optional<User> findUserByEmailIfExist(String email) {
+        return userRepository.findByEmailIgnoreCase(email);
     }
 
     @Override

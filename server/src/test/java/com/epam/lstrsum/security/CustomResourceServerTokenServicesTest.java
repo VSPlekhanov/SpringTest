@@ -1,7 +1,6 @@
 package com.epam.lstrsum.security;
 
 import com.epam.lstrsum.enums.UserRoleType;
-import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.security.role.RoleService;
 import com.epam.lstrsum.service.UserService;
@@ -10,28 +9,22 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
+import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_USER_ID;
-import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
-import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_NAME;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someActiveUser;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someNotActiveUser;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import java.util.Optional;
+
+import static com.epam.lstrsum.testutils.InstantiateUtil.*;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class CustomResourceServerTokenServicesTest {
     private static final String ROLE_EXTENDED_USER = UserRoleType.ROLE_EXTENDED_USER.name();
+    private static final String ROLE_SIMPLE_USER = UserRoleType.ROLE_SIMPLE_USER.name();
     private static final String SOME_CLIENT_ID = someString();
 
     private static final String VALID_JWT_ACCESS_TOKEN =
@@ -66,7 +59,7 @@ public class CustomResourceServerTokenServicesTest {
         when(authorizationCodeResourceDetails.getClientId()).thenReturn(EXISTING_USER_ID);
         when(roleService.getPrincipalRoles(any(User.class))).thenReturn(new String[]{ROLE_EXTENDED_USER});
         val someActiveUser = someActiveUser();
-        when(userService.findUserByEmail(any(String.class))).thenReturn(someActiveUser);
+        doReturn(Optional.of(someActiveUser)).when(userService).findUserByEmailIfExist(any(String.class));
 
         OAuth2Authentication auth = tokenServices.loadAuthentication(VALID_JWT_ACCESS_TOKEN);
         EpamEmployeePrincipal employeePrincipal = (EpamEmployeePrincipal) auth.getPrincipal();
@@ -81,48 +74,47 @@ public class CustomResourceServerTokenServicesTest {
 
         verify(authorizationCodeResourceDetails, times(1)).getClientId();
         verify(roleService, times(1)).getPrincipalRoles(any(User.class));
-        verify(userService, times(1)).findUserByEmail(any(String.class));
+        verify(userService, times(1)).findUserByEmailIfExist(any(String.class));
     }
 
     @Test
     public void successLoadAuthenticationReturningNotActiveUser() {
         when(authorizationCodeResourceDetails.getClientId()).thenReturn(SOME_CLIENT_ID);
         val someNotActiveUser = someNotActiveUser();
-        when(userService.findUserByEmail(any(String.class))).thenReturn(someNotActiveUser);
+        doReturn(Optional.of(someNotActiveUser)).when(userService).findUserByEmailIfExist(any(String.class));
         when(roleService.getPrincipalRoles(any(User.class))).thenReturn(new String[]{ROLE_EXTENDED_USER});
 
         tokenServices.loadAuthentication(VALID_JWT_ACCESS_TOKEN);
 
         verify(authorizationCodeResourceDetails, times(1)).getClientId();
-        verify(userService, times(1)).findUserByEmail(any(String.class));
+        verify(userService, times(1)).findUserByEmailIfExist(any(String.class));
         verify(roleService, times(1)).getPrincipalRoles(any(User.class));
     }
 
     @Test
-    public void successLoadAuthenticationThrowingException() {
-        when(authorizationCodeResourceDetails.getClientId()).thenReturn(SOME_CLIENT_ID);
-        final NoSuchUserException cause = new NoSuchUserException("No such User in user Collection");
-        when(userService.findUserByEmail(any(String.class))).thenThrow(cause);
+    public void successLoadAuthenticationByNotExistInDBUser() {
+        when(authorizationCodeResourceDetails.getClientId()).thenReturn(someString());
+        doReturn(Optional.empty()).when(userService).findUserByEmailIfExist(any(String.class));
 
-        assertThatThrownBy(() -> tokenServices.loadAuthentication(VALID_JWT_ACCESS_TOKEN))
-                .hasMessage("User not found")
-                .isInstanceOf(NoSuchUserException.class);
+        OAuth2Authentication authentication = tokenServices.loadAuthentication(VALID_JWT_ACCESS_TOKEN);
 
         verify(authorizationCodeResourceDetails, times(1)).getClientId();
-        verify(userService, times(1)).findUserByEmail(any(String.class));
+        verify(userService, times(1)).findUserByEmailIfExist(any(String.class));
+        verify(roleService, times(0)).getPrincipalRoles(any(User.class));
+        assertThat(authentication.getAuthorities().iterator().next().toString(), is(ROLE_SIMPLE_USER));
     }
 
-    @Test(expected = NoSuchUserException.class)
+    @Test(expected = InvalidTokenException.class)
     public void loadAuthenticationWithNullAccessToken() {
         tokenServices.loadAuthentication(null);
     }
 
-    @Test(expected = NoSuchUserException.class)
+    @Test(expected = InvalidTokenException.class)
     public void loadAuthenticationWithEmptyAccessToken() {
         tokenServices.loadAuthentication("          ");
     }
 
-    @Test(expected = NoSuchUserException.class)
+    @Test(expected = InvalidTokenException.class)
     public void loadAuthenticationWithNoSignatureAccessToken() {
         tokenServices.loadAuthentication(JWT_ACCESS_TOKEN_WITH_NO_SIGNATURE);
     }

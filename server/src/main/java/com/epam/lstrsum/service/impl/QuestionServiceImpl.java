@@ -1,12 +1,7 @@
 package com.epam.lstrsum.service.impl;
 
-import com.epam.lstrsum.aggregators.AttachmentAggregator;
 import com.epam.lstrsum.aggregators.QuestionAggregator;
-import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
-import com.epam.lstrsum.dto.question.QuestionAllFieldsListDto;
-import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
-import com.epam.lstrsum.dto.question.QuestionPostDto;
-import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
+import com.epam.lstrsum.dto.question.*;
 import com.epam.lstrsum.email.EmailNotification;
 import com.epam.lstrsum.email.template.NewQuestionNotificationTemplate;
 import com.epam.lstrsum.exception.NoSuchRequestException;
@@ -97,7 +92,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public List<QuestionAllFieldsDto> searchWithAllowedSub(String searchQuery, Integer page, Integer size, String email) {
         List<Question> questionList = questionRepository.findAllByAllowedSubsContains(
-                userService.findUserByEmail(email),
+                userService.findUserByEmailOrThrowException(email),
                 getTextCriteriaForFullTextSearch(searchQuery),
                 getPageableForFullTextSearch(page, size));
 
@@ -147,7 +142,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Long getTextSearchResultsCountWithAllowedSub(String query, String email) {
         return questionRepository
-                .countAllByAllowedSubsContains(userService.findUserByEmail(email), getTextCriteriaForFullTextSearch(query));
+                .countAllByAllowedSubsContains(userService.findUserByEmailOrThrowException(email), getTextCriteriaForFullTextSearch(query));
     }
 
     @Override
@@ -163,7 +158,7 @@ public class QuestionServiceImpl implements QuestionService {
     public List<QuestionWithAnswersCountDto> findAllQuestionBaseDtoWithAllowedSub(int questionPage, int questionAmount, String userEmail) {
         Pageable pageable = new PageRequest(questionPage, questionAmount);
         List<Question> questionList = questionRepository.findAllByAllowedSubsContainsOrderByCreatedAtDesc(
-                userService.findUserByEmail(userEmail), pageable
+                userService.findUserByEmailOrThrowException(userEmail), pageable
         );
         final List<QuestionWithAnswersCount> questionWithAnswersCounts = answerService.aggregateToCount(questionList);
 
@@ -267,7 +262,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public Long getQuestionCountWithAllowedSub(String userEmail) {
-        return questionRepository.countAllByAllowedSubs(userService.findUserByEmail(userEmail));
+        return questionRepository.countAllByAllowedSubs(userService.findUserByEmailOrThrowException(userEmail));
     }
 
     @Override

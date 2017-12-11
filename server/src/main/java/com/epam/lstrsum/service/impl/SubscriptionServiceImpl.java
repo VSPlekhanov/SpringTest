@@ -107,7 +107,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public boolean subscribeForQuestionByUser(String questionId, String email) {
-        String userId = userService.findUserByEmail(email).getUserId();
+        String userId = userService.findUserByEmailOrThrowException(email).getUserId();
         Update addSubscription = new Update().addToSet("subscribers")
                 .value(new DBRef(User.USER_COLLECTION_NAME, userId));
         return updateQuestionWithSubscriber(getQueryForQuestionId(questionId), addSubscription);
@@ -116,7 +116,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public boolean unsubscribeForQuestionByUser(String questionId, String email) {
-        String userId = userService.findUserByEmail(email).getUserId();
+        String userId = userService.findUserByEmailOrThrowException(email).getUserId();
         Update pullSubscription = new Update().pull("subscribers",
                 new DBRef(User.USER_COLLECTION_NAME, userId));
         return updateQuestionWithSubscriber(getQueryForQuestionId(questionId), pullSubscription);

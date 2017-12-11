@@ -1,6 +1,5 @@
 package com.epam.lstrsum.security;
 
-import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.security.role.RoleService;
 import com.epam.lstrsum.service.UserService;
@@ -24,6 +23,8 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 import java.util.Map;
 import java.util.Optional;
 
+import static com.epam.lstrsum.enums.UserRoleType.ROLE_SIMPLE_USER;
+
 @Slf4j
 @RequiredArgsConstructor
 public class CustomResourceServerTokenServices implements ResourceServerTokenServices {
@@ -37,8 +38,7 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
         try {
             Jwt jwt = JwtHelper.decode(accessToken);
             String jwtClaims = jwt.getClaims();
-            Map<String, Object> map = new ObjectMapper().readValue(jwtClaims, new TypeReference<Map<String, String>>() {
-            });
+            Map<String, Object> map = new ObjectMapper().readValue(jwtClaims, new TypeReference<Map<String, String>>() {});
 
             OAuth2Request request = new OAuth2Request(null, authorizationCodeResourceDetails.getClientId(),
                     null, true, null,
@@ -47,17 +47,24 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
             String email = getEmailFromMap(map);
 
             val user = handleUserFromToken(email);
-            map.put(EpamEmployeePrincipal.DISTRIBUTION_LIST_USER, user.getIsActive());
+            map.put(EpamEmployeePrincipal.DISTRIBUTION_LIST_USER, user.map(User::getIsActive).orElse(false));
 
             EpamEmployeePrincipal principal = EpamEmployeePrincipal.ofMap(map);
             final UsernamePasswordAuthenticationToken finalToken =
                     new UsernamePasswordAuthenticationToken(principal, "N/A",
-                            AuthorityUtils.createAuthorityList(roleService.getPrincipalRoles(user)));
+                            AuthorityUtils.createAuthorityList(
+                                    user.map(roleService::getPrincipalRoles).orElse(
+                                            new String[]{ROLE_SIMPLE_USER.name()})
+                            )
+                    );
 
             return new OAuth2Authentication(request, finalToken);
+        } catch (AuthenticationException | InvalidTokenException e) {
+            log.error("Token process exception: {}", e.getMessage());
+            throw e;
         } catch (Exception e) {
-            log.error("Token process exception!");
-            throw new NoSuchUserException("User not found");
+            log.error("Token process exception: {}", e.getMessage());
+            throw new InvalidTokenException(e.getMessage(), e);
         }
     }
 
@@ -67,13 +74,10 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
                 .orElseThrow(() -> new IllegalArgumentException("Wrong map format."));
     }
 
-    private User handleUserFromToken(String email) {
-        try {
-            return userService.findUserByEmail(email);
-        } catch (NoSuchUserException e) {
-            log.error("User with email : '{}' is not in a db. Access denied", email);
-            throw e;
-        }
+    private Optional<User> handleUserFromToken(String email) {
+        Optional<User> user = userService.findUserByEmailIfExist(email);
+        if (!user.isPresent()) log.info("User with email : '{}' visit portal. This user is not in a db.", email);
+        return user;
     }
 
     public OAuth2AccessToken readAccessToken(String s) {
