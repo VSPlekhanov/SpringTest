@@ -179,14 +179,12 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
     public void getEmailsToNotifyAllowedSubsAndAuthorAndDLAboutNewQuestionFromEmail() {
         val postDto = someQuestionPostDtoWithAllowedSubs(allowedSubsList);
         subscriptionService.setNotifyAllowedSubs(true);
-        subscriptionService.setNotifyAuthor(true);
         subscriptionService.setNotifyDL(true);
 
         val question = questionService.addNewQuestion(postDto, SOME_USER_EMAIL);
         val emails = subscriptionService.getEmailsToNotifyAboutNewQuestionFromEmail(question);
         val dLEmails = userService.findAllActive().stream().map(User::getEmail).collect(Collectors.toList());
         dLEmails.addAll(allowedSubsList);
-        dLEmails.add(question.getAuthorId().getEmail());
         assertThat(emails).containsExactlyInAnyOrder(dLEmails.stream().distinct().toArray(String[]::new));
     }
 
@@ -194,14 +192,12 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
     public void getEmailsToNotifyAllowedSubsAndAuthorAboutNewQuestionFromEmail() {
         val postDto = someQuestionPostDtoWithAllowedSubs(allowedSubsList);
         subscriptionService.setNotifyAllowedSubs(true);
-        subscriptionService.setNotifyAuthor(true);
         subscriptionService.setNotifyDL(false);
 
         val question = questionService.addNewQuestion(postDto, SOME_USER_EMAIL);
         val emails = subscriptionService.getEmailsToNotifyAboutNewQuestionFromEmail(question);
         List<String> expectedEmails = new ArrayList<>();
         expectedEmails.addAll(allowedSubsList);
-        expectedEmails.add(question.getAuthorId().getEmail());
         assertThat(emails).containsExactlyInAnyOrder(expectedEmails.stream().distinct().toArray(String[]::new));
     }
 
@@ -209,7 +205,6 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
     public void getEmailsToNotifyAllowedSubsAndDlAboutNewQuestionFromEmail() {
         val postDto = someQuestionPostDtoWithAllowedSubs(allowedSubsList);
         subscriptionService.setNotifyAllowedSubs(true);
-        subscriptionService.setNotifyAuthor(false);
         subscriptionService.setNotifyDL(true);
 
         val question = questionService.addNewQuestion(postDto, SOME_USER_EMAIL);
@@ -223,7 +218,6 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
     public void getEmailsToNotifyAllowedSubsAboutNewQuestionFromEmail() {
         val postDto = someQuestionPostDtoWithAllowedSubs(allowedSubsList);
         subscriptionService.setNotifyAllowedSubs(true);
-        subscriptionService.setNotifyAuthor(false);
         subscriptionService.setNotifyDL(false);
 
         val question = questionService.addNewQuestion(postDto, SOME_USER_EMAIL);
@@ -235,7 +229,6 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
     public void getEmailsToNotifyNobodyAboutNewQuestionFromEmail() {
         val postDto = someQuestionPostDtoWithAllowedSubs(allowedSubsList);
         subscriptionService.setNotifyAllowedSubs(false);
-        subscriptionService.setNotifyAuthor(false);
         subscriptionService.setNotifyDL(false);
 
         val question = questionService.addNewQuestion(postDto, SOME_USER_EMAIL);

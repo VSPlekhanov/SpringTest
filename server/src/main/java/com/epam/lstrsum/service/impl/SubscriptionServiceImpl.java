@@ -47,8 +47,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Setter
     private boolean notifyAllowedSubs;
     @Setter
-    private boolean notifyAuthor;
-    @Setter
     private boolean notifyDL;
 
     private static Address[] getAddressesFromEmails(Collection<String> emails) {
@@ -82,10 +80,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public Set<String> getEmailsToNotifyAboutNewQuestionFromEmail(Question question) {
-        return Stream.concat(Stream.concat(
+        return Stream.concat(
                 notifyAllowedSubs ? question.getAllowedSubs().stream() : Stream.empty(),
-                notifyDL ? userService.findAllActive().stream() : Stream.empty()
-            ), notifyAuthor ? Stream.of(question.getAuthorId()) : Stream.empty())
+                notifyDL ? userService.findAllActive().stream() : Stream.empty())
             .map(User::getEmail)
             .filter(e -> !e.equalsIgnoreCase(fromAddress))
             .collect(Collectors.toSet());
