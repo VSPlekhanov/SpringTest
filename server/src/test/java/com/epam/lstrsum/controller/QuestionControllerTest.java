@@ -8,6 +8,7 @@ import com.epam.lstrsum.service.UserService;
 import com.epam.lstrsum.testutils.AssertionUtils;
 import com.epam.lstrsum.testutils.InstantiateUtil;
 import lombok.val;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -26,9 +27,12 @@ import static com.epam.lstrsum.utils.FunctionalUtil.getList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isIn;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -61,15 +65,18 @@ public class QuestionControllerTest {
 
     @Test
     public void addQuestionUserShouldSaveQuestion() throws IOException {
-        val authorEmail = someString();
+        final String authorEmail = someString();
+
         when(userRuntimeRequestComponent.getEmail()).thenReturn(authorEmail);
         when(userService.findUserByEmailIfExist(authorEmail)).thenReturn(Optional.of(someUser()));
+
         val postDto = someQuestionPostDto();
         when(questionService.addNewQuestion(any(), any(), any())).thenReturn(someQuestion());
 
         MultipartFile[] files = new MultipartFile[]{};
 
         controller.addQuestion(postDto, files);
+        assertThat(authorEmail, isIn(postDto.getAllowedSubs()));
         verify(questionService, times(1)).addNewQuestion(postDto, authorEmail, files);
     }
 
@@ -83,7 +90,9 @@ public class QuestionControllerTest {
         when(questionService.addNewQuestion(any(), any(), any())).thenReturn(question);
         when(userService.findUserByEmailIfExist(authorEmail)).thenReturn(Optional.of(someUser()));
 
-        assertThat(controller.addQuestion(someQuestionPostDto(), new MultipartFile[]{})).isEqualTo(ResponseEntity.ok(questionId));
+        val postDto = someQuestionPostDto();
+        assertThat(controller.addQuestion(postDto, new MultipartFile[]{})).isEqualTo(ResponseEntity.ok(questionId));
+        assertThat(authorEmail, isIn(postDto.getAllowedSubs()));
     }
 
     @Test

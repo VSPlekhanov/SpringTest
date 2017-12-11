@@ -380,16 +380,18 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
     @Test
     public void addQuestionWithSuccessInitializeSubscribersListTest() {
         QuestionPostDto questionPostDto = someQuestionPostDto();
-        questionPostDto.setAllowedSubs(Arrays.asList("John_Doe@epam.com", "Bob_Hoplins@epam.com", "Donald_Gardner@epam.com"));
+        String authorEmail = "John_Doe@epam.com";
+        questionPostDto.setAllowedSubs(Arrays.asList(authorEmail, "Bob_Hoplins@epam.com", "Donald_Gardner@epam.com"));
 
         List<Question> questionListBeforeUpdate = questionRepository.findAll();
 
-        Question question = questionService.addNewQuestion(questionPostDto, "John_Doe@epam.com");
+        Question question = questionService.addNewQuestion(questionPostDto, authorEmail);
         List<User> expectedSubscribers = question.getAllowedSubs();
-        expectedSubscribers.add(question.getAuthorId());
 
         assertThat(questionRepository.findAll().size()).isEqualTo(questionListBeforeUpdate.size() + 1);
-        assertThat(question.getSubscribers()).containsExactlyInAnyOrder(expectedSubscribers.toArray(new User[4]));
+
+        List<User> subscribers = question.getSubscribers();
+        assertThat(subscribers).containsExactlyInAnyOrder(expectedSubscribers.toArray(new User[subscribers.size()]));
     }
 
 }

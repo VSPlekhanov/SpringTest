@@ -4,7 +4,11 @@ import com.epam.lstrsum.converter.QuestionDtoMapper;
 import com.epam.lstrsum.converter.UserDtoMapper;
 import com.epam.lstrsum.converter.contract.AllFieldModelDtoConverter;
 import com.epam.lstrsum.converter.contract.BasicModelDtoConverter;
-import com.epam.lstrsum.dto.question.*;
+import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
+import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
+import com.epam.lstrsum.dto.question.QuestionBaseDto;
+import com.epam.lstrsum.dto.question.QuestionPostDto;
+import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
 import com.epam.lstrsum.model.Attachment;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.QuestionWithAnswersCount;
@@ -13,7 +17,6 @@ import com.epam.lstrsum.persistence.AttachmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -81,8 +84,7 @@ public class QuestionAggregator implements BasicModelDtoConverter<Question, Ques
                 questionPostDto,
                 author,
                 allowedSubs,
-                initializeSubscribersListByAllowedSubsListAndAuthor(allowedSubs, author)
-
+                initializeSubscribersListByAllowedSubsList(allowedSubs)
         );
     }
 
@@ -96,7 +98,7 @@ public class QuestionAggregator implements BasicModelDtoConverter<Question, Ques
                 author,
                 allowedSubs,
                 attachmentIds,
-                initializeSubscribersListByAllowedSubsListAndAuthor(allowedSubs, author)
+                initializeSubscribersListByAllowedSubsList(allowedSubs)
         );
     }
 
@@ -107,10 +109,8 @@ public class QuestionAggregator implements BasicModelDtoConverter<Question, Ques
                 .anyMatch(userEmail::equalsIgnoreCase);
     }
 
-    private List<User> initializeSubscribersListByAllowedSubsListAndAuthor(List<User> allowedSubs, User author){
-        List<User> subscribers = new ArrayList<>(allowedSubs);
-        if (!subscribers.contains(author)) subscribers.add(author);
-        return subscribers;
+    private List<User> initializeSubscribersListByAllowedSubsList(List<User> allowedSubs) {
+        return allowedSubs;
     }
 
     public List<QuestionBaseDto> subscriptionsToListOfQuestionBaseDto(List<Question> subscriptions) {
