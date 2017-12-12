@@ -3,11 +3,13 @@ package com.epam.lstrsum.security;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.security.role.RoleService;
 import com.epam.lstrsum.service.UserService;
+import com.epam.lstrsum.utils.MessagesHelper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -19,6 +21,7 @@ import org.springframework.security.oauth2.common.exceptions.InvalidTokenExcepti
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.Optional;
@@ -31,6 +34,7 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
     private final RoleService roleService;
     private final AuthorizationCodeResourceDetails authorizationCodeResourceDetails;
     private final UserService userService;
+    private final MessagesHelper messagesHelper;
 
     @Override
     public OAuth2Authentication loadAuthentication(String accessToken) throws AuthenticationException, InvalidTokenException {
@@ -71,7 +75,7 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
     private String getEmailFromMap(Map<String, Object> map) {
         return Optional.ofNullable(map.get(EpamEmployeePrincipal.EMAIL))
                 .map(o -> (String) o)
-                .orElseThrow(() -> new IllegalArgumentException("Wrong map format."));
+                .orElseThrow(() -> new IllegalArgumentException(messagesHelper.get("validation.security.wrong-map-format")));
     }
 
     private Optional<User> handleUserFromToken(String email) {
@@ -81,6 +85,6 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
     }
 
     public OAuth2AccessToken readAccessToken(String s) {
-        throw new UnsupportedOperationException("Not supported.");
+        throw new UnsupportedOperationException(messagesHelper.get("validation.security.not-supported"));
     }
 }

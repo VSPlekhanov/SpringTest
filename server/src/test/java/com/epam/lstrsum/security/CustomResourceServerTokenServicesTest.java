@@ -4,14 +4,23 @@ import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.security.role.RoleService;
 import com.epam.lstrsum.service.UserService;
+import com.epam.lstrsum.utils.MessagesHelper;
 import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Optional;
 
@@ -43,15 +52,15 @@ public class CustomResourceServerTokenServicesTest {
     @Mock
     private UserService userService;
 
-    private ResourceServerTokenServices tokenServices;
+    @Mock
+    private MessagesHelper messagesHelper;
+
+    @InjectMocks
+    private CustomResourceServerTokenServices tokenServices;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-
-        tokenServices = new CustomResourceServerTokenServices(
-                roleService, authorizationCodeResourceDetails, userService
-        );
     }
 
     @Test

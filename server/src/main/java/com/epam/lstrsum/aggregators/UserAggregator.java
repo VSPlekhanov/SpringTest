@@ -10,10 +10,13 @@ import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.UserRepository;
+import com.epam.lstrsum.utils.MessagesHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -24,6 +27,7 @@ public class UserAggregator implements BasicModelDtoConverter<User, UserBaseDto>
         AllFieldModelDtoConverter<User, UserAllFieldsDto> {
     private final UserDtoMapper userMapper;
     private final UserRepository userRepository;
+    private final MessagesHelper messagesHelper;
 
     @Override
     public UserAllFieldsDto modelToAllFieldsDto(User user) {
@@ -42,7 +46,7 @@ public class UserAggregator implements BasicModelDtoConverter<User, UserBaseDto>
     public User findByEmail(String email) {
         return userRepository.findByEmailIgnoreCase(email).orElseThrow(() -> {
             log.debug("No user with such email = {}", email);
-            return new NoSuchUserException("No user with such email = " + email);
+            return new NoSuchUserException(MessageFormat.format(messagesHelper.get("validation.aggregators.no-user-with-such-email"), email));
         });
     }
 

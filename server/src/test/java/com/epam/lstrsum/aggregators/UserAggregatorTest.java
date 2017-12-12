@@ -5,10 +5,18 @@ import com.epam.lstrsum.enums.UserRoleType;
 import com.epam.lstrsum.exception.NoSuchUserException;
 import com.epam.lstrsum.persistence.UserRepository;
 import com.epam.lstrsum.testutils.InstantiateUtil;
+import com.epam.lstrsum.utils.MessagesHelper;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.EnumSet;
 import java.util.Optional;
@@ -19,10 +27,9 @@ import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
 import static com.epam.lstrsum.utils.FunctionalUtil.getListWithSize;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+
 
 public class UserAggregatorTest {
     @Mock
@@ -30,6 +37,9 @@ public class UserAggregatorTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private MessagesHelper messagesHelper;
 
     @InjectMocks
     private UserAggregator aggregator;
@@ -80,7 +90,7 @@ public class UserAggregatorTest {
     @Test(expected = NoSuchUserException.class)
     public void findByEmailWithEmpyOptional() {
         doReturn(Optional.empty()).when(userRepository).findByEmailIgnoreCase(anyString());
-
+        when(messagesHelper.get(anyString())).thenReturn("");
         aggregator.findByEmail(someString());
     }
 }

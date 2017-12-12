@@ -10,11 +10,12 @@ import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.UserRepository;
 import com.epam.lstrsum.service.TelescopeService;
 import com.epam.lstrsum.service.UserService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import com.epam.lstrsum.utils.MessagesHelper;
 import lombok.val;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -30,8 +31,6 @@ import static com.epam.lstrsum.enums.UserRoleType.ROLE_SIMPLE_USER;
 import static java.util.Objects.isNull;
 
 @Service
-@Slf4j
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     //List<String> -> Set<String> -> String
     private static final BiFunction<List<String>, Set<String>, String> GET_EMAIL_CONTAINS_IN_BOTH_LISTS =
@@ -47,11 +46,23 @@ public class UserServiceImpl implements UserService {
                     GET_EMAIL_CONTAINS_IN_BOTH_LISTS.apply(data.getEmail(), emails),
                     data
             );
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final UserRepository userRepository;
     private final UserAggregator userAggregator;
     private final MongoTemplate mongoTemplate;
     private final TelescopeService telescopeService;
+
+    @Autowired
+    private MessagesHelper messagesHelper;
+
+    @java.beans.ConstructorProperties({"userRepository", "userAggregator", "mongoTemplate", "telescopeService"})
+    public UserServiceImpl(UserRepository userRepository, UserAggregator userAggregator, MongoTemplate mongoTemplate, TelescopeService telescopeService) {
+        this.userRepository = userRepository;
+        this.userAggregator = userAggregator;
+        this.mongoTemplate = mongoTemplate;
+        this.telescopeService = telescopeService;
+    }
 
     @Override
     public List<User> findAll() {
@@ -66,13 +77,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findUserByEmailOrThrowException(String email) {
         return userRepository.findByEmailIgnoreCase(email).orElseThrow(() ->
-                new NoSuchUserException("No such User in user Collection"));
+                new NoSuchUserException(messagesHelper.get("validation.service.no-such-user-in-collection")));
     }
 
     @Override
     public Optional<User> findUserByEmailIfExist(String email) {
         return userRepository.findByEmailIgnoreCase(email);
     }
+
+
 
     @Override
     public long setActiveForAllAs(Collection<? super String> emails, boolean active) {
@@ -97,7 +110,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findUserById(String userId) {
         return Optional.ofNullable(userRepository.findOne(userId))
-                .orElseThrow(() -> new NoSuchUserException("No such User in user Collection"));
+                .orElseThrow(() -> new NoSuchUserException(messagesHelper.get("validation.service.no-such-user-in-collection")));
     }
 
     @Override
