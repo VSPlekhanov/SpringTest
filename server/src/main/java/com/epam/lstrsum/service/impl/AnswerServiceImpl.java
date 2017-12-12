@@ -17,10 +17,13 @@ import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.persistence.UserRepository;
 import com.epam.lstrsum.service.AnswerService;
+import com.epam.lstrsum.utils.MessagesHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.slf4j.helpers.MessageFormatter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -30,6 +33,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +62,10 @@ public class AnswerServiceImpl implements AnswerService {
     private final QuestionRepository questionRepository;
     private final MongoTemplate mongoTemplate;
     private final AnswerAggregator answerAggregator;
+
+    @Autowired
+    private final MessagesHelper messagesHelper;
+
     @Setter
     private int searchDefaultPageSize;
     @Setter
@@ -80,15 +88,15 @@ public class AnswerServiceImpl implements AnswerService {
 
     private Question getQuestionByIdOrThrowException(AnswerPostDto answerPostDto) {
         return Optional.ofNullable(questionRepository.findOne(answerPostDto.getQuestionId()))
-                .orElseThrow(() -> new QuestionValidationException("No such question with id : " + answerPostDto.getQuestionId()));
+                .orElseThrow(() -> new QuestionValidationException(MessageFormat.format(messagesHelper.get("validation.service.no-such-question-with-id"),
+                                                                    answerPostDto.getQuestionId())));
     }
 
     private void checkQuestionExistAndUserHasPermission(Question question, String userEmail) {
         if (isNull(question) || !isUserAllowedSubOnQuestion(question, userEmail)) {
             throw new BusinessLogicException(
-                    "Question isn't exist or user with email : '" + userEmail + " ' has no permission to question id : '" +
-                            question.getQuestionId() +
-                            "' and relative answers!");
+                    MessageFormat.format(messagesHelper.get("validation.service.question-not-exist-or-user-has-no-permission-to-question"),
+                            userEmail, question.getQuestionId()));
         }
     }
 
@@ -181,8 +189,8 @@ public class AnswerServiceImpl implements AnswerService {
 
         // TODO: 01.11.17 This doesn't work if we change Question.class to Question.QUESTION_COLLECTION_NAME
         List<Answer> answers = mongoTemplate.aggregate(aggregation, Question.class, Answer.class).getMappedResults();
-        if (answers.isEmpty() || isNull(answers.get(0))) throw new NoSuchAnswerException("No such Answer in this Question");
-        if (answers.size() > 1) throw new AnswersWithSameIdException("Answers with the same id found");
+        if (answers.isEmpty() || isNull(answers.get(0))) throw new NoSuchAnswerException(messagesHelper.get("validation.service.no-such-answer-in-this-question"));
+        if (answers.size() > 1) throw new AnswersWithSameIdException(messagesHelper.get("validation.service.answers-with-same-id-found"));
 
         return answers.get(0);
     }

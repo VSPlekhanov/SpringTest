@@ -90,9 +90,13 @@ public class MailReceiverImpl implements MailReceiver {
             final String authorEmail = parsedMessage.getSender();
             final QuestionPostDto questionPostDto = parsedMessage.getQuestionPostDto();
 
-            final long users = userService.addIfNotExistAllWithRole(questionPostDto.getAllowedSubs(), ROLE_SIMPLE_USER);
-            if (users > 0) {
-                log.debug("Detected {} users not in base and added as another user", users);
+            long addedUsers = userService.findUserByEmailIfExist(authorEmail)
+                    .map(u->0L)
+                    .orElseGet(() -> userService.addIfNotExistAllWithRole(Collections.singletonList(authorEmail), ROLE_SIMPLE_USER));
+            addedUsers += userService.addIfNotExistAllWithRole(questionPostDto.getAllowedSubs(), ROLE_SIMPLE_USER);
+
+            if ((addedUsers) > 0) {
+                log.debug("Detected {} users not in base and added as another user", addedUsers);
             }
 
             final Question newQuestion = questionService.addNewQuestionFromEmail(questionPostDto, authorEmail);

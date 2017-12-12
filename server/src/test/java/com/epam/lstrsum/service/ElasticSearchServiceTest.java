@@ -1,6 +1,7 @@
 package com.epam.lstrsum.service;
 
 import com.epam.lstrsum.service.impl.ElasticSearchServiceImpl;
+import com.epam.lstrsum.utils.MessagesHelper;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 import org.junit.Before;

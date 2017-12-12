@@ -8,10 +8,13 @@ import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.service.QuestionService;
 import com.epam.lstrsum.service.SubscriptionService;
 import com.epam.lstrsum.service.UserService;
+import com.epam.lstrsum.utils.MessagesHelper;
 import com.mongodb.DBRef;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.helpers.MessageFormatter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -23,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -41,13 +45,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final UserService userService;
     private final MongoTemplate mongoTemplate;
 
+    @Autowired
+    private MessagesHelper messagesHelper;
+
     @Value("${spring.mail.username}")
     private String fromAddress;
 
     @Setter
     private boolean notifyAllowedSubs;
-    @Setter
-    private boolean notifyAuthor;
     @Setter
     private boolean notifyDL;
 
@@ -82,10 +87,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public Set<String> getEmailsToNotifyAboutNewQuestionFromEmail(Question question) {
-        return Stream.concat(Stream.concat(
+        return Stream.concat(
                 notifyAllowedSubs ? question.getAllowedSubs().stream() : Stream.empty(),
-                notifyDL ? userService.findAllActive().stream() : Stream.empty()
-            ), notifyAuthor ? Stream.of(question.getAuthorId()) : Stream.empty())
+                notifyDL ? userService.findAllActive().stream() : Stream.empty())
             .map(User::getEmail)
             .filter(e -> !e.equalsIgnoreCase(fromAddress))
             .collect(Collectors.toSet());
@@ -100,7 +104,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Question question = mongoTemplate.findOne(getQueryForQuestionId(questionId), Question.class);
         if (isNull(question) || !isUserAllowedSubOnQuestion(question, userEmail)) {
             throw new BusinessLogicException(
-                    "Question doesn't exist or user with email : '" + userEmail + " ' has no permission to answer id : '" + questionId);
+                    MessageFormat.format(messagesHelper.get("validation.service.question-not-exist-or-user-has-no-permission-to-answer"),
+                            userEmail, questionId));
         }
     }
 
@@ -110,7 +115,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public boolean subscribeForQuestionByUser(String questionId, String email) {
-        String userId = userService.findUserByEmail(email).getUserId();
+        String userId = userService.findUserByEmailOrThrowException(email).getUserId();
         Update addSubscription = new Update().addToSet("subscribers")
                 .value(new DBRef(User.USER_COLLECTION_NAME, userId));
         return updateQuestionWithSubscriber(getQueryForQuestionId(questionId), addSubscription);
@@ -119,7 +124,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public boolean unsubscribeForQuestionByUser(String questionId, String email) {
-        String userId = userService.findUserByEmail(email).getUserId();
+        String userId = userService.findUserByEmailOrThrowException(email).getUserId();
         Update pullSubscription = new Update().pull("subscribers",
                 new DBRef(User.USER_COLLECTION_NAME, userId));
         return updateQuestionWithSubscriber(getQueryForQuestionId(questionId), pullSubscription);

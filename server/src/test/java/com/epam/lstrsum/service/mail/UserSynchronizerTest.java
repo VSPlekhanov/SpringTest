@@ -5,7 +5,6 @@ import com.epam.lstrsum.email.service.ExchangeServiceHelper;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.service.TelescopeService;
 import com.epam.lstrsum.service.UserService;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -63,9 +62,9 @@ public class UserSynchronizerTest extends SetUpDataBaseCollections {
 
         userSynchronizer.synchronizeUsers();
 
-        assertThat(userService.findUserByEmail(johnDoe).getIsActive())
+        assertThat(userService.findUserByEmailOrThrowException(johnDoe).getIsActive())
                 .isTrue();
-        assertThat(userService.findUserByEmail(bobHoplins).getIsActive())
+        assertThat(userService.findUserByEmailOrThrowException(bobHoplins).getIsActive())
                 .isTrue();
 
         List<User> users = userService.findAllWithRole(ROLE_EXTENDED_USER);

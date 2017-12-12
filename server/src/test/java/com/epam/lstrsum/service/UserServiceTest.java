@@ -20,20 +20,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.epam.lstrsum.enums.UserRoleType.ROLE_ADMIN;
-import static com.epam.lstrsum.enums.UserRoleType.ROLE_EXTENDED_USER;
-import static com.epam.lstrsum.enums.UserRoleType.ROLE_NOT_ALLOWED_USER;
-import static com.epam.lstrsum.enums.UserRoleType.ROLE_SIMPLE_USER;
-import static com.epam.lstrsum.testutils.InstantiateUtil.EXISTING_USER_ID;
-import static com.epam.lstrsum.testutils.InstantiateUtil.NON_EXISTING_USER_ID;
-import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_NOT_USER_EMAIL;
-import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someStrings;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeEmployeeEntityDto;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someTelescopeEmployeeEntityDtoWithEmail;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
-import static com.epam.lstrsum.testutils.InstantiateUtil.someUserBaseDtos;
+import static com.epam.lstrsum.enums.UserRoleType.*;
+import static com.epam.lstrsum.testutils.InstantiateUtil.*;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,10 +32,7 @@ import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 public class UserServiceTest extends SetUpDataBaseCollections {
@@ -63,7 +48,7 @@ public class UserServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void getUserByEmail() {
-        User user = userService.findUserByEmail(SOME_USER_EMAIL);
+        User user = userService.findUserByEmailOrThrowException(SOME_USER_EMAIL);
 
         assertNotNull(user);
         assertEquals(user.getEmail(), SOME_USER_EMAIL);
@@ -89,8 +74,8 @@ public class UserServiceTest extends SetUpDataBaseCollections {
         final long actual = userService.setActiveForAllAs(Arrays.asList(johnDoe, bobHoplins), false);
 
         assertEquals(actual, 2);
-        assertEquals(userService.findUserByEmail(johnDoe).getIsActive(), false);
-        assertEquals(userService.findUserByEmail(bobHoplins).getIsActive(), false);
+        assertEquals(userService.findUserByEmailOrThrowException(johnDoe).getIsActive(), false);
+        assertEquals(userService.findUserByEmailOrThrowException(bobHoplins).getIsActive(), false);
     }
 
     @Test
@@ -200,7 +185,7 @@ public class UserServiceTest extends SetUpDataBaseCollections {
 
         userService.addIfNotExistAllWithRole(Arrays.asList(userWithSimpleRoleEmail), ROLE_EXTENDED_USER);
 
-        assertThat(userService.findUserByEmail(userWithSimpleRoleEmail))
+        assertThat(userService.findUserByEmailOrThrowException(userWithSimpleRoleEmail))
                 .extracting("roles", "isActive")
                 .containsOnly(Sets.immutableEnumSet(ROLE_EXTENDED_USER), true);
     }
@@ -214,14 +199,14 @@ public class UserServiceTest extends SetUpDataBaseCollections {
 
         userService.addIfNotExistAllWithRole(Arrays.asList(exDistributionListUserEmail), ROLE_SIMPLE_USER);
 
-        assertThat(userService.findUserByEmail(exDistributionListUserEmail))
+        assertThat(userService.findUserByEmailOrThrowException(exDistributionListUserEmail))
                 .extracting("roles", "isActive")
                 .containsOnly(Sets.immutableEnumSet(ROLE_SIMPLE_USER, ROLE_ADMIN), false);
     }
 
     @Test(expected = NoSuchUserException.class)
     public void getUserByEmailWithNonExistingEmail() {
-        userService.findUserByEmail(SOME_NOT_USER_EMAIL);
+        userService.findUserByEmailOrThrowException(SOME_NOT_USER_EMAIL);
     }
 
     @Test(expected = NoSuchUserException.class)

@@ -1,12 +1,7 @@
 package com.epam.lstrsum.service.impl;
 
-import com.epam.lstrsum.aggregators.AttachmentAggregator;
 import com.epam.lstrsum.aggregators.QuestionAggregator;
-import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
-import com.epam.lstrsum.dto.question.QuestionAllFieldsListDto;
-import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
-import com.epam.lstrsum.dto.question.QuestionPostDto;
-import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
+import com.epam.lstrsum.dto.question.*;
 import com.epam.lstrsum.email.EmailNotification;
 import com.epam.lstrsum.email.template.NewQuestionNotificationTemplate;
 import com.epam.lstrsum.exception.NoSuchRequestException;
@@ -16,10 +11,12 @@ import com.epam.lstrsum.model.QuestionWithAnswersCount;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.QuestionRepository;
 import com.epam.lstrsum.service.*;
+import com.epam.lstrsum.utils.MessagesHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.PageRequest;
@@ -33,6 +30,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -62,6 +60,9 @@ public class QuestionServiceImpl implements QuestionService {
     private final AnswerService answerService;
     private final UserService userService;
     private final AttachmentService attachmentService;
+
+    @Autowired
+    private MessagesHelper messagesHelper;
 
     @Setter
     private int searchDefaultPageSize;
@@ -97,7 +98,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public List<QuestionAllFieldsDto> searchWithAllowedSub(String searchQuery, Integer page, Integer size, String email) {
         List<Question> questionList = questionRepository.findAllByAllowedSubsContains(
-                userService.findUserByEmail(email),
+                userService.findUserByEmailOrThrowException(email),
                 getTextCriteriaForFullTextSearch(searchQuery),
                 getPageableForFullTextSearch(page, size));
 
@@ -147,7 +148,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Long getTextSearchResultsCountWithAllowedSub(String query, String email) {
         return questionRepository
-                .countAllByAllowedSubsContains(userService.findUserByEmail(email), getTextCriteriaForFullTextSearch(query));
+                .countAllByAllowedSubsContains(userService.findUserByEmailOrThrowException(email), getTextCriteriaForFullTextSearch(query));
     }
 
     @Override
@@ -163,7 +164,7 @@ public class QuestionServiceImpl implements QuestionService {
     public List<QuestionWithAnswersCountDto> findAllQuestionBaseDtoWithAllowedSub(int questionPage, int questionAmount, String userEmail) {
         Pageable pageable = new PageRequest(questionPage, questionAmount);
         List<Question> questionList = questionRepository.findAllByAllowedSubsContainsOrderByCreatedAtDesc(
-                userService.findUserByEmail(userEmail), pageable
+                userService.findUserByEmailOrThrowException(userEmail), pageable
         );
         final List<QuestionWithAnswersCount> questionWithAnswersCounts = answerService.aggregateToCount(questionList);
 
@@ -267,7 +268,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public Long getQuestionCountWithAllowedSub(String userEmail) {
-        return questionRepository.countAllByAllowedSubs(userService.findUserByEmail(userEmail));
+        return questionRepository.countAllByAllowedSubs(userService.findUserByEmailOrThrowException(userEmail));
     }
 
     @Override
@@ -290,19 +291,22 @@ public class QuestionServiceImpl implements QuestionService {
 
     private void validateQuestionData(QuestionPostDto questionPostDto, String email) {
         if (questionPostDto == null) {
-            throw new QuestionValidationException("Post question should have json for QuestionPostDto");
+            throw new QuestionValidationException(messagesHelper.get("validation.service.no-json-for-questionpostdto"));
         }
         if (email == null) {
-            throw new QuestionValidationException("probably should`nt appear at all, problems with SSO");
+            throw new QuestionValidationException(messagesHelper.get("validation.service.sso-problems"));
         }
         if ((questionPostDto.getText() == null) || (questionPostDto.getTitle() == null)) {
-            throw new QuestionValidationException("null fields found in question " + questionPostDto.toJson());
+            throw new QuestionValidationException(MessageFormat.format(messagesHelper.get("validation.service.null-fields-in-question"),
+                    questionPostDto.toJson()));
         }
         if (questionPostDto.getTitle().length() < QUESTION_TITLE_LENGTH) {
-            throw new QuestionValidationException("Title is too short " + questionPostDto.toJson());
+            throw new QuestionValidationException(MessageFormat.format(messagesHelper.get("validation.service.short-title"),
+                    questionPostDto.toJson()));
         }
         if (questionPostDto.getText().length() < QUESTION_TEXT_LENGTH) {
-            throw new QuestionValidationException("Text is too short " + questionPostDto.toJson());
+            throw new QuestionValidationException(MessageFormat.format(messagesHelper.get("validation.service.short-text"),
+                    questionPostDto.toJson()));
         }
     }
 }

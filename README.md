@@ -1,3 +1,4 @@
-#  lstrsum-parent
+#  Experience project
 
-Add instructions for project developers here.
+All the necessary information you can find here:
+https://kb.epam.com/display/EPMLSTR/Development

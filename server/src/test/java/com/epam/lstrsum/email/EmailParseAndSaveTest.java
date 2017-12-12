@@ -18,9 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import javax.mail.internet.MimeMessage;
 import java.util.EnumSet;
 
-import static com.epam.lstrsum.enums.UserRoleType.ROLE_ADMIN;
-import static com.epam.lstrsum.enums.UserRoleType.ROLE_EXTENDED_USER;
-import static com.epam.lstrsum.enums.UserRoleType.ROLE_SIMPLE_USER;
+import static com.epam.lstrsum.enums.UserRoleType.*;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -76,7 +74,7 @@ public class EmailParseAndSaveTest extends SetUpDataBaseCollections {
         messageHelper.setTo("Stan_Chivs@epam.com");
         final EmailParser.EmailForExperienceApplication parsedMessage = emailParser.getParsedMessage(simpleEmail);
         final QuestionPostDto requestPostDto = parsedMessage.getQuestionPostDto();
-        questionService.addNewQuestion(requestPostDto, parsedMessage.getSender());
+        questionService.addNewQuestionFromEmail(requestPostDto, parsedMessage.getSender());
         final Question createdRequest = questionService.findQuestionByTitleAndAuthorEmail("Simple request title", authorOfEmail);
         assertThat(createdRequest.getTitle(), is("Simple request title"));
         assertThat(createdRequest.getText(), is("Simple request text"));

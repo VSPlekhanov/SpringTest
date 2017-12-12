@@ -147,7 +147,7 @@ public class AnswerNotificationAspectTest extends SetUpDataBaseCollections {
     private MimeMessage addNewQuestionAndAnswerToItInDBAndGetExpectedMimeMessage(
             QuestionPostDto question, String questionAuthor, String answerAuthor
     ) throws Exception {
-        Question savedQuestion = questionService.addNewQuestion(question, questionAuthor);
+        Question savedQuestion = questionService.addNewQuestionFromEmail(question, questionAuthor);
 
         AnswerPostDto answerPost = new AnswerPostDto(savedQuestion.getQuestionId(), "Text of Answer");
 
