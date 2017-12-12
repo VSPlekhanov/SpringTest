@@ -1,39 +1,130 @@
 {
   "Question": {
     "properties": {
-      "id": {
-        "type": "keyword",
-        "index": "not_analyzed"
-      },
-      "title": {
+      "_class": {
         "type": "text",
-        "index": "analyzed"
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "allowedSubs": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "answers": {
+        "properties": {
+          "answerId": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "authorId": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "createdAt": {
+            "type": "date"
+          },
+          "text": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "votes": {
+            "properties": {
+              "authorEmail": {
+                "type": "text",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 256
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "attachmentIds": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "authorId": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "createdAt": {
+        "type": "date"
+      },
+      "deadLine": {
+        "type": "date"
+      },
+      "subscribers": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "tags": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
       },
       "text": {
         "type": "text",
-        "index": "analyzed"
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
       },
-      "tags": {
-        "type" : "keyword",
-        "index": "analyzed"
-      },
-      "authorId": {
-        "type" : "text",
-        "index": "not_analyzed"
-      },
-      "createdAt": {
-        "type" : "date",
-        "index": "analyzed"
-      },
-      "upVote": {
-        "type" : "integer"
-      },
-      "allowedSubs": {
-        "type" : "text",
-        "index": "not_analyzed"
-      },
-      "deadLine": {
-        "type" : "nested"
+      "title": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
       }
     }
   }
