@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 public class SearchQueryServiceImpl implements SearchQueryService {
 
     private final String splitArrayPattern = "\\s*,\\s*";
+    private static final Pattern validateQueryWithMetaTag = Pattern.compile("[^:\"]+");
     private final Pattern metaTagWithValuePattern =
             Pattern.compile("([^\\s\",]+):\\s*((((\"[^\",]+\")|([^\\s\",]+))\\s*,\\s*)*((\"[^\",]+\")|([^\\s\",]+)))\\s*");
 
@@ -37,10 +38,11 @@ public class SearchQueryServiceImpl implements SearchQueryService {
             List<String> localValidMetaTags = new ArrayList<>(validMetaTags);
 
             while (matcher.find(nextStart)) {
-                if (!localValidMetaTags.contains(matcher.group(1)) || !validateValueOfMetaTag(matcher.group(2)))
+                String metaTag = matcher.group(1).toLowerCase();
+                if (!localValidMetaTags.contains(metaTag) || !validateValueOfMetaTag(matcher.group(2)))
                     errorsInQuery.add(new QueryErrorDefinitionDto(matcher.start(), matcher.end()));
                 else {
-                    queryStringsWithMetaTags.add(String.format("%s:(%s)", matcher.group(1), matcher.group(2).replaceAll(",", " ")));
+                    queryStringsWithMetaTags.add(String.format("%s:(%s)", metaTag, matcher.group(2).replaceAll(",", " ")));
                     localValidMetaTags.remove(matcher.group(1));
                 }
                 queryForSearch.append(getValidQueryForSearch(query, nextStart, matcher.start(), errorsInQuery));
@@ -62,9 +64,8 @@ public class SearchQueryServiceImpl implements SearchQueryService {
 
     private boolean validateValueOfMetaTag(String values) {
         String[] value = values.trim().replaceAll("\"", "").split(splitArrayPattern);
-        Pattern p = Pattern.compile("[^:\\p{P}\"]+");
         for (String metaTag : value)
-            if (!p.matcher(metaTag.trim()).matches()) return false;
+            if (!validateQueryWithMetaTag.matcher(metaTag.trim()).matches()) return false;
         return true;
     }
 

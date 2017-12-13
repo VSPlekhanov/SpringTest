@@ -62,6 +62,13 @@ public class SearchQueryServiceTest {
     }
 
     @Test
+    public void parseQueryContainsUpperMetaTags() throws Exception {
+        QuestionParsedQueryDto parseResult = searchQueryService.parseQuery("TEXT: Text tItle: Name taGS: Tag1");
+        assertThat(parseResult.getQueryStringsWithMetaTags(), containsInAnyOrder("text:(Text)", "title:(Name)", "tags:(Tag1)"));
+        assertTrue(parseResult.getErrorsInQuery().isEmpty());
+    }
+
+    @Test
     public void parseQueryContainsAllValidTagsWithOneFewOrNoValue() throws Exception {
         QuestionParsedQueryDto parseResult = searchQueryService.parseQuery("text: title: Name tags: Tag1, Tag2, Tag3, Tag4");
         assertThat(parseResult.getQueryStringsWithMetaTags(), not(containsInAnyOrder("text:()")));
@@ -130,7 +137,7 @@ public class SearchQueryServiceTest {
         assertThat(parseResult.getQueryStringsWithMetaTags(), not(containsInAnyOrder("text:(Te[xt)")));
         assertThat(parseResult.getQueryStringsWithMetaTags(), not(containsInAnyOrder("tags:(\"Some text, ok?\")")));
         assertThat(parseResult.getQueryForSearch(), isEmptyString());
-        assertThat(parseResult.getErrorsInQuery().size(), is(3));
+        assertThat(parseResult.getErrorsInQuery().size(), is(1));
     }
 
     @Test
@@ -174,4 +181,6 @@ public class SearchQueryServiceTest {
         assertThat(parseResult.getQueryForSearch(), is("first query aaa secondQuery! third query some query String last query"));
         assertTrue(parseResult.getErrorsInQuery().isEmpty());
     }
+
+
 }

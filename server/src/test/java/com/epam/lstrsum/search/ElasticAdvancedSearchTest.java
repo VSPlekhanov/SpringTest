@@ -14,11 +14,7 @@ import org.assertj.core.api.Assertions;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.elasticsearch.client.RestClient;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,14 +39,10 @@ import java.util.Optional;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
-import static pl.allegro.tech.embeddedelasticsearch.PopularProperties.CLUSTER_NAME;
-import static pl.allegro.tech.embeddedelasticsearch.PopularProperties.HTTP_PORT;
-import static pl.allegro.tech.embeddedelasticsearch.PopularProperties.TRANSPORT_TCP_PORT;
+import static pl.allegro.tech.embeddedelasticsearch.PopularProperties.*;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -215,11 +207,24 @@ public class ElasticAdvancedSearchTest {
     }
 
     @Test
+    public void searchPhraseWithUpperCaseMetaTagsInText() throws Exception {
+        String result = questionController.advancedSearch("TITLE: javascript TaGs: javascript, iphone teXT: multiple", 0, 10).getBody();
+        JsonNode nodeResult = mapper.readTree(result);
+
+        assertFalse(nodeResult.path("hits").path("hits").isMissingNode());
+        assertThat(nodeResult.path("hits").path("hits").size(), is(3));
+        assertThat(nodeResult.path("hits").path("hits").get(2).get("_source").path("id").getTextValue(), is("3u_4r"));
+        assertThat(nodeResult.path("hits").path("hits").get(1).get("_source").path("id").getTextValue(), is("4u_5r"));
+        assertThat(nodeResult.path("hits").path("hits").get(0).get("_source").path("id").getTextValue(), is("2u_3r"));
+    }
+
+    @Test
     public void searchPhraseWithMetaTagsInText() throws Exception {
         String result = questionController.advancedSearch("text: \"Mac OS\", code", 0, 10).getBody();
         JsonNode nodeResult = mapper.readTree(result);
 
         assertFalse(nodeResult.path("hits").path("hits").isMissingNode());
+
         assertThat(nodeResult.path("hits").path("hits").size(), is(1));
         assertThat(nodeResult.path("hits").path("hits").get(0).get("_source").path("id").getTextValue(), is("1u_2r"));
     }
