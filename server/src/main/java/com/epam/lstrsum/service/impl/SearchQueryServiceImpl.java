@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 public class SearchQueryServiceImpl implements SearchQueryService {
 
     private final String splitArrayPattern = "\\s*,\\s*";
+    private static final Pattern validateQueryWithMetaTag = Pattern.compile("[^:\"]+");
     private final Pattern metaTagWithValuePattern =
             Pattern.compile("([^\\s\",]+):\\s*((((\"[^\",]+\")|([^\\s\",]+))\\s*,\\s*)*((\"[^\",]+\")|([^\\s\",]+)))\\s*");
 
@@ -63,9 +64,8 @@ public class SearchQueryServiceImpl implements SearchQueryService {
 
     private boolean validateValueOfMetaTag(String values) {
         String[] value = values.trim().replaceAll("\"", "").split(splitArrayPattern);
-        Pattern p = Pattern.compile("[^:\"]+");
         for (String metaTag : value)
-            if (!p.matcher(metaTag.trim()).matches()) return false;
+            if (!validateQueryWithMetaTag.matcher(metaTag.trim()).matches()) return false;
         return true;
     }
 
