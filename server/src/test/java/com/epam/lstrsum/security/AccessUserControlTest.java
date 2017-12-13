@@ -22,15 +22,20 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.epam.lstrsum.testutils.InstantiateUtil.*;
+import static com.epam.lstrsum.testutils.InstantiateUtil.SOME_USER_EMAIL;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someQuestionPostDto;
+import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ActiveProfiles("email")
 public class AccessUserControlTest extends SetUpDataBaseCollections {
@@ -57,7 +62,7 @@ public class AccessUserControlTest extends SetUpDataBaseCollections {
     public void accessForAddingQuestionByUserNotFromDB() throws IOException {
         String newCurrentUserEmail = someString();
         String newAllowedSubsEmail = someString();
-        List<String> newAllowedSubsEmails = Arrays.asList(SOME_USER_EMAIL, newAllowedSubsEmail);
+        List<String> newAllowedSubsEmails = new ArrayList<>(Arrays.asList(SOME_USER_EMAIL, newAllowedSubsEmail));
         QuestionPostDto questionPostDto = someQuestionPostDto();
         questionPostDto.setAllowedSubs(newAllowedSubsEmails);
 
@@ -65,12 +70,11 @@ public class AccessUserControlTest extends SetUpDataBaseCollections {
         mockTelescopeServiceByEmail(newAllowedSubsEmails);
         when(userRuntimeRequestComponent.getEmail()).thenReturn(newCurrentUserEmail);
 
-
         int usersCount = userService.findAll().size();
         ResponseEntity<String> response = questionController.addQuestion(questionPostDto, new MultipartFile[]{});
         assertTrue(userService.findUserByEmailIfExist(newCurrentUserEmail).isPresent());
         assertTrue(userService.findUserByEmailIfExist(newAllowedSubsEmail).isPresent());
-        assertThat(userService.findAll()).hasSize(usersCount+2);
+        assertThat(userService.findAll()).hasSize(usersCount + 2);
         assertThat(response).satisfies(AssertionUtils::hasStatusOk);
         assertThat(questionService.getQuestionAllFieldDtoByQuestionId(response.getBody()).getAuthor().getEmail())
                     .isEqualTo(newCurrentUserEmail.toLowerCase());
@@ -127,7 +131,4 @@ public class AccessUserControlTest extends SetUpDataBaseCollections {
 
         return mimeMessageMock;
     }
-
-
-
 }

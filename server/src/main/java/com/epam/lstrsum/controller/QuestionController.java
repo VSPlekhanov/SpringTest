@@ -45,18 +45,21 @@ public class QuestionController {
             @RequestPart(value = "files", required = false) MultipartFile[] files)
             throws IOException {
         log.debug("addQuestion.enter; dtoObject: {}", dtoObject);
-        String email = userRuntimeRequestComponent.getEmail();
 
-        long usersAdded = userService.findUserByEmailIfExist(email)
+        String authorEmail = userRuntimeRequestComponent.getEmail();
+        log.debug("addQuestion; email: {}", authorEmail);
+
+        long usersAdded = userService.findUserByEmailIfExist(authorEmail)
                 .map(u -> 0L)
-                .orElseGet(() -> userService.addIfNotExistAllWithRole(Collections.singletonList(email), ROLE_SIMPLE_USER));
+                .orElseGet(() -> userService.addIfNotExistAllWithRole(Collections.singletonList(authorEmail), ROLE_SIMPLE_USER));
 
         usersAdded += userService.addIfNotExistAllWithRole(dtoObject.getAllowedSubs(), ROLE_SIMPLE_USER);
-
         log.debug("{} users added to db", usersAdded);
-        log.debug("addQuestion; email: {}", email);
 
-        String questionId = questionService.addNewQuestion(dtoObject, email, files).getQuestionId();
+        List<String> allowedSubs = dtoObject.getAllowedSubs();
+        if (!allowedSubs.contains(authorEmail)) allowedSubs.add(authorEmail);
+
+        String questionId = questionService.addNewQuestion(dtoObject, authorEmail, files).getQuestionId();
         log.debug("addQuestion; question: {}", questionId);
 
         return ResponseEntity.ok(questionId);
