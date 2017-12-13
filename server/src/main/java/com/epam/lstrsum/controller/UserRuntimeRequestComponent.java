@@ -1,8 +1,12 @@
 package com.epam.lstrsum.controller;
 
 import com.epam.lstrsum.security.EpamEmployeePrincipal;
+import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
@@ -17,6 +21,10 @@ import java.util.Optional;
 public class UserRuntimeRequestComponent {
     private final HttpServletRequest request;
 
+    @Autowired
+    @Setter
+    private UserService userService;
+
     public String getEmail() {
         return getPrincipal().getEmail();
     }
@@ -27,7 +35,7 @@ public class UserRuntimeRequestComponent {
 
     private EpamEmployeePrincipal getPrincipal() {
         log.debug("getPrincipal.enter; request {}", request);
-        return Optional.ofNullable(request.getUserPrincipal())
+        EpamEmployeePrincipal epamEmployeePrincipal = Optional.ofNullable(request.getUserPrincipal())
                 .map(o -> (OAuth2Authentication) o)
                 .map(u -> (EpamEmployeePrincipal) u.getPrincipal())
                 .orElseGet(() -> {
@@ -37,6 +45,12 @@ public class UserRuntimeRequestComponent {
                             .userInDistributionList(true)
                             .build();
                 });
+
+        if(!userService.findUserById(epamEmployeePrincipal.getUserId()).getIsActive()) {
+            epamEmployeePrincipal.setUserInDistributionList(false);
+        }
+
+        return epamEmployeePrincipal;
     }
 }
 
