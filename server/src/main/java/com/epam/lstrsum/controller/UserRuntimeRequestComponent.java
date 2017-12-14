@@ -1,5 +1,6 @@
 package com.epam.lstrsum.controller;
 
+import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.security.EpamEmployeePrincipal;
 import com.epam.lstrsum.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,8 @@ public class UserRuntimeRequestComponent {
                             .build();
                 });
 
-        if(!userService.findUserById(epamEmployeePrincipal.getUserId()).getIsActive()) {
+        if(!userService.findUserByEmailIfExist(epamEmployeePrincipal.getEmail())
+                .orElse(User.builder().isActive(false).build()).getIsActive()) {
             epamEmployeePrincipal.setUserInDistributionList(false);
         }
 
