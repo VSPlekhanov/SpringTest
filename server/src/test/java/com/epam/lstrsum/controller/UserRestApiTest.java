@@ -28,7 +28,6 @@ public class UserRestApiTest extends SetUpDataBaseCollections {
 
         when(telescopeService.getUsersInfoByFullName(fullName, defaultMaxUsersAmountInResult))
                 .thenReturn(someTelescopeEmployeeEntityDtos());
-        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         assertThat(restTemplate.exchange(
                 "/api/user/telescope/info?fullName=" + fullName, HttpMethod.GET, null, Object.class
@@ -64,21 +63,7 @@ public class UserRestApiTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void getUserInfoWithNotDistributionListUser() {
-        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(false);
-
-        assertThat(restTemplate.exchange(
-                "/api/user/telescope/info?fullName=" + someString() + "&maxUsersAmountInResult=" + 10,
-                HttpMethod.GET, null, Object.class
-        )).satisfies(AssertionUtils::hasStatusNotFound);
-
-        verifyZeroInteractions(telescopeService);
-    }
-
-    @Test
     public void getUserInfoByEmptyFullname() {
-        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
-
         assertThat(restTemplate.exchange(
                 "/api/user/telescope/info?fullName=", HttpMethod.GET, null, Object.class
         )).satisfies(AssertionUtils::hasStatusInternalServerError);
@@ -111,17 +96,6 @@ public class UserRestApiTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void getUserPhotoByUriWithNotDistributionListUser() {
-        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(false);
-
-        assertThat(restTemplate.exchange(
-                "/api/user/telescope/photo?uri=" + someString(), HttpMethod.GET, null, String.class
-        )).satisfies(AssertionUtils::hasStatusNotFound);
-
-        verifyZeroInteractions(telescopeService);
-    }
-
-    @Test
     public void getUserPhotoByMissingUri() {
         assertThat(restTemplate.exchange(
                 "/api/user/telescope/photo", HttpMethod.GET, null, String.class
@@ -132,8 +106,6 @@ public class UserRestApiTest extends SetUpDataBaseCollections {
 
     @Test
     public void getUserPhotoByEmptyUri() {
-        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
-
         assertThat(restTemplate.exchange(
                 "/api/user/telescope/photo?uri=", HttpMethod.GET, null, String.class
         )).satisfies(AssertionUtils::hasStatusInternalServerError);
