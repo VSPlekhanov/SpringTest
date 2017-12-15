@@ -46,9 +46,15 @@ public class UserRuntimeRequestComponent {
                             .userInDistributionList(true)
                             .build();
                 });
+        Optional<User> userFromDatabase = userService.findUserByEmailIfExist(epamEmployeePrincipal.getEmail());
 
-        if(!userService.findUserByEmailIfExist(epamEmployeePrincipal.getEmail())
-                .orElse(User.builder().isActive(false).build()).getIsActive()) {
+        if(userFromDatabase.isPresent()){
+
+            if (!userFromDatabase.get().getIsActive()) {
+                epamEmployeePrincipal.setUserInDistributionList(false);
+            }
+
+        } else {
             epamEmployeePrincipal.setUserInDistributionList(false);
         }
 
