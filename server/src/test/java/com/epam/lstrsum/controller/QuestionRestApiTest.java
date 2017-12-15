@@ -266,7 +266,6 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
     @Test
     public void getRelevantTags() {
         String uri = String.format("/api/question/getRelevantTags?key=%s", "java");
-        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         ResponseEntity<List<String>> result = restTemplate.exchange(
                 uri,
@@ -282,24 +281,8 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void getRelevantTagsWithNotDistributionListUser() {
-        String uri = String.format("/api/question/getRelevantTags?key=%s", someString());
-        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(false);
-
-        ResponseEntity<List<String>> result = restTemplate.exchange(
-                uri,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<String>>() {
-                });
-
-        assertThat(result).satisfies(AssertionUtils::hasStatusNotFound);
-    }
-
-    @Test
     public void getRelevantTagsNonExistingTags() {
         String uri = String.format("/api/question/getRelevantTags?key=%s", someString());
-        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         ResponseEntity<List<String>> result = restTemplate.exchange(
                 uri,

@@ -82,10 +82,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> findUserByEmailIfExist(String email) {
-        return userRepository.findByEmailIgnoreCase(email);
+        Optional<User> user = userRepository.findByEmailIgnoreCase(email);
+        if (!user.isPresent()) log.info("User with email {} does not exist in db.", email);
+        return user;
     }
-
-
 
     @Override
     public long setActiveForAllAs(Collection<? super String> emails, boolean active) {

@@ -73,6 +73,14 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
     }
 
     @Test
+    public void countQuestionWithAllowedSubsCorrect() {
+        assertThat(questionService.getQuestionCountWithAllowedSub(SOME_USER_EMAIL))
+                .isEqualTo(4L);
+        assertThat(questionService.getQuestionCountWithAllowedSub(SOME_NOT_USER_EMAIL))
+                .isEqualTo(0L);
+    }
+
+    @Test
     public void findAllReturnsCorrectValuesTest() {
         List<Question> questionList = questionRepository.findAll();
         List<QuestionAllFieldsDto> expectedAllFieldsDto = new ArrayList<>();
@@ -137,6 +145,12 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
     }
 
     @Test
+    public void searchWithAllowedSubReturnsEmptyListForNotExesyUser() {
+       assertThat(questionService.searchWithAllowedSub(SEARCH_PHRASE, START_PAGE, null, SOME_NOT_USER_EMAIL))
+                .hasSize(0);
+    }
+
+    @Test
     public void smartSearch() {
         assertThat(questionService.smartSearch("one", someInt(), someInt())).isNotNull();
     }
@@ -148,6 +162,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
         assertThat(actual, is(expected));
     }
+
 
     @Test
     public void getTextSearchResultsCountWithAllowedSubCorrect() {
@@ -162,6 +177,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
         assertThat(actual).isEqualTo(2L);
         assertThat(anotherActual, is(anotherExpected));
         assertThat(anotherActual).isEqualTo(1L);
+        assertThat(questionService.getTextSearchResultsCountWithAllowedSub(SEARCH_PHRASE, SOME_NOT_USER_EMAIL), is(0L));
     }
 
     private void assertThatListHasRightSizeAndContainsCorrectValue(
@@ -372,9 +388,11 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void findAllQuestionBaseDtoWithAllowedSub() {
+    public void findAllQuestionBaseDtoWithAllowedSubCorrect() {
         assertThat(questionService.findAllQuestionBaseDtoWithAllowedSub(0, 100, EXISTING_USER_EMAIL))
                 .hasSize(6);
+        assertThat(questionService.findAllQuestionBaseDtoWithAllowedSub(0, 100, SOME_NOT_USER_EMAIL))
+                .hasSize(0);
     }
 
     @Test
