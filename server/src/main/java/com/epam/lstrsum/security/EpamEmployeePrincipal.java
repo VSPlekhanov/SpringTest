@@ -2,6 +2,7 @@ package com.epam.lstrsum.security;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
@@ -24,6 +25,8 @@ public class EpamEmployeePrincipal implements Principal, Serializable {
     private String userId;
     private String email;
     private String displayName;
+
+    @Setter
     private boolean userInDistributionList;
 
     public static EpamEmployeePrincipal ofMap(Map<String, Object> map) throws IllegalArgumentException {
