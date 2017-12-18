@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -31,18 +30,13 @@ public class UserController {
     @GetMapping("/telescope/info")
     public ResponseEntity<List<TelescopeEmployeeEntityDto>> getUserInfoByFullName(
             @NotEmptyString @RequestParam String fullName,
-            @Max(5000) @Min(0) @RequestParam(required = false, defaultValue = "5") Integer maxUsersAmountInResult
-    ) {
-        return currentUserInDistributionList() ?
-                ResponseEntity.ok(telescopeService.getUsersInfoByFullName(fullName, maxUsersAmountInResult)) :
-                ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            @Max(5000) @Min(0) @RequestParam(required = false, defaultValue = "5") Integer maxUsersAmountInResult) {
+        return ResponseEntity.ok(telescopeService.getUsersInfoByFullName(fullName, maxUsersAmountInResult));
     }
 
     @GetMapping("/telescope/photo")
     public ResponseEntity<Resource> getUserPhotoByUri(@NotEmptyString @RequestParam String uri) {
-        return currentUserInDistributionList() ?
-                buildResponse(telescopeService.getUserPhotoByUri(uri)) :
-                ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return buildResponse(telescopeService.getUserPhotoByUri(uri));
     }
 
     @SneakyThrows
@@ -53,9 +47,5 @@ public class UserController {
                 .ok()
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(image);
-    }
-
-    private boolean currentUserInDistributionList() {
-        return userRuntimeRequestComponent.isInDistributionList();
     }
 }

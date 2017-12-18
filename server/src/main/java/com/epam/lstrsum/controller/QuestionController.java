@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -106,11 +105,13 @@ public class QuestionController {
         return ResponseEntity.ok(new QuestionWithAnswersCountListDto(count, questionsFromService));
     }
 
+    @Deprecated
     @GetMapping("/count")
     public ResponseEntity<CounterDto> getQuestionCount() {
         return ResponseEntity.ok().body(new CounterDto(getTotalQuestionsCount()));
     }
 
+    @Deprecated
     private Long getTotalQuestionsCount() {
         return getTotalQuestionsCount(currentUserInDistributionList());
     }
@@ -121,8 +122,9 @@ public class QuestionController {
                 questionService.getQuestionCountWithAllowedSub(userRuntimeRequestComponent.getEmail());
     }
 
-    @GetMapping("/searchMongo") // TODO: 11/29/2017 Remove (unused method)
-    public ResponseEntity<QuestionAllFieldsListDto> search(
+    @Deprecated
+    @GetMapping("/searchMongo")
+    public ResponseEntity<QuestionAllFieldsListDto> mongoSearch(
             @RequestParam("query") String query,
             @RequestParam(required = false, defaultValue = "-1") Integer page,
             @RequestParam(required = false, defaultValue = "-1") Integer size) {
@@ -170,26 +172,18 @@ public class QuestionController {
         QuestionParsedQueryDto parsedQueryDto = queryService.parseQuery(query);
 
         if (parsedQueryDto.getErrorsInQuery().isEmpty()){
-            QuestionAllFieldsListDto questionAllFieldsListDto = currentUserInDistributionList() ?
-                    questionService.elasticSimpleSearch(
+            QuestionAllFieldsListDto questionAllFieldsListDto = questionService.elasticSimpleSearch(
                             parsedQueryDto.getQueryForSearch(),
                             parsedQueryDto.getQueryStringsWithMetaTags(),
                             page,
-                            size
-                    ) :
-                    // TODO: 11/29/2017 Create search method for users not in DistributionList
-                    questionService.elasticSimpleSearch(
-                            parsedQueryDto.getQueryForSearch(),
-                            parsedQueryDto.getQueryStringsWithMetaTags(),
-                            page,
-                            size
-                    );
+                            size);
             return ResponseEntity.ok(questionAllFieldsListDto);
         } else {
             return ResponseEntity.ok(null);
         }
     }
 
+    @Deprecated
     @GetMapping("/smartSearch")
     public ResponseEntity<String> smartSearch(
             @RequestParam("query") String query,
@@ -201,6 +195,7 @@ public class QuestionController {
         return ResponseEntity.ok(searchResult);
     }
 
+    @Deprecated
     @GetMapping("/advancedSearch")
     public ResponseEntity<String> advancedSearch (
             @RequestParam("query") String query,
@@ -234,6 +229,7 @@ public class QuestionController {
         }
     }
 
+    @Deprecated
     @GetMapping("/search/count")
     public ResponseEntity<CounterDto> searchCount(@RequestParam("query") String query) {
         Long count = getSearchCount(query);
@@ -253,9 +249,7 @@ public class QuestionController {
 
     @GetMapping("/getRelevantTags")
     public ResponseEntity<List<String>> getRelevantTags(@RequestParam("key") String key) {
-        return currentUserInDistributionList() ?
-                ResponseEntity.ok(questionService.getRelevantTags(key)) :
-                ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return  ResponseEntity.ok(questionService.getRelevantTags(key));
     }
 
     private boolean currentUserInDistributionList() {

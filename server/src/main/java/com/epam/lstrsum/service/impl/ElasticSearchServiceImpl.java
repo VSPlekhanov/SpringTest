@@ -21,11 +21,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.Fuzziness;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MultiMatchQueryBuilder;
-import org.elasticsearch.index.query.Operator;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -135,6 +131,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         throw new UnsupportedOperationException(messagesHelper.get("validation.service.unsupported-method-yet"));
     }
 
+    @Deprecated
     @Override
     public String advancedSearch(String searchString, List<String> metaTags, Integer page, Integer size) {
         try {

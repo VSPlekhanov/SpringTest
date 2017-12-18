@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -97,15 +98,17 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<QuestionAllFieldsDto> searchWithAllowedSub(String searchQuery, Integer page, Integer size, String email) {
-        List<Question> questionList = questionRepository.findAllByAllowedSubsContains(
-                userService.findUserByEmailOrThrowException(email),
-                getTextCriteriaForFullTextSearch(searchQuery),
-                getPageableForFullTextSearch(page, size));
+        Optional<User> user = userService.findUserByEmailIfExist(email);
+        return user.map(u -> {
+            List<Question> questionList = questionRepository.findAllByAllowedSubsContains(u,
+                    getTextCriteriaForFullTextSearch(searchQuery),
+                    getPageableForFullTextSearch(page, size));
 
-        return questionList
-                .stream()
-                .map(questionAggregator::modelToAllFieldsDto)
-                .collect(Collectors.toList());
+            return questionList
+                    .stream()
+                    .map(questionAggregator::modelToAllFieldsDto)
+                    .collect(Collectors.toList());
+        }).orElse(Collections.emptyList());
     }
 
     private TextCriteria getTextCriteriaForFullTextSearch(String searchQuery) {
@@ -147,8 +150,10 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public Long getTextSearchResultsCountWithAllowedSub(String query, String email) {
-        return questionRepository
-                .countAllByAllowedSubsContains(userService.findUserByEmailOrThrowException(email), getTextCriteriaForFullTextSearch(query));
+        Optional<User> user = userService.findUserByEmailIfExist(email);
+        return user
+                .map(u -> questionRepository.countAllByAllowedSubsContains(u, getTextCriteriaForFullTextSearch(query)))
+                .orElse(0L);
     }
 
     @Override
@@ -163,12 +168,14 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public List<QuestionWithAnswersCountDto> findAllQuestionBaseDtoWithAllowedSub(int questionPage, int questionAmount, String userEmail) {
         Pageable pageable = new PageRequest(questionPage, questionAmount);
-        List<Question> questionList = questionRepository.findAllByAllowedSubsContainsOrderByCreatedAtDesc(
-                userService.findUserByEmailOrThrowException(userEmail), pageable
-        );
-        final List<QuestionWithAnswersCount> questionWithAnswersCounts = answerService.aggregateToCount(questionList);
-
-        return mapList(questionWithAnswersCounts, questionAggregator::modelToAnswersCountDto);
+        Optional<User> user = userService.findUserByEmailIfExist(userEmail);
+        return  user.map(u -> {
+                    List<Question> questionList = questionRepository.findAllByAllowedSubsContainsOrderByCreatedAtDesc(u, pageable);
+                    return answerService.aggregateToCount(questionList).stream()
+                                                .map(questionAggregator::modelToAnswersCountDto)
+                                                .collect(Collectors.toList());
+                    })
+                .orElse(Collections.emptyList());
     }
 
     @Override
@@ -268,7 +275,8 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public Long getQuestionCountWithAllowedSub(String userEmail) {
-        return questionRepository.countAllByAllowedSubs(userService.findUserByEmailOrThrowException(userEmail));
+        Optional<User> user = userService.findUserByEmailIfExist(userEmail);
+        return user.map(questionRepository::countAllByAllowedSubs).orElse(0L);
     }
 
     @Override

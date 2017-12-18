@@ -8,7 +8,6 @@ import com.epam.lstrsum.service.UserService;
 import com.epam.lstrsum.testutils.AssertionUtils;
 import com.epam.lstrsum.testutils.InstantiateUtil;
 import lombok.val;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -28,11 +27,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isIn;
-import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -109,6 +106,19 @@ public class QuestionControllerTest {
         assertThat(actual.getStatusCode(), is(HttpStatus.OK));
         assertThat(actual.getBody().getTotalNumber(), is((long) list.size()));
         assertThat(actual.getBody().getQuestions()).isEqualTo(list);
+    }
+
+    @Test
+    public void getQuestionsForUserDoesNotExistTest() {
+        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(false);
+        when(userService.findUserByEmailIfExist(SOME_NOT_USER_EMAIL)).thenReturn(Optional.empty());
+        when(userRuntimeRequestComponent.getEmail()).thenReturn(SOME_NOT_USER_EMAIL);
+
+        ResponseEntity<QuestionWithAnswersCountListDto> actual = controller.getQuestions(someInt(), someInt());
+
+        assertThat(actual.getStatusCode(), is(HttpStatus.OK));
+        assertThat(actual.getBody().getTotalNumber(), is(0L));
+        assertThat(actual.getBody().getQuestions()).isEmpty();
     }
 
     @Test
@@ -210,7 +220,7 @@ public class QuestionControllerTest {
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
 
         controller.setMaxQuestionAmount(200);
-        QuestionAllFieldsListDto actual = controller.search(someString(), 0, 20).getBody();
+        QuestionAllFieldsListDto actual = controller.mongoSearch(someString(), 0, 20).getBody();
         assertThat(actual.getTotalNumber()).isEqualTo(totalNumber);
         assertThat(actual.getQuestions()).isEqualTo(questionAllFieldsDtos);
     }
