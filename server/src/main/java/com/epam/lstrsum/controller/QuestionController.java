@@ -66,9 +66,10 @@ public class QuestionController {
 
     @GetMapping(value = "/{questionId}")
     public ResponseEntity<QuestionAppearanceDto> getQuestionWithText(@PathVariable String questionId) {
+        String userEmail = userRuntimeRequestComponent.getEmail();
         Optional<QuestionAppearanceDto> questionDto = currentUserInDistributionList() ?
-                questionService.getQuestionAppearanceDtoByQuestionId(questionId, userRuntimeRequestComponent.getEmail()) :
-                questionService.getQuestionAppearanceDtoByQuestionIdWithAllowedSub(questionId, userRuntimeRequestComponent.getEmail());
+                questionService.getQuestionAppearanceDtoByQuestionId(questionId, userEmail) :
+                questionService.getQuestionAppearanceDtoByQuestionIdWithAllowedSub(questionId, userEmail);
         return questionDto.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 

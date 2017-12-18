@@ -72,6 +72,7 @@ for (let i = 0; i < QUESTIONS_AMOUNT_MAX; ++i) {
     for (let j = 0; j < subsAmount; ++j) {
         newQuestion.allowedSubs.push(DBRef(USER_COLLECTION_NAME, allUsers[randomInt(0, allUsers.length)]._id))
     }
+    if (!newQuestion.allowedSubs.includes(newQuestion.authorId)) newQuestion.allowedSubs.push(newQuestion.authorId)
 
     newQuestion.attachmentIds = []
 
@@ -89,7 +90,6 @@ for (let i = 0; i < QUESTIONS_AMOUNT_MAX; ++i) {
     }
 
     newQuestion.subscribers = [].concat(newQuestion.allowedSubs)
-    if (!newQuestion.subscribers.includes(newQuestion.authorId)) newQuestion.subscribers.push(newQuestion.authorId)
 
     db.getCollection(QUESTION_COLLECTION_NAME).insert(newQuestion)
 }
@@ -103,30 +103,3 @@ db.getCollection(QUESTION_COLLECTION_NAME).createIndex({"_fts": "text", "_ftsx":
         }
     });
 allQuestions = db.getCollection(QUESTION_COLLECTION_NAME).find({}).toArray()
-
-//create Subscriptions
-for (let i = 0; i < allUsers.length; ++i) {
-    newSubscription = {}
-    newSubscription._class = "com.epam.lstrsum.model.Subscription";
-    newSubscription.userId = DBRef(USER_COLLECTION_NAME, allUsers[randomInt(0, allUsers.length)]._id)
-    newSubscription.questionIds = []
-
-    db.getCollection(SUBSCRIPTION_COLLECTION_NAME).insert(newSubscription)
-}
-
-db.getCollection(SUBSCRIPTION_COLLECTION_NAME).createIndex({"questionIds": 1});
-allSubs = db.getCollection(SUBSCRIPTION_COLLECTION_NAME).find({}).toArray()
-
-allQuestions.forEach(function (question, i, arr) {
-    currentAllowedSubs = question.allowedSubs
-    subscriptionAmountForCurrentQuestion = randomInt(0, currentAllowedSubs.length)
-
-    for (let j = 0; j < subscriptionAmountForCurrentQuestion; ++j) {
-        userForSubscribe = currentAllowedSubs[randomInt(0, currentAllowedSubs.length)]
-
-        db.getCollection(SUBSCRIPTION_COLLECTION_NAME).findAndModify({
-            query: {userId: userForSubscribe},
-            update: {$addToSet: {questionIds: DBRef(QUESTION_COLLECTION_NAME, question._id)}}
-        })
-    }
-})
