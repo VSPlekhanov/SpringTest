@@ -242,7 +242,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     private boolean userHasPermissionToViewQuestion(Question question, String userEmail) {
-        return !isNull(question) && question.getAllowedSubs().stream().map(User::getEmail).filter(e -> e.equals(userEmail)).count() == 1;
+        return !isNull(question) && question.getAllowedSubs().stream().map(User::getEmail).anyMatch(userEmail::equalsIgnoreCase);
     }
 
     @Override
