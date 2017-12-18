@@ -264,6 +264,14 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
         assertFalse(questionDto.isPresent());
     }
 
+    @Test
+    public void getQuestionAppearanceDtoByQuestionIdWithPermissions() {
+        Optional<QuestionAppearanceDto> questionDto = questionService.getQuestionAppearanceDtoByQuestionIdWithAllowedSub(
+                InstantiateUtil.EXISTING_QUESTION_ID,
+                "TYLER_greeds@epam.com");
+        assertTrue(questionDto.isPresent());
+    }
+
     @Test(expected = QuestionValidationException.class)
     public void questionServiceThrowsQuestionValidationExceptionForNullTitleInPostDto() {
         QuestionPostDto postDto = new QuestionPostDto(null, new String[]{"1", "2", "3", "go"},
