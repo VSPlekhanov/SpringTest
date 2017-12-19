@@ -1,5 +1,6 @@
 package com.epam.lstrsum.configuration;
 
+import com.epam.lstrsum.converter.FeedbackPostDtoHttpMessageConverter;
 import com.epam.lstrsum.converter.QuestionPostDtoHttpMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +14,12 @@ public class HttpConfiguration {
     }
 
     @Bean
-    public QuestionPostDtoHttpMessageConverter commonsMultipartResolver() {
+    public QuestionPostDtoHttpMessageConverter questionPostDtoHttpMessageConverter() {
         return new QuestionPostDtoHttpMessageConverter();
     }
 
+    @Bean
+    public FeedbackPostDtoHttpMessageConverter feedbackPostDtoHttpMessageConverter() {
+        return new FeedbackPostDtoHttpMessageConverter();
+    }
 }
