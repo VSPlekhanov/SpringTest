@@ -69,6 +69,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private String authorizationAccessTokenUri;
     @Setter
     private String authorizationUserUri;
+    @Setter
+    private String authorizationClientSecret;
+    @Setter
+    private String authorizationGrantType;
 
     @Autowired
     private UserService userService;
@@ -131,6 +135,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         details.setUserAuthorizationUri(authorizationUserUri);
         details.setClientAuthenticationScheme(AuthenticationScheme.form);
         details.setAuthenticationScheme(AuthenticationScheme.query);
+        details.setClientSecret(authorizationClientSecret);
+        details.setGrantType(authorizationGrantType);
         return details;
     }
 
