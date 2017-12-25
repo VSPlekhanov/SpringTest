@@ -125,23 +125,13 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public String smartSearch(String searchQuery, int page, int size) {
-        return elasticSearchService.smartSearch(searchQuery, page, size);
+    public String advancedSearchGetString(String searchQuery, List<String> metaTags, Integer page, Integer size) {
+        return elasticSearchService.advancedSearchGetString(searchQuery, metaTags, page, size);
     }
 
     @Override
-    public String advancedSearch(String searchQuery, List<String> metaTags, Integer page, Integer size) {
-        return elasticSearchService.advancedSearch(searchQuery, metaTags, page, size);
-    }
-
-    @Override
-    public QuestionAllFieldsListDto elasticSimpleSearch(String searchString, List<String> metaTags, Integer page, Integer size) {
-        return elasticSearchService.elasticSimpleSearch(searchString, metaTags, page, size);
-    }
-
-    @Override
-    public String smartSearchWithAllowedSub(String searchQuery, int page, int size, String email) {
-        return elasticSearchService.smartSearchWithAllowedSub(searchQuery, page, size, email);
+    public QuestionWithAnswersCountListDto advancedSearchGetDto(String searchString, List<String> metaTags, Integer page, Integer size) {
+        return elasticSearchService.advancedSearchGetDto(searchString, metaTags, page, size);
     }
 
     @Override

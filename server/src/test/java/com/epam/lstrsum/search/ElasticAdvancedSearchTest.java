@@ -2,9 +2,11 @@ package com.epam.lstrsum.search;
 
 import com.epam.lstrsum.controller.QuestionController;
 import com.epam.lstrsum.controller.UserRuntimeRequestComponent;
+import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
+import com.epam.lstrsum.dto.question.QuestionWithAnswersCountListDto;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.UserRepository;
-import com.epam.lstrsum.service.ElasticSearchServiceTest;
+import com.epam.lstrsum.service.UserService;
 import com.epam.lstrsum.testutils.AssertionUtils;
 import lombok.Setter;
 import org.apache.http.HttpEntity;
@@ -14,6 +16,7 @@ import org.assertj.core.api.Assertions;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +36,12 @@ import pl.allegro.tech.embeddedelasticsearch.IndexSettings;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
+import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -56,6 +62,9 @@ public class ElasticAdvancedSearchTest {
     private UserRuntimeRequestComponent userRuntimeRequestComponent;
 
     @MockBean
+    private UserService userService;
+
+    @MockBean
     private UserRepository userRepository;
 
     @Autowired
@@ -63,6 +72,9 @@ public class ElasticAdvancedSearchTest {
 
     @Autowired
     private ObjectMapper mapper;
+
+    @Autowired
+    private RestHighLevelClient restHighLevelClient;
 
     private static EmbeddedElastic embeddedElastic;
 
@@ -102,8 +114,8 @@ public class ElasticAdvancedSearchTest {
 
     @BeforeClass
     public static void startEmbeddedElastic() throws Exception{
-        InputStream questionsStream = ElasticSearchServiceTest.class.getClassLoader().getResourceAsStream(questionMapping);
-        InputStream settingsStream = ElasticSearchServiceTest.class.getClassLoader().getResourceAsStream(analyzeSettings);
+        InputStream questionsStream = ElasticAdvancedSearchTest.class.getClassLoader().getResourceAsStream(questionMapping);
+        InputStream settingsStream = ElasticAdvancedSearchTest.class.getClassLoader().getResourceAsStream(analyzeSettings);
         embeddedElastic = EmbeddedElastic.builder()
                 .withElasticVersion(version)
                 .withEsJavaOpts(testEsJavaOpts)
@@ -172,7 +184,7 @@ public class ElasticAdvancedSearchTest {
 
         assertFalse(nodeResult.path("hits").path("hits").isMissingNode());
         assertThat(nodeResult.path("hits").path("hits").size(), is(1));
-        assertThat(nodeResult.path("hits").path("hits").get(0).get("_source").path("id").getTextValue(), is("1u_1r"));
+        assertThat(nodeResult.path("hits").path("hits").get(0).path("_id").getTextValue(), is("1u_1r"));
     }
 
     @Test
@@ -182,7 +194,7 @@ public class ElasticAdvancedSearchTest {
 
         assertFalse(nodeResult.path("hits").path("hits").isMissingNode());
         assertThat(nodeResult.path("hits").path("hits").size(), is(1));
-        assertThat(nodeResult.path("hits").path("hits").get(0).get("_source").path("id").getTextValue(), is("2u_3r"));
+        assertThat(nodeResult.path("hits").path("hits").get(0).path("_id").getTextValue(), is("2u_3r"));
     }
 
     @Test
@@ -192,7 +204,7 @@ public class ElasticAdvancedSearchTest {
 
         assertFalse(nodeResult.path("hits").path("hits").isMissingNode());
         assertThat(nodeResult.path("hits").path("hits").size(), is(1));
-        assertThat(nodeResult.path("hits").path("hits").get(0).get("_source").path("id").getTextValue(), is("2u_3r"));
+        assertThat(nodeResult.path("hits").path("hits").get(0).path("_id").getTextValue(), is("2u_3r"));
     }
 
     @Test
@@ -202,8 +214,8 @@ public class ElasticAdvancedSearchTest {
 
         assertFalse(nodeResult.path("hits").path("hits").isMissingNode());
         assertThat(nodeResult.path("hits").path("hits").size(), is(2));
-        assertThat(nodeResult.path("hits").path("hits").get(1).get("_source").path("id").getTextValue(), is("4u_5r"));
-        assertThat(nodeResult.path("hits").path("hits").get(0).get("_source").path("id").getTextValue(), is("2u_3r"));
+        assertThat(nodeResult.path("hits").path("hits").get(1).path("_id").getTextValue(), is("4u_5r"));
+        assertThat(nodeResult.path("hits").path("hits").get(0).path("_id").getTextValue(), is("2u_3r"));
     }
 
     @Test
@@ -213,9 +225,9 @@ public class ElasticAdvancedSearchTest {
 
         assertFalse(nodeResult.path("hits").path("hits").isMissingNode());
         assertThat(nodeResult.path("hits").path("hits").size(), is(3));
-        assertThat(nodeResult.path("hits").path("hits").get(2).get("_source").path("id").getTextValue(), is("3u_4r"));
-        assertThat(nodeResult.path("hits").path("hits").get(1).get("_source").path("id").getTextValue(), is("4u_5r"));
-        assertThat(nodeResult.path("hits").path("hits").get(0).get("_source").path("id").getTextValue(), is("2u_3r"));
+        assertThat(nodeResult.path("hits").path("hits").get(2).path("_id").getTextValue(), is("3u_4r"));
+        assertThat(nodeResult.path("hits").path("hits").get(1).path("_id").getTextValue(), is("4u_5r"));
+        assertThat(nodeResult.path("hits").path("hits").get(0).path("_id").getTextValue(), is("2u_3r"));
     }
 
     @Test
@@ -226,7 +238,7 @@ public class ElasticAdvancedSearchTest {
         assertFalse(nodeResult.path("hits").path("hits").isMissingNode());
 
         assertThat(nodeResult.path("hits").path("hits").size(), is(1));
-        assertThat(nodeResult.path("hits").path("hits").get(0).get("_source").path("id").getTextValue(), is("1u_2r"));
+        assertThat(nodeResult.path("hits").path("hits").get(0).path("_id").getTextValue(), is("1u_2r"));
     }
 
     @Test
@@ -236,10 +248,10 @@ public class ElasticAdvancedSearchTest {
 
         assertFalse(nodeResult.path("hits").path("hits").isMissingNode());
         assertThat(nodeResult.path("hits").path("hits").size(), is(4));
-        assertThat(nodeResult.path("hits").path("hits").get(3).get("_source").path("id").getTextValue(), is("3u_4r"));
-        assertThat(nodeResult.path("hits").path("hits").get(2).get("_source").path("id").getTextValue(), is("4u_5r"));
-        assertThat(nodeResult.path("hits").path("hits").get(1).get("_source").path("id").getTextValue(), is("6u_6r"));
-        assertThat(nodeResult.path("hits").path("hits").get(0).get("_source").path("id").getTextValue(), is("2u_3r"));
+        assertThat(nodeResult.path("hits").path("hits").get(3).path("_id").getTextValue(), is("3u_4r"));
+        assertThat(nodeResult.path("hits").path("hits").get(2).path("_id").getTextValue(), is("4u_5r"));
+        assertThat(nodeResult.path("hits").path("hits").get(1).path("_id").getTextValue(), is("6u_6r"));
+        assertThat(nodeResult.path("hits").path("hits").get(0).path("_id").getTextValue(), is("2u_3r"));
     }
 
     @Test
@@ -249,7 +261,7 @@ public class ElasticAdvancedSearchTest {
 
         assertFalse(nodeResult.path("hits").path("hits").isMissingNode());
         assertThat(nodeResult.path("hits").path("hits").size(), is(1));
-        assertThat(nodeResult.path("hits").path("hits").get(0).get("_source").path("id").getTextValue(), is("4u_5r"));
+        assertThat(nodeResult.path("hits").path("hits").get(0).path("_id").getTextValue(), is("4u_5r"));
     }
 
     @Test
@@ -259,8 +271,8 @@ public class ElasticAdvancedSearchTest {
 
         assertFalse(nodeResult.path("hits").isMissingNode());
         assertThat(nodeResult.path("hits").path("hits").size(), is(2));
-        assertThat(nodeResult.path("hits").path("hits").get(0).get("_source").path("id").getTextValue(), is("1u_2r"));
-        assertThat(nodeResult.path("hits").path("hits").get(1).get("_source").path("id").getTextValue(), is("6u_6r"));
+        assertThat(nodeResult.path("hits").path("hits").get(0).path("_id").getTextValue(), is("1u_2r"));
+        assertThat(nodeResult.path("hits").path("hits").get(1).path("_id").getTextValue(), is("6u_6r"));
     }
 
     @Test
@@ -288,8 +300,8 @@ public class ElasticAdvancedSearchTest {
 
         assertFalse(nodeResult.path("hits").path("hits").isMissingNode());
         assertThat(nodeResult.path("hits").path("hits").size(), is(2));
-        assertThat(nodeResult.path("hits").path("hits").get(1).get("_source").path("id").getTextValue(), is("6u_6r"));
-        assertThat(nodeResult.path("hits").path("hits").get(0).get("_source").path("id").getTextValue(), is("1u_2r"));
+        assertThat(nodeResult.path("hits").path("hits").get(1).path("_id").getTextValue(), is("6u_6r"));
+        assertThat(nodeResult.path("hits").path("hits").get(0).path("_id").getTextValue(), is("1u_2r"));
     }
 
 
@@ -299,10 +311,9 @@ public class ElasticAdvancedSearchTest {
         JsonNode nodeResult = mapper.readTree(result);
 
         assertFalse(nodeResult.path("hits").path("hits").isMissingNode());
-        assertThat(nodeResult.path("hits").path("hits").size(), is(3));
-        assertThat(nodeResult.path("hits").path("hits").get(2).get("_source").path("id").getTextValue(), is("3u_4r"));
-        assertThat(nodeResult.path("hits").path("hits").get(1).get("_source").path("id").getTextValue(), is("1u_1r"));
-        assertThat(nodeResult.path("hits").path("hits").get(0).get("_source").path("id").getTextValue(), is("2u_3r"));
+        assertThat(nodeResult.path("hits").path("hits").size(), is(2));
+        assertThat(nodeResult.path("hits").path("hits").get(1).path("_id").getTextValue(), is("3u_4r"));
+        assertThat(nodeResult.path("hits").path("hits").get(0).path("_id").getTextValue(), is("2u_3r"));
     }
 
     private void prepareUserOutsideTheDL(String currentUserId) {
@@ -396,4 +407,56 @@ public class ElasticAdvancedSearchTest {
             assertTrue(isTheAuthor || isInAllowedSubs);
         });
     }
+
+    @Test
+    public void advancedSearchReturnsValidDto() throws Exception {
+        when(userService.findUserById(anyString())).thenReturn(someUser());
+        QuestionWithAnswersCountListDto result = questionController.elasticSearch("\"tags:javascript prototype\"", 0, 10).getBody();
+
+        assertThat(result.getTotalNumber(), is(1L));
+        QuestionWithAnswersCountDto foundQuestion = result.getQuestions().get(0);
+        assertThat(foundQuestion.getAnswersCount(), is(3));
+        assertThat(foundQuestion.getTags().length, is(3));
+        assertThat(foundQuestion.getQuestionId(), is("4u_5r"));
+        assertThat(foundQuestion.getCreatedAt(), is(Instant.parse("2017-05-31T09:18:00.360Z")));
+    }
+
+    @Test
+    public void advancedSearchReturnsValidDtoWithEmptyTagsAndAnswersArrays() throws Exception {
+        when(userService.findUserById(anyString())).thenReturn(someUser());
+
+        QuestionWithAnswersCountListDto result = questionController.elasticSearch("Elixir", 0, 10).getBody();
+
+        assertThat(result.getTotalNumber(), is(1L));
+        QuestionWithAnswersCountDto foundQuestion = result.getQuestions().get(0);
+        assertThat(foundQuestion.getAnswersCount(), is(0));
+        assertThat(foundQuestion.getTags().length, is(0));
+        assertThat(foundQuestion.getQuestionId(), is("6u_6r"));
+    }
+
+    @Test
+    public void advancedSearchReturnsValidDtoWithoutTags() throws Exception {
+        when(userService.findUserById(anyString())).thenReturn(someUser());
+
+        QuestionWithAnswersCountListDto result = questionController.elasticSearch("title: JsonMappingException", 0, 10).getBody();
+
+        assertThat(result.getTotalNumber(), is(1L));
+        QuestionWithAnswersCountDto foundQuestion = result.getQuestions().get(0);
+        assertNull(foundQuestion.getTags());
+        assertThat(foundQuestion.getQuestionId(), is("1u_1r"));
+    }
+
+    @Test
+    public void advancedSearchReturnsDtoWithEmptyQueryWithPaging() throws Exception {
+        when(userService.findUserById(anyString())).thenReturn(someUser());
+
+        QuestionWithAnswersCountListDto result = questionController.elasticSearch("", 1, 2).getBody();
+
+        List<QuestionWithAnswersCountDto> foundQuestions = result.getQuestions();
+        assertThat(result.getTotalNumber(), is(6L));
+        assertThat(result.getQuestions().size(), is(2));
+        assertThat(foundQuestions.get(0).getQuestionId(), is("1u_2r"));
+        assertThat(foundQuestions.get(1).getQuestionId(), is("6u_6r"));
+    }
+
 }

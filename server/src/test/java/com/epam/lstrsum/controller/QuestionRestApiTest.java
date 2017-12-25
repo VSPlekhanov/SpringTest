@@ -211,27 +211,6 @@ public class QuestionRestApiTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void smartSearchSuccessful() throws Exception {
-        String uri = String.format("/api/question/smartSearch?query=%s&page=%d&size=%d", someString(), 0, 2);
-        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);
-
-        assertThat(restTemplate.exchange(uri, HttpMethod.GET, null, Object.class))
-                .satisfies(AssertionUtils::hasStatusOk);
-    }
-
-    @Test
-    public void smartSearchWithAllowedSubThrowException() throws Exception {
-        String uri = String.format("/api/question/smartSearch?query=%s&page=%d&size=%d", someString(), 0, 2);
-        when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(false);
-        when(userRuntimeRequestComponent.getEmail()).thenReturn(someString());
-
-        ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.GET, null, String.class);
-
-        assertThat(result)
-                .satisfies(AssertionUtils::hasStatusInternalServerError);
-    }
-
-    @Test
     public void countSearchResult() {
         String uri = String.format("/api/question/search/count?query=%s", "postman");
         when(userRuntimeRequestComponent.isInDistributionList()).thenReturn(true);

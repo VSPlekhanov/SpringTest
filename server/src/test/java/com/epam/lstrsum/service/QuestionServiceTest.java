@@ -151,11 +151,6 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
     }
 
     @Test
-    public void smartSearch() {
-        assertThat(questionService.smartSearch("one", someInt(), someInt())).isNotNull();
-    }
-
-    @Test
     public void getTextSearchResultsCountCorrect() {
         long expected = questionRepository.getTextSearchResultsCount(SEARCH_PHRASE);
         Long actual = questionService.getTextSearchResultsCount(SEARCH_PHRASE);
