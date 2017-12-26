@@ -66,9 +66,9 @@ public class UserRuntimeQuestionComponentTest {
 
     @Test
     public void getEmailUnsecuredConnection() {
-        when(userService.findUserByEmailIfExist("John_Doe@epam.com")).thenReturn(Optional.of(userActive()));
+        when(userService.findUserByEmailIfExist("john_doe@epam.com")).thenReturn(Optional.of(userActive()));
         String actual = userRuntimeRequestComponent.getEmail();
-        assertEquals("John_Doe@epam.com", actual);
+        assertEquals("john_doe@epam.com", actual);
     }
 
     private EpamEmployeePrincipal epamEmployeePrincipal() {

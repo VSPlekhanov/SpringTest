@@ -109,6 +109,7 @@ public class EmailParser {
                 .filter(e -> !e.equalsIgnoreCase(distributionList))
                 .flatMap(email -> exchangeServiceHelper.resolveGroup(email).stream())
                 .filter(e -> !e.equalsIgnoreCase(fromAddress))
+                .map(String::toLowerCase)
                 .collect(Collectors.toList());
     }
 

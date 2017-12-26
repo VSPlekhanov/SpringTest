@@ -74,7 +74,7 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
 
     private String getEmailFromMap(Map<String, Object> map) {
         return Optional.ofNullable(map.get(EpamEmployeePrincipal.EMAIL))
-                .map(o -> (String) o)
+                .map(o -> (String) o).map(String::toLowerCase)
                 .orElseThrow(() -> new IllegalArgumentException(messagesHelper.get("validation.security.wrong-map-format")));
     }
 

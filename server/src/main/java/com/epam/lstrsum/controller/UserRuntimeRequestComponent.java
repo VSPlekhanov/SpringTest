@@ -27,7 +27,7 @@ public class UserRuntimeRequestComponent {
     private UserService userService;
 
     public String getEmail() {
-        return getPrincipal().getEmail();
+        return getPrincipal().getEmail().toLowerCase();
     }
 
     public boolean isInDistributionList() {
@@ -42,7 +42,7 @@ public class UserRuntimeRequestComponent {
                 .orElseGet(() -> {
                     log.warn("Unsecured invocation detected");
                     return EpamEmployeePrincipal.builder()
-                            .email("John_Doe@epam.com")
+                            .email("john_doe@epam.com")
                             .userInDistributionList(true)
                             .build();
                 });
