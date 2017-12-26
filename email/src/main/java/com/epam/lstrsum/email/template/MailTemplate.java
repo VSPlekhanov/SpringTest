@@ -2,6 +2,7 @@ package com.epam.lstrsum.email.template;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.util.Collection;
 
 /**
  * Implement this interface to determine the way of
@@ -13,5 +14,5 @@ import javax.mail.internet.MimeMessage;
  * @param <T> Source for building MimeMessage
  */
 public interface MailTemplate<T> {
-    MimeMessage buildMailMessage(T source, boolean fromPortal) throws MessagingException;
+    Collection<MimeMessage> buildMailMessages(T source, boolean fromPortal) throws MessagingException;
 }

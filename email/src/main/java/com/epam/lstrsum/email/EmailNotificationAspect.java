@@ -43,7 +43,7 @@ public class EmailNotificationAspect {
                     .findFirst()
                     .orElseThrow(() -> new NoMailTemplateFoundException("Can not found template bean of type: " + templateClass));
 
-            mailService.sendMessage(template.buildMailMessage(proceed, annotation.fromPortal()));
+            mailService.sendMessages(template.buildMailMessages(proceed, annotation.fromPortal()));
         } catch (Exception e) {
             log.error("Error sending email notification. {}", e.getMessage());
         }

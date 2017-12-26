@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+    <a th:text="${authorFirstName}"></a>
+    <a th:text="${authorLastName}"></a>
+    <a> has posted the following answer on your question:</a>
+    <br></br>
+    <a th:text="${messageText}"></a>
+    <br></br>
+    <a th:href="${questionPath}">Go to answer</a>
+</body>
+</html>
