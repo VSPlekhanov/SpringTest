@@ -4,6 +4,7 @@ import javax.mail.Address;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.Collection;
 
 
 public interface MailService {
@@ -14,5 +15,5 @@ public interface MailService {
 
     void sendMessage(String subject, String text, String... to) throws MessagingException;
 
-    void sendMessage(MimeMessage mimeMessage) throws MessagingException;
+    void sendMessages(Collection<MimeMessage> mimeMessageCollection) throws MessagingException;
 }

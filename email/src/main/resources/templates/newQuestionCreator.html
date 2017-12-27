@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+    <br></br>
+    Hello!
+    <br></br>
+    You added a new question to EXP Portal!
+    <br></br>
+    <a th:text="${questionText}"></a>
+    <br></br>
+    <a>Deadline: </a><a th:datetime="${questionDeadline}"></a>
+    <br></br>
+    <a th:href="${questionPath}">Go to question</a>
+</body>
+</html>
