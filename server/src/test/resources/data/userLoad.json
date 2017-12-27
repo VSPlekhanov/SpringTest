@@ -3,7 +3,7 @@
     "_id": "1u",
     "firstName": "John",
     "lastName": "Doe",
-    "email": "John_Doe@epam.com",
+    "email": "john_doe@epam.com",
     "roles": [
       "ROLE_EXTENDED_USER",
       "ROLE_ADMIN"
@@ -17,7 +17,7 @@
     "_id": "2u",
     "firstName": "Bob",
     "lastName": "Hoplins",
-    "email": "Bob_Hoplins@epam.com",
+    "email": "bob_hoplins@epam.com",
     "roles": [
       "ROLE_EXTENDED_USER"
     ],
@@ -30,7 +30,7 @@
     "_id": "3u",
     "firstName": "Tyler",
     "lastName": "Greeds",
-    "email": "Tyler_Greeds@epam.com",
+    "email": "tyler_greeds@epam.com",
     "roles": [
       "ROLE_EXTENDED_USER",
       "ROLE_ADMIN"
@@ -44,7 +44,7 @@
     "_id": "4u",
     "firstName": "Donald",
     "lastName": "Gardner",
-    "email": "Donald_Gardner@epam.com",
+    "email": "donald_gardner@epam.com",
     "roles": [
       "ROLE_NOT_ALLOWED_USER"
     ],
@@ -57,7 +57,7 @@
     "_id": "5u",
     "firstName": "Ernest",
     "lastName": "Hemingway",
-    "email": "Ernest_Hemingway@epam.com",
+    "email": "ernest_hemingway@epam.com",
     "roles": [
       "ROLE_SIMPLE_USER"
     ],
@@ -70,7 +70,7 @@
     "_id": "6u",
     "firstName": "Steven",
     "lastName": "Tyler",
-    "email": "Steven_Tyler@epam.com",
+    "email": "steven_tyler@epam.com",
     "roles": [
       "ROLE_SIMPLE_USER"
     ],
@@ -83,7 +83,7 @@
     "_id": "7u",
     "firstName": "Tyler",
     "lastName": "Derden",
-    "email": "Tyler_Derden@mylo.com",
+    "email": "tyler_derden@mylo.com",
     "roles": [
       "ROLE_EXTENDED_USER"
     ],

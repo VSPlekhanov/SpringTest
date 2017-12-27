@@ -41,7 +41,7 @@ public class SubscriptionControllerTest extends SetUpDataBaseCollections {
 
     @Test
     public void unsubscribeFromAllowedSubTest() {
-        unsubscribeTest("6u_6r", "tyler_greeds@epam.com", false);
+        unsubscribeTest("6u_6r", "Tyler_Greeds@epam.com", false);
     }
 
     private void subscribeTest(String questionId, String userEmail, boolean isInDistributionList) {

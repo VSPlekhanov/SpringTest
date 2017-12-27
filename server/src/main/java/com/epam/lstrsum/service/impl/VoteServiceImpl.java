@@ -77,7 +77,7 @@ public class VoteServiceImpl implements VoteService {
     }
 
     private boolean isUserAllowedSubOnQuestion(Question question, String userEmail) {
-        return question.getAllowedSubs().stream().map(User::getEmail).filter(e -> e.equals(userEmail)).count() == 1;
+        return question.getAllowedSubs().stream().map(User::getEmail).map(String::toLowerCase).filter(e -> e.equals(userEmail)).count() == 1;
     }
 
 }

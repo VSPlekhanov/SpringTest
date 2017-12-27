@@ -91,6 +91,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 notifyAllowedSubs ? question.getAllowedSubs().stream() : Stream.empty(),
                 notifyDL ? userService.findAllActive().stream() : Stream.empty())
             .map(User::getEmail)
+            .map(String::toLowerCase)
             .filter(e -> !e.equalsIgnoreCase(fromAddress))
             .collect(Collectors.toSet());
     }
@@ -110,7 +111,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     private boolean isUserAllowedSubOnQuestion(Question question, String userEmail) {
-        return question.getAllowedSubs().stream().map(User::getEmail).anyMatch(email -> email.equals(userEmail));
+        return question.getAllowedSubs().stream().map(User::getEmail).map(String::toLowerCase).anyMatch(email -> email.equals(userEmail));
     }
 
     @Override

@@ -75,6 +75,7 @@ public class MailReceiverImpl implements MailReceiver {
                     .filter(a -> a instanceof InternetAddress)
                     .map(a -> (InternetAddress) a)
                     .map(InternetAddress::getAddress)
+                    .map(String::toLowerCase)
                     .collect(Collectors.toSet());
         } catch (MessagingException e) {
             return Collections.emptySet();

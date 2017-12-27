@@ -97,7 +97,8 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public List<QuestionAllFieldsDto> searchWithAllowedSub(String searchQuery, Integer page, Integer size, String email) {
+    public List<QuestionAllFieldsDto> searchWithAllowedSub(String searchQuery, Integer page, Integer size, String email)
+    {
         Optional<User> user = userService.findUserByEmailIfExist(email);
         return user.map(u -> {
             List<Question> questionList = questionRepository.findAllByAllowedSubsContains(u,

@@ -64,7 +64,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     private boolean questionExistAndUserAllowedSubOnIt(Question question, String userEmail) {
-        return !isNull(question) && question.getAllowedSubs().stream().map(User::getEmail).filter(e -> e.equals(userEmail)).count() == 1;
+        return !isNull(question) && question.getAllowedSubs().stream().map(User::getEmail).map(String::toLowerCase).filter(e -> e.equals(userEmail)).count() == 1;
     }
 
     @Override
