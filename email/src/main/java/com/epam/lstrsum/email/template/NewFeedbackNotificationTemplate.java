@@ -16,6 +16,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,7 +33,13 @@ public class NewFeedbackNotificationTemplate implements MailTemplate<FeedbackAll
     private List<String> toAddresses;
 
     @Override
-    public MimeMessage buildMailMessage(FeedbackAllFieldsDto source, boolean fromPortal) throws MessagingException {
+    public Collection<MimeMessage> buildMailMessages(FeedbackAllFieldsDto source, boolean fromPortal) throws MessagingException {
+        List<MimeMessage> mimeMessageCollection = new LinkedList<>();
+        mimeMessageCollection.add(buildMimeMessage(source, fromPortal));
+        return mimeMessageCollection;
+    }
+
+    private MimeMessage buildMimeMessage(FeedbackAllFieldsDto source, boolean fromPortal) throws MessagingException {
         MimeMessage mimeMessage = new MimeMessage((Session) null);
 
         mimeMessage.setFrom(new InternetAddress(fromAddress));
