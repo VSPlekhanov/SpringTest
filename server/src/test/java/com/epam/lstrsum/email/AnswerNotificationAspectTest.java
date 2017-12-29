@@ -16,14 +16,22 @@ import org.springframework.test.context.ActiveProfiles;
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.someLong;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someString;
+import static org.hamcrest.collection.IsArrayContainingInAnyOrder.arrayContainingInAnyOrder;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @SuppressWarnings("unchecked")
 @ActiveProfiles("email")
@@ -110,7 +118,7 @@ public class AnswerNotificationAspectTest extends SetUpDataBaseCollections {
 
             Address[] expectedSubscriberRecipients = {new InternetAddress("Tyler_Greeds@epam.com"),
                     new InternetAddress("Bob_Hoplins@epam.com"), new InternetAddress("Donald_Gardner@epam.com")};
-            assertThat(actualSubscriberMimeMessage.getAllRecipients(), equalTo(expectedSubscriberRecipients));
+            assertThat(actualSubscriberMimeMessage.getAllRecipients(), arrayContainingInAnyOrder(expectedSubscriberRecipients));
             assertThat(actualSubscriberMimeMessage.getSubject(),
                     equalTo("[EPAM Experience Portal] A new answer has been added to the question > "
                             + questionPostDto.getTitle()));
@@ -201,7 +209,7 @@ public class AnswerNotificationAspectTest extends SetUpDataBaseCollections {
 
             Address[] expectedRecipients = {new InternetAddress("Tyler_Greeds@epam.com"),
                     new InternetAddress("Bob_Hoplins@epam.com"), new InternetAddress("Donald_Gardner@epam.com")};
-            assertThat(actualSubscriberMimeMessage.getAllRecipients(), equalTo(expectedRecipients));
+            assertThat(actualSubscriberMimeMessage.getAllRecipients(), arrayContainingInAnyOrder(expectedRecipients));
             assertThat(actualSubscriberMimeMessage.getSubject(),
                     equalTo("[EPAM Experience Portal] A new answer has been added to the question > "
                             + questionWithoutSubs.getTitle()));
