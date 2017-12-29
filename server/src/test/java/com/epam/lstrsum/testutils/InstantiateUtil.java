@@ -3,21 +3,15 @@ package com.epam.lstrsum.testutils;
 import com.epam.lstrsum.dto.answer.AnswerBaseDto;
 import com.epam.lstrsum.dto.answer.AnswerPostDto;
 import com.epam.lstrsum.dto.attachment.AttachmentAllFieldsDto;
-import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
-import com.epam.lstrsum.dto.question.QuestionAppearanceDto;
-import com.epam.lstrsum.dto.question.QuestionBaseDto;
-import com.epam.lstrsum.dto.question.QuestionPostDto;
-import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
+import com.epam.lstrsum.dto.feedback.FeedbackAllFieldsDto;
+import com.epam.lstrsum.dto.feedback.FeedbackPostDto;
+import com.epam.lstrsum.dto.question.*;
 import com.epam.lstrsum.dto.user.UserBaseDto;
 import com.epam.lstrsum.dto.user.telescope.TelescopeDataDto;
 import com.epam.lstrsum.dto.user.telescope.TelescopeEmployeeEntityDto;
 import com.epam.lstrsum.dto.user.telescope.TelescopeProfileDto;
 import com.epam.lstrsum.enums.UserRoleType;
-import com.epam.lstrsum.model.Answer;
-import com.epam.lstrsum.model.Attachment;
-import com.epam.lstrsum.model.Question;
-import com.epam.lstrsum.model.User;
-import com.epam.lstrsum.model.Vote;
+import com.epam.lstrsum.model.*;
 import com.epam.lstrsum.security.EpamEmployeePrincipal;
 import com.google.common.collect.ImmutableMap;
 import io.github.benas.randombeans.EnhancedRandomBuilder;
@@ -29,7 +23,10 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.*;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.utils.FunctionalUtil.getList;
@@ -185,8 +182,16 @@ public class InstantiateUtil {
         return random.nextObject(QuestionAllFieldsDto.class);
     }
 
+    public static FeedbackAllFieldsDto someFeedbackAllFieldsDto() {
+        return random.nextObject(FeedbackAllFieldsDto.class);
+    }
+
     public static QuestionPostDto someQuestionPostDto() {
         return random.nextObject(QuestionPostDto.class);
+    }
+
+    public static FeedbackPostDto someFeedbackPostDto() {
+        return random.nextObject(FeedbackPostDto.class);
     }
 
     public static QuestionPostDto someQuestionPostDtoWithAllowedSubs(List<String> emails) {
@@ -291,5 +296,16 @@ public class InstantiateUtil {
 
     public static MockMultipartFile someMockMultipartFile() {
         return new MockMultipartFile(someString(), someString(), someString(), new byte[5]);
+    }
+
+    public static MockMultipartFile[] someMockMultipartFiles() {
+        int total = random.nextInt(16);
+
+        MockMultipartFile[] mockMultipartFiles = new MockMultipartFile[total];
+        for (int i = 0; i < mockMultipartFiles.length; i++) {
+            mockMultipartFiles[i] = someMockMultipartFile();
+        }
+
+        return mockMultipartFiles;
     }
 }

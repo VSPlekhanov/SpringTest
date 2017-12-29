@@ -146,7 +146,7 @@ public class QuestionServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void searchWithAllowedSubReturnsEmptyListForNotExesyUser() {
-       assertThat(questionService.searchWithAllowedSub(SEARCH_PHRASE, START_PAGE, null, SOME_NOT_USER_EMAIL))
+        assertThat(questionService.searchWithAllowedSub(SEARCH_PHRASE, START_PAGE, null, SOME_NOT_USER_EMAIL))
                 .hasSize(0);
     }
 

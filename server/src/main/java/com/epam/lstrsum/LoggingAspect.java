@@ -19,12 +19,12 @@ import java.util.ArrayList;
 public class LoggingAspect {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    @Around("execution(* com.epam.lstrsum.controller..*(..)) && ! execution(* com.epam.lstrsum.controller.QuestionController.addQuestion(..))")
+    @Around("execution(* com.epam.lstrsum.controller..*(..)) && ! execution(* com.epam.lstrsum.controller.QuestionController.addQuestion(..)) && ! execution(* com.epam.lstrsum.controller.FeedbackController.sendFeedback(..))")
     public Object logMethodExecution(ProceedingJoinPoint joinPoint) throws Throwable {
         return logMethod(joinPoint, 0);
     }
 
-    @Around("execution(* com.epam.lstrsum.controller.QuestionController.addQuestion(..))")
+    @Around("execution(* com.epam.lstrsum.controller.QuestionController.addQuestion(..)) || execution(* com.epam.lstrsum.controller.FeedbackController.sendFeedback(..))")
     public Object logMethodExecutionMultipartFile(ProceedingJoinPoint joinPoint) throws Throwable {
         return logMethod(joinPoint, 1);
     }
