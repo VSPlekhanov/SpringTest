@@ -34,7 +34,7 @@ public class SubscriptionController {
 
     @PutMapping("/unsubscribe/{questionId}")
     public ResponseEntity unSubscribe(@PathVariable @NotEmptyString String questionId) {
-        String email = userRuntimeRequestComponent.getEmail();
+        String email = userRuntimeRequestComponent.getEmail().toLowerCase();
         boolean successSubscribe = currentUserInDistributionList() ?
                 subscriptionService.unsubscribeForQuestionByUser(questionId, email) :
                 subscriptionService.unsubscribeForQuestionByAllowedSub(questionId, email);

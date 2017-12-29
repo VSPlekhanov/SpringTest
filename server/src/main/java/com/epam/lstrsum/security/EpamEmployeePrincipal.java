@@ -33,7 +33,7 @@ public class EpamEmployeePrincipal implements Principal, Serializable {
 
         final String userId = validateAndGetByKey(map, USER_ID);
         final String displayName = validateAndGetByKey(map, UNIQUE_NAME);
-        final String email = validateAndGetByKey(map, EMAIL);
+        final String email = validateAndGetByKey(map, EMAIL).toLowerCase();
 
         final Boolean isDistributionListUser = Optional.ofNullable(map.get(DISTRIBUTION_LIST_USER))
                 .map(value -> {

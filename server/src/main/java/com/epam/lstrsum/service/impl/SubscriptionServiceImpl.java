@@ -110,7 +110,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     private boolean isUserAllowedSubOnQuestion(Question question, String userEmail) {
-        return question.getAllowedSubs().stream().map(User::getEmail).anyMatch(email -> email.equals(userEmail));
+        return question.getAllowedSubs().stream().map(User::getEmail).anyMatch(email -> email.equalsIgnoreCase(userEmail));
     }
 
     @Override

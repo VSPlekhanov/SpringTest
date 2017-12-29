@@ -31,7 +31,7 @@ public class SubscriptionControllerTest extends SetUpDataBaseCollections {
 
     @Test
     public void unsubscribeFromDlTest() {
-        unsubscribeTest("6u_6r", "John_Doe@epam.com", false);
+        unsubscribeTest("6u_6r", "john_doe@epam.com", false);
     }
 
     @Test

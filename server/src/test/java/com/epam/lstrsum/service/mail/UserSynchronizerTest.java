@@ -52,8 +52,8 @@ public class UserSynchronizerTest extends SetUpDataBaseCollections {
 
     @Test
     public void synchronizeUsers() throws Exception {
-        final String bobHoplins = "Bob_Hoplins@epam.com";
-        final String johnDoe = "John_Doe@epam.com";
+        final String bobHoplins = "bob_hoplins@epam.com";
+        final String johnDoe = "john_doe@epam.com";
 
         doReturn(someTelescopeEmployeeEntityDtosWithEmails(Arrays.asList(bobHoplins, johnDoe)))
                 .when(telescopeService).getUsersInfoByEmails(anySetOf(String.class));

@@ -24,8 +24,8 @@ import static org.junit.Assert.assertTrue;
 
 public class SubscriptionServiceTest extends SetUpDataBaseCollections {
 
-    private static List<String> allowedSubsList = Arrays.asList("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-            "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com");
+    private static List<String> allowedSubsList = Arrays.asList("bob_hoplins@epam.com", "tyler_greeds@epam.com",
+            "donald_gardner@epam.com", "ernest_hemingway@epam.com");
 
     @Autowired
     private SubscriptionServiceImpl subscriptionService;
@@ -117,13 +117,13 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
     @Test
     public void checkQuestionExistsAndUserHasPermissionTest() {
         ((SubscriptionServiceImpl)subscriptionService)
-                .checkQuestionExistsAndUserHasPermission("6u_6r", "Tyler_Greeds@epam.com");
+                .checkQuestionExistsAndUserHasPermission("6u_6r", "tyler_greeds@epam.com");
     }
 
     @Test
     public void subscribeForQuestionByAllowedSubSuccessTest() {
         String questionId = "6u_6r";
-        String userEmail = "Bob_Hoplins@epam.com";
+        String userEmail = "bob_hoplins@epam.com";
         User user = userService.findUserByEmailOrThrowException(userEmail);
         List<User> listBeforeUpdate = questionService.getQuestionById(questionId).getSubscribers();
         assertTrue(subscriptionService.subscribeForQuestionByAllowedSub(questionId, userEmail));
@@ -136,7 +136,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
     @Test
     public void unsubscribeForQuestionByAllowedSubSuccessTest() {
         String questionId = "6u_6r";
-        String userEmail = "Tyler_Greeds@epam.com";
+        String userEmail = "tyler_greeds@epam.com";
         User user = userService.findUserByEmailOrThrowException(userEmail);
         List<User> listBeforeUpdate = questionService.getQuestionById(questionId).getSubscribers();
         assertTrue(subscriptionService.unsubscribeForQuestionByAllowedSub(questionId, userEmail));
@@ -163,8 +163,8 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
         val question = questionService.addNewQuestion(postDto, SOME_USER_EMAIL);
         val emails = subscriptionService.getEmailsToNotifyAboutNewQuestionFromPortal(question);
 
-        assertThat(emails).containsExactlyInAnyOrder("Bob_Hoplins@epam.com", "Tyler_Greeds@epam.com",
-                "Donald_Gardner@epam.com", "Ernest_Hemingway@epam.com", "John_Doe@epam.com", "Tyler_Derden@mylo.com");
+        assertThat(emails).containsExactlyInAnyOrder("bob_hoplins@epam.com", "tyler_greeds@epam.com",
+                "donald_gardner@epam.com", "ernest_hemingway@epam.com", "john_doe@epam.com", "tyler_derden@mylo.com");
     }
 
     @Test
@@ -172,7 +172,7 @@ public class SubscriptionServiceTest extends SetUpDataBaseCollections {
         val emails = subscriptionService.getEmailsToNotifyAboutNewAnswerFromPortal("6u_6r");
 
         assertThat(emails).hasSize(2);
-        assertThat(emails).containsExactlyInAnyOrder("John_Doe@epam.com", "Tyler_Greeds@epam.com");
+        assertThat(emails).containsExactlyInAnyOrder("john_doe@epam.com", "tyler_greeds@epam.com");
     }
 
     @Test

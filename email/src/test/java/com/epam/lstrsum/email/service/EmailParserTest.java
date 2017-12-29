@@ -9,6 +9,7 @@ import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import java.util.List;
 
+import static com.epam.lstrsum.email.service.EmailParserUtil.getSender;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -64,7 +65,7 @@ public class EmailParserTest {
         messageHelper.setFrom("Eugen_Sandrov@epam.com");
         messageHelper.setTo("Roman_Karimov@epam.com");
         final String senderEmail = emailParser.getParsedMessage(normalMessage).getSender();
-        assertThat(senderEmail, is(equalTo("Eugen_Sandrov@epam.com")));
+        assertThat(senderEmail, is(equalTo("eugen_sandrov@epam.com")));
     }
 
     @Test
@@ -86,8 +87,9 @@ public class EmailParserTest {
         final List<String> emailsFromHeader = emailParser.getParsedMessage(normalMessage).getReceivers();
         assertThat(emailsFromHeader.isEmpty(), is(false));
         assertThat(emailsFromHeader.size(), is(equalTo(9)));
-        assertThat(emailsFromHeader.contains("Donald_Zakary@epam.com"), is(true));
-        assertThat(emailsFromHeader.contains("Stan_Chivs@epam.com"), is(true));
+        assertThat(getSender(normalMessage), is("eugen_sandrov@epam.com"));
+        assertThat(emailsFromHeader.contains("donald_zakary@epam.com"), is(true));
+        assertThat(emailsFromHeader.contains("stan_chivs@epam.com"), is(true));
     }
 
 

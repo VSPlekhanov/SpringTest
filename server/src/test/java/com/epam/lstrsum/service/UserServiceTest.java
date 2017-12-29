@@ -64,13 +64,13 @@ public class UserServiceTest extends SetUpDataBaseCollections {
 
         assertThat(allUsers)
                 .hasSize(7)
-                .anySatisfy(user -> assertThat(user.getEmail()).isEqualTo(SOME_USER_EMAIL));
+                .anySatisfy(user -> assertThat(user.getEmail().toLowerCase()).isEqualTo(SOME_USER_EMAIL));
     }
 
     @Test
     public void updateActiveMoreOne() {
-        final String johnDoe = "John_Doe@epam.com";
-        final String bobHoplins = "Bob_Hoplins@epam.com";
+        final String johnDoe = "john_doe@epam.com";
+        final String bobHoplins = "bob_hoplins@epam.com";
         final long actual = userService.setActiveForAllAs(Arrays.asList(johnDoe, bobHoplins), false);
 
         assertEquals(actual, 2);
@@ -216,8 +216,8 @@ public class UserServiceTest extends SetUpDataBaseCollections {
 
     @Test
     public void findAllActive() {
-        val allowedEmails = Arrays.asList("Tyler_Derden@mylo.com", "Ernest_Hemingway@epam.com", "Donald_Gardner@epam.com",
-                "Bob_Hoplins@epam.com", "John_Doe@epam.com");
+        val allowedEmails = Arrays.asList("tyler_derden@mylo.com", "ernest_hemingway@epam.com", "donald_gardner@epam.com",
+                "bob_hoplins@epam.com", "john_doe@epam.com");
 
         assertThat(userService.findAllActive())
                 .hasSize(4)
