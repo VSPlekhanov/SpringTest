@@ -75,4 +75,14 @@
         </root>
     </springProfile>
 
+    <springProfile name="qa">
+        <root level="ERROR">
+            <appender-ref ref="ROLLING-FILE-ERROR"/>
+        </root>
+        <root level="DEBUG">
+            <appender-ref ref="ROLLING-FILE-ALL"/>
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
 </configuration>
