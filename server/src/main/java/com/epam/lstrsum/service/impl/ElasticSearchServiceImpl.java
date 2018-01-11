@@ -84,7 +84,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
                                                     String[] excludeFields) throws IOException {
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
                 .query(createQuery(searchString, metaTags))
-                .from(page)
+                .from(page*size)
                 .size(size)
                 .sort("createdAt", SortOrder.DESC)
                 .highlighter(createHighlighter());
