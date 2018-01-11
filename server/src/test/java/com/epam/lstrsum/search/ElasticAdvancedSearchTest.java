@@ -266,13 +266,20 @@ public class ElasticAdvancedSearchTest {
 
     @Test
     public void searchPaging() throws Exception {
-        String result = questionController.advancedSearch("", 1, 2).getBody();
-        JsonNode nodeResult = mapper.readTree(result);
+        JsonNode page1 = mapper.readTree(questionController.advancedSearch("", 0, 2).getBody());
+        JsonNode page2 = mapper.readTree(questionController.advancedSearch("", 1, 2).getBody());
+        JsonNode page3 = mapper.readTree(questionController.advancedSearch("", 2, 2).getBody());
 
-        assertFalse(nodeResult.path("hits").isMissingNode());
-        assertThat(nodeResult.path("hits").path("hits").size(), is(2));
-        assertThat(nodeResult.path("hits").path("hits").get(0).path("_id").getTextValue(), is("1u_2r"));
-        assertThat(nodeResult.path("hits").path("hits").get(1).path("_id").getTextValue(), is("6u_6r"));
+        assertPage(page1, "2u_3r", "1u_2r");
+        assertPage(page2, "6u_6r", "4u_5r");
+        assertPage(page3, "1u_1r", "3u_4r");
+    }
+
+    private void assertPage(JsonNode page, String item1, String item2) {
+        assertFalse(page.path("hits").isMissingNode());
+        assertThat(page.path("hits").path("hits").size(), is(2));
+        assertThat(page.path("hits").path("hits").get(0).path("_id").getTextValue(), is(item1));
+        assertThat(page.path("hits").path("hits").get(1).path("_id").getTextValue(), is(item2));
     }
 
     @Test
@@ -450,13 +457,21 @@ public class ElasticAdvancedSearchTest {
     public void advancedSearchReturnsDtoWithEmptyQueryWithPaging() throws Exception {
         when(userService.findUserById(anyString())).thenReturn(someUser());
 
-        QuestionWithAnswersCountListDto result = questionController.elasticSearch("", 1, 2).getBody();
+        QuestionWithAnswersCountListDto page1 = questionController.elasticSearch("", 0, 2).getBody();
+        QuestionWithAnswersCountListDto page2 = questionController.elasticSearch("", 1, 2).getBody();
+        QuestionWithAnswersCountListDto page3 = questionController.elasticSearch("", 2, 2).getBody();
 
-        List<QuestionWithAnswersCountDto> foundQuestions = result.getQuestions();
-        assertThat(result.getTotalNumber(), is(6L));
-        assertThat(result.getQuestions().size(), is(2));
-        assertThat(foundQuestions.get(0).getQuestionId(), is("1u_2r"));
-        assertThat(foundQuestions.get(1).getQuestionId(), is("6u_6r"));
+        assertElasticSearchPages(page1, "2u_3r", "1u_2r");
+        assertElasticSearchPages(page2, "6u_6r", "4u_5r");
+        assertElasticSearchPages(page3, "1u_1r", "3u_4r");
+    }
+
+    private void assertElasticSearchPages(QuestionWithAnswersCountListDto page, String question1, String question2){
+        List<QuestionWithAnswersCountDto> foundQuestions = page.getQuestions();
+        assertThat(page.getTotalNumber(), is(6L));
+        assertThat(page.getQuestions().size(), is(2));
+        assertThat(foundQuestions.get(0).getQuestionId(), is(question1));
+        assertThat(foundQuestions.get(1).getQuestionId(), is(question2));
     }
 
 }
