@@ -169,7 +169,7 @@ public class QuestionController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<QuestionAllFieldsListDto> elasticSearch(
+    public ResponseEntity<QuestionWithAnswersCountListDto> elasticSearch(
             @RequestParam("query") String query,
             @RequestParam(value = "page", required = false, defaultValue = "-1") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "-1") Integer size) {
@@ -184,7 +184,7 @@ public class QuestionController {
         QuestionParsedQueryDto parsedQueryDto = queryService.parseQuery(query);
 
         if (parsedQueryDto.getErrorsInQuery().isEmpty()){
-            QuestionAllFieldsListDto questionAllFieldsListDto = questionService.elasticSimpleSearch(
+            QuestionWithAnswersCountListDto questionAllFieldsListDto = questionService.advancedSearchGetDto(
                             parsedQueryDto.getQueryForSearch(),
                             parsedQueryDto.getQueryStringsWithMetaTags(),
                             page,
@@ -193,18 +193,6 @@ public class QuestionController {
         } else {
             return ResponseEntity.ok(null);
         }
-    }
-
-    @Deprecated
-    @GetMapping("/smartSearch")
-    public ResponseEntity<String> smartSearch(
-            @RequestParam("query") String query,
-            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "0") Integer size) {
-        String searchResult = currentUserInDistributionList() ?
-                questionService.smartSearch(query, page, size) :
-                questionService.smartSearchWithAllowedSub(query, page, size, userRuntimeRequestComponent.getEmail());
-        return ResponseEntity.ok(searchResult);
     }
 
     @Deprecated
@@ -224,7 +212,7 @@ public class QuestionController {
         QuestionParsedQueryDto parsedQueryDto = queryService.parseQuery(query);
 
         if (parsedQueryDto.getErrorsInQuery().isEmpty()){
-            String resultValue = questionService.advancedSearch(
+            String resultValue = questionService.advancedSearchGetString(
                     parsedQueryDto.getQueryForSearch(),
                     parsedQueryDto.getQueryStringsWithMetaTags(),
                     page,

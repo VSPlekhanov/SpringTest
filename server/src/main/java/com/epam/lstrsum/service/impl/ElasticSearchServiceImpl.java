@@ -2,20 +2,18 @@ package com.epam.lstrsum.service.impl;
 
 import com.epam.lstrsum.controller.UserRuntimeRequestComponent;
 import com.epam.lstrsum.converter.UserDtoMapper;
-import com.epam.lstrsum.dto.question.QuestionAllFieldsDto;
-import com.epam.lstrsum.dto.question.QuestionAllFieldsListDto;
+import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
+import com.epam.lstrsum.dto.question.QuestionWithAnswersCountListDto;
 import com.epam.lstrsum.model.Question;
+import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.UserRepository;
 import com.epam.lstrsum.service.ElasticSearchService;
+import com.epam.lstrsum.service.UserService;
 import com.epam.lstrsum.utils.MessagesHelper;
-import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.entity.ContentType;
-import org.apache.http.nio.entity.NStringEntity;
-import org.apache.http.util.EntityUtils;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RestClient;
@@ -39,8 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static java.lang.String.valueOf;
 
 @Service
 @Slf4j
@@ -71,86 +67,67 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     private UserRepository userRepository;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private UserDtoMapper userMapper;
 
     @Setter
     private List<String> validMetaTags;
 
+
+    private SearchResponse getElasticSearchResponse(String searchString,
+                                                    List<String> metaTags,
+                                                    Integer page,
+                                                    Integer size,
+                                                    String[] includeFields,
+                                                    String[] excludeFields) throws IOException {
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
+                .query(createQuery(searchString, metaTags))
+                .from(page)
+                .size(size)
+                .sort("createdAt", SortOrder.DESC)
+                .highlighter(createHighlighter());
+        searchSourceBuilder.fetchSource(includeFields, excludeFields);
+        SearchRequest searchRequest = new SearchRequest(index)
+                .types(Question.QUESTION_COLLECTION_NAME)
+                .source(searchSourceBuilder);
+        return restHighLevelClient.search(searchRequest);
+    }
+
     @Override
-    public QuestionAllFieldsListDto elasticSimpleSearch(String searchString, List<String> metaTags, Integer page, Integer size) {
-        List<QuestionAllFieldsDto> result = new ArrayList<>();
+    public QuestionWithAnswersCountListDto advancedSearchGetDto(String searchString, List<String> metaTags, Integer page, Integer size) {
+        List<QuestionWithAnswersCountDto> result = new ArrayList<>();
+        long totalCount = 0L;
 
         try {
-            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
-                    .query(createQuery(searchString, metaTags))
-                    .from(page)
-                    .size(size)
-                    .sort("createdAt", SortOrder.DESC)
-                    .highlighter(createHighlighter());
-
-            String[] includeFields = new String[]{"title", "createdAt", "authorId"};
-            String[] excludeFields = new String[]{""};
-            searchSourceBuilder.fetchSource(includeFields, excludeFields);
-
-            SearchRequest searchRequest = new SearchRequest(index)
-                    .types(Question.QUESTION_COLLECTION_NAME)
-                    .source(searchSourceBuilder);
-
-            SearchResponse searchResponse = restHighLevelClient.search(searchRequest);
+            SearchResponse searchResponse = getElasticSearchResponse(
+                    searchString,
+                    metaTags,
+                    page,
+                    size,
+                    new String[]{"title", "createdAt", "authorId", "tags", "answers"},
+                    new String[]{""}
+                    );
             SearchHits hits = searchResponse.getHits();
-            Arrays.stream(hits.getHits()).forEach(h -> result.add(hitToDto(h)));
+            totalCount = hits.getTotalHits();
+            Arrays.stream(hits.getHits()).forEach(h -> result.add(hitToDtoWithAnswersCount(h)));
         } catch (IOException e) {
-            log.warn("elasticSimpleSearch_Can't perform request to ES, with error {}", e.getMessage());
+            log.warn("advancedSearchGetDto_Can't perform request to ES, with error {}", e.getMessage());
         }
-        return new QuestionAllFieldsListDto((long) result.size(), result);
-    }
-
-    public String smartSearch(String searchQuery, int page, int size) {
-        final ImmutableMap<String, String> params = new ImmutableMap.Builder<String, String>()
-                .put("pretty", "true")
-                .put("size", valueOf(size))
-                .put("from", valueOf(page * size))
-                .build();
-
-
-        try {
-            return EntityUtils.toString(
-                    restClient.performRequest(
-                            "GET", String.format(ENDPOINT, index), params,
-                            new NStringEntity(String.format(QUESTION_SEARCH, searchQuery), ContentType.APPLICATION_JSON)
-                    ).getEntity());
-        } catch (IOException e) {
-            log.warn("Can't perform request to ES, with error {}", e.getMessage());
-        }
-        return "";
-    }
-
-    // TODO: 10/20/2017 Create a smart search only in questions on which the user is allowed sub
-    @Override
-    public String smartSearchWithAllowedSub(String searchQuery, int page, int size, String email) {
-        throw new UnsupportedOperationException(messagesHelper.get("validation.service.unsupported-method-yet"));
+        return new QuestionWithAnswersCountListDto(totalCount, result);
     }
 
     @Deprecated
     @Override
-    public String advancedSearch(String searchString, List<String> metaTags, Integer page, Integer size) {
+    public String advancedSearchGetString(String searchString, List<String> metaTags, Integer page, Integer size) {
         try {
-            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
-                    .query(createQuery(searchString, metaTags))
-                    .from(page)
-                    .size(size)
-                    .sort("createdAt", SortOrder.DESC)
-                    .highlighter(createHighlighter());
-            SearchRequest searchRequest = new SearchRequest(index)
-                    .types(Question.QUESTION_COLLECTION_NAME)
-                    .source(searchSourceBuilder);
-            SearchResponse searchResponse = restHighLevelClient.search(searchRequest);
+            SearchResponse searchResponse = getElasticSearchResponse(searchString, metaTags, page, size, null, null);
             return searchResponse.toString();
         } catch (IOException e){
             log.warn("Can't perform request to ES, with error {}", e.getMessage());
         }
         return "";
-
     }
 
     private BoolQueryBuilder createQuery(String searchString, List<String> metaTags){
@@ -207,23 +184,49 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     }
 
     @SneakyThrows
-    private QuestionAllFieldsDto hitToDto(SearchHit hit) {
+    private QuestionWithAnswersCountDto hitToDtoWithAnswersCount(SearchHit hit) {
         Map<String, Object> map = hit.getSource();
 
-        QuestionAllFieldsDto questionAllFieldsDto = new QuestionAllFieldsDto();
-        questionAllFieldsDto.setQuestionId(hit.getId());
-        questionAllFieldsDto.setTitle((String) map.get("title"));
+        QuestionWithAnswersCountDto questionDto = new QuestionWithAnswersCountDto();
+        String questionId = hit.getId();
+        questionDto.setQuestionId(questionId);
+        questionDto.setTitle((String) map.get("title"));
 
-        String value = (String) map.get("authorId");
-        Matcher m = dbRefPattern.matcher(value);
-        m.matches();
-        value = m.group(1);
-        questionAllFieldsDto.setAuthor(userMapper.modelToBaseDto(userRepository.findByUserId(value).get()));
+        String authorId = (String) map.get("authorId");
+        Matcher m = dbRefPattern.matcher(authorId);
+        if (m.matches()) {
+            User user = userService.findUserById(m.group(1));
+            questionDto.setAuthor(userMapper.modelToBaseDto(user));
+        }
+        String createdAt = (String) map.get("createdAt");
+        createdAt = createdAt.substring(0, createdAt.length() - 3);
+        questionDto.setCreatedAt(new SimpleDateFormat(elsticDateTimePattern).parse(createdAt).toInstant()); // "2017-11-15T08:49:28.106000" -> "2017-11-15T08:49:28.106"
 
-        value = (String) map.get("createdAt");
-        value = value.substring(0, value.length() - 3); // "2017-11-15T08:49:28.106000" -> "2017-11-15T08:49:28.106"
-        questionAllFieldsDto.setCreatedAt(new SimpleDateFormat(elsticDateTimePattern).parse(value).toInstant());
+        List list = getFieldFromSearchHit(map, "tags", questionId);
+        if (list != null) {
+            List<String> tags = (List<String>)list;
+            questionDto.setTags(tags.toArray(new String[tags.size()]));
+        }
 
-        return questionAllFieldsDto;
+        list = getFieldFromSearchHit(map, "answers", questionId);
+        questionDto.setAnswersCount(list != null ? list.size() : 0);
+
+        return questionDto;
+    }
+
+    private List getFieldFromSearchHit(Map<String, Object> map, String key, String id){
+        List result = null;
+
+        Object object = map.get(key);
+        if (object == null) {
+            log.error("ElasticSearch response includes question (id = {}) without {} field.", id, key);
+        } else {
+            if (object instanceof List<?>) {
+                result = (List) object;
+            } else {
+                log.error("ElasticSearch response includes question (id = {}) with {} in undefined structure.", id, key);
+            }
+        }
+        return result;
     }
 }
