@@ -4,15 +4,13 @@ package com.epam.lstrsum.email.service;
 import com.epam.lstrsum.dto.attachment.AttachmentAllFieldsDto;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.email.exception.EmailValidationException;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import com.epam.lstrsum.email.template.MailTemplate;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -51,13 +49,35 @@ public class EmailParser {
     @Value("${spring.mail.username}")
     private String fromAddress;
 
+    @Autowired
+    @Setter
+    private MailService mailService;
+
+    @Autowired
+    @Setter
+    private MailTemplate<List> newErrorNotificationTemplate;
+
+    @Value("${email.max-attachments-number}")
+    @Setter
+    private int maxAttachmentsNumber;
+
+    @Value("${email.max-text-size}")
+    @Setter
+    private int maxTextSize;
+
+    @Value("${email.max-attachment-size}")
+    @Setter
+    private int maxAttachmentSize;
+
     public EmailForExperienceApplication getParsedMessage(@NonNull MimeMessage message) throws Exception {
+        List<String> errorsOccurred = new ArrayList<>();
 
         String title = message.getSubject();
         validateNotEmptyString(title);
 
         final String sender = getSender(message);
         log.debug("Sender's email address: {}", sender);
+        errorsOccurred.add(sender);
 
         final MimeMessageParser messageParser = new MimeMessageParser(message);
         messageParser.parse();
@@ -68,15 +88,35 @@ public class EmailParser {
         List<String> keys = new ArrayList<>();
         List<DataSource> inlineSources = new ArrayList<>();
 
+        boolean textExceededSize = false;
+
         if (isQuestion(replyTo)) {
             log.debug("Received email is question");
             if (messageParser.hasPlainContent()) {
                 questionText = messageParser.getPlainContent();
+
+                String errorMessage = validateTextSize(questionText.length());
+
+                textExceededSize = errorMessage != null;
+
+                if (errorMessage != null) {
+                    errorsOccurred.add(errorMessage);
+                }
+
+
                 validateQuestion(questionText);
 
             } else if (messageParser.hasHtmlContent()) {
                 questionText = messageParser.getHtmlContent();
                 validateQuestion(questionText);
+
+                String errorMessage = validateTextSize(questionText.length());
+
+                textExceededSize = errorMessage != null;
+
+                if (errorMessage != null) {
+                    errorsOccurred.add(errorMessage);
+                }
 
                 keys.addAll(evalKeysForInlining(questionText));
                 inlineSources.addAll(evalInlineSources(messageParser, questionText));
@@ -94,9 +134,34 @@ public class EmailParser {
         List<DataSource> attachmentListWithoutInline = messageParser.getAttachmentList();
         attachmentListWithoutInline.removeAll(inlineSources);
 
+        List<DataSource> parsedAttachmentsWithoutInline = parseAttachmentsWithoutInline(attachmentListWithoutInline);
+
+        if (parsedAttachmentsWithoutInline.size() != attachmentListWithoutInline.size()) {
+            String errorMessage = "Some attachments exceeded size limit - " + maxAttachmentSize + "MB";
+            log.warn(errorMessage);
+            errorsOccurred.add(errorMessage);
+        }
+
+        if (parsedAttachmentsWithoutInline.size() > maxAttachmentsNumber) {
+            String errorMessage = "Number of attachments exceeded limit - " + maxAttachmentsNumber + ", extra attachments were ignored";
+            log.warn(errorMessage);
+            errorsOccurred.add(errorMessage);
+            parsedAttachmentsWithoutInline = parsedAttachmentsWithoutInline.subList(0,10);
+        }
+
+        errorsOccurred.add("The question was" + (textExceededSize ? "n't" : "") + " created!");
+
+        if (errorsOccurred.size() > 2) {
+            mailService.sendMessages(newErrorNotificationTemplate.buildMailMessages(errorsOccurred, false));
+        }
+
+        if (textExceededSize) {
+            throw new EmailValidationException(errorsOccurred.get(0));
+        }
+
         return new EmailForExperienceApplication(
                 title, questionText, sender,
-                getReceiversFromMessage(message), attachmentListWithoutInline,
+                getReceiversFromMessage(message), parsedAttachmentsWithoutInline,
                 inlineSources
         );
 
@@ -138,6 +203,45 @@ public class EmailParser {
     private boolean notAllowedFile(String fileName) {
         return allowedExtensions.stream()
                 .noneMatch(fileName::endsWith);
+    }
+
+    private long bytesToMegabytes(long bytes) {
+        return bytes / 1024 / 1024;
+    }
+
+    private String validateTextSize(long textLength) {
+        if(bytesToMegabytes(Character.BYTES * textLength) >= maxTextSize) {
+            String errorMessage = "Text size exceeded limit - " + maxTextSize + "MB, question wasn't created";
+            log.error(errorMessage);
+            return errorMessage;
+        }
+        return null;
+    }
+
+    private List<DataSource> parseAttachmentsWithoutInline(List<DataSource> attachmentListWithoutInline) throws Exception {
+        List<DataSource> parsedAttachments = attachmentListWithoutInline;
+        for (DataSource attachment: attachmentListWithoutInline) {
+            if (!validateAttachmentSize(attachment.getInputStream().available())) {
+
+                parsedAttachments = parsedAttachments.stream()
+                        .filter(o -> {
+                            try {
+                                return validateAttachmentSize(o.getInputStream().available());
+                            } catch (IOException e) {
+                                log.error("Error during attachments size checking");
+                                return false;
+                            }
+                        })
+                        .collect(Collectors.toList());
+
+                break;
+            }
+        }
+        return parsedAttachments;
+    }
+
+    private boolean validateAttachmentSize(long bytes) {
+        return bytesToMegabytes(bytes) < maxAttachmentSize;
     }
 
     @AllArgsConstructor(access = AccessLevel.PRIVATE)

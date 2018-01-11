@@ -4,16 +4,20 @@ import com.epam.lstrsum.SetUpDataBaseCollections;
 import com.epam.lstrsum.dto.question.QuestionPostDto;
 import com.epam.lstrsum.email.service.EmailParser;
 import com.epam.lstrsum.email.service.ExchangeServiceHelper;
+import com.epam.lstrsum.email.service.MailService;
+import com.epam.lstrsum.email.template.NewErrorNotificationTemplate;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.service.QuestionService;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.test.context.ActiveProfiles;
+import org.thymeleaf.TemplateEngine;
 
 import javax.mail.internet.MimeMessage;
 import java.util.EnumSet;
@@ -39,12 +43,26 @@ public class EmailParseAndSaveTest extends SetUpDataBaseCollections {
     @Autowired
     private QuestionService questionService;
 
+    @Autowired
+    private TemplateEngine templateEngine;
+
+    @Mock
+    private MailService mailService;
+
     private ExchangeServiceHelper exchangeServiceHelper = mock(ExchangeServiceHelper.class);
     private EmailParser emailParser = new EmailParser(exchangeServiceHelper);
 
     @Before
     public void setUp() {
         when(exchangeServiceHelper.resolveGroup(anyString())).thenAnswer(invocation -> singletonList(invocation.getArguments()[0]));
+        emailParser.setMailService(mailService);
+        NewErrorNotificationTemplate newErrorNotificationTemplate = new NewErrorNotificationTemplate();
+        newErrorNotificationTemplate.setTemplateEngine(templateEngine);
+        newErrorNotificationTemplate.setFromAddress("Auto_EPM-LSTR_Ask_Exp@epam.com");
+        emailParser.setNewErrorNotificationTemplate(newErrorNotificationTemplate);
+        emailParser.setMaxTextSize(16);
+        emailParser.setMaxAttachmentsNumber(10);
+        emailParser.setMaxAttachmentSize(16);
     }
 
     @Test
