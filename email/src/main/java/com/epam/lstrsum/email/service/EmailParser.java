@@ -136,17 +136,17 @@ public class EmailParser {
 
         List<DataSource> parsedAttachmentsWithoutInline = parseAttachmentsWithoutInline(attachmentListWithoutInline);
 
-        if (parsedAttachmentsWithoutInline.size() != attachmentListWithoutInline.size()) {
-            String errorMessage = "Some attachments exceeded size limit - " + maxAttachmentSize + "MB";
-            log.warn(errorMessage);
+        String errorMessage = validateSizeOfEachParsedAttachment(parsedAttachmentsWithoutInline.size(), attachmentListWithoutInline.size());
+
+        if (errorMessage != null) {
             errorsOccurred.add(errorMessage);
         }
 
-        if (parsedAttachmentsWithoutInline.size() > maxAttachmentsNumber) {
-            String errorMessage = "Number of attachments exceeded limit - " + maxAttachmentsNumber + ", extra attachments were ignored";
-            log.warn(errorMessage);
-            errorsOccurred.add(errorMessage);
+        errorMessage = validateSizeOfParsedAttachmentsList(parsedAttachmentsWithoutInline.size());
+
+        if (errorMessage != null) {
             parsedAttachmentsWithoutInline = parsedAttachmentsWithoutInline.subList(0,10);
+            errorsOccurred.add(errorMessage);
         }
 
         errorsOccurred.add("The question was" + (textExceededSize ? "n't" : "") + " created!");
@@ -209,6 +209,10 @@ public class EmailParser {
         return bytes / 1024 / 1024;
     }
 
+    private boolean validateAttachmentSize(long bytes) {
+        return bytesToMegabytes(bytes) < maxAttachmentSize;
+    }
+
     private String validateTextSize(long textLength) {
         if(bytesToMegabytes(Character.BYTES * textLength) >= maxTextSize) {
             String errorMessage = "Text size exceeded limit - " + maxTextSize + "MB, question wasn't created";
@@ -240,8 +244,22 @@ public class EmailParser {
         return parsedAttachments;
     }
 
-    private boolean validateAttachmentSize(long bytes) {
-        return bytesToMegabytes(bytes) < maxAttachmentSize;
+    private String validateSizeOfEachParsedAttachment(int parsedListSize, int originalListSize) {
+        if (parsedListSize != originalListSize) {
+            String errorMessage = "Some attachments exceeded size limit - " + maxAttachmentSize + "MB";
+            log.warn(errorMessage);
+            return errorMessage;
+        }
+        return null;
+    }
+
+    private String validateSizeOfParsedAttachmentsList(int parsedListSize) {
+        if (parsedListSize >= maxAttachmentsNumber) {
+            String errorMessage = "Number of attachments exceeded limit - " + maxAttachmentsNumber + ", extra attachments were ignored";
+            log.warn(errorMessage);
+            return errorMessage;
+        }
+        return null;
     }
 
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
