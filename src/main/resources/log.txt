@@ -1,0 +1,4 @@
+Event{id=608, msg=User John Doe is ready, date=Jan 13, 2018 9:25:47 PM}
+Event{id=971, msg=User 2 is ready, date=Jan 13, 2018 9:25:49 PM}
+Event{id=462, msg=User John Doe is ready, date=Jan 13, 2018 9:27:24 PM}
+Event{id=797, msg=User 2 is ready, date=Jan 13, 2018 9:27:25 PM}

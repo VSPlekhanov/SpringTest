@@ -25,7 +25,7 @@
         </constructor-arg>
     </bean>
 
-    <bean name="fileEventLogger" class="test.spring.loggers.impl.FileEventLogger">
+    <bean name="fileEventLogger" class="test.spring.loggers.impl.FileEventLogger" init-method="init">
         <constructor-arg value="src/main/resources/log.txt"/>
     </bean>
 
