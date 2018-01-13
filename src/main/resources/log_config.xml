@@ -15,4 +15,13 @@
           parent="fileEventLogger" destroy-method="destroy">
         <constructor-arg value="2"/>
     </bean>
+
+    <bean name="combineEventLogger" class="test.spring.loggers.impl.CombineEventLogger">
+        <constructor-arg>
+            <list>
+                <ref bean="consoleEventLogger"/>
+                <ref bean="fileEventLogger"/>
+            </list>
+        </constructor-arg>
+    </bean>
 </beans>

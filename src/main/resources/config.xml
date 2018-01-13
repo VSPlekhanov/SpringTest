@@ -10,6 +10,12 @@
     <bean id="app" class="test.spring.app.App">
         <constructor-arg ref="client"/>
         <constructor-arg ref="cachedFileEventLogger"/>
+        <constructor-arg>
+            <map>
+                <entry key="INFO" value-ref="consoleEventLogger"/>
+                <entry key="ERROR" value-ref="combineEventLogger"/>
+            </map>
+        </constructor-arg>
     </bean>
 
     <bean id="client" class="test.spring.model.Client">
@@ -17,7 +23,7 @@
         <constructor-arg value="John Doe"/>
     </bean>
 
-    <bean id="event" class="test.spring.model.Event" scope="prototype">
+    <bean id="event" class="test.spring.loggers.Event" scope="prototype">
         <constructor-arg>
             <bean class="java.util.Date"/>
         </constructor-arg>

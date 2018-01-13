@@ -1,8 +1,7 @@
 package test.spring.loggers.impl;
 
-import test.spring.model.Event;
+import test.spring.loggers.Event;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

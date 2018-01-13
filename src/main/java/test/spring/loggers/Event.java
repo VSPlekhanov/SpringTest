@@ -1,4 +1,4 @@
-package test.spring.model;
+package test.spring.loggers;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -10,6 +10,7 @@ public class Event {
     private String msg;
     private Date date;
     private DateFormat dateFormat;
+    private EventType type;
 
     public Event(Date date, DateFormat dateFormat) {
         this.date = date;
@@ -18,27 +19,39 @@ public class Event {
 
     @Override
     public String toString() {
-        return "Event{" +
-                "id=" + id +
-                ", msg=" + msg +
-                ", date=" + dateFormat.format(date) +
+        return "Event{" + "type= " + type +
+                ", id= " + id +
+                ", msg= " + msg +
+                ", date= " + dateFormat.format(date) +
                 "}\n";
+    }
+
+
+    public EventType getType() {
+        return type;
+    }
+
+    public Event setType(EventType type) {
+        this.type = type;
+        return this;
     }
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public Event setId(int id) {
         this.id = id;
+        return this;
     }
 
     public String getMsg() {
         return msg;
     }
 
-    public void setMsg(String msg) {
+    public Event setMsg(String msg) {
         this.msg = msg;
+        return this;
     }
 
     public Date getDate() {

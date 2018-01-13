@@ -2,7 +2,7 @@ package test.spring.loggers.impl;
 
 import org.apache.commons.io.FileUtils;
 import test.spring.loggers.EventLogger;
-import test.spring.model.Event;
+import test.spring.loggers.Event;
 
 import java.io.File;
 import java.io.IOException;

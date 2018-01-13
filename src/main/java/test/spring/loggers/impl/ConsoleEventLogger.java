@@ -1,7 +1,7 @@
 package test.spring.loggers.impl;
 
 import test.spring.loggers.EventLogger;
-import test.spring.model.Event;
+import test.spring.loggers.Event;
 
 public class ConsoleEventLogger implements EventLogger {
 
