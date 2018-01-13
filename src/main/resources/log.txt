@@ -1,4 +1,6 @@
-Event{id=608, msg=User John Doe is ready, date=Jan 13, 2018 9:25:47 PM}
-Event{id=971, msg=User 2 is ready, date=Jan 13, 2018 9:25:49 PM}
-Event{id=462, msg=User John Doe is ready, date=Jan 13, 2018 9:27:24 PM}
-Event{id=797, msg=User 2 is ready, date=Jan 13, 2018 9:27:25 PM}
+Event{id=231, msg=User John Doe is ready, date=Jan 13, 2018 10:53:38 PM}
+Event{id=578, msg=User 2 is ready, date=Jan 13, 2018 10:53:39 PM}
+Event{id=318, msg=User 3 is ready, date=Jan 13, 2018 10:53:39 PM}
+Event{id=294, msg=User John Doe is ready, date=Jan 13, 2018 10:55:03 PM}
+Event{id=27, msg=User 2 is ready, date=Jan 13, 2018 10:55:04 PM}
+Event{id=256, msg=User 3 is ready, date=Jan 13, 2018 10:55:04 PM}
