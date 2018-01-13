@@ -19,7 +19,7 @@ public class App {
 
     public static void main(String[] args) throws Exception {
         try(ConfigurableApplicationContext context =
-                    new ClassPathXmlApplicationContext("Spring_Config.xml")) {
+                    new ClassPathXmlApplicationContext("config.xml")) {
 
             App app = (App) context.getBean("app");
             Event event1 = (Event) context.getBean("event");

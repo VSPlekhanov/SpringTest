@@ -4,6 +4,9 @@
        xsi:schemaLocation="
  		http://www.springframework.org/schema/beans
  		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+    <import resource="log_config.xml"/>
+
     <bean id="app" class="test.spring.app.App">
         <constructor-arg ref="client"/>
         <constructor-arg ref="cachedFileEventLogger"/>
@@ -14,8 +17,6 @@
         <constructor-arg value="John Doe"/>
     </bean>
 
-    <bean id="consoleEventLogger" class="test.spring.loggers.impl.ConsoleEventLogger"/>
-
     <bean id="event" class="test.spring.model.Event" scope="prototype">
         <constructor-arg>
             <bean class="java.util.Date"/>
@@ -23,16 +24,6 @@
         <constructor-arg>
             <bean class="java.text.DateFormat" factory-method="getDateTimeInstance"/>
         </constructor-arg>
-    </bean>
-
-    <bean name="fileEventLogger" class="test.spring.loggers.impl.FileEventLogger" init-method="init">
-        <constructor-arg value="src/main/resources/log.txt"/>
-    </bean>
-
-    <bean name="cachedFileEventLogger" class="test.spring.loggers.impl.CachedFileEventLogger"
-          init-method="init" destroy-method="destroy">
-        <constructor-arg value="src/main/resources/log.txt"/>
-        <constructor-arg value="2"/>
     </bean>
 
 </beans>
