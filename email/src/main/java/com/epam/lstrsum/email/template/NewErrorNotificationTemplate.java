@@ -15,6 +15,7 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,7 +38,7 @@ public class NewErrorNotificationTemplate implements MailTemplate<List> {
     public Collection<MimeMessage> buildMailMessages(List errorList, boolean fromPortal) throws MessagingException {
 
         List<MimeMessage> mimeMessageCollection = new LinkedList<>();
-        List<String> errors = new LinkedList<>();
+        List<String> errors = new ArrayList<>();
         for (Object entry: errorList) {
             errors.add((String) entry);
         }
@@ -46,7 +47,7 @@ public class NewErrorNotificationTemplate implements MailTemplate<List> {
         mimeMessage.setFrom(new InternetAddress(fromAddress));
 
         Context context = new Context();
-        context.setVariable("errors", errors);
+        context.setVariable("errors", errors.subList(0, errors.size() - 2));
 
         mimeMessage.setFrom(new InternetAddress(fromAddress));
         mimeMessage.setSubject("Some errors occurred during email parsing...");
@@ -54,7 +55,7 @@ public class NewErrorNotificationTemplate implements MailTemplate<List> {
                 "utf-8",
                 "html");
 
-        mimeMessage.setRecipients(Message.RecipientType.TO, errors.get(0));
+        mimeMessage.setRecipients(Message.RecipientType.TO, errors.get(errors.size() - 1));
         return mimeMessageCollection;
     }
 }

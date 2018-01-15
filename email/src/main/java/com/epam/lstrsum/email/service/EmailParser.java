@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.epam.lstrsum.email.service.EmailParserUtil.evalInlineSources;
@@ -77,7 +78,6 @@ public class EmailParser {
 
         final String sender = getSender(message);
         log.debug("Sender's email address: {}", sender);
-        errorsOccurred.add(sender);
 
         final MimeMessageParser messageParser = new MimeMessageParser(message);
         messageParser.parse();
@@ -138,18 +138,19 @@ public class EmailParser {
 
         String errorMessage = validateSizeOfEachParsedAttachment(parsedAttachmentsWithoutInline.size(), attachmentListWithoutInline.size());
 
-        if (errorMessage != null) {
+        if (Objects.nonNull(errorMessage)) {
             errorsOccurred.add(errorMessage);
         }
 
         errorMessage = validateSizeOfParsedAttachmentsList(parsedAttachmentsWithoutInline.size());
 
-        if (errorMessage != null) {
+        if (Objects.nonNull(errorMessage)) {
             parsedAttachmentsWithoutInline = parsedAttachmentsWithoutInline.subList(0,10);
             errorsOccurred.add(errorMessage);
         }
 
         errorsOccurred.add("The question was" + (textExceededSize ? "n't" : "") + " created!");
+        errorsOccurred.add(sender);
 
         if (errorsOccurred.size() > 2) {
             mailService.sendMessages(newErrorNotificationTemplate.buildMailMessages(errorsOccurred, false));
