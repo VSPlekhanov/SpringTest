@@ -71,7 +71,7 @@ public class EmailParser {
     private int maxAttachmentSize;
 
     public EmailForExperienceApplication getParsedMessage(@NonNull MimeMessage message) throws Exception {
-        List<String> errorsOccurred = new ArrayList<>();
+        List<String> emailParsingInfo = new ArrayList<>();
 
         String title = message.getSubject();
         validateNotEmptyString(title);
@@ -100,7 +100,7 @@ public class EmailParser {
                 textExceededSize = Objects.nonNull(errorMessage);
 
                 if (Objects.nonNull(errorMessage)) {
-                    errorsOccurred.add(errorMessage);
+                    emailParsingInfo.add(errorMessage);
                 }
 
 
@@ -115,7 +115,7 @@ public class EmailParser {
                 textExceededSize = Objects.nonNull(errorMessage);
 
                 if (Objects.nonNull(errorMessage)) {
-                    errorsOccurred.add(errorMessage);
+                    emailParsingInfo.add(errorMessage);
                 }
 
                 keys.addAll(evalKeysForInlining(questionText));
@@ -139,25 +139,25 @@ public class EmailParser {
         String errorMessage = validateSizeOfEachParsedAttachment(parsedAttachmentsWithoutInline.size(), attachmentListWithoutInline.size());
 
         if (Objects.nonNull(errorMessage)) {
-            errorsOccurred.add(errorMessage);
+            emailParsingInfo.add(errorMessage);
         }
 
         errorMessage = validateSizeOfParsedAttachmentsList(parsedAttachmentsWithoutInline.size());
 
         if (Objects.nonNull(errorMessage)) {
             parsedAttachmentsWithoutInline = parsedAttachmentsWithoutInline.subList(0,10);
-            errorsOccurred.add(errorMessage);
+            emailParsingInfo.add(errorMessage);
         }
 
-        errorsOccurred.add("The question was" + (textExceededSize ? "n't" : "") + " created!");
-        errorsOccurred.add(sender);
+        emailParsingInfo.add("The question was" + (textExceededSize ? "n't" : "") + " created!");
+        emailParsingInfo.add(sender);
 
-        if (errorsOccurred.size() > 2) {
-            mailService.sendMessages(newErrorNotificationTemplate.buildMailMessages(errorsOccurred, false));
+        if (emailParsingInfo.size() > 2) {
+            mailService.sendMessages(newErrorNotificationTemplate.buildMailMessages(emailParsingInfo, false));
         }
 
         if (textExceededSize) {
-            throw new EmailValidationException(errorsOccurred.get(0));
+            throw new EmailValidationException(emailParsingInfo.get(0));
         }
 
         return new EmailForExperienceApplication(

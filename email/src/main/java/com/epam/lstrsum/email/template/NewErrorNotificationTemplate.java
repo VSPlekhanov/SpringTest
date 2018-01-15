@@ -35,19 +35,19 @@ public class NewErrorNotificationTemplate implements MailTemplate<List> {
     private String fromAddress;
 
     @Override
-    public Collection<MimeMessage> buildMailMessages(List errorList, boolean fromPortal) throws MessagingException {
+    public Collection<MimeMessage> buildMailMessages(List emailParsingInfo, boolean fromPortal) throws MessagingException {
 
         List<MimeMessage> mimeMessageCollection = new LinkedList<>();
-        List<String> errors = new ArrayList<>();
-        for (Object entry: errorList) {
-            errors.add((String) entry);
+        List<String> parsingInfo = new ArrayList<>();
+        for (Object entry: emailParsingInfo) {
+            parsingInfo.add((String) entry);
         }
 
         MimeMessage mimeMessage = new MimeMessage((Session) null);
         mimeMessage.setFrom(new InternetAddress(fromAddress));
 
         Context context = new Context();
-        context.setVariable("errors", errors.subList(0, errors.size() - 2));
+        context.setVariable("errors", parsingInfo.subList(0, parsingInfo.size() - 2));
 
         mimeMessage.setFrom(new InternetAddress(fromAddress));
         mimeMessage.setSubject("Some errors occurred during email parsing...");
@@ -55,7 +55,7 @@ public class NewErrorNotificationTemplate implements MailTemplate<List> {
                 "utf-8",
                 "html");
 
-        mimeMessage.setRecipients(Message.RecipientType.TO, errors.get(errors.size() - 1));
+        mimeMessage.setRecipients(Message.RecipientType.TO, parsingInfo.get(parsingInfo.size() - 1));
         return mimeMessageCollection;
     }
 }
