@@ -313,3 +313,27 @@ db.User.insert(
         "isActive": true
     }
 );
+
+//changeset Maksim_Nikolaev:ChangeSet-7
+db.User.insert(
+    {
+        "_class": "com.epam.lstrsum.model.User",
+        "firstName": "Andrey",
+        "lastName": "Zhestkov",
+        "email": "andrey_zhestkov@epam.com",
+        "roles": ["ROLE_EXTENDED_USER", "ACTUATOR"],
+        "createdAt": ISODate("2018-01-15T12:00:00.000Z"),
+        "isActive": true
+    }
+);
+db.User.insert(
+    {
+        "_class": "com.epam.lstrsum.model.User",
+        "firstName": "Svyatoslav",
+        "lastName": "Nesteruk",
+        "email": "svyatoslav_nesteruk@epam.com",
+        "roles": ["ROLE_EXTENDED_USER", "ACTUATOR"],
+        "createdAt": ISODate("2018-01-15T12:00:00.000Z"),
+        "isActive": true
+    }
+);
