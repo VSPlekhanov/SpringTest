@@ -97,9 +97,9 @@ public class EmailParser {
 
                 String errorMessage = validateTextSize(questionText.length());
 
-                textExceededSize = errorMessage != null;
+                textExceededSize = Objects.nonNull(errorMessage);
 
-                if (errorMessage != null) {
+                if (Objects.nonNull(errorMessage)) {
                     errorsOccurred.add(errorMessage);
                 }
 
@@ -112,9 +112,9 @@ public class EmailParser {
 
                 String errorMessage = validateTextSize(questionText.length());
 
-                textExceededSize = errorMessage != null;
+                textExceededSize = Objects.nonNull(errorMessage);
 
-                if (errorMessage != null) {
+                if (Objects.nonNull(errorMessage)) {
                     errorsOccurred.add(errorMessage);
                 }
 
