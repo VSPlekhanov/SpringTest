@@ -1,9 +1,12 @@
 package com.epam.lstrsum.email.service;
 
 import com.epam.lstrsum.email.exception.EmailValidationException;
+import com.epam.lstrsum.email.template.NewErrorNotificationTemplate;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.thymeleaf.TemplateEngine;
 
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
@@ -20,12 +23,23 @@ import static org.mockito.Mockito.when;
 
 public class EmailParserTest {
 
+    @Mock
+    private MailService mailService;
+
     private ExchangeServiceHelper exchangeServiceHelper = mock(ExchangeServiceHelper.class);
     private EmailParser emailParser = new EmailParser(exchangeServiceHelper);
 
     @Before
     public void setUp() {
         when(exchangeServiceHelper.resolveGroup(anyString())).thenAnswer(invocation -> singletonList(invocation.getArguments()[0]));
+        TemplateEngine templateEngine = new TemplateEngine();
+        NewErrorNotificationTemplate newErrorNotificationTemplate = new NewErrorNotificationTemplate();
+        newErrorNotificationTemplate.setTemplateEngine(templateEngine);
+        emailParser.setMailService(mailService);
+        emailParser.setNewErrorNotificationTemplate(newErrorNotificationTemplate);
+        emailParser.setMaxTextSize(16);
+        emailParser.setMaxAttachmentsNumber(10);
+        emailParser.setMaxAttachmentSize(16);
     }
 
     @Test(expected = NullPointerException.class)
@@ -92,5 +106,22 @@ public class EmailParserTest {
         assertThat(emailsFromHeader.contains("stan_chivs@epam.com"), is(true));
     }
 
+    @Test(expected = EmailValidationException.class)
+    public void testThatParserThrowsExceptionWhenTextExceededSizeLimits() throws Exception {
+        final MimeMessage messageWithBigText = new MimeMessage((Session) null);
+        final MimeMessageHelper messageHelper = new MimeMessageHelper(messageWithBigText);
+        messageHelper.setFrom("John_Doe@epam.com");
+        messageHelper.setTo("John_Foe@epam.com");
+        messageHelper.setSubject("       ");
+        messageHelper.setText(createStringWithSpecificSize(Integer.MAX_VALUE / 100));
+        emailParser.getParsedMessage(messageWithBigText);
+    }
 
+    private String createStringWithSpecificSize(int stringSize) {
+        StringBuilder sb = new StringBuilder(stringSize);
+        for (int i=0; i < stringSize; i++) {
+            sb.append('a');
+        }
+        return sb.toString();
+    }
 }
