@@ -4,6 +4,7 @@ import com.epam.lstrsum.controller.QuestionController;
 import com.epam.lstrsum.controller.UserRuntimeRequestComponent;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountListDto;
+import com.epam.lstrsum.dto.question.QuestionWithHighlightersDto;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.UserRepository;
 import com.epam.lstrsum.service.UserService;
@@ -37,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +46,7 @@ import java.util.Optional;
 import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
@@ -415,17 +418,33 @@ public class ElasticAdvancedSearchTest {
         });
     }
 
-    @Test
-    public void advancedSearchReturnsValidDto() throws Exception {
-        when(userService.findUserById(anyString())).thenReturn(someUser());
-        QuestionWithAnswersCountListDto result = questionController.elasticSearch("\"tags:javascript prototype\"", 0, 10).getBody();
+
+    private QuestionWithHighlightersDto advancedSearchReturnsValidDto(QuestionWithAnswersCountListDto result) {
 
         assertThat(result.getTotalNumber(), is(1L));
-        QuestionWithAnswersCountDto foundQuestion = result.getQuestions().get(0);
-        assertThat(foundQuestion.getAnswersCount(), is(3));
-        assertThat(foundQuestion.getTags().length, is(3));
+        QuestionWithHighlightersDto foundQuestion = (QuestionWithHighlightersDto) result.getQuestions().get(0);
+        assertNotNull(foundQuestion.getHighlightedText());
+        assertThat(foundQuestion.getHighlightedText().length, is(1));
+        return foundQuestion;
+    }
+
+    @Test
+    public void advancedSearchReturnsValidDtoWithHighlights() throws Exception {
+        when(userService.findUserById(anyString())).thenReturn(someUser());
+        QuestionWithAnswersCountListDto result = questionController.elasticSearch("\"tags:javascript prototype\"", 0, 10).getBody();
+        QuestionWithHighlightersDto foundQuestion = advancedSearchReturnsValidDto(result);
         assertThat(foundQuestion.getQuestionId(), is("4u_5r"));
         assertThat(foundQuestion.getCreatedAt(), is(Instant.parse("2017-05-31T09:18:00.360Z")));
+        assertThat(foundQuestion.getHighlightedText()[0].length(), is(150));
+
+        assertThat(foundQuestion.getAnswersCount(), is(3));
+        assertThat(foundQuestion.getTags().length, is(3));
+        assertThat(foundQuestion.getTitle(), is("Prototype.js get 'Text' from an element. language javascript."));
+        List<String> tags = Arrays.asList(foundQuestion.getTags());
+        assertThat(tags.size(), is(3));
+        assertThat(tags, containsInAnyOrder("<em>javascript</em>", "dom", "<em>prototypejs</em>"));
+
+
     }
 
     @Test
@@ -433,12 +452,13 @@ public class ElasticAdvancedSearchTest {
         when(userService.findUserById(anyString())).thenReturn(someUser());
 
         QuestionWithAnswersCountListDto result = questionController.elasticSearch("Elixir", 0, 10).getBody();
-
-        assertThat(result.getTotalNumber(), is(1L));
-        QuestionWithAnswersCountDto foundQuestion = result.getQuestions().get(0);
+        QuestionWithHighlightersDto foundQuestion = advancedSearchReturnsValidDto(result);
+        assertThat(foundQuestion.getQuestionId(), is("6u_6r"));
+        assertThat(foundQuestion.getCreatedAt(), is(Instant.parse("2017-07-23T09:00:00.050Z")));
+        assertThat(foundQuestion.getTitle(), is("<em>Elixir</em>: pipe more then one variable into a function"));
+        assertThat(foundQuestion.getHighlightedText()[0], is("<em>Elixir</em> has the possibility to pipe input into a function, which makes code more readable very often. For example something like this"));
         assertThat(foundQuestion.getAnswersCount(), is(0));
         assertThat(foundQuestion.getTags().length, is(0));
-        assertThat(foundQuestion.getQuestionId(), is("6u_6r"));
     }
 
     @Test

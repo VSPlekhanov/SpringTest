@@ -212,6 +212,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         questionDto.setAnswersCount(Objects.nonNull(list) ? list.size() : 0);
     }
 
+    @SuppressWarnings("unchecked")
     private void fillDtoFromMapWithTags(Map<String, Object> map, QuestionWithAnswersCountDto questionDto, String questionId) {
         List list = getFieldFromSearchHit(map, "tags", questionId);
         if (Objects.nonNull(list)) {
