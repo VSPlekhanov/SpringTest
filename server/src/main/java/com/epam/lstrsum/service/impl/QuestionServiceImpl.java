@@ -130,8 +130,8 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public QuestionWithAnswersCountListDto advancedSearchGetDto(String searchString, List<String> metaTags, Integer page, Integer size) {
-        return elasticSearchService.advancedSearchGetDto(searchString, metaTags, page, size);
+    public QuestionWithAnswersCountListDto advancedSearchGetDtoWithHighlights(String searchString, List<String> metaTags, Integer page, Integer size) {
+        return elasticSearchService.advancedSearchGetDtoWithHighlights(searchString, metaTags, page, size);
     }
 
     @Override

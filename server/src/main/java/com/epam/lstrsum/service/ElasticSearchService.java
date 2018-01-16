@@ -19,5 +19,5 @@ public interface ElasticSearchService {
      * @return special dto for ui with list of found questions
      * @see <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html">Elastic Search</a>
      */
-    QuestionWithAnswersCountListDto advancedSearchGetDto(String searchString, List<String> metaTags, Integer page, Integer size);
+    QuestionWithAnswersCountListDto advancedSearchGetDtoWithHighlights(String searchString, List<String> metaTags, Integer page, Integer size);
 }

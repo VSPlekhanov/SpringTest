@@ -35,10 +35,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,7 +49,8 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
 
     // Pattern for getting id from string like "DBRef(u'User', ObjectId('5a1571563867e59abcba48ca'))"
     private final Pattern dbRefPattern = Pattern.compile("^.*\\'(\\w*)\\'\\)\\)$");
-    private final String elsticDateTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+    private final String elasticDateTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+    private final int highlightedFragmentSize = 150;
 
     @Setter
     private String index;
@@ -102,7 +100,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     }
 
     @Override
-    public QuestionWithAnswersCountListDto advancedSearchGetDto(String searchString, List<String> metaTags, Integer page, Integer size) {
+    public QuestionWithAnswersCountListDto advancedSearchGetDtoWithHighlights(String searchString, List<String> metaTags, Integer page, Integer size) {
         List<QuestionWithAnswersCountDto> result = new ArrayList<>();
         long totalCount = 0L;
 
@@ -185,7 +183,9 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         HighlightBuilder highlightBuilder = new HighlightBuilder();
         highlightBuilder
                 .field(new HighlightBuilder.Field("title").numOfFragments(0))
-                .field(new HighlightBuilder.Field("text").fragmentSize(150).noMatchSize(150))
+                .field(new HighlightBuilder.Field("text")
+                        .fragmentSize(highlightedFragmentSize)
+                        .noMatchSize(highlightedFragmentSize))
                 .field(new HighlightBuilder.Field("tags"));
         return highlightBuilder;
     }
@@ -199,29 +199,28 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
 
         questionDto.setQuestionId(questionId);
         questionDto.setTitle((String) map.get("title"));
-        setAuthorToQuestionDto(map, questionDto);
-        setCreatedDateToQuestionDto(map, questionDto);
-        setTagsToQuestionDto(map, questionDto, questionId);
-        setAnswersCountToQuestionDto(map, questionDto, questionId);
+        fillDtoFromMapWithAuthor(map, questionDto);
+        fillDtoFromMapWithCreatedDate(map, questionDto);
+        fillDtoFromMapWithTags(map, questionDto, questionId);
+        fillDtoFromMapWithAnswers(map, questionDto, questionId);
 
         return questionDto;
     }
 
-    private void setAnswersCountToQuestionDto(Map<String, Object> map, QuestionWithAnswersCountDto questionDto, String questionId) {
-        List list;
-        list = getFieldFromSearchHit(map, "answers", questionId);
-        questionDto.setAnswersCount(list != null ? list.size() : 0);
+    private void fillDtoFromMapWithAnswers(Map<String, Object> map, QuestionWithAnswersCountDto questionDto, String questionId) {
+        List list = getFieldFromSearchHit(map, "answers", questionId);
+        questionDto.setAnswersCount(Objects.nonNull(list) ? list.size() : 0);
     }
 
-    private void setTagsToQuestionDto(Map<String, Object> map, QuestionWithAnswersCountDto questionDto, String questionId) {
+    private void fillDtoFromMapWithTags(Map<String, Object> map, QuestionWithAnswersCountDto questionDto, String questionId) {
         List list = getFieldFromSearchHit(map, "tags", questionId);
-        if (list != null) {
+        if (Objects.nonNull(list)) {
             List<String> tags = (List<String>)list;
             questionDto.setTags(tags.toArray(new String[tags.size()]));
         }
     }
 
-    private void setAuthorToQuestionDto(Map<String, Object> map, QuestionWithAnswersCountDto questionDto) {
+    private void fillDtoFromMapWithAuthor(Map<String, Object> map, QuestionWithAnswersCountDto questionDto) {
         String authorId = (String) map.get("authorId");
         Matcher m = dbRefPattern.matcher(authorId);
         if (m.matches()) {
@@ -230,10 +229,10 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         }
     }
 
-    private void setCreatedDateToQuestionDto(Map<String, Object> map, QuestionWithAnswersCountDto questionDto) throws ParseException {
+    private void fillDtoFromMapWithCreatedDate(Map<String, Object> map, QuestionWithAnswersCountDto questionDto) throws ParseException {
         String createdAt = (String) map.get("createdAt");
         createdAt = createdAt.substring(0, createdAt.length() - 3);
-        questionDto.setCreatedAt(new SimpleDateFormat(elsticDateTimePattern).parse(createdAt).toInstant()); // "2017-11-15T08:49:28.106000" -> "2017-11-15T08:49:28.106"
+        questionDto.setCreatedAt(new SimpleDateFormat(elasticDateTimePattern).parse(createdAt).toInstant()); // "2017-11-15T08:49:28.106000" -> "2017-11-15T08:49:28.106"
     }
 
     @SneakyThrows
@@ -243,23 +242,23 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         QuestionWithHighlightersDto questionDto = new QuestionWithHighlightersDto();
         String questionId = hit.getId();
         questionDto.setQuestionId(questionId);
-        setAuthorToQuestionDto(source, questionDto);
-        setCreatedDateToQuestionDto(source, questionDto);
-        setAnswersCountToQuestionDto(source, questionDto, questionId);
+        fillDtoFromMapWithAuthor(source, questionDto);
+        fillDtoFromMapWithCreatedDate(source, questionDto);
+        fillDtoFromMapWithAnswers(source, questionDto, questionId);
 
         Map<String, HighlightField> highlights = hit.getHighlightFields();
 
         String title = highlights.containsKey("title") ? highlights.get("title").getFragments()[0].string() : (String) source.get("title");
         questionDto.setTitle(title);
 
-        setHighlightedTags(source, questionDto, questionId, highlights);
+        fillDtoFromMapWithHighlightedTags(source, questionDto, questionId, highlights);
 
-        setHighlightedText(questionDto, highlights);
+        fillDtoFromMapWithHighlightedText(questionDto, highlights);
 
         return questionDto;
     }
 
-    private void setHighlightedText(QuestionWithHighlightersDto questionDto, Map<String, HighlightField> highlights) {
+    private void fillDtoFromMapWithHighlightedText(QuestionWithHighlightersDto questionDto, Map<String, HighlightField> highlights) {
         if (highlights.containsKey("text")){
             String[] highlightedText = Arrays.stream(highlights.get("text").getFragments())
                     .map(Text::string)
@@ -268,10 +267,11 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         }
     }
 
-    private void setHighlightedTags(Map<String, Object> source, QuestionWithHighlightersDto questionDto, String questionId, Map<String, HighlightField> highlights) {
+    @SuppressWarnings("unchecked")
+    private void fillDtoFromMapWithHighlightedTags(Map<String, Object> source, QuestionWithHighlightersDto questionDto, String questionId, Map<String, HighlightField> highlights) {
         List list = getFieldFromSearchHit(source, "tags", questionId);
 
-        if (list != null) {
+        if (Objects.nonNull(list)) {
             String[] resultTags;
             List<String> tags = (List<String>) list;
 
@@ -302,7 +302,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         List result = null;
 
         Object object = map.get(key);
-        if (object == null) {
+        if (!Objects.nonNull(object)) {
             log.error("ElasticSearch response includes question (id = {}) without {} field.", id, key);
         } else {
             if (object instanceof List<?>) {
