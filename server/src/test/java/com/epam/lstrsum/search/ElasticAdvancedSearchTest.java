@@ -38,15 +38,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.epam.lstrsum.testutils.InstantiateUtil.someUser;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
@@ -419,58 +418,77 @@ public class ElasticAdvancedSearchTest {
     }
 
 
-    private QuestionWithHighlightersDto advancedSearchReturnsValidDto(QuestionWithAnswersCountListDto result) {
+    private void advancedSearchReturnsValidDto(
+            String query, String questionId, String createdAt, String text, String title,
+            int answerCount, int tagsSize, boolean hasTags, String ... tags) {
 
-        assertThat(result.getTotalNumber(), is(1L));
+        when(userService.findUserById(anyString())).thenReturn(someUser());
+        QuestionWithAnswersCountListDto result = questionController.elasticSearch(query, 0, 10).getBody();
         QuestionWithHighlightersDto foundQuestion = (QuestionWithHighlightersDto) result.getQuestions().get(0);
+
         assertNotNull(foundQuestion.getHighlightedText());
         assertThat(foundQuestion.getHighlightedText().length, is(1));
-        return foundQuestion;
+        assertThat(result.getTotalNumber(), is(1L));
+
+        assertThat(foundQuestion.getQuestionId(), is(questionId));
+        assertThat(foundQuestion.getCreatedAt(), is(Instant.parse(createdAt)));
+        assertThat(foundQuestion.getHighlightedText()[0], is(text));
+
+        assertThat(foundQuestion.getAnswersCount(), is(answerCount));
+        assertThat(foundQuestion.getTitle(), is(title));
+
+        if(hasTags) {
+            List<String> tagsList = Arrays.asList(foundQuestion.getTags());
+            assertThat(tagsList.size(), is(tagsSize));
+            assertThat(tagsList, Objects.nonNull(tags)
+                    ? containsInAnyOrder(tags)
+                    : empty());
+        }
     }
 
     @Test
     public void advancedSearchReturnsValidDtoWithHighlights() throws Exception {
-        when(userService.findUserById(anyString())).thenReturn(someUser());
-        QuestionWithAnswersCountListDto result = questionController.elasticSearch("\"tags:javascript prototype\"", 0, 10).getBody();
-        QuestionWithHighlightersDto foundQuestion = advancedSearchReturnsValidDto(result);
-        assertThat(foundQuestion.getQuestionId(), is("4u_5r"));
-        assertThat(foundQuestion.getCreatedAt(), is(Instant.parse("2017-05-31T09:18:00.360Z")));
-        assertThat(foundQuestion.getHighlightedText()[0].length(), is(150));
-
-        assertThat(foundQuestion.getAnswersCount(), is(3));
-        assertThat(foundQuestion.getTags().length, is(3));
-        assertThat(foundQuestion.getTitle(), is("Prototype.js get 'Text' from an element. language javascript."));
-        List<String> tags = Arrays.asList(foundQuestion.getTags());
-        assertThat(tags.size(), is(3));
-        assertThat(tags, containsInAnyOrder("<em>javascript</em>", "dom", "<em>prototypejs</em>"));
-
-
+        advancedSearchReturnsValidDto(
+                "\"tags:javascript prototype\"",
+                "4u_5r",
+                "2017-05-31T09:18:00.360Z",
+                "I'm new to Protoype.JS and just testing it a bit because I heard it was good, " +
+                        "but I'm stuck quite quickly. As easy as this is with jQuery, it seems to",
+                "Prototype.js get 'Text' from an element. language javascript.",
+                3,
+                3,
+                true,
+                "<em>javascript</em>", "dom", "<em>prototypejs</em>");
     }
 
     @Test
     public void advancedSearchReturnsValidDtoWithEmptyTagsAndAnswersArrays() throws Exception {
-        when(userService.findUserById(anyString())).thenReturn(someUser());
-
-        QuestionWithAnswersCountListDto result = questionController.elasticSearch("Elixir", 0, 10).getBody();
-        QuestionWithHighlightersDto foundQuestion = advancedSearchReturnsValidDto(result);
-        assertThat(foundQuestion.getQuestionId(), is("6u_6r"));
-        assertThat(foundQuestion.getCreatedAt(), is(Instant.parse("2017-07-23T09:00:00.050Z")));
-        assertThat(foundQuestion.getTitle(), is("<em>Elixir</em>: pipe more then one variable into a function"));
-        assertThat(foundQuestion.getHighlightedText()[0], is("<em>Elixir</em> has the possibility to pipe input into a function, which makes code more readable very often. For example something like this"));
-        assertThat(foundQuestion.getAnswersCount(), is(0));
-        assertThat(foundQuestion.getTags().length, is(0));
+        advancedSearchReturnsValidDto(
+                "Elixir",
+                "6u_6r",
+                "2017-07-23T09:00:00.050Z",
+                "<em>Elixir</em> has the possibility to pipe input into a function," +
+                        " which makes code more readable very often. For example something like this",
+                "<em>Elixir</em>: pipe more then one variable into a function",
+                0,
+                0,
+                true,
+                null);
     }
 
     @Test
     public void advancedSearchReturnsValidDtoWithoutTags() throws Exception {
-        when(userService.findUserById(anyString())).thenReturn(someUser());
-
-        QuestionWithAnswersCountListDto result = questionController.elasticSearch("title: JsonMappingException", 0, 10).getBody();
-
-        assertThat(result.getTotalNumber(), is(1L));
-        QuestionWithAnswersCountDto foundQuestion = result.getQuestions().get(0);
-        assertNull(foundQuestion.getTags());
-        assertThat(foundQuestion.getQuestionId(), is("1u_1r"));
+        advancedSearchReturnsValidDto(
+                "title: JsonMappingException",
+                "1u_1r",
+                "2016-04-19T08:00:00Z",
+                "I have this call in async task. All parameters are correct." +
+                        " In postman or advance rest client the call work fine and It return a json with a list of",
+                "<em>JsonMappingException</em> on android spring httprequest",
+                3,
+                0,
+                false,
+                null);
     }
 
     @Test
