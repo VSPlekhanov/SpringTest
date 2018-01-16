@@ -4,6 +4,7 @@ import com.epam.lstrsum.controller.UserRuntimeRequestComponent;
 import com.epam.lstrsum.converter.UserDtoMapper;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountDto;
 import com.epam.lstrsum.dto.question.QuestionWithAnswersCountListDto;
+import com.epam.lstrsum.dto.question.QuestionWithHighlightersDto;
 import com.epam.lstrsum.model.Question;
 import com.epam.lstrsum.model.User;
 import com.epam.lstrsum.persistence.UserRepository;
@@ -18,18 +19,21 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.text.Text;
 import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
@@ -111,7 +117,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
                     );
             SearchHits hits = searchResponse.getHits();
             totalCount = hits.getTotalHits();
-            Arrays.stream(hits.getHits()).forEach(h -> result.add(hitToDtoWithAnswersCount(h)));
+            Arrays.stream(hits.getHits()).forEach(h -> result.add(hitToDtoWithHighlights(h)));
         } catch (IOException e) {
             log.warn("advancedSearchGetDto_Can't perform request to ES, with error {}", e.getMessage());
         }
@@ -177,9 +183,10 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
 
     private HighlightBuilder createHighlighter(){
         HighlightBuilder highlightBuilder = new HighlightBuilder();
-        validMetaTags.forEach(
-                el -> highlightBuilder.field(new HighlightBuilder.Field(el))
-        );
+        highlightBuilder
+                .field(new HighlightBuilder.Field("title").numOfFragments(0))
+                .field(new HighlightBuilder.Field("text").fragmentSize(150).noMatchSize(150))
+                .field(new HighlightBuilder.Field("tags"));
         return highlightBuilder;
     }
 
@@ -189,29 +196,106 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
 
         QuestionWithAnswersCountDto questionDto = new QuestionWithAnswersCountDto();
         String questionId = hit.getId();
+
         questionDto.setQuestionId(questionId);
         questionDto.setTitle((String) map.get("title"));
+        setAuthorToQuestionDto(map, questionDto);
+        setCreatedDateToQuestionDto(map, questionDto);
+        setTagsToQuestionDto(map, questionDto, questionId);
+        setAnswersCountToQuestionDto(map, questionDto, questionId);
 
+        return questionDto;
+    }
+
+    private void setAnswersCountToQuestionDto(Map<String, Object> map, QuestionWithAnswersCountDto questionDto, String questionId) {
+        List list;
+        list = getFieldFromSearchHit(map, "answers", questionId);
+        questionDto.setAnswersCount(list != null ? list.size() : 0);
+    }
+
+    private void setTagsToQuestionDto(Map<String, Object> map, QuestionWithAnswersCountDto questionDto, String questionId) {
+        List list = getFieldFromSearchHit(map, "tags", questionId);
+        if (list != null) {
+            List<String> tags = (List<String>)list;
+            questionDto.setTags(tags.toArray(new String[tags.size()]));
+        }
+    }
+
+    private void setAuthorToQuestionDto(Map<String, Object> map, QuestionWithAnswersCountDto questionDto) {
         String authorId = (String) map.get("authorId");
         Matcher m = dbRefPattern.matcher(authorId);
         if (m.matches()) {
             User user = userService.findUserById(m.group(1));
             questionDto.setAuthor(userMapper.modelToBaseDto(user));
         }
+    }
+
+    private void setCreatedDateToQuestionDto(Map<String, Object> map, QuestionWithAnswersCountDto questionDto) throws ParseException {
         String createdAt = (String) map.get("createdAt");
         createdAt = createdAt.substring(0, createdAt.length() - 3);
         questionDto.setCreatedAt(new SimpleDateFormat(elsticDateTimePattern).parse(createdAt).toInstant()); // "2017-11-15T08:49:28.106000" -> "2017-11-15T08:49:28.106"
+    }
 
-        List list = getFieldFromSearchHit(map, "tags", questionId);
-        if (list != null) {
-            List<String> tags = (List<String>)list;
-            questionDto.setTags(tags.toArray(new String[tags.size()]));
-        }
+    @SneakyThrows
+    private QuestionWithAnswersCountDto hitToDtoWithHighlights(SearchHit hit) {
+        Map<String, Object> source = hit.getSource();
 
-        list = getFieldFromSearchHit(map, "answers", questionId);
-        questionDto.setAnswersCount(list != null ? list.size() : 0);
+        QuestionWithHighlightersDto questionDto = new QuestionWithHighlightersDto();
+        String questionId = hit.getId();
+        questionDto.setQuestionId(questionId);
+        setAuthorToQuestionDto(source, questionDto);
+        setCreatedDateToQuestionDto(source, questionDto);
+        setAnswersCountToQuestionDto(source, questionDto, questionId);
+
+        Map<String, HighlightField> highlights = hit.getHighlightFields();
+
+        String title = highlights.containsKey("title") ? highlights.get("title").getFragments()[0].string() : (String) source.get("title");
+        questionDto.setTitle(title);
+
+        setHighlightedTags(source, questionDto, questionId, highlights);
+
+        setHighlightedText(questionDto, highlights);
 
         return questionDto;
+    }
+
+    private void setHighlightedText(QuestionWithHighlightersDto questionDto, Map<String, HighlightField> highlights) {
+        if (highlights.containsKey("text")){
+            String[] highlightedText = Arrays.stream(highlights.get("text").getFragments())
+                    .map(Text::string)
+                    .toArray(String[]::new);
+            questionDto.setHighlightedText(highlightedText);
+        }
+    }
+
+    private void setHighlightedTags(Map<String, Object> source, QuestionWithHighlightersDto questionDto, String questionId, Map<String, HighlightField> highlights) {
+        List list = getFieldFromSearchHit(source, "tags", questionId);
+
+        if (list != null) {
+            String[] resultTags;
+            List<String> tags = (List<String>) list;
+
+            if (highlights.containsKey("tags")) {
+                List<String> highlightedTags = Arrays.stream(highlights.get("tags").getFragments())
+                        .map(Text::string)
+                        .collect(toList());
+
+                resultTags = tags.stream()
+                        .map(t -> {
+                               for (String ht: highlightedTags){
+                                   if (t.equals(ht.substring(4, ht.length() - 5))) {
+                                       return ht;
+                                   }
+                               }
+                               return t;
+                        })
+                        .toArray(String[]::new);
+            } else {
+                resultTags = tags.toArray(new String[tags.size()]);
+            }
+
+            questionDto.setTags(resultTags);
+        }
     }
 
     private List getFieldFromSearchHit(Map<String, Object> map, String key, String id){
